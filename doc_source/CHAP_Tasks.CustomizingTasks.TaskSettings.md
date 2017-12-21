@@ -1,0 +1,96 @@
+# Specifying Task Settings for AWS Database Migration Service Tasks<a name="CHAP_Tasks.CustomizingTasks.TaskSettings"></a>
+
+Each task has settings that you can configure according to the needs of your database migration\. You create these settings in a JSON file or, with some settings, you can specify the settings using the AWS DMS console\. 
+
+There are several main types of task settings:
+
++ [Target Metadata Task Settings](CHAP_Tasks.CustomizingTasks.TaskSettings.TargetMetadata.md) \(TargetMetadata\)
+
++ [Full Load Task Settings](CHAP_Tasks.CustomizingTasks.TaskSettings.FullLoad.md) \(FullLoadSettings\)
+
++ [Logging Task Settings](CHAP_Tasks.CustomizingTasks.TaskSettings.Logging.md) \(Logging\)
+
++ [Control Table Task Settings](CHAP_Tasks.CustomizingTasks.TaskSettings.ControlTable.md) \(ControlTablesSettings\)
+
++ [Stream Buffer Task Settings](CHAP_Tasks.CustomizingTasks.TaskSettings.StreamBuffer.md) \(StreamBufferSettings\)
+
++ [Change Processing Tuning Settings](CHAP_Tasks.CustomizingTasks.TaskSettings.ChangeProcessingTuning.md) \(ChangeProcessingTuning\)
+
++ [Change Processing DDL Handling Policy Task Settings](CHAP_Tasks.CustomizingTasks.TaskSettings.DDLHandling.md) \(ChangeProcessingDdlHandlingPolicy\)
+
++ [Error Handling Task Settings](CHAP_Tasks.CustomizingTasks.TaskSettings.ErrorHandling.md) \(ErrorBehavior\)
+
+A task settings JSON file can look like this:
+
+```
+{
+  "TargetMetadata": {
+    "TargetSchema": "",
+    "SupportLobs": true,
+    "FullLobMode": false,
+    "LobChunkSize": 64,
+    "LimitedSizeLobMode": true,
+    "LobMaxSize": 32,
+    "BatchApplyEnabled": true
+  },
+  "FullLoadSettings": {
+    "TargetTablePrepMode": "DO_NOTHING",
+    "CreatePkAfterFullLoad": false,
+    "StopTaskCachedChangesApplied": false,
+    "StopTaskCachedChangesNotApplied": false,
+    "MaxFullLoadSubTasks": 8,
+    "TransactionConsistencyTimeout": 600,
+    "CommitRate": 10000
+  },
+  "Logging": {
+    "EnableLogging": false
+  },
+  "ControlTablesSettings": {
+    "ControlSchema":"",
+    "HistoryTimeslotInMinutes":5,
+    "HistoryTableEnabled": false,
+    "SuspendedTablesTableEnabled": false,
+    "StatusTableEnabled": false
+  },
+  "StreamBufferSettings": {
+    "StreamBufferCount": 3,
+    "StreamBufferSizeInMB": 8
+  },
+  "ChangeProcessingTuning": { 
+    "BatchApplyPreserveTransaction": true, 
+    "BatchApplyTimeoutMin": 1, 
+    "BatchApplyTimeoutMax": 30, 
+    "BatchApplyMemoryLimit": 500, 
+    "BatchSplitSize": 0, 
+    "MinTransactionSize": 1000, 
+    "CommitTimeout": 1, 
+    "MemoryLimitTotal": 1024, 
+    "MemoryKeepTime": 60, 
+    "StatementCacheSize": 50 
+  },
+  "ChangeProcessingDdlHandlingPolicy": {
+    "HandleSourceTableDropped": true,
+    "HandleSourceTableTruncated": true,
+    "HandleSourceTableAltered": true
+  },
+  "ErrorBehavior": {
+    "DataErrorPolicy": "LOG_ERROR",
+    "DataTruncationErrorPolicy":"LOG_ERROR",
+    "DataErrorEscalationPolicy":"SUSPEND_TABLE",
+    "DataErrorEscalationCount": 50,
+    "TableErrorPolicy":"SUSPEND_TABLE",
+    "TableErrorEscalationPolicy":"STOP_TASK",
+    "TableErrorEscalationCount": 50,
+    "RecoverableErrorCount": 0,
+    "RecoverableErrorInterval": 5,
+    "RecoverableErrorThrottling": true,
+    "RecoverableErrorThrottlingMax": 1800,
+    "ApplyErrorDeletePolicy":"IGNORE_RECORD",
+    "ApplyErrorInsertPolicy":"LOG_ERROR",
+    "ApplyErrorUpdatePolicy":"LOG_ERROR",
+    "ApplyErrorEscalationPolicy":"LOG_ERROR",
+    "ApplyErrorEscalationCount": 0,
+    "FullLoadIgnoreConflicts": true
+  }
+}
+```

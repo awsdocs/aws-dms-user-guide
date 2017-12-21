@@ -1,0 +1,93 @@
+# Using an Amazon Redshift Database as a Target for AWS Database Migration Service<a name="CHAP_Target.Redshift"></a>
+
+You can migrate data to Amazon Redshift databases using AWS Database Migration Service\. Amazon Redshift is a fully\-managed, petabyte\-scale data warehouse service in the cloud\. With an Amazon Redshift database as a target, you can migrate data from all of the other supported source databases\.
+
+ The Amazon Redshift cluster must be in the same AWS account and same AWS Region as the replication instance\. 
+
+During a database migration to Amazon Redshift, AWS DMS first moves data to an S3 bucket\. Once the files reside in an S3 bucket, AWS DMS then transfers them to the proper tables in the Amazon Redshift data warehouse\. AWS DMS creates the S3 bucket in the same AWS Region as the Amazon Redshift database\. The AWS DMS replication instance must be located in that same region\. 
+
+If you use the AWS Command Line Interface \(AWS CLI\) or the AWS DMS API to migrate data to Amazon Redshift, you must set up an AWS Identity and Access Management \(IAM\) role to allow S3 access\. For more information about creating this IAM role, see [Creating the IAM Roles to Use With the AWS CLI and AWS DMS API](CHAP_Security.APIRole.md)\.
+
+The Amazon Redshift endpoint provides full automation for the following:
+
++ Schema generation and data type mapping
+
++ Full load of source database tables
+
++ Incremental load of changes made to source tables
+
++ Application of schema changes in data definition language \(DDL\) made to the source tables
+
++ Synchronization between full load and change data capture \(CDC\) processes\.
+
+AWS Database Migration Service supports both full load and change processing operations\. AWS DMS reads the data from the source database and creates a series of comma\-separated value \(CSV\) files\. For full\-load operations, AWS DMS creates files for each table\. AWS DMS then copies the table files for each table to a separate folder in Amazon S3\. When the files are uploaded to Amazon S3, AWS DMS sends a copy command and the data in the files are copied into Amazon Redshift\. For change\-processing operations, AWS DMS copies the net changes to the CSV files\. AWS DMS then uploads the net change files to Amazon S3 and copies the data to Amazon Redshift\.
+
+For additional details on working with Amazon Redshift as a target for AWS DMS, see the following sections: 
+
+
++ [Prerequisites for Using an Amazon Redshift Database as a Target for AWS Database Migration Service](#CHAP_Target.Redshift.Prerequisites)
++ [Limitations on Using Redshift as a Target for AWS Database Migration Service](#CHAP_Target.Redshift.Limitations)
++ [Configuring an Amazon Redshift Database as a Target for AWS Database Migration Service](#CHAP_Target.Redshift.Configuration)
++ [Using Enhanced VPC Routing with an Amazon Redshift as a Target for AWS Database Migration Service](#CHAP_Target.Redshift.EnhancedVPC)
++ [Extra Connection Attributes When Using Redshift as a Target for AWS DMS](#CHAP_Target.Redshift.ConnectionAttrib)
+
+## Prerequisites for Using an Amazon Redshift Database as a Target for AWS Database Migration Service<a name="CHAP_Target.Redshift.Prerequisites"></a>
+
+The following list describe the prerequisites necessary for working with Amazon Redshift as a target for data migration:
+
++ Use the AWS Management Console to launch an Amazon Redshift cluster\. You should note the basic information about your AWS account and your Amazon Redshift cluster, such as your password, user name, and database name\. You will need these values when creating the Amazon Redshift target endpoint\. 
+
++ The Amazon Redshift cluster must be in the same AWS account and the same AWS Region as the replication instance\.
+
++ The AWS DMS replication instance needs network connectivity to the Redshift endpoint \(hostname and port\) that your cluster uses\.
+
++ AWS DMS uses an Amazon S3 bucket to transfer data to the Redshift database\. For AWS DMS to create the bucket, the DMS console uses an Amazon IAM role, `dms-access-for-endpoint`\. If you use the AWS CLI or DMS API to create a database migration with Amazon Redshift as the target database, you must create this IAM role\. For more information about creating this role, see [Creating the IAM Roles to Use With the AWS CLI and AWS DMS API](CHAP_Security.APIRole.md)\. 
+
+## Limitations on Using Redshift as a Target for AWS Database Migration Service<a name="CHAP_Target.Redshift.Limitations"></a>
+
+When using a Redshift database as a target, AWS DMS doesn't support the following:
+
++ When migrating from MySQL/Aurora MySQL to Redshift, you cannot use DDL to alter a column from the BLOB data type to the NVARCHAR data type\.
+
+  For example, the following DDL is not supported\.
+
+  ```
+  ALTER TABLE table_name MODIFY column_name NVARCHAR(n);                   
+  ```
+
+## Configuring an Amazon Redshift Database as a Target for AWS Database Migration Service<a name="CHAP_Target.Redshift.Configuration"></a>
+
+AWS Database Migration Service must be configured to work with the Amazon Redshift instance\. The following table describes the configuration properties available for the Amazon Redshift endpoint\.
+
+
+| Property | Description | 
+| --- | --- | 
+| server | The name of the Amazon Redshift cluster you are using\. | 
+| port | The port number for Amazon Redshift\. The default value is 5439\. | 
+| username | An Amazon Redshift user name for a registered user\. | 
+| password | The password for the user named in the username property\. | 
+| database | The name of the Amazon Redshift data warehouse \(service\) you are working with\. | 
+
+If you want to add extra connection string attributes to your Amazon Redshift endpoint, you can specify the `maxFileSize` and `fileTransferUploadStreams` attributes\. For more information on these attributes, see [Extra Connection Attributes When Using Redshift as a Target for AWS DMS](#CHAP_Target.Redshift.ConnectionAttrib)\.
+
+## Using Enhanced VPC Routing with an Amazon Redshift as a Target for AWS Database Migration Service<a name="CHAP_Target.Redshift.EnhancedVPC"></a>
+
+If you're using the *Enhanced VPC Routing* feature with your Amazon Redshift target, the feature forces all COPY traffic between your Redshift cluster and your data repositories through your Amazon VPC\. Because *Enhanced VPC Routing* affects the way that Amazon Redshift accesses other resources, COPY commands might fail if you haven't configured your VPC correctly\.
+
+AWS DMS can be affected by this behavior since it uses the COPY command to move data in S3 to a Redshift cluster\.
+
+Following are the steps AWS DMS takes to load data into an Amazon Redshift target:
+
+1. AWS DMS copies data from the source to CSV files on the replication server\.
+
+1. AWS DMS uses the AWS SDK to copy the CSV files into an S3 bucket on your account\.
+
+1. AWS DMS then uses the COPY command in Redshift to copy data from the CSV files in S3 to an appropriate table in Redshift\.
+
+If *Enhanced VPC Routing* is not enabled, Amazon Redshift routes traffic through the Internet, including traffic to other services within the AWS network\. If the feature is not enabled, you do not have to configure the network path\. If the feature is enabled, you must specifically create a network path between your cluster's VPC and your data resources\. For more information on the configuration required, see [ Enhanced VPC Routing](http://docs.aws.amazon.com/redshift/latest/mgmt/enhanced-vpc-routing.html) in the Amazon Redshift documentation\. 
+
+## Extra Connection Attributes When Using Redshift as a Target for AWS DMS<a name="CHAP_Target.Redshift.ConnectionAttrib"></a>
+
+You can use extra connection attributes to configure your Redshift target\. You specify these settings when you create the source endpoint\. The following table shows the extra connection attributes available when Redshift is the target:
+
+[\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_Target.Redshift.html)
