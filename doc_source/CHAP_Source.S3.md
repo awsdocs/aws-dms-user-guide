@@ -101,7 +101,7 @@ The elements in this JSON document are as follows:
 
   + `ColumnName`—the name of a column in the source table\.
 
-  + `ColumnType`—the data type for the column\. For valid data types, see [Source Data Types for Amazon S3](CHAP_Reference.Source.S3.DataTypes.md)\.
+  + `ColumnType`—the data type for the column\. For valid data types, see [Source Data Types for Amazon S3](#CHAP_Source.S3.DataTypes)\.
 
   + `ColumnLength`—the number of bytes in this column\.
 
@@ -155,7 +155,7 @@ s3://mybucket/changedata
 
 The records in a CDC file are formatted as follows:
 
-+ Operation—the change operation to be performed: `INSERT`, `UPDATE`, or `DELETE`\. These keywords are case\-insenstive\.
++ Operation—the change operation to be performed: `INSERT`, `UPDATE`, or `DELETE`\. These keywords are case\-insensitive\.
 
 + Table name—the name of the source table\.
 
@@ -217,3 +217,35 @@ You can specify the following options as extra connection attributes\.
 | csvRowDelimiter |  The delimiter used to separate rows in the source files\. The default is a carriage return \(`\n`\)\. An example follows\. `csvRowDelimiter=\n;`  | 
 | csvDelimiter |  The delimiter used to separate columns in the source files\. The default is a comma\. An example follows\. `csvDelimiter=,;`  | 
 | externalTableDefinition |  A JSON object that describes how AWS DMS should interpret the data in the S3 bucket during the migration\. For more information, see [Defining External Tables for S3 as a Source for AWS DMS](#CHAP_Source.S3.ExternalTableDef)\. An example follows\. `externalTableDefinition=`*<json\_object>*  | 
+
+## Source Data Types for Amazon S3<a name="CHAP_Source.S3.DataTypes"></a>
+
+Data migration that uses Amazon S3 as a source for AWS DMS needs to map data from S3 to AWS DMS data types\. For more information, see [Defining External Tables for S3 as a Source for AWS DMS](#CHAP_Source.S3.ExternalTableDef)\.
+
+For information on how to view the data type that is mapped in the target, see the section for the target endpoint you are using\.
+
+For additional information about AWS DMS data types, see [Data Types for AWS Database Migration Service](CHAP_Reference.DataTypes.md)\.
+
+
+|  AWS DMS Data Types—Amazon S3 as Source  | 
+| --- | 
+| BYTERequires `ColumnLength`\. For more information, see [Defining External Tables for S3 as a Source for AWS DMS](#CHAP_Source.S3.ExternalTableDef)\. | 
+| DATE | 
+| TIME | 
+| DATETIME | 
+| TIMESTAMP | 
+| INT1 | 
+| INT2 | 
+| INT4 | 
+| INT8 | 
+| NUMERIC Requires `ColumnPrecision` and `ColumnScale`\. For more information, see [Defining External Tables for S3 as a Source for AWS DMS](#CHAP_Source.S3.ExternalTableDef)\. | 
+| REAL4 | 
+| REAL8 | 
+| STRINGRequires `ColumnLength`\. For more information, see [Defining External Tables for S3 as a Source for AWS DMS](#CHAP_Source.S3.ExternalTableDef)\. | 
+| UINT1 | 
+| UINT2 | 
+| UINT4 | 
+| UINT8 | 
+| BLOB | 
+| CLOB | 
+| BOOLEAN | 

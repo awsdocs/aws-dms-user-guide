@@ -40,11 +40,15 @@ If you start your database migration using the AWS DMS console wizard, you will 
 
 ## Step 2: Create a Replication Instance<a name="CHAP_GettingStarted.ReplicationInstance"></a>
 
-Your first task in migrating a database is to create a replication instance that has sufficient storage and processing power to perform the tasks you assign and migrate data from your source database to the target database\. The required size of this instance varies depending on the amount of data you need to migrate and the tasks that you need the instance to perform\. For more information about replication instances, see [AWS Database Migration Service Replication Instance](CHAP_ReplicationInstance.md)\. 
+Your first task in migrating a database is to create a replication instance that has sufficient storage and processing power to perform the tasks you assign and migrate data from your source database to the target database\. The required size of this instance varies depending on the amount of data you need to migrate and the tasks that you need the instance to perform\. For more information about replication instances, see [Working with a Replication Instance in AWS Database Migration Service](CHAP_ReplicationInstance.md)\. 
 
 The procedure following assumes that you have chosen the AWS DMS console wizard\. Note that you can also do this step by selecting **Replication instances** from the AWS DMS console's navigation pane and then selecting **Create replication instance**\.
 
 **To create a replication instance by using the AWS console**
+
+1. In the navigation pane, click **Replication instances**\.
+
+1. Select **Create Replication Instance**\. 
 
 1. On the **Create replication instance** page, specify your replication instance information\. The following table describes the settings\.   
 ![\[Create a replication instance\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-gs-wizard2.png)    
@@ -54,7 +58,7 @@ The procedure following assumes that you have chosen the AWS DMS console wizard\
 ![\[Advanced Tab\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-gs-wizard2A.png)    
 [\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_GettingStarted.html)
 
-1. Specify the **Maintenance** settings\. The following table describes the settings\. For more information about maintenance settings, see [ AWS DMS Maintenance Window](CHAP_ReplicationInstance.md#CHAP_ReplicationInstance.MaintenanceWindow)  
+1. Specify the **Maintenance** settings\. The following table describes the settings\. For more information about maintenance settings, see [AWS DMS Maintenance Window](CHAP_ReplicationInstance.md#CHAP_ReplicationInstance.MaintenanceWindow)  
 ![\[Maintenance Tab\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-gs-wizard2B.png)    
 [\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_GettingStarted.html)
 

@@ -13,8 +13,9 @@ For more information, see the following topics\.
 
 + [Task Status](#CHAP_Tasks.Status)
 + [Table State During Tasks](#CHAP_Tasks.CustomizingTasks.TableState)
-+ [Monitoring Tasks Using Amazon CloudWatch](#CHAP_Monitoring.CloudWatch)
++ [Monitoring Replication Tasks Using Amazon CloudWatch](#CHAP_Monitoring.CloudWatch)
 + [Data Migration Service Metrics](#CHAP_Monitoring.Metrics)
++ [Managing AWS DMS Task Logs](#CHAP_Monitoring.ManagingLogs)
 + [Logging AWS DMS API Calls Using AWS CloudTrail](#CHAP_Monitoring.CloudTrail)
 
 ## Task Status<a name="CHAP_Tasks.Status"></a>
@@ -52,7 +53,7 @@ The AWS DMS console updates information regarding the state of your tables durin
 |   **Table cancelled**   |  Loading of the table has been cancelled\.   | 
 |   **Table error**   |  An error occurred when loading the table\.  | 
 
-## Monitoring Tasks Using Amazon CloudWatch<a name="CHAP_Monitoring.CloudWatch"></a>
+## Monitoring Replication Tasks Using Amazon CloudWatch<a name="CHAP_Monitoring.CloudWatch"></a>
 
 You can use Amazon CloudWatch alarms or events to more closely track your migration\. For more information about Amazon CloudWatch, see [What Are Amazon CloudWatch, Amazon CloudWatch Events, and Amazon CloudWatch Logs?](http://docs.aws.amazon.com/AmazonCloudWatch/latest/DeveloperGuide/WhatIsCloudWatch.html) in the Amazon CloudWatch User Guide\. Note that there is a charge for using Amazon CloudWatch\.
 
@@ -191,6 +192,46 @@ The gap, in seconds, between the last event captured from the source endpoint an
 
 **CDCLatencyTarget**  
 The gap, in seconds, between the last event applied on the target and the current system timestamp of the AWS DMS instance\. Target latency should never be smaller than the source latency\.
+
+## Managing AWS DMS Task Logs<a name="CHAP_Monitoring.ManagingLogs"></a>
+
+AWS DMS uses Amazon CloudWatch to log task information during the migration process\. You can use the AWS CLI or the AWS DMS API to view information about the task logs\. To do this, use the `describe-replication-instance-task-logs` AWS CLI command or the AWS DMS API action `DescribeReplicationInstanceTaskLogs`\. 
+
+For example, the following AWS CLI command shows the task log metadata in JSON format\.
+
+```
+$ aws dms describe-replication-instance-task-logs \
+   --replication-instance-arn arn:aws:dms:us-east-1:237565436:rep:CDSFSFSFFFSSUFCAY
+```
+
+A sample response from the command is as follows\.
+
+```
+{
+    "ReplicationInstanceTaskLogs": [
+        {
+            "ReplicationTaskArn": "arn:aws:dms:us-east-1:237565436:task:MY34U6Z4MSY52GRTIX3O4AY",
+            "ReplicationTaskName": "mysql-to-ddb",
+            "ReplicationInstanceTaskLogSize": 3726134
+        }
+    ],
+    "ReplicationInstanceArn": "arn:aws:dms:us-east-1:237565436:rep:CDSFSFSFFFSSUFCAY"
+}
+```
+
+In this response, there is a single task log \(`mysql-to-ddb`\) associated with the replication instance\. The size of this log is 3,726,124 bytes\.
+
+You can use the information returned by `describe-replication-instance-task-logs` to diagnose and troubleshoot problems with task logs\. For example, if you enable detailed debug logging for a task, the task log will grow quickly—potentially consuming all of the available storage on the replication instance, and causing the instance status to change to `storage-full`\. By describing the task logs, you can determine which ones you no longer need; then you can delete them, freeing up storage space\.
+
+To delete the task logs for a task, set the task setting `DeleteTaskLogs` to true\. For example, the following JSON deletes the task logs when modifying a task using the AWS CLI `modify-replication-task` command or the AWS DMS API `ModifyReplicationTask` action\.
+
+```
+{
+   "Logging": {
+       "DeleteTaskLogs":true
+   }
+}
+```
 
 ## Logging AWS DMS API Calls Using AWS CloudTrail<a name="CHAP_Monitoring.CloudTrail"></a>
 

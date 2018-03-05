@@ -9,8 +9,8 @@ The following table describes the important changes to the documentation since t
 
 | Change | Description | Date Changed | 
 | --- | --- | --- | 
-| New feature | Added support for using with AWS Snowball to migrate large databases\. For more information, see [Migrating Large Data Stores Using AWS Database Migration Service and AWS Snowball](CHAP_LargeDBs.md)\. | November 17, 2017 | 
-| New feature | Added support for task assessment report and data validation\. For more information about the task assessment report, see [Creating a Task Assessment Report](CHAP_Tasks.AssessmentReport.md)\. For more information about data validation, see [Data Validation Task Settings](CHAP_Tasks.CustomizingTasks.TaskSettings.DataValidation.md)\. | November 17, 2017 | 
+| New feature | Added support for using AWS DMS with AWS Snowball to migrate large databases\. For more information, see [Migrating Large Data Stores Using AWS Database Migration Service and AWS Snowball](CHAP_LargeDBs.md)\. | November 17, 2017 | 
+| New feature | Added support for task assessment report and data validation\. For more information about the task assessment report, see [Creating a Task Assessment Report](CHAP_Tasks.AssessmentReport.md)\. For more information about data validation, see [ Data Validation Task Settings](CHAP_Tasks.CustomizingTasks.TaskSettings.DataValidation.md)\. | November 17, 2017 | 
 | New feature | Added support for AWS CloudFormation templates\. For more information, see [AWS DMS Support for AWS CloudFormation](CHAP_Introduction.CloudFormation.md)\. | July 11, 2017 | 
 | New feature | Added support for using Amazon Dynamo as a target\. For more information, see [Using an Amazon DynamoDB Database as a Target for AWS Database Migration Service](CHAP_Target.DynamoDB.md)\. | April 10, 2017 | 
 | New feature | Added support for using MongoDB as a source\. For more information, see [Using MongoDB as a Source for AWS DMS](CHAP_Source.MongoDB.md)\. | April 10, 2017 | 

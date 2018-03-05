@@ -9,7 +9,7 @@ If you want to view database migration logs, you need the appropriate Amazon Clo
 
 + [IAM Permissions Needed to Use AWS DMS](CHAP_Security.IAMPermissions.md)
 + [Creating the IAM Roles to Use With the AWS CLI and AWS DMS API](CHAP_Security.APIRole.md)
-+ [Fine\-grained Access Control Using Resource Names and Tags](CHAP_Security.FineGrainedAccess.md)
++ [Fine\-Grained Access Control Using Resource Names and Tags](CHAP_Security.FineGrainedAccess.md)
 + [Setting an Encryption Key and Specifying KMS Permissions](CHAP_Security.EncryptionKey.md)
 + [Network Security for AWS Database Migration Service](CHAP_Security.Network.md)
 + [Using SSL With AWS Database Migration Service](CHAP_Security.SSL.md)

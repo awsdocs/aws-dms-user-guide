@@ -4,21 +4,17 @@ Each task has settings that you can configure according to the needs of your dat
 
 There are several main types of task settings:
 
-+ [Target Metadata Task Settings](CHAP_Tasks.CustomizingTasks.TaskSettings.TargetMetadata.md) \(TargetMetadata\)
 
-+ [Full Load Task Settings](CHAP_Tasks.CustomizingTasks.TaskSettings.FullLoad.md) \(FullLoadSettings\)
-
-+ [Logging Task Settings](CHAP_Tasks.CustomizingTasks.TaskSettings.Logging.md) \(Logging\)
-
-+ [Control Table Task Settings](CHAP_Tasks.CustomizingTasks.TaskSettings.ControlTable.md) \(ControlTablesSettings\)
-
-+ [Stream Buffer Task Settings](CHAP_Tasks.CustomizingTasks.TaskSettings.StreamBuffer.md) \(StreamBufferSettings\)
-
-+ [Change Processing Tuning Settings](CHAP_Tasks.CustomizingTasks.TaskSettings.ChangeProcessingTuning.md) \(ChangeProcessingTuning\)
-
-+ [Change Processing DDL Handling Policy Task Settings](CHAP_Tasks.CustomizingTasks.TaskSettings.DDLHandling.md) \(ChangeProcessingDdlHandlingPolicy\)
-
-+ [Error Handling Task Settings](CHAP_Tasks.CustomizingTasks.TaskSettings.ErrorHandling.md) \(ErrorBehavior\)
++ [Target Metadata Task Settings](CHAP_Tasks.CustomizingTasks.TaskSettings.TargetMetadata.md)
++ [Full Load Task Settings](CHAP_Tasks.CustomizingTasks.TaskSettings.FullLoad.md)
++ [Logging Task Settings](CHAP_Tasks.CustomizingTasks.TaskSettings.Logging.md)
++ [Control Table Task Settings](CHAP_Tasks.CustomizingTasks.TaskSettings.ControlTable.md)
++ [Stream Buffer Task Settings](CHAP_Tasks.CustomizingTasks.TaskSettings.StreamBuffer.md)
++ [Change Processing Tuning Settings](CHAP_Tasks.CustomizingTasks.TaskSettings.ChangeProcessingTuning.md)
++ [Data Validation Task Settings](CHAP_Tasks.CustomizingTasks.TaskSettings.DataValidation.md)
++ [Change Processing DDL Handling Policy Task Settings](CHAP_Tasks.CustomizingTasks.TaskSettings.DDLHandling.md)
++ [Error Handling Task Settings](CHAP_Tasks.CustomizingTasks.TaskSettings.ErrorHandling.md)
++ [Saving Task Settings](CHAP_Tasks.CustomizingTasks.TaskSettings.Saving.md)
 
 A task settings JSON file can look like this:
 
@@ -72,6 +68,10 @@ A task settings JSON file can look like this:
     "HandleSourceTableDropped": true,
     "HandleSourceTableTruncated": true,
     "HandleSourceTableAltered": true
+  },
+  "ValidationSettings": {
+     "EnableValidation": false,
+     "ThreadCount": 5
   },
   "ErrorBehavior": {
     "DataErrorPolicy": "LOG_ERROR",

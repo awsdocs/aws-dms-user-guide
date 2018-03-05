@@ -20,11 +20,11 @@ The following procedure shows how to use ClassicLink to connect an Amazon RDS so
 
 1. Step 1: Create an AWS DMS replication instance\.
 
-**To create a AWS DMS replication instance and assign a VPC security group**
+   To create a AWS DMS replication instance and assign a VPC security group:
 
    1. Sign in to the AWS Management Console and choose AWS Database Migration Service\. Note that if you are signed in as an AWS Identity and Access Management \(IAM\) user, you must have the appropriate permissions to access AWS DMS\. For more information on the permissions required for database migration, see [IAM Permissions Needed to Use AWS DMS](CHAP_Security.IAMPermissions.md)\.
 
-   1. On the **Dashboard** page, choose **Replication Instance**\. Follow the instructions at [Step 2: Create a Replication InstanceModifying a Replication Instance](CHAP_GettingStarted.md#CHAP_GettingStarted.ReplicationInstance) to create a replication instance\.
+   1. On the **Dashboard** page, choose **Replication Instance**\. Follow the instructions at [Step 2: Create a Replication Instance](CHAP_GettingStarted.md#CHAP_GettingStarted.ReplicationInstance) to create a replication instance\.
 
    1.  After you have created the AWS DMS replication instance, open the EC2 service console\. Select **Network Interfaces** from the navigation pane\. 
 
@@ -34,7 +34,7 @@ The following procedure shows how to use ClassicLink to connect an Amazon RDS so
 
 1.  Step 2: Associate the security group from the last step with the target DB instance\. 
 
-**To associate a security group with a DB instance**
+   To associate a security group with a DB instance
 
    1. Open the Amazon RDS service console\. Select **Instances** from the navigation pane\.
 
@@ -46,7 +46,7 @@ The following procedure shows how to use ClassicLink to connect an Amazon RDS so
 
 1. Step 3: Set up a proxy server on an EC2 Classic instance using NGINX\. Use an AMI of your choice to launch an EC2 Classic instance\. The example below is based on the AMI Ubuntu Server 14\.04 LTS \(HVM\)\. 
 
-**To set up a proxy server on an EC2 Classic instance**
+   To set up a proxy server on an EC2 Classic instance
 
    1. Connect to the EC2 Classic instance and install NGINX using the following commands:
 
@@ -120,7 +120,7 @@ The following procedure shows how to use ClassicLink to connect an Amazon RDS so
 
 1. Step 4: Create a ClassicLink connection between the proxy server and the target VPC that contains the target DB instance and the replication instance
 
-**Use ClassicLink to connect the proxy server with the target VPC**
+   Use ClassicLink to connect the proxy server with the target VPC
 
    1. Open the EC2 console and select the EC2 Classic instance that is running the proxy server\.
 

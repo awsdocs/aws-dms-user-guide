@@ -4,6 +4,8 @@ Logging task settings are written to a JSON file and they let you specify which 
 
 There are several ways to enable Amazon CloudWatch logging\. You can select the `EnableLogging` option on the AWS Management Console when you create a migration task or set the `EnableLogging` option to `true` when creating a task using the AWS DMS API\. You can also specify `"EnableLogging": true` in the JSON of the logging section of task settings\.
 
+To delete the task logs, you can specify `"DeleteTaskLogs": true` in the JSON of the logging section of task settings\.
+
 You can specify logging for the following component activities:
 
 + SOURCE\_UNLOAD — Data is unloaded from the source database\.

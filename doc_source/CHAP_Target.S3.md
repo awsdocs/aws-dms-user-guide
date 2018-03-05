@@ -10,9 +10,9 @@ The parameter `bucketFolder` contains the location where the \.csv files are sto
 <schema_name>/<table_name>/<time-stamp>.csv
 ```
 
-You can specify the column delimiter, row delimiter, null value indicator, and other parameters using the extra connection attributes\. For more information on the extra connection attributes, see [Extra Connection Attributes](#CHAP_Target.S3.Configuring) at the end of this section\.
+You can specify the column delimiter, row delimiter, and other parameters using the extra connection attributes\. For more information on the extra connection attributes, see [Extra Connection Attributes](#CHAP_Target.S3.Configuring) at the end of this section\.
 
-When you use AWS DMS to replicate data changes, the first column of the CSV output file indicates how the data was changed, as shown following:
+When you use AWS DMS to replicate data changes, the first column of the CSV output file indicates how the data was changed as shown following:
 
 ```
 I,101,Smith,Bob,4-Jun-14,New York
@@ -33,7 +33,7 @@ For this example, suppose that there is an `EMPLOYEE` table in the source databa
 
 ## Prerequisites for Using Amazon S3 as a Target<a name="CHAP_Target.S3.Prerequisites"></a>
 
-The Amazon S3 bucket you are using as a target must be in the same region as the DMS replication instance you are using the migrate your data\. 
+The Amazon S3 bucket you are using as a target must be in the same region as the DMS replication instance you are using to migrate your data\. 
 
 The AWS account you use for the migration must have write and delete access to the Amazon S3 bucket you are using as a target\. The role assigned to the user account used to create the migration task must have the following set of permissions\.
 
@@ -72,7 +72,9 @@ The following limitations apply to a file in Amazon S3 that you are using as a t
 
 + Full LOB mode is not supported\.
 
-+ Changes to the source table structure during full load are not supported\. Changes to the data is supported during full load\.
++ Changes to the source table structure during full load are not supported\. Changes to the data are supported during full load\.
+
++ Multiple tasks that replicate data from the same source table to the same target S3 endpoint bucket result in those tasks writing to the same file\. We recommend that you specify different target endpoints \(buckets\) if your data source is from the same table\.
 
 ## Security<a name="CHAP_Target.S3.Security"></a>
 
@@ -84,11 +86,12 @@ The IAM role that you use for the migration must be able to perform the `s3:PutO
 
 ## Extra Connection Attributes<a name="CHAP_Target.S3.Configuring"></a>
 
-You can specify the following options as extra connection attributes\.
+You can specify the following options as extra connection attributes\. Multiple extra connection attribute settings should be separated by a semicolon\.
 
 
 | **Option** | **Description** | 
 | --- | --- | 
+| addColumnName |  An optional parameter that allows you to add column name information to the \.csv output file\. The default is false\. **Example:** `addColumnName=true;`  | 
 | bucketFolder |  An optional parameter to set a folder name in the S3 bucket\. If provided, tables are created in the path <bucketFolder>/<schema\_name>/<table\_name>/\. If this parameter is not specified, then the path used is <schema\_name>/<table\_name>/\.  **Example:** `bucketFolder=testFolder;`  | 
 | bucketName |  The name of the S3 bucket\. **Example:** `bucketName=buckettest;`  | 
 | cannedAclForObjects |  Allows AWS DMS to specify a predefined \(canned\) access control list for objects written to the S3 bucket\. For more information about Amazon S3 canned ACLs, see [Canned ACL](http://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) in the Amazon S3 Developer Guide\. **Example:** `cannedAclForObjects=PUBLIC_READ;` Valid values for this attribute are: NONE; PRIVATE; PUBLIC\_READ; PUBLIC\_READ\_WRITE; AUTHENTICATED\_READ; AWS\_EXEC\_READ; BUCKET\_OWNER\_READ; BUCKET\_OWNER\_FULL\_CONTROL\. If this attribute isn't specified, it defaults to NONE\.  | 
@@ -96,3 +99,4 @@ You can specify the following options as extra connection attributes\.
 | compressionType |  An optional parameter to use GZIP to compress the target files\. Set to NONE \(the default\) or do not use to leave the files uncompressed\. **Example:** `compressionType=GZIP;`  | 
 | csvRowDelimiter |  The delimiter used to separate rows in the source files\. The default is a carriage return \(`\n`\)\. **Example:** `csvRowDelimiter=\n;`  | 
 | csvDelimiter |  The delimiter used to separate columns in the source files\. The default is a comma\. **Example:** `csvDelimiter=,;`  | 
+| rfc4180 |  An optional parameter used to control RFC compliance behavior with data migrated to Amazon S3\. When using Amazon S3 as a target, if the data has quotes or a new line character in it then AWS DMS encloses the entire column with an additional "\. Every quote mark within the data is repeated twice\. This is in compliance with RFC 4180\. The default is a true\. **Example:** `rfc4180=false;`  | 

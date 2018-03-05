@@ -1,8 +1,8 @@
-# AWS Database Migration Service Endpoints<a name="CHAP_Endpoints"></a>
+# Working with Endpoints in AWS Database Migration Service<a name="CHAP_Endpoints"></a>
 
 An endpoint provides connection, data store type, and location information about your data store\. AWS Database Migration Service uses this information to connect to a data store and migrate data from a source endpoint to a target endpoint\. You can specify additional connection attributes for an endpoint by using extra connection attributes\. These attributes can control logging, file size, and other parameters; for more information about extra connection attributes, see [Using Extra Connection Attributes with AWS Database Migration Service](CHAP_Introduction.ConnectionAttributes.md) or see the documentation section for your data store\. 
 
-The following topics are covered in this section\.
+Following, you can find out more details about endpoints\.
 
 
 + [Sources for Data Migration](CHAP_Source.md)

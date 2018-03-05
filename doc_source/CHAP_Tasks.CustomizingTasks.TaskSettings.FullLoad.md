@@ -20,6 +20,6 @@ Full load settings include the following:
 
 + `MaxFullLoadSubTasks` – Set this option to indicate the maximum number of tables to load in parallel\. The default is 8; the maximum value is 50\.
 
-+ To set the number of seconds that AWS DMS waits for transactions to close before beginning a full\-load operation, if transactions are open when the task starts, set the `TransactionConsistencyTimeout` option\. The default value is 600 \(10 minutes\)\. AWS DMS begins the full load after the timeout value is reached, even if there are open transactions\. 
++ To set the number of seconds that AWS DMS waits for transactions to close before beginning a full\-load operation, if transactions are open when the task starts, set the `TransactionConsistencyTimeout` option\. The default value is 600 \(10 minutes\)\. AWS DMS begins the full load after the timeout value is reached, even if there are open transactions\. Note that a full\-load only task does not wait for 10 minutes and will start immediately\.
 
 + To indicate the maximum number of events that can be transferred together, set the `CommitRate` option\. 

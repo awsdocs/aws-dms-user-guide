@@ -6,7 +6,7 @@ Change processing tuning settings include the following:
 
 The following settings apply only when the target metadata parameter `BatchApplyEnabled` is set to `true`\.
 
-+ `BatchApplyPreserveTransaction` – If set to `true`, transactional integrity is preserved and a batch is guaranteed to contain all the changes within a transaction from the source\. The default value is `true`\.
++ `BatchApplyPreserveTransaction` – If set to `true`, transactional integrity is preserved and a batch is guaranteed to contain all the changes within a transaction from the source\. The default value is `true`\. This setting applies only to Oracle target endpoints\.
 
   If set to `false`, there can be temporary lapses in transactional integrity to improve performance\. There is no guarantee that all the changes within a transaction from the source will be applied to the target in a single batch\. 
 

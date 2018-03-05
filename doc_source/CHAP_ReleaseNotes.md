@@ -1,10 +1,39 @@
 # Release Notes for AWS Database Migration Service<a name="CHAP_ReleaseNotes"></a>
 
-This topic describes the release notes for versions of AWS Database Migration Service \(AWS DMS\) and the Schema Conversion Tool \(SCT\)\.
+This topic describes the release notes for versions of AWS Database Migration Service \(AWS DMS\)\.
+
+## AWS Database Migration Service \(AWS DMS\) 2\.4\.1 Release Notes<a name="CHAP_ReleaseNotes.DMS241"></a>
+
+The following tables shows the features and bug fixes for version 2\.4\.1 of AWS Database Migration Service \(AWS DMS\)\.
+
+
+| New feature or enhancement | Description | 
+| --- | --- | 
+| JSONB support for PostgreSQL sources | Introduced support for JSONB migration from PostgreSQL as a source\. JSONB is treated as a LOB data type and will require appropriate LOB settings to be used\. | 
+| HSTORE support for PostgreSQL sources |  Introduced support for HSTORE data type migration from PostgreSQL as a source\. HSTORE is treated as a LOB data type and will require appropriate LOB settings to be used\. | 
+| Additional copy command parameters for Redshift as a target |  Introduced support for the following [additional copy parameters](https://docs.aws.amazon.com/redshift/latest/dg/r_COPY-parameters.html) via the extra connection attributes –  [\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_ReleaseNotes.html)  | 
+
+
+**Issues Resolved**  
+
+| Date reported | Description | 
+| --- | --- | 
+| 12th July 2017 | Fixed an issue where migration task is hung before the full load phase starts when reading from an Oracle table with TDE column encryption enabled\. | 
+| 3rd October 2017 | Fixed an issue where a JSON column from a PostgreSQL source would not migrate as expected\.  | 
+| 5th October 2017 | Fixed an issue when DMS migration task shows 0 source latency when archive redo log file is not found on the source Oracle instance\. This fix will linearly increase source latency under such conditions\.  | 
+|  20th November 2017  | Fixed an issue with LOB migration where a TEXT column in PostgreSQL was migrating to a CLOB column in Oracle with extra spaces after each character in the LOB entry\. | 
+|  20th November 2017  | Fixed an issue with a migration task not stopping as expected after an underlying replication instance upgrade from version 1\.9\.0 to 2\.4\.0\. | 
+| 30th November 2017 | Fixed an issue where a DMS migration task does not properly capture changes made by a copy command run on a source PostgreSQL instance\. | 
+| 11th December 2017 | Fixed an issue where a migration task failed when reading change data from a non\-existent bin log from a MySQL source\.  | 
+| 11th December 2017 | Fixed an issue where DMS is reading change data from a non\-existent table from a MySQL source\.  | 
+| 20th December 2017 | Includes several fixes and enhancements for the data validation feature\. | 
+| 22nd December 2017 | Fixed an issue with maxFileSize parameter for Redshift targets\. This parameter was wrongly being interpreted as bytes instead of kilobytes\.  | 
+| 4th January 2018 | Fixed a memory allocation bug for a DynamoDB as a target migration tasks\. In certain conditions, AWS DMS was not allocating enough memory if the object mapping being used contained a sort key\. | 
+| 10th January 2018 | Fixed an issue with Oracle 12\.2 as a source where DMLs were not captured as expected when ROWDEPENDENCIES are used\.  | 
 
 ## AWS Database Migration Service \(AWS DMS\) 2\.4\.0 Release Notes<a name="CHAP_ReleaseNotes.DMS240"></a>
 
-The following table shows the features and bug fixes for version 2\.4\.0 of AWS Database Migration Service \(AWS DMS\)\.
+The following tables shows the features and bug fixes for version 2\.4\.0 of AWS Database Migration Service \(AWS DMS\)\.
 
 
 | New feature or enhancement | Description | 
@@ -27,7 +56,7 @@ The following table shows the features and bug fixes for version 2\.4\.0 of AWS 
 
 ## AWS Database Migration Service \(AWS DMS\) 2\.3\.0 Release Notes<a name="CHAP_ReleaseNotes.DMS230"></a>
 
-The following table shows the features and bug fixes for version 2\.3\.0 of AWS Database Migration Service \(AWS DMS\)\.
+The following tables shows the features and bug fixes for version 2\.3\.0 of AWS Database Migration Service \(AWS DMS\)\.
 
 
 | New feature or enhancement | Description | 

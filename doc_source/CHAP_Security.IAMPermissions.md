@@ -5,7 +5,7 @@ You need to use certain IAM permissions and IAM roles to use AWS DMS\. If you ar
 The following set of permissions gives you access to AWS DMS, and also permissions for certain actions needed from other Amazon services such as AWS KMS, IAM, Amazon Elastic Compute Cloud \(Amazon EC2\), and Amazon CloudWatch\. CloudWatch monitors your AWS DMS migration in real time and collects and tracks metrics that indicate the progress of your migration\. You can use CloudWatch Logs to debug problems with a task\. 
 
 **Note**  
-You can further restrict access to AWS DMS resources using tagging\. For more information about restricting access to AWS DMS resources using tagging, see [Fine\-grained Access Control Using Resource Names and Tags](CHAP_Security.FineGrainedAccess.md)
+You can further restrict access to AWS DMS resources using tagging\. For more information about restricting access to AWS DMS resources using tagging, see [Fine\-Grained Access Control Using Resource Names and Tags](CHAP_Security.FineGrainedAccess.md)
 
 ```
 {

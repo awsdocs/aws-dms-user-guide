@@ -1,10 +1,20 @@
 # Using a PostgreSQL Database as a Source for AWS DMS<a name="CHAP_Source.PostgreSQL"></a>
 
-You can migrate data from one or many PostgreSQL databases using AWS DMS \(AWS DMS\)\. With a PostgreSQL database as a source, you can migrate data to either another PostgreSQL database or one of the other supported databases\. AWS DMS supports a PostgreSQL version 9\.3 database as a source for on\-premises databases, databases on an EC2 instance, and databases on an Amazon RDS DB instance\. 
+You can migrate data from one or many PostgreSQL databases using AWS DMS \(AWS DMS\)\. With a PostgreSQL database as a source, you can migrate data to either another PostgreSQL database or one of the other supported databases\. AWS DMS supports a PostgreSQL version 9\.4 database as a source for on\-premises databases, databases on an EC2 instance, and databases on an Amazon RDS DB instance\. 
 
 You can use SSL to encrypt connections between your PostgreSQL endpoint and the replication instance\. For more information on using SSL with a PostgreSQL endpoint, see [Using SSL With AWS Database Migration Service](CHAP_Security.SSL.md)\.
 
-AWS DMS supports change data capture \(CDC\) for PostgreSQL tables with primary keys; if a table does not have a primary key, the WAL logs do not include a before image of the database row and AWS DMS cannot update the table\. 
+For a homogeneous migration from a PostgreSQL database to a PostgreSQL database on AWS, the following is true:
+
++ JSONB columns on the source are migrated to JSONB columns on the target\. 
+
++ JSON columns are migrated as JSON columns on the target\. 
+
++ HSTORE columns are migrated as HSTORE columns on the target\. 
+
+For a heterogeneous migration with PostgreSQL as the source and a different database engine as the target, the situation is different\. In this case, JSONB, JSON, and HSTORE columns are converted to the AWS DMS intermediate type of NCLOB and then translated to the corresponding NCLOB column type on the target\. In this case, AWS DMS treats JSONB data as if it were a LOB column\. During the full load phase of a migration, the target column must be nullable\.
+
+AWS DMS supports change data capture \(CDC\) for PostgreSQL tables with primary keys\. If a table doesn't have a primary key, the write\-ahead logs \(WAL\) don't include a before image of the database row and AWS DMS can't update the table\. 
 
 AWS DMS supports CDC on Amazon RDS PostgreSQL databases when the DB instance is configured to use logical replication\. Amazon RDS supports logical replication for a PostgreSQL DB instance version 9\.4\.9 and higher and 9\.5\.4 and higher\.
 
@@ -18,6 +28,7 @@ For additional details on working with PostgreSQL databases and AWS DMS, see the
 + [Removing AWS DMS Artifacts from a PostgreSQL Source Database](#CHAP_Source.PostgreSQL.CleanUp)
 + [Additional Configuration Settings When Using a PostgreSQL Database as a Source for AWS DMS](#CHAP_Source.PostgreSQL.Advanced)
 + [Extra Connection Attributes When Using PostgreSQL as a Source for AWS DMS](#CHAP_Source.PostgreSQL.ConnectionAttrib)
++ [Source Data Types for PostgreSQL](#CHAP_Source.PostgreSQL.DataTypes)
 
 ## Prerequisites for Using a PostgreSQL Database as a Source for AWS DMS<a name="CHAP_Source.PostgreSQL.Prerequisites"></a>
 
@@ -55,13 +66,11 @@ The following change data capture \(CDC\) limitations apply when using PostgreSQ
 
 + A captured table must have a primary key\. If a table doesn't have a primary key, AWS DMS ignores DELETE and UPDATE record operations for that table\.
 
-+ AWS DMS ignores an attempt to update a primary key segment\. In these cases, the target identifies the update as one that didn't update any rows, but since the results of updating a primary key in PostgreSQL is unpredictable, no records are written to the exceptions table\.
++ AWS DMS ignores an attempt to update a primary key segment\. In these cases, the target identifies the update as one that didn't update any rows\. However, because the results of updating a primary key in PostgreSQL are unpredictable, no records are written to the exceptions table\.
 
 + AWS DMS doesn't support the **Start Process Changes from Timestamp** run option\.
 
 + AWS DMS supports full load and change processing on Amazon RDS for PostgreSQL\. For information on how to prepare a PostgreSQL DB instance and to set it up for using CDC, see [Setting Up an Amazon RDS PostgreSQL DB Instance as a Source](#CHAP_Source.PostgreSQL.RDSPostgreSQL)\.
-
-+ AWS DMS doesn't map some PostgreSQL data types, including the JSON data type\. The JSON is converted to CLOB\.
 
 + Replication of multiple tables with the same name but where each name has a different case \(for example table1, TABLE1, and Table1\) can cause unpredictable behavior, and therefore AWS DMS doesn't support it\.
 
@@ -84,7 +93,7 @@ The following change data capture \(CDC\) limitations apply when using PostgreSQ
 
 + AWS DMS doesn’t support change processing to set column default values \(using the ALTER COLUMN SET DEFAULT clause on ALTER TABLE statements\)\.
 
-+ AWS DMS doesn’t support change processing to set column null\-ability \(using the ALTER COLUMN \[SET|DROP\] NOT NULL clause on ALTER TABLE statements\)\.
++ AWS DMS doesn’t support change processing to set column nullability \(using the ALTER COLUMN \[SET|DROP\] NOT NULL clause on ALTER TABLE statements\)\.
 
 + AWS DMS doesn't support replication of partitioned tables\. When a partitioned table is detected, the following occurs:
 
@@ -114,9 +123,9 @@ Amazon RDS for PostgreSQL Read Replicas cannot be used for CDC \(ongoing replica
 
 To enable logical replication for an RDS PostgreSQL DB instance, do the following:
 
-+ In general, use the AWS master user account for the PostgreSQL DB instance as the user account for the PostgreSQL source endpoint\. The master user account has the required roles that allow the it to set up CDC\. If you use an account other than the master user account, you must create several objects from the master account for the account that you use\. For more information, see [Migrating an Amazon RDS for PostgreSQL Database Without Using the Master User Account](#CHAP_Source.PostgreSQL.RDSPostgreSQL.NonMasterUser)\.
++ In general, use the AWS master user account for the PostgreSQL DB instance as the user account for the PostgreSQL source endpoint\. The master user account has the required roles that allow it to set up CDC\. If you use an account other than the master user account, you must create several objects from the master account for the account that you use\. For more information, see [Migrating an Amazon RDS for PostgreSQL Database Without Using the Master User Account](#CHAP_Source.PostgreSQL.RDSPostgreSQL.NonMasterUser)\.
 
-+ Set the `rds.logical_replication` parameter in your DB parameter group to 1\. This is a static parameter that requires a reboot of the DB instance for the parameter to take effect\. As part of applying this parameter, AWS DMS sets the `wal_level`, `max_wal_senders`, `max_replication_slots`, and `max_connections` parameters\. Note that these parameter changes can increase WAL generation so you should only set the `rds.logical_replication` parameter when you are using logical slots\.
++ Set the `rds.logical_replication` parameter in your DB parameter group to 1\. This is a static parameter that requires a reboot of the DB instance for the parameter to take effect\. As part of applying this parameter, AWS DMS sets the `wal_level`, `max_wal_senders`, `max_replication_slots`, and `max_connections` parameters\. These parameter changes can increase WAL generation, so you should only set the `rds.logical_replication` parameter when you are using logical slots\.
 
 ### Migrating an Amazon RDS for PostgreSQL Database Without Using the Master User Account<a name="CHAP_Source.PostgreSQL.RDSPostgreSQL.NonMasterUser"></a>
 
@@ -129,7 +138,7 @@ Use the following procedure to create these objects\. The user account other tha
 
 **To create objects**
 
-1. Choose a schema where the objects will be created\. The default schema is `public`\. Ensure that the schema exists and is accessible by the `NoPriv` account\. 
+1. Choose the schema where the objects are to be created\. The default schema is `public`\. Ensure that the schema exists and is accessible by the `NoPriv` account\. 
 
 1. Log in to the PostgreSQL DB instance using the `NoPriv` account\.
 
@@ -192,7 +201,7 @@ To enable logical replication for an RDS PostgreSQL DB instance, do the followin
 
 + In general, use the AWS master user account for the PostgreSQL DB instance as the user account for the PostgreSQL source endpoint\. The master user account has the required roles that allow the it to set up CDC\. If you use an account other than the master user account, you must create several objects from the master account for the account that you use\. For more information, see [Migrating an Amazon RDS for PostgreSQL Database Without Using the Master User Account](#CHAP_Source.PostgreSQL.RDSPostgreSQL.NonMasterUser)\.
 
-+ Set the `rds.logical_replication` parameter in your DB parameter group to 1\. This is a static parameter that requires a reboot of the DB instance for the parameter to take effect\. As part of applying this parameter, AWS DMS sets the `wal_level`, `max_wal_senders`, `max_replication_slots`, and `max_connections` parameters\. Note that these parameter changes can increase WAL generation so you should only set the `rds.logical_replication` parameter when you are using logical slots\.
++ Set the `rds.logical_replication` parameter in your DB parameter group to 1\. This is a static parameter that requires a reboot of the DB instance for the parameter to take effect\. As part of applying this parameter, AWS DMS sets the `wal_level`, `max_wal_senders`, `max_replication_slots`, and `max_connections` parameters\. These parameter changes can increase WAL generation, so you should only set the `rds.logical_replication` parameter when you are using logical slots\.
 
 ## Removing AWS DMS Artifacts from a PostgreSQL Source Database<a name="CHAP_Source.PostgreSQL.CleanUp"></a>
 
@@ -202,7 +211,7 @@ To capture DDL events, AWS DMS creates various artifacts in the PostgreSQL datab
 drop event trigger awsdms_intercept_ddl;
 ```
 
-Note that the event trigger doesn't belong to a specific schema\.
+The event trigger doesn't belong to a specific schema\.
 
 ```
 drop function {AmazonRDSMigration}.awsdms_intercept_ddl()
@@ -215,9 +224,9 @@ Dropping a schema should be done with extreme caution, if at all\. Never drop an
 
 ## Additional Configuration Settings When Using a PostgreSQL Database as a Source for AWS DMS<a name="CHAP_Source.PostgreSQL.Advanced"></a>
 
-You can add additional configuration settings when migrating data from a PostgreSQL database in two way\.
+You can add additional configuration settings when migrating data from a PostgreSQL database in two ways:
 
-+ You can add values to the Extra Connection attribute to capture DDL events and to specify the schema in which the operational DDL database artifacts are created\. For more information, see [Extra Connection Attributes When Using PostgreSQL as a Source for AWS DMS](#CHAP_Source.PostgreSQL.ConnectionAttrib)\.
++ You can add values to the extra connection attribute to capture DDL events and to specify the schema in which the operational DDL database artifacts are created\. For more information, see [Extra Connection Attributes When Using PostgreSQL as a Source for AWS DMS](#CHAP_Source.PostgreSQL.ConnectionAttrib)\.
 
 + You can override connection string parameters\. Select this option if you need to do either of the following:
 
@@ -227,8 +236,70 @@ You can add additional configuration settings when migrating data from a Postgre
 
 ## Extra Connection Attributes When Using PostgreSQL as a Source for AWS DMS<a name="CHAP_Source.PostgreSQL.ConnectionAttrib"></a>
 
-You can use extra connection attributes to configure your PostgreSQL source\. You specify these settings when you create the source endpoint\.
+You can use extra connection attributes to configure your PostgreSQL source\. You specify these settings when you create the source endpoint\. Multiple extra connection attribute settings should be separated by a semicolon\.
 
 The following table shows the extra connection attributes you can use when using PostgreSQL as a source for AWS DMS:
 
 [\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.PostgreSQL.html)
+
+## Source Data Types for PostgreSQL<a name="CHAP_Source.PostgreSQL.DataTypes"></a>
+
+The following table shows the PostgreSQL source data types that are supported when using AWS DMS and the default mapping to AWS DMS data types\.
+
+For information on how to view the data type that is mapped in the target, see the section for the target endpoint you are using\.
+
+For additional information about AWS DMS data types, see [Data Types for AWS Database Migration Service](CHAP_Reference.DataTypes.md)\.
+
+
+|  PostgreSQL Data Types  |  AWS DMS Data Types  | 
+| --- | --- | 
+|  INTEGER  |  INT4  | 
+|  SMALLINT  |  INT2  | 
+|  BIGINT  |  INT8  | 
+|  NUMERIC \(p,s\)  |  If precision is from 0 through 38, then use NUMERIC\. If precision is 39 or greater, then use STRING\.  | 
+|  DECIMAL\(P,S\)  |  If precision is from 0 through 38, then use NUMERIC\. If precision is 39 or greater, then use STRING\.  | 
+|  REAL  |  REAL4  | 
+|  DOUBLE  |  REAL8  | 
+|  SMALLSERIAL  |  INT2  | 
+|  SERIAL  |  INT4  | 
+|  BIGSERIAL  |  INT8  | 
+|  MONEY  |  NUMERIC\(38,4\) Note: The MONEY data type is mapped to FLOAT in SQL Server\.  | 
+|  CHAR  |  WSTRING \(1\)  | 
+|  CHAR\(N\)  |  WSTRING \(n\)  | 
+|  VARCHAR\(N\)  |  WSTRING \(n\)  | 
+|  TEXT  |  NCLOB  | 
+|  BYTEA  |  BLOB  | 
+|  TIMESTAMP  |  TIMESTAMP  | 
+|  TIMESTAMP \(z\)  |  TIMESTAMP  | 
+|  TIMESTAMP with time zone  |  Not supported  | 
+|  DATE  |  DATE  | 
+|  TIME  |  TIME  | 
+|  TIME \(z\)  |  TIME  | 
+|  INTERVAL  |  STRING \(128\)—1 YEAR, 2 MONTHS, 3 DAYS, 4 HOURS, 5 MINUTES, 6 SECONDS  | 
+|  BOOLEAN  |  CHAR \(5\) false or true  | 
+|  ENUM  |  STRING \(64\)  | 
+|  CIDR  |  STRING \(50\)  | 
+|  INET  |  STRING \(50\)  | 
+|  MACADDR  |  STRING \(18\)  | 
+|  BIT \(n\)  |  STRING \(n\)  | 
+|  BIT VARYING \(n\)  |  STRING \(n\)  | 
+|  UUID  |  STRING  | 
+|  TSVECTOR  |  CLOB  | 
+|  TSQUERY  |  CLOB  | 
+|  XML  |  CLOB  | 
+|  POINT  |  STRING \(255\) "\(x,y\)"  | 
+|  LINE  |  STRING \(255\) "\(x,y,z\)"  | 
+|  LSEG  |  STRING \(255\) "\(\(x1,y1\),\(x2,y2\)\)"  | 
+|  BOX  |  STRING \(255\) "\(\(x1,y1\),\(x2,y2\)\)"  | 
+|  PATH  |  CLOB "\(\(x1,y1\),\(xn,yn\)\)"  | 
+|  POLYGON  |  CLOB "\(\(x1,y1\),\(xn,yn\)\)"  | 
+|  CIRCLE  |  STRING \(255\) "\(x,y\),r"  | 
+|  JSON  |  NCLOB  | 
+|  JSONB  |  NCLOB  | 
+|  ARRAY  |  NCLOB  | 
+|  COMPOSITE  |  NCLOB  | 
+|  HSTORE  |  NCLOB  | 
+|  INT4RANGE  |  STRING \(255\)  | 
+|  INT8RANGE  |  STRING \(255\)  | 
+|  NUMRANGE  |  STRING \(255\)  | 
+|  STRRANGE  |  STRING \(255\)  | 

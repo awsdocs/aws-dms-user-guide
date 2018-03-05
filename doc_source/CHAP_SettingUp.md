@@ -6,7 +6,7 @@ Before you use AWS Database Migration Service \(AWS DMS\) for the first time, yo
 
 1. [Create an IAM User](#CHAP_SettingUp.IAM)
 
-1. [Determine Requirements](#CHAP_SettingUp.Requirements)
+1. [Migration Planning for AWS Database Migration Service](#CHAP_SettingUp.MigrationPlanning)
 
 ## Sign Up for AWS<a name="CHAP_SettingUp.SignUp"></a>
 
@@ -78,98 +78,14 @@ https://your_account_alias.signin.aws.amazon.com/console/
 
 To verify the sign\-in link for IAM users for your account, open the IAM console and check under **AWS Account Alias** on the dashboard\.
 
-## Determine Requirements<a name="CHAP_SettingUp.Requirements"></a>
+## Migration Planning for AWS Database Migration Service<a name="CHAP_SettingUp.MigrationPlanning"></a>
 
-A database migration requires thorough testing and a sound backup strategy\. To successfully migrate a database using AWS DMS, you must have expertise, time, and knowledge about your source database, your network, the AWS network, your requirements, and your target database schema, as described following\.
+When planning a database migration using AWS Database Migration Service, consider the following:
 
-**Available Regions**  
-Ensure that AWS DMS is available in the region that you need\. AWS DMS is currently available in the following regions:      
-[\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_SettingUp.html)
++ You will need to configure a network that connects your source and target databases to a AWS DMS replication instance\. This can be as simple as connecting two AWS resources in the same VPC as the replication instance to more complex configurations such as connecting an on\-premises database to an Amazon RDS DB instance over VPN\. For more information, see [Network Configurations for Database Migration](CHAP_ReplicationInstance.md#CHAP_ReplicationInstance.VPC.Configurations)
 
-**Expertise**  
-A database migration requires expertise in several areas\.  
++ **Source and Target Endpoints** – You will need to know what information and tables in the source database need to be migrated to the target database\. AWS DMS supports basic schema migration, including the creation of tables and primary keys\. However, AWS DMS doesn't automatically create secondary indexes, foreign keys, user accounts, and so on in the target database\. Note that, depending on your source and target database engine, you may need to set up supplemental logging or modify other settings for a source or target database\. See the [Sources for Data Migration](CHAP_Source.md) and [Targets for Data Migration](CHAP_Target.md) sections for more information\.
 
-+ You should have a thorough knowledge of the database engine you are migrating from and the database engine you are migrating to\.
++ **Schema/Code Migration** – AWS DMS doesn't perform schema or code conversion\. You can use tools such as Oracle SQL Developer, MySQL Workbench, or pgAdmin III to convert your schema\. If you want to convert an existing schema to a different database engine, you can use the AWS Schema Conversion Tool\. It can create a target schema and also can generate and create an entire schema: tables, indexes, views, and so on\. You can also use the tool to convert PL/SQL or TSQL to PgSQL and other formats\. For more information on the AWS Schema Conversion Tool, see [ AWS Schema Conversion Tool ](http://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_SchemaConversionTool.Installing.html)\.
 
-+ You should understand both the network you are migrating from and how that network connects to AWS\. 
-
-+ You should have a thorough knowledge of the AWS service you are migrating to and the AWS Identity and Access Management \(IAM\) service\.
-
-+ In most cases, it helps if you have an understanding of software architecture\.
-
-**Time**  
-Migration projects can take from two weeks to several months to complete\.  
-
-+ A successful migration can require several iterations\.
-
-+ The migration process can take more time than you anticipate\.
-
-+ Do you have a hard date on when your database migration must be completed?
-
-+ Migration planning can often take longer than the migration itself\.
-
-**Knowledge of your source database**  
-The size of your database and the data types it contains can have a dramatic impact on your migration\.  
-
-+ How many schemas and tables does your database contain?
-
-+ Does your database have any very large tables \(more than 5 GB in size\)?
-
-+ Do you know what the transaction boundaries look like?
-
-+ Does your database have data types that AWS DMS does not support?
-
-+ Do you have LOBs in your tables? If so, how large are the LOBs?
-
-+ Do your tables with LOBs have primary keys?
-
-+ How busy is your source database?
-
-+ What kind of users, roles, and permissions do you have on the source database?
-
-+ When was the last time you vacuumed or compacted your source database?
-
-**Knowledge of your network and the AWS network**  
-You must connect the network that the source database uses to AWS\.  
-
-+ How will your database access the AWS network?
-
-+ Which Amazon Virtual Private Cloud \(Amazon VPC\) will you use?
-
-+ Which Amazon Elastic Compute Cloud \(Amazon EC2\) security group will you use?
-
-+ How much bandwidth will you need to move all your data?
-
-**An understanding of your requirements**  
-The following questions make up much of your migration planning:  
-
-+ How much downtime can you afford?
-
-+ Do you need the source database to be available after migration?
-
-+ Do you know why you preferred one target database engine over another database engine?
-
-+ What are your high availability requirements?
-
-+ Does all the data needs to be migrated?
-
-+ Does all the data need to be migrated to the same database?
-
-+ Do you understand the benefits of using Amazon RDS \(automated backups, high availability, and so on\)?
-
-+ Do you understand the limits of using Amazon RDS \(storage size, admin user, and so on\)?
-
-+ What happens to your application during the migration process?
-
-+ What is your contingency plan if the migration is unsuccessful?
-
-**Knowledge of your target database schema**  
-AWS DMS creates only tables and primary keys in the target database\. You must recreate any other database requirements\.  
-
-+ You can use the AWS Schema Conversion Tool \(AWS SCT\) to migrate a database schema\. It works best when migrating from one database engine to a different database engine\. For more information on the AWS Schema Conversion Tool, see [ AWS Schema Conversion Tool ](http://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_SchemaConversionTool.Installing.html)\.
-
-+ The AWS SCT does not support schema conversions from and to the same database engine type\. If you need to convert a schema when going to the same database engine, use the database engine's native tools for the conversion\.
-
-+ The AWS SCT does not currently support orchestration\.
-
-+ Postpone any schema changes until after the migration\.
++ **Unsupported Data Types** – Some source data types need to be converted into the parallel data types for the target database\. For tables listing conversions between database data types, see [Reference for AWS Database Migration Service Including Data Conversion Reference and Additional Topics](CHAP_Reference.md)\. 

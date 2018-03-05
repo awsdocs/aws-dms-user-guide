@@ -20,6 +20,6 @@ Target metadata settings include the following:
 
   When LOB columns are included in the replication, `BatchApplyEnabled`can only be used in **Limited\-size LOB mode**\.
 
-+ `ParallelLoadThreads` – Specifies the number of threads AWS DMS uses to load each table into the target database\. The maximum value for a MySQL target is 16; the maximum value for a DynamoDB target is 32\. The maximum limit can be increated upon request\.
++ `ParallelLoadThreads` – Specifies the number of threads AWS DMS uses to load each table into the target database\. The maximum value for a MySQL target is 16; the maximum value for a DynamoDB target is 32\. The maximum limit can be increased upon request\.
 
 + `ParallelLoadBufferSize` – Specifies the maximum number of records to store in the buffer used by the parallel load threads to load data to the target\. The default value is 50\. Maximum value is 1000\. This field is currently only valid when DynamoDB is the target\. This parameter should be used in conjunction with `ParallelLoadThreads` and is valid only when ParallelLoadThreads > 1\.

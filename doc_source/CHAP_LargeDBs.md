@@ -266,7 +266,7 @@ UsageCount = 2
 For information on configuring an Amazon S3 bucket, see [ Working with Amazon S3 Buckets](http://docs.aws.amazon.com/AmazonS3/latest/dev/UsingBucket.html) in the Amazon S3 documentation\.
 
 **Note**  
-To use the resulting Amazon S3 bucket in migration, you must have an AWS DMS replication instance created in the same AWS Region as the S3 bucket\. If you haven't already created one, do so by using the AWS DMS Management Console, as described in [Step 2: Create a Replication InstanceModifying a Replication Instance](CHAP_GettingStarted.md#CHAP_GettingStarted.ReplicationInstance)\.
+To use the resulting Amazon S3 bucket in migration, you must have an AWS DMS replication instance created in the same AWS Region as the S3 bucket\. If you haven't already created one, do so by using the AWS DMS Management Console, as described in [Step 2: Create a Replication Instance](CHAP_GettingStarted.md#CHAP_GettingStarted.ReplicationInstance)\.
 
 ### Step 10: Creating a Local & DMS Task<a name="CHAP_LargeDBs.SBS.CreateLocalRemoteTask"></a>
 

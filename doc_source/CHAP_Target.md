@@ -3,7 +3,7 @@
 AWS Database Migration Service \(AWS DMS\) can use many of the most popular databases as a target for data replication\. The target can be on an Amazon Elastic Compute Cloud \(Amazon EC2\) instance, an Amazon Relational Database Service \(Amazon RDS\) instance, or an on\-premises database\. 
 
 **Note**  
-Regardless of the source storage engine \(MyISAM, MEMORY, etc\.\), AWS DMS creates the MySQL\-compatible target table as an InnoDB table by default\. If you need to have a table that uses a storage engine other than InnoDB, you can manually create the table on the MySQL\-compatible target and migrate the table using the "Do Nothing" mode\. For more information about the "Do Nothing" mode, see [Full Load Task Settings](CHAP_Tasks.CustomizingTasks.TaskSettings.FullLoad.md)\.
+Regardless of the source storage engine \(MyISAM, MEMORY, and so on\), AWS DMS creates a MySQL\-compatible target table as an InnoDB table by default\. If you need to have a table that uses a storage engine other than InnoDB, you can manually create the table on the MySQL\-compatible target and migrate the table using the "do nothing" mode\. For more information about the "do nothing" mode, see [Full Load Task Settings](CHAP_Tasks.CustomizingTasks.TaskSettings.FullLoad.md)\.
 
 The databases include the following: 
 
@@ -17,9 +17,9 @@ The databases include the following:
 
 + MariaDB \(supported as a MySQL\-compatible data target\)
 
-+ PostgreSQL versions 9\.3 and later
++ PostgreSQL versions 9\.4 and later
 
-+ SAP Adaptive Server Enterprise \(ASE\) 15\.7 and later
++ SAP Adaptive Server Enterprise \(ASE\) versions 15, 15\.5, 15\.7, 16 and later
 
 **Amazon RDS instance databases, Amazon Redshift, Amazon S3, and Amazon DynamoDB**
 
@@ -31,7 +31,7 @@ The databases include the following:
 
 + Amazon RDS MariaDB \(supported as a MySQL\-compatible data target\)
 
-+ Amazon RDS PostgreSQL versions 9\.3 and later
++ Amazon RDS PostgreSQL versions 9\.4 and later
 
 + Amazon Aurora with MySQL compatibility
 

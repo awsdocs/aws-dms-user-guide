@@ -1,4 +1,4 @@
-# Fine\-grained Access Control Using Resource Names and Tags<a name="CHAP_Security.FineGrainedAccess"></a>
+# Fine\-Grained Access Control Using Resource Names and Tags<a name="CHAP_Security.FineGrainedAccess"></a>
 
 You can use ARN\-based resource names and resource tags to manage access to AWS DMS resources\. You do this by defining permitted action or including conditional statements in IAM policies\. 
 

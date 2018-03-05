@@ -1,6 +1,6 @@
 # Using a SAP ASE Database as a Source for AWS DMS<a name="CHAP_Source.SAP"></a>
 
-You can migrate data from a SAP Adaptive Server Enterprise \(ASE\) database–formerly known as Sybase–using AWS DMS\. With a SAP ASE database as a source, you can migrate data to any of the other supported AWS DMS target databases\.
+You can migrate data from a SAP Adaptive Server Enterprise \(ASE\) database–formerly known as Sybase–using AWS DMS\. With a SAP ASE database as a source, you can migrate data to any of the other supported AWS DMS target databases\. AWS DMS\. supports SAP ASE versions 12\.5, 15, 15\.5, 15\.7, 16 and later as sources\.
 
 For additional details on working with SAP ASE databases and AWS DMS, see the following sections\.
 
@@ -9,6 +9,7 @@ For additional details on working with SAP ASE databases and AWS DMS, see the fo
 + [Limitations on Using SAP ASE as a Source for AWS DMS](#CHAP_Source.SAP.Limitations)
 + [User Account Permissions Required for Using SAP ASE as a Source for AWS DMS](#CHAP_Source.SAP.Security)
 + [Removing the Truncation Point](#CHAP_Source.SAP.Truncation)
++ [Source Data Types for SAP ASE](#CHAP_Source.SAP.DataTypes)
 
 ## Prerequisites for Using a SAP ASE Database as a Source for AWS DMS<a name="CHAP_Source.SAP.Prerequisites"></a>
 
@@ -54,7 +55,7 @@ To use an SAP ASE database as a source in an AWS DMS task, the user specified in
 
 + sybase\_ts\_role
 
-+ If you have set the `enableReplication` connection property to `Y`, then your must also be granted the `sp_setreptable` permission\. For more information on connection properties see [Using Extra Connection Attributes with AWS Database Migration Service](CHAP_Introduction.ConnectionAttributes.md)\.
++ If you have set the `enableReplication` connection property to `Y`, then you must also be granted the `sp_setreptable` permission\. For more information on connection properties, see [Using Extra Connection Attributes with AWS Database Migration Service](CHAP_Introduction.ConnectionAttributes.md)\.
 
 ## Removing the Truncation Point<a name="CHAP_Source.SAP.Truncation"></a>
 
@@ -67,3 +68,46 @@ dbcc settrunc('ltm','ignore')
 ```
 
 After the truncation point has been removed, the AWS DMS task cannot be resumed\. The log continues to be truncated automatically at the checkpoints \(if automatic truncation is set\)\.
+
+## Source Data Types for SAP ASE<a name="CHAP_Source.SAP.DataTypes"></a>
+
+Data migration that uses SAP ASE as a source for AWS DMS supports most SAP ASE data types\. The following table shows the SAP ASE source data types that are supported when using AWS DMS and the default mapping from AWS DMS data types\.
+
+For information on how to view the data type that is mapped in the target, see the section for the target endpoint you are using\.
+
+For additional information about AWS DMS data types, see [Data Types for AWS Database Migration Service](CHAP_Reference.DataTypes.md)\.
+
+
+|  SAP ASE Data Types  |  AWS DMS Data Types  | 
+| --- | --- | 
+| BIGINT | INT8 | 
+| BINARY | BYTES | 
+| BIT | BOOLEAN | 
+| CHAR | STRING | 
+| DATE | DATE | 
+| DATETIME | DATETIME | 
+| DECIMAL | NUMERIC | 
+| DOUBLE | REAL8 | 
+| FLOAT | REAL8 | 
+| IMAGE | BLOB | 
+| INT | INT4 | 
+| MONEY | NUMERIC | 
+| NCHAR | WSTRING | 
+| NUMERIC | NUMERIC | 
+| NVARCHAR | WSTRING | 
+| REAL | REAL4 | 
+| SMALLDATETIME | DATETIME | 
+| SMALLINT | INT2 | 
+| SMALLMONEY | NUMERIC | 
+| TEXT | CLOB | 
+| TIME | TIME | 
+| TINYINT | UINT1 | 
+| UNICHAR | UNICODE CHARACTER | 
+| UNITEXT | NCLOB | 
+| UNIVARCHAR | UNICODE | 
+| VARBINARY | BYTES | 
+| VARCHAR | STRING | 
+
+AWS DMS does not support tables that include fields with the following data types: 
+
++ User\-defined type \(UDT\)

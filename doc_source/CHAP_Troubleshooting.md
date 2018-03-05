@@ -117,7 +117,7 @@ The following issues are specific to using AWS DMS with Oracle databases\.
 
 ### Pulling Data from Views<a name="CHAP_Troubleshooting.Oracle.Views"></a>
 
-To be able to extract data from views, you must add the following code to the **Extra connection attributes** in the **Advanced** section of the Oracle source endpoint\. Note that when you extract data from a view, the view is shown as a table on the target schema\.
+You can pull data once from a view; you cannot use it for ongoing replication\. To be able to extract data from views, you must add the following code to the **Extra connection attributes** in the **Advanced** section of the Oracle source endpoint\. Note that when you extract data from a view, the view is shown as a table on the target schema\.
 
 ```
 exposeViews=true

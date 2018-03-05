@@ -22,9 +22,9 @@ The Write Capacity Units \(WCU\) parameter value is also set, but its value depe
 
 ## Migrating from a Relational Database to a DynamoDB Table<a name="CHAP_Target.DynamoDB.RDBMS2DynamoDB"></a>
 
-AWS DMS supports migrating data to DynamoDB’s scalar data types\. When migrating from a relational database like Oracle or MySQL to DynamoDB, you may want to restructure how you store this data\.
+AWS DMS supports migrating data to DynamoDB’s scalar data types\. When migrating from a relational database like Oracle or MySQL to DynamoDB, you might want to restructure how you store this data\.
 
-Currently AWS DMS supports single table to single table restructuring to DynamoDB scalar type attributes\. If you are migrating data into DynamoDB from a relational database table, you would take data from a table and reformat it into DynamoDB scalar data type attributes\. These attributes can accept data from multiple columns and you can map a column to an attribute directly\.
+Currently AWS DMS supports single table to single table restructuring to DynamoDB scalar type attributes\. If you are migrating data into DynamoDB from a relational database table, you take data from a table and reformat it into DynamoDB scalar data type attributes\. These attributes can accept data from multiple columns, and you can map a column to an attribute directly\.
 
 AWS DMS supports the following DynamoDB scalar data types:
 
@@ -39,7 +39,7 @@ NULL data from the source are ignored on the target\.
 
 ## Prerequisites for Using a DynamoDB as a Target for AWS Database Migration Service<a name="CHAP_Target.DynamoDB.Prerequisites"></a>
 
-Before you begin to work with a DynamoDB database as a target for AWS DMS, make sure you create an IAM role that allows AWS DMS to assume and grants access to the DynamoDB tables that are being migrated into\. The minimum set of access permissions is shown in the following sample role policy:
+Before you begin to work with a DynamoDB database as a target for AWS DMS, make sure that you create an IAM role that allows AWS DMS to assume and grants access to the DynamoDB tables that are being migrated into\. The minimum set of access permissions is shown in the following sample role policy:
 
 ```
 {
@@ -79,7 +79,7 @@ The user account that you use for the migration to DynamoDB must have the follow
 {
       "Effect": "Allow",
       "Action": [
-        "dynamodb:ListTables",
+        "dynamodb:ListTables"
       ],
       "Resource": "*"
     }
@@ -103,7 +103,9 @@ The following limitations apply when using Amazon DynamoDB as a target:
 
 ## Using Object Mapping to Migrate Data to DynamoDB<a name="CHAP_Target.DynamoDB.ObjectMapping"></a>
 
-AWS DMS uses table mapping rules to map data from the source to the target DynamoDB table\. To map data to a DynamoDB target, you use a type of table mapping rule called *object\-mapping*\. Object mapping lets you define the attribute names and the data to be migrated to them\. Amazon DynamoDB doesn't have a preset structure other than having a partition key and an optional sort key\. If you have a non\-composite primary key, AWS DMS will use it\. If you have a composite primary key or you want to use a sort key, you need to define these keys and the other attributes in your target DynamoDB table\.
+AWS DMS uses table mapping rules to map data from the source to the target DynamoDB table\. To map data to a DynamoDB target, you use a type of table mapping rule called *object\-mapping*\. Object mapping lets you define the attribute names and the data to be migrated to them\. You must have selection rules when you use object mapping,
+
+Amazon DynamoDB doesn't have a preset structure other than having a partition key and an optional sort key\. If you have a noncomposite primary key, AWS DMS uses it\. If you have a composite primary key or you want to use a sort key, define these keys and the other attributes in your target DynamoDB table\.
 
 To create an object mapping rule, you specify the `rule-type` as *object\-mapping*\. This rule specifies what type of object mapping you want to use\. 
 
@@ -133,15 +135,25 @@ AWS DMS currently supports *map\-record\-to\-record* and *map\-record\-to\-docum
 
 + *map\-record\-to\-document* puts source columns into a single, flat, DynamoDB map on the target using the attribute name "\_doc\." When using `map-record-to-document`, for any column in the source table not listed in the `exclude-columns` attribute list, AWS DMS places the data into a single, flat, DynamoDB map attribute on the source called "\_doc"\.
 
-One way to understand the difference between the `rule-action` parameters *map\-record\-to\-record* and *map\-record\-to\-document* is to see the two parameters in action\. For this example, assume you are starting with a relational database table row with the following structure and data:
+One way to understand the difference between the `rule-action` parameters *map\-record\-to\-record* and *map\-record\-to\-document* is to see the two parameters in action\. For this example, assume that you are starting with a relational database table row with the following structure and data:
 
 ![\[sample database for example\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-dynamodb1.png)
 
-To migrate this information to DynamoDB, you would create rules to map the data into a DynamoDB table item\. Note the columns listed for the `exclude-columns` parameter\. These columns are not directly mapped over to the target; instead, attribute mapping is used to combine the data into new items, such as where *FirstName* and *LastName* are grouped together to become *CustomerName* on the DynamoDB target\. Note also that *NickName* and *income* are not excluded\.
+To migrate this information to DynamoDB, you create rules to map the data into a DynamoDB table item\. Note the columns listed for the `exclude-columns` parameter\. These columns are not directly mapped over to the target\. Instead, attribute mapping is used to combine the data into new items, such as where *FirstName* and *LastName* are grouped together to become *CustomerName* on the DynamoDB target\. *NickName* and *income* are not excluded\.
 
 ```
 {
   "rules": [
+     {
+      "rule-type": "selection",
+      "rule-id": "1",
+      "rule-name": "1",
+      "object-locator": {
+        "schema-name": "test",
+        "table-name": "%"
+      },
+      "rule-action": "include"
+    },
     {
       "rule-type": "object-mapping",
       "rule-id": "1",
@@ -210,7 +222,7 @@ By using the `rule-action` parameter *map\-record\-to\-record*, the data for *Ni
 
 ![\[Get started with AWS DMS\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-dynamodb2.png)
 
-If you use the exact same rules but change the `rule-action` parameter to *map\-record\-to\-document*, the columns not listed in the `exclude-columns` parameter, *NickName* and *income*, are mapped to a *\_doc* item\.
+However, suppose that you use the same rules but change the `rule-action` parameter to *map\-record\-to\-document*\. In this case, the columns not listed in the `exclude-columns` parameter, *NickName* and *income*, are mapped to a *\_doc* item\.
 
 ![\[Get started with AWS DMS\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-dynamodb3.png)
 
@@ -307,74 +319,56 @@ The following JSON shows the object mapping and column mapping used to achieve t
 
 ```
 {
-"rules": [
-        {
-            "rule-type": "selection",
-            "rule-id": "1",
-            "rule-name": "1",
-            "object-locator": {
-                "schema-name": "Test",
-                "table-name": "%"
-            },
-            "rule-action": "include"
-        }
-    ]
-       {
-    { 
-      "rule-type": "object-mapping",
+  "rules": [
+    {
+      "rule-type": "selection",
       "rule-id": "1",
+      "rule-name": "1",
+      "object-locator": {
+        "schema-name": "test",
+        "table-name": "%"
+      },
+      "rule-action": "include"
+    },
+    {
+      "rule-type": "object-mapping",
+      "rule-id": "2",
       "rule-name": "TransformToDDB",
       "rule-action": "map-record-to-record",
-      "object-locator": { 
-        "owner-name": "test",
-        "table-name": "customer",
+      "object-locator": {
+        "schema-name": "test",
+        "table-name": "customer"
       },
       "target-table-name": "customer_t",
       "mapping-parameters": {
         "partition-key-name": "CustomerName",
         "sort-key-name": "StoreId",
         "exclude-columns": [
-          "FirstName", "LastName", "HomeAddress", "HomePhone", "WorkAddress", "WorkPhone"
+          "FirstName",
+          "LastName",
+          "HomeAddress",
+          "HomePhone",
+          "WorkAddress",
+          "WorkPhone"
         ],
         "attribute-mappings": [
           {
             "target-attribute-name": "CustomerName",
             "attribute-type": "scalar",
             "attribute-sub-type": "string",
-            "value": 
-              "${FirstName},${LastName}"
+            "value": "${FirstName},${LastName}"
           },
           {
             "target-attribute-name": "StoreId",
             "attribute-type": "scalar",
             "attribute-sub-type": "string",
-            "value":
-              "${StoreId}"
+            "value": "${StoreId}"
           },
           {
             "target-attribute-name": "ContactDetails",
             "attribute-type": "scalar",
             "attribute-sub-type": "string",
-            "value":
-              "{
-                 \"Name\":\"${FirstName}\",
-                 \"Home\":{
-                   \"Address\":\"${HomeAddress}\",
-                   \"Phone\":\"${HomePhone}\"
-                 },
-                 \"Work\":{
-                   \"Address\":\"${WorkAddress}\",
-                   \"Phone\":\"${WorkPhone}\"
-                 }
-               }"
-          },
-          {
-            "target-attribute-name": "StoreId",
-            "attribute-type": "scalar",
-            "attribute-sub-type": "string",
-            "value": {
-              "${StoreId}"
-            }
+            "value": "{\"Name\":\"${FirstName}\",\"Home\":{\"Address\":\"${HomeAddress}\",\"Phone\":\"${HomePhone}\"}, \"Work\":{\"Address\":\"${WorkAddress}\",\"Phone\":\"${WorkPhone}\"}}"
           }
         ]
       }
@@ -635,3 +629,32 @@ The sample output for the SportsTeams *DynamoDB* table is shown below:
   "TeamName": "Indianapolis Colts"
 }
 ```
+
+## Target Data Types for Amazon DynamoDB<a name="CHAP_Target.DynamoDB.DataTypes"></a>
+
+The Amazon DynamoDB endpoint for Amazon AWS DMS supports most Amazon DynamoDB data types\. The following table shows the Amazon AWS DMS target data types that are supported when using AWS DMS and the default mapping from AWS DMS data types\.
+
+For additional information about AWS DMS data types, see [Data Types for AWS Database Migration Service](CHAP_Reference.DataTypes.md)\.
+
+When AWS DMS migrates data from heterogeneous databases, we map data types from the source database to intermediate data types called AWS DMS data types\. We then map the intermediate data types to the target data types\. The following table shows each AWS DMS data type and the data type it maps to in DynamoDB:
+
+
+| AWS DMS Data Type | DynamoDB Data Type | 
+| --- | --- | 
+|  String  |  String  | 
+|  WString  |  String  | 
+|  Boolean  |  Boolean  | 
+|  Date  |  String  | 
+|  DateTime  |  String  | 
+|  INT1  |  Number  | 
+|  INT2  |  Number  | 
+|  INT4  |  Number  | 
+|  INT8  |  Number  | 
+|  Numeric  |  Number  | 
+|  Real4  |  Number  | 
+|  Real8  |  Number  | 
+|  UINT1  |  Number  | 
+|  UINT2  |  Number  | 
+|  UINT4  |  Number  | 
+| UINT8 | Number | 
+| CLOB | String | 

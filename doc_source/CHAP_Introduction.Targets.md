@@ -12,13 +12,9 @@ You can use the following data stores as target endpoints for data migration usi
 
 + MariaDB \(supported as a MySQL\-compatible data target\)
 
-+ PostgreSQL, versions 9\.3 and later
++ PostgreSQL, versions 9\.4 and later
 
-+ SAP Adaptive Server Enterprise \(ASE\) 15\.7 and later
-
-**Microsoft Azure**
-
-+ Azure SQL Database
++ SAP Adaptive Server Enterprise \(ASE\) versions 15, 15\.5, 15\.7, 16 and later 
 
 **Amazon RDS instance databases, Amazon Redshift, Amazon DynamoDB, and Amazon S3**
 
@@ -30,7 +26,7 @@ You can use the following data stores as target endpoints for data migration usi
 
 + MariaDB \(supported as a MySQL\-compatible data target\)
 
-+ PostgreSQL, versions 9\.3 and later
++ PostgreSQL, versions 9\.4 and later
 
 + Amazon Aurora with MySQL compatibility
 
