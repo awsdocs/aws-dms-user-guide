@@ -6,7 +6,7 @@ There are several things you need to know when creating a migration task:
 
 + You must create a source endpoint, a target endpoint, and a replication instance before you can create a migration task\. 
 
-+ There are a significant number of migration setting you can specify to tailor your migration task when using the AWS CLI or DMS APIs\. These include setting how migration errors are handled, logging, and control table information\. 
++ There are a significant number of migration settings you can specify to tailor your migration task when using the AWS CLI or DMS APIs\. These include setting how migration errors are handled, logging, and control table information\. 
 
 + Once you create a task, you can run it immediately\. The target tables with the necessary metadata definitions are automatically created and loaded, and you can specify that the CDC replication process be started\.
 
