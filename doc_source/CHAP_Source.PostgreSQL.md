@@ -54,7 +54,7 @@ For a PostgreSQL database to be a source for AWS DMS, you should do the followin
 
   + Set `wal_sender_timeout =0`
 
-    The `wal_sender_timeout` parameter terminates replication connections that are inactive longer than the specified number of milliseconds\. Although the default is 60 seconds, we recommend that you set this parameter to zero, which disables the timeout mechanism\.
+    The `wal_sender_timeout` parameter terminates replication connections that are inactive longer than the specified number of milliseconds\. Although the default is 30 seconds, we recommend that you set this parameter to zero, which disables the timeout mechanism\.
 
 ## Security Requirements When Using a PostgreSQL Database as a Source for AWS DMS<a name="CHAP_Source.PostgreSQL.Security"></a>
 
