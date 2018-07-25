@@ -27,7 +27,7 @@ You can create one of three possible types of migration tasks:
  By default AWS DMS starts your task as soon as you create it\. However, in some situations, you might want to postpone the start of the task\. For example, when using the AWS Command Line Interface \(AWS CLI\), you might have a process that creates a task and a different process that starts the task based on some triggering event\. As needed, you can postpone your task's start\.
 
 **Ongoing replication, or change data capture \(CDC\)**  
-AWS DMS can be used to capture ongoing changes to the data store while you are migrating you data\. The change capture process that AWS DMS uses when replicating ongoing changes from a source endpoint collects changes to the database logs by using the database engine's native API\.   
+AWS DMS can be used to capture ongoing changes to the data store while you are migrating your data\. The change capture process that AWS DMS uses when replicating ongoing changes from a source endpoint collects changes to the database logs by using the database engine's native API\.   
 Each source engine has specific configuration requirements for exposing this change stream to a given user account\. Most engines require some additional configuration to make the change data consumable in a meaningful way, without data loss, for the capture process\. For example, Oracle requires the addition of supplemental logging, and MySQL requires row\-level bin logging\. When using Amazon RDS as a source, we recommend ensuring that backups are enabled and that the source database is configured to retain change logs for a sufficient time \(24 hours is usually enough\)\. 
 
 **Schema and code migration**  
