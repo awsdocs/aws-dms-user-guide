@@ -7,26 +7,18 @@ You can use SSL to encrypt connections between your MySQL\-compatible endpoint a
 MySQL versions 5\.5, 5\.6, and 5\.7 are supported, as are MariaDB and Aurora MySQL\. 
 
 You can use the following MySQL\-compatible databases as targets for AWS DMS:
-
 + MySQL Community Edition
-
 + MySQL Standard Edition
-
 + MySQL Enterprise Edition
-
 + MySQL Cluster Carrier Grade Edition
-
 + MariaDB Community Edition
-
 + MariaDB Enterprise Edition
-
 + MariaDB Column Store
-
 + Amazon Aurora MySQL
 
 For additional details on working with a MySQL\-compatible database as a target for AWS DMS, see the following sections\. 
 
-
+**Topics**
 + [Using Any MySQL\-Compatible Database as a Target for AWS Database Migration Service](#CHAP_Target.MySQL.Prerequisites)
 + [Limitations on Using a MySQL\-Compatible Database as a Target for AWS Database Migration Service](#CHAP_Target.MySQL.Limitations)
 + [Extra Connection Attributes When Using a MySQL\-Compatible Database as a Target for AWS DMS](#CHAP_Target.MySQL.ConnectionAttrib)
@@ -35,7 +27,6 @@ For additional details on working with a MySQL\-compatible database as a target 
 ## Using Any MySQL\-Compatible Database as a Target for AWS Database Migration Service<a name="CHAP_Target.MySQL.Prerequisites"></a>
 
 Before you begin to work with a MySQL\-compatible database as a target for AWS DMS, make sure that you have the following prerequisites:
-
 + You must provide a user account to AWS DMS that has read/write privileges to the MySQL\-compatible database\. To create the necessary privileges, run the following commands\.
 
   ```
@@ -44,7 +35,6 @@ Before you begin to work with a MySQL\-compatible database as a target for AWS D
   '<user acct>'@'%';
   GRANT ALL PRIVILEGES ON awsdms_control.* TO '<user acct>'@'%';
   ```
-
 +  During the full\-load migration phase, you must disable foreign keys on your target tables\. To disable foreign key checks on a MySQL\-compatible database during a full load, you can add the following command to the **Extra Connection Attributes** in the **Advanced** section of the target endpoint\.
 
   ```
@@ -54,15 +44,10 @@ Before you begin to work with a MySQL\-compatible database as a target for AWS D
 ## Limitations on Using a MySQL\-Compatible Database as a Target for AWS Database Migration Service<a name="CHAP_Target.MySQL.Limitations"></a>
 
 When using a MySQL database as a target, AWS DMS doesn't support the following:
-
 + The data definition language \(DDL\) statements TRUNCATE PARTITION, DROP TABLE, and RENAME TABLE\.
-
 + Using an `ALTER TABLE <table_name> ADD COLUMN <column_name>` statement to add columns to the beginning or the middle of a table\.
-
 + When only the LOB column in a source table is updated, AWS DMS doesn't update the corresponding target column\. The target LOB is only updated if at least one other column is updated in the same transaction\.
-
 + When loading data to a MySQL\-compatible target in a full load task, AWS DMS doesn't report duplicate key errors in the task log\.
-
 + When you update a column's value to its existing value, MySQL\-compatible databases return a `0 rows affected` warning\. Although this behavior isn't technically an error, it is different from how the situation is handled by other database engines\. For example, Oracle performs an update of one row\. For MySQL\-compatible databases, AWS DMS generates an entry in the awsdms\_apply\_exceptions control table and logs the following warning\.
 
   ```

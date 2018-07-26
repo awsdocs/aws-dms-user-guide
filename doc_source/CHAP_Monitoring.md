@@ -1,4 +1,4 @@
-# Monitoring AWS Database Migration Service Tasks<a name="CHAP_Monitoring"></a>
+# Monitoring AWS DMS Tasks<a name="CHAP_Monitoring"></a>
 
 You can monitor the progress of your task by checking the task status and by monitoring the task's control table\. For more information about control tables, see [Control Table Task Settings](CHAP_Tasks.CustomizingTasks.TaskSettings.ControlTable.md)\.
 
@@ -10,7 +10,7 @@ Note that the "last updated" column the DMS console only indicates the time that
 
 For more information, see the following topics\.
 
-
+**Topics**
 + [Task Status](#CHAP_Tasks.Status)
 + [Table State During Tasks](#CHAP_Tasks.CustomizingTasks.TableState)
 + [Monitoring Replication Tasks Using Amazon CloudWatch](#CHAP_Monitoring.CloudWatch)
@@ -41,7 +41,7 @@ The task status bar gives an estimation of the task's progress\. The quality of 
 
 The AWS DMS console updates information regarding the state of your tables during migration\. The following table shows the possible state values:
 
-![\[ AWS Database Migration Service replication instance\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-TableState.png)
+![\[AWS Database Migration Service replication instance\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-TableState.png)
 
 
 | State | Description | 
@@ -72,11 +72,8 @@ In addition, if you select a replication instance from the **Replication Instanc
 ## Data Migration Service Metrics<a name="CHAP_Monitoring.Metrics"></a>
 
 AWS DMS provides statistics for the following: 
-
 + **Host Metrics** – Performance and utilization statistics for the replication host, provided by Amazon CloudWatch\. For a complete list of the available metrics, see [Replication Instance Metrics](#CHAP_Monitoring.Metrics.CloudWatch)\.
-
 + **Replication Task Metrics** – Statistics for replication tasks including incoming and committed changes, and latency between the replication host and both the source and target databases\. For a complete list of the available metrics, see [Replication Task Metrics](#CHAP_Monitoring.Metrics.Task)\.
-
 + **Table Metrics** – Statistics for tables that are in the process of being migrated, including the number of insert, update, delete, and DDL statements completed\.
 
 Task metrics are divided into statistics between the replication host and the source endpoint, and statistics between the replication host and the target endpoint\. You can determine the total statistic for a task by adding two related statistics together\. For example, you can determine the total latency, or replica lag, for a task by combining the **CDCLatencySource** and **CDCLatencyTarget** values\.
@@ -178,8 +175,11 @@ Amount of rows accumulating on disk and waiting to be committed from the source\
 **CDCChangesDiskTarget**  
 Amount of rows accumulating on disk and waiting to be committed to the target\. 
 
+**CDCThroughputBandwidthSource**  
+Network bandwidth for the target in KB per second\. CDCThroughputBandwidth records bandwidth on sampling points\. If no network traffic is found, the value is zero\. Because CDC does not issue long\-running transactions, network traffic may not be recorded\.
+
 **CDCThroughputBandwidthTarget**  
-Outgoing task network bandwidth for the target in KB per second\.
+Network bandwidth for the target in KB per second\. CDCThroughputBandwidth records bandwidth on sampling points\. If no network traffic is found, the value is zero\. Because CDC does not issue long\-running transactions, network traffic may not be recorded\.
 
 **CDCThroughputRowsSource**  
 Incoming task changes from the source in rows per second\.
@@ -191,7 +191,7 @@ Outgoing task changes for the target in rows per second\.
 The gap, in seconds, between the last event captured from the source endpoint and current system time stamp of the AWS DMS instance\. If no changes have been captured from the source due to task scoping, AWS DMS sets this value to zero\.
 
 **CDCLatencyTarget**  
-The gap, in seconds, between the last event applied on the target and the current system timestamp of the AWS DMS instance\. Target latency should never be smaller than the source latency\.
+The gap, in seconds, between the first event timestamp waiting to commit on the target and the current timestamp of the AWS DMS instance\. This value occurs if there are transactions that are not handled by target\. Otherwise, target latency is the same as source latency if all transactions are applied\. Target latency should never be smaller than the source latency\.
 
 ## Managing AWS DMS Task Logs<a name="CHAP_Monitoring.ManagingLogs"></a>
 

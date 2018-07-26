@@ -1,8 +1,8 @@
-# Troubleshooting Migration Tasks<a name="CHAP_Troubleshooting"></a>
+# Troubleshooting Migration Tasks in AWS Database Migration Service<a name="CHAP_Troubleshooting"></a>
 
 The following sections provide information on troubleshooting issues with AWS Database Migration Service \(AWS DMS\)\. 
 
-
+**Topics**
 + [Slow Running Migration Tasks](#CHAP_Troubleshooting.General.SlowTask)
 + [Task Status Bar Not Moving](#CHAP_Troubleshooting.General.StatusBar)
 + [Missing Foreign Keys and Secondary Indexes](#CHAP_Troubleshooting.General.MissingSecondaryObjs)
@@ -23,18 +23,14 @@ The following sections provide information on troubleshooting issues with AWS Da
 
 ## Slow Running Migration Tasks<a name="CHAP_Troubleshooting.General.SlowTask"></a>
 
-There are several issues that may cause a migration task to run slowly, or for subsequent tasks to run slower than the initial task\. The most common reason for a migration task running slowly is that there are inadequate resources allocated to the AWS DMS replication instance\. Check your replication instance's use of CPU, Memory, Swap, and IOPs to ensure that your instance has enough resources for the tasks you are running on it\. For example, multiple tasks with Amazon Redshift as an endpoint are IO intensive\. You can increase IOPS for your replication instance or split your tasks across multiple replication instances for a more efficient migration\.
+Several issues can cause a migration task to run slowly, or cause subsequent tasks to run slower than the initial task\. The most common reason for a migration task running slowly is that there are inadequate resources allocated to the AWS DMS replication instance\. Check your replication instance's use of CPU, memory, swap files, and IOPS to ensure that your instance has enough resources for the tasks you are running on it\. For example, multiple tasks with Amazon Redshift as an endpoint are IO intensive\. You can increase IOPS for your replication instance or split your tasks across multiple replication instances for a more efficient migration\.
 
-For more information about determining the size of your replication instance, see [Determining the Optimum Size for a Replication Instance](CHAP_BestPractices.md#CHAP_BestPractices.SizingReplicationInstance)
+For more information about determining the size of your replication instance, see [Choosing the Optimum Size for a Replication Instance](CHAP_BestPractices.md#CHAP_BestPractices.SizingReplicationInstance)
 
 You can increase the speed of an initial migration load by doing the following:
-
 + If your target is an Amazon RDS DB instance, ensure that Multi\-AZ is not enabled for the target DB instance\.
-
 + Turn off any automatic backups or logging on the target database during the load, and turn back on those features once the migration is complete\.
-
-+ If the feature is available on the target, use Provisioned IOPs\.
-
++ If the feature is available on the target, use Provisioned IOPS\.
 + If your migration data contains LOBs, ensure that the task is optimized for LOB migration\. See [Target Metadata Task Settings](CHAP_Tasks.CustomizingTasks.TaskSettings.TargetMetadata.md) for more information on optimizing for LOBs\.
 
 ## Task Status Bar Not Moving<a name="CHAP_Troubleshooting.General.StatusBar"></a>
@@ -50,15 +46,10 @@ To migrate secondary objects from your database, use the database's native tools
 ## Amazon RDS Connection Issues<a name="CHAP_Troubleshooting.General.RDSConnection"></a>
 
 There can be several reasons why you are unable to connect to an Amazon RDS DB instance that you set as an endpoint\. These include:
-
 + Username and password combination is incorrect\.
-
 + Check that the endpoint value shown in the Amazon RDS console for the instance is the same as the endpoint identifier you used to create the AWS DMS endpoint\.
-
 + Check that the port value shown in the Amazon RDS console for the instance is the same as the port assigned to the AWS DMS endpoint\.
-
 + Check that the security group assigned to the Amazon RDS DB instance allows connections from the AWS DMS replication instance\.
-
 + If the AWS DMS replication instance and the Amazon RDS DB instance are not in the same VPC, check that the DB instance is publicly accessible\.
 
 ### Error Message: Incorrect thread connection string: incorrect thread value 0<a name="CHAP_Troubleshooting.General.RDSConnection.ConnectionString"></a>
@@ -70,11 +61,8 @@ This error can often occur when you are testing the connection to an endpoint\. 
 The most common networking issue involves the VPC security group used by the AWS DMS replication instance\. By default, this security group has rules that allow egress to 0\.0\.0\.0/0 on all ports\. If you modify this security group or use your own security group, egress must, at a minimum, be permitted to the source and target endpoints on the respective database ports\.
 
 Other configuration related issues include:
-
 +  **Replication instance and both source and target endpoints in the same VPC** — The security group used by the endpoints must allow ingress on the database port from the replication instance\. Ensure that the security group used by the replication instance has ingress to the endpoints, or you can create a rule in the security group used by the endpoints that allows the private IP address of the replication instance access\. 
-
 +  **Source endpoint is outside the VPC used by the replication instance \(using Internet Gateway\)** — The VPC security group must include routing rules that send traffic not destined for the VPC to the Internet Gateway\. In this configuration, the connection to the endpoint appears to come from the public IP address on the replication instance\. 
-
 +  **Source endpoint is outside the VPC used by the replication instance \(using NAT Gateway\)** — You can configure a network address translation \(NAT\) gateway using a single Elastic IP Address bound to a single Elastic Network Interface which then receives a NAT identifier \(nat\-\#\#\#\#\#\)\. If the VPC includes a default route to that NAT Gateway instead of the Internet Gateway, the replication instance will instead appear to contact the Database Endpoint using the public IP address of the Internet Gateway\. In this case, the ingress to the Database Endpoint outside the VPC needs to allow ingress from the NAT address instead of the Replication Instance’s public IP Address\. 
 
 ## CDC Stuck After Full Load<a name="CHAP_Troubleshooting.General.CDCStuck"></a>
@@ -91,7 +79,7 @@ If your initial load of your schemas fails with an error of `Operation:getSchema
 
 ## Tasks Failing With Unknown Error<a name="CHAP_Troubleshooting.General.TasksFail"></a>
 
-The cause of these types of error can be varied, but often we find that the issue involves insufficient resources allocated to the AWS DMS replication instance\. Check the replication instance's use of CPU, Memory, Swap, and IOPs to ensure your instance has enough resources to perform the migration\. For more information on monitoring, see [Data Migration Service Metrics](CHAP_Monitoring.md#CHAP_Monitoring.Metrics)\.
+The cause of these types of error can be varied, but often we find that the issue involves insufficient resources allocated to the AWS DMS replication instance\. Check the replication instance's use of CPU, memory, swap files, and IOPS to ensure your instance has enough resources to perform the migration\. For more information on monitoring, see [Data Migration Service Metrics](CHAP_Monitoring.md#CHAP_Monitoring.Metrics)\.
 
 ## Task Restart Loads Tables From the Beginning<a name="CHAP_Troubleshooting.General.RestartLoad"></a>
 
@@ -105,10 +93,10 @@ While there is no set limit on the number of tables per replication task, we hav
 
 The following issues are specific to using AWS DMS with Oracle databases\.
 
-
+**Topics**
 + [Pulling Data from Views](#CHAP_Troubleshooting.Oracle.Views)
 + [Migrating LOBs from Oracle 12c](#CHAP_Troubleshooting.Oracle.12cLOBs)
-+ [Switching Between Oracle LogMiner and BinaryReader](#CHAP_Troubleshooting.Oracle.LogMinerBinaryReader)
++ [Switching Between Oracle LogMiner and Binary Reader](#CHAP_Troubleshooting.Oracle.LogMinerBinaryReader)
 + [Error: Oracle CDC stopped 122301 Oracle CDC maximum retry counter exceeded\.](#CHAP_Troubleshooting.Oracle.CDCStopped)
 + [Automatically Add Supplemental Logging to an Oracle Source Endpoint](#CHAP_Troubleshooting.Oracle.AutoSupplLogging)
 + [LOB Changes not being Captured](#CHAP_Troubleshooting.Oracle.LOBChanges)
@@ -125,19 +113,19 @@ exposeViews=true
 
 ### Migrating LOBs from Oracle 12c<a name="CHAP_Troubleshooting.Oracle.12cLOBs"></a>
 
-AWS DMS can use two methods to capture changes to an Oracle database, BinaryReader and Oracle LogMiner\. By default, AWS DMS uses Oracle LogMiner to capture changes\. However, on Oracle 12c, Oracle LogMiner does not support LOB columns\. To capture changes to LOB columns on Oracle 12c, use BinaryReader\.
+AWS DMS can use two methods to capture changes to an Oracle database, Binary Reader and Oracle LogMiner\. By default, AWS DMS uses Oracle LogMiner to capture changes\. However, on Oracle 12c, Oracle LogMiner does not support LOB columns\. To capture changes to LOB columns on Oracle 12c, use Binary Reader\.
 
-### Switching Between Oracle LogMiner and BinaryReader<a name="CHAP_Troubleshooting.Oracle.LogMinerBinaryReader"></a>
+### Switching Between Oracle LogMiner and Binary Reader<a name="CHAP_Troubleshooting.Oracle.LogMinerBinaryReader"></a>
 
-AWS DMS can use two methods to capture changes to a source Oracle database, BinaryReader and Oracle LogMiner\. Oracle LogMiner is the default\. To switch to using BinaryReader for capturing changes, do the following:
+AWS DMS can use two methods to capture changes to a source Oracle database, Binary Reader and Oracle LogMiner\. Oracle LogMiner is the default\. To switch to using Binary Reader for capturing changes, do the following:
 
-**To use BinaryReader for capturing changes**
+**To use Binary Reader for capturing changes**
 
 1.  Sign in to the AWS Management Console and select DMS\. 
 
 1. Select **Endpoints**\.
 
-1. Select the Oracle source endpoint that you want to use BinaryReader\.
+1. Select the Oracle source endpoint that you want to use Binary Reader\.
 
 1. Select **Modify**\.
 
@@ -186,11 +174,8 @@ By default, AWS DMS has supplemental logging turned off\. To automatically turn 
 ### LOB Changes not being Captured<a name="CHAP_Troubleshooting.Oracle.LOBChanges"></a>
 
 Currently, a table must have a primary key for AWS DMS to capture LOB changes\. If a table that contains LOBs doesn't have a primary key, there are several actions you can take to capture LOB changes:
-
 + Add a primary key to the table\. This can be as simple as adding an ID column and populating it with a sequence using a trigger\.
-
 + Create a materialized view of the table that includes a system generated ID as the primary key and migrate the materialized view rather than the table\.
-
 + Create a logical standby, add a primary key to the table, and migrate from the logical standby\.
 
 ### Error: ORA\-12899: value too large for column <column\-name><a name="CHAP_Troubleshooting.Oracle.ORA12899"></a>
@@ -199,13 +184,13 @@ The error "ORA\-12899: value too large for column <column\-name>" is often cause
 
 ### NUMBER data type being misinterpreted<a name="CHAP_Troubleshooting.Oracle.Numbers"></a>
 
-The Oracle NUMBER data type is converted into various AWS DMS datatypes, depending on the precision and scale of NUMBER\. These conversions are documented here [Using an Oracle Database as a Source for AWS DMS](CHAP_Source.Oracle.md)\. The way the NUMBER type is converted can also be affected by using Extra Connection Attributes for the source Oracle endpoint\. These Extra Connection Attributes are documented in [Using Extra Connection Attributes with AWS Database Migration Service](CHAP_Introduction.ConnectionAttributes.md)\.
+The Oracle NUMBER data type is converted into various AWS DMS datatypes, depending on the precision and scale of NUMBER\. These conversions are documented here [Using an Oracle Database as a Source for AWS DMSUsing an IBM Db2 for Linux, Unix, and Windows Database \(Db2 LUW\) as a Source for AWS DMS](CHAP_Source.Oracle.md)\. The way the NUMBER type is converted can also be affected by using extra connection attributes for the source Oracle endpoint\. These extra connection attributes are documented in [Extra Connection Attributes When Using Oracle as a Source for AWS DMS](CHAP_Source.Oracle.md#CHAP_Source.Oracle.ConnectionAttrib)\.
 
 ## Troubleshooting MySQL Specific Issues<a name="CHAP_Troubleshooting.MySQL"></a>
 
 The following issues are specific to using AWS DMS with MySQL databases\.
 
-
+**Topics**
 + [CDC Task Failing for Amazon RDS DB Instance Endpoint Because Binary Logging Disabled](#CHAP_Troubleshooting.MySQL.CDCTaskFail)
 + [Connections to a target MySQL instance are disconnected during a task](#CHAP_Troubleshooting.MySQL.ConnectionDisconnect)
 + [Adding Autocommit to a MySQL\-compatible Endpoint](#CHAP_Troubleshooting.MySQL.Autocommit)
@@ -217,6 +202,7 @@ The following issues are specific to using AWS DMS with MySQL databases\.
 + [Log Message: Some changes from the source database had no impact when applied to the target database\.](#CHAP_Troubleshooting.MySQL.NoImpact)
 + [Error: Identifier too long](#CHAP_Troubleshooting.MySQL.IDTooLong)
 + [Error: Unsupported Character Set Causes Field Data Conversion to Fail](#CHAP_Troubleshooting.MySQL.UnsupportedCharacterSet)
++ [Error: Codepage 1252 to UTF8 \[120112\] A field data conversion failed](#CHAP_Troubleshooting.MySQL.DataConversionFailed)
 
 ### CDC Task Failing for Amazon RDS DB Instance Endpoint Because Binary Logging Disabled<a name="CHAP_Troubleshooting.MySQL.CDCTaskFail"></a>
 
@@ -239,17 +225,11 @@ to MySQL server during query [122502] ODBC general error.
 ```
 
 To solve the issue where a task is being disconnected from a MySQL target, do the following:
-
 + Check that you have your database variable `max_allowed_packet` set large enough to hold your largest LOB\.
-
 + Check that you have the following variables set to have a large timeout value\. We suggest you use a value of at least 5 minutes for each of these variables\.
-
   + `net_read_timeout` 
-
   + `net_write_timeout` 
-
   + `wait_timeout` 
-
   + `interactive_timeout` 
 
 ### Adding Autocommit to a MySQL\-compatible Endpoint<a name="CHAP_Troubleshooting.MySQL.Autocommit"></a>
@@ -345,11 +325,32 @@ This error often occurs because of tables or databases using UTF8MB4 encoding\. 
 SHOW VARIABLES LIKE '%char%';
 ```
 
+### Error: Codepage 1252 to UTF8 \[120112\] A field data conversion failed<a name="CHAP_Troubleshooting.MySQL.DataConversionFailed"></a>
+
+ The following error can occur during a migration if you have non codepage\-1252 characters in the source MySQL database\.
+
+```
+  
+[SOURCE_CAPTURE ]E: Error converting column ‘column_xyz’ in table
+'table_xyz with codepage 1252 to UTF8 [120112] A field data conversion failed. 
+(mysql_endpoint_capture.c:2248)
+```
+
+ As a workaround, you can use the `CharsetMapping` extra connection attribute with your source MySQL endpoint to specify character set mapping\. You might need to restart the AWS DMS migration task from the beginning if you add this extra connection attribute\. 
+
+For example, the following extra connection attribute could be used for a MySQL source endpoint where the source character set is `utf8` or `latin1`\. 65001 is the UTF8 code page identifier\. 
+
+```
+   
+CharsetMapping=utf8,65001
+CharsetMapping=latin1,65001
+```
+
 ## Troubleshooting PostgreSQL Specific Issues<a name="CHAP_Troubleshooting.PostgreSQL"></a>
 
 The following issues are specific to using AWS DMS with PostgreSQL databases\.
 
-
+**Topics**
 + [JSON data types being truncated](#CHAP_Troubleshooting.PostgreSQL.JSONTruncation)
 + [Columns of a user defined data type not being migrated correctly](#CHAP_Troubleshooting.PostgreSQL.UserDefinedDataType)
 + [Error: No schema has been selected to create in](#CHAP_Troubleshooting.PostgreSQL.NoSchema)
@@ -434,9 +435,8 @@ A View as a PostgreSQL source endpoint is not supported by AWS DMS\.
 
 The following issues are specific to using AWS DMS with Microsoft SQL Server databases\.
 
-
+**Topics**
 + [Special Permissions for AWS DMS user account to use CDC](#CHAP_Troubleshooting.SQLServer.Permissions)
-+ [SQL Server Change Data Capture \(CDC\) and Amazon RDS](#CHAP_Troubleshooting.SQLServer.RDSCDC)
 + [Errors Capturing Changes for SQL Server Database](#CHAP_Troubleshooting.SQLServer.CDCErrors)
 + [Missing Identity Columns](#CHAP_Troubleshooting.SQLServer.IdentityColumns)
 + [Error: SQL Server Does Not Support Publications](#CHAP_Troubleshooting.SQLServer.Publications)
@@ -445,10 +445,6 @@ The following issues are specific to using AWS DMS with Microsoft SQL Server dat
 ### Special Permissions for AWS DMS user account to use CDC<a name="CHAP_Troubleshooting.SQLServer.Permissions"></a>
 
 The user account used with AWS DMS requires the SQL Server SysAdmin role in order to operate correctly when using change data capture \(CDC\)\. CDC for SQL Server is only available for on\-premises databases or databases on an EC2 instance\.
-
-### SQL Server Change Data Capture \(CDC\) and Amazon RDS<a name="CHAP_Troubleshooting.SQLServer.RDSCDC"></a>
-
-AWS DMS currently does not support change data capture \(CDC\) from an Amazon RDS SQL Server DB instance\. CDC for SQL Server is only available for on\-premises databases or databases on an Amazon EC2 instance\.
 
 ### Errors Capturing Changes for SQL Server Database<a name="CHAP_Troubleshooting.SQLServer.CDCErrors"></a>
 
@@ -487,7 +483,7 @@ The SIMPLE recovery model logs the minimal information needed to allow users to 
 
 The following issues are specific to using AWS DMS with Amazon Redshift databases\.
 
-
+**Topics**
 + [Loading into a Amazon Redshift Cluster in a Different Region Than the AWS DMS Replication Instance](#CHAP_Troubleshooting.Redshift.Regions)
 + [Error: Relation "awsdms\_apply\_exceptions" already exists](#CHAP_Troubleshooting.Redshift.AlreadyExists)
 + [Errors with Tables Whose Name Begins with "awsdms\_changes"](#CHAP_Troubleshooting.Redshift.Changes)
@@ -513,11 +509,8 @@ AWS DMS creates temporary tables when data is being loaded from files stored in 
 ### Permissions Required to Work with Amazon Redshift<a name="CHAP_Troubleshooting.Redshift.Permissions"></a>
 
 To use AWS DMS with Amazon Redshift, the user account you use to access Amazon Redshift must have the following permissions:
-
 + CRUD \(Select, Insert, Update, Delete\) 
-
 + Bulk Load
-
 + Create, Alter, Drop \(if required by the task's definition\)
 
 To see all the pre\-requisites required for using Amazon Redshift as a target, see [Using an Amazon Redshift Database as a Target for AWS Database Migration Service](CHAP_Target.Redshift.md)\.
@@ -526,7 +519,7 @@ To see all the pre\-requisites required for using Amazon Redshift as a target, s
 
 The following issues are specific to using AWS DMS with Amazon Aurora MySQL databases\.
 
-
+**Topics**
 + [Error: CHARACTER SET UTF8 fields terminated by ',' enclosed by '"' lines terminated by '\\n'](#CHAP_Troubleshooting.Aurora.ANSIQuotes)
 
 ### Error: CHARACTER SET UTF8 fields terminated by ',' enclosed by '"' lines terminated by '\\n'<a name="CHAP_Troubleshooting.Aurora.ANSIQuotes"></a>

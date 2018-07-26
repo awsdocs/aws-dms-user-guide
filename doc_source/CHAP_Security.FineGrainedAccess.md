@@ -108,30 +108,19 @@ on resource: arn:aws:dms:us-east-1:152683116:task:UO3YR4N47DXH3ATT4YMWOIT
 
 ## Using Tags to Control Access<a name="CHAP_Security.FineGrainedAccess.Tags"></a>
 
-AWS DMS defines a set of common key/value pairs that are available for use in customer defined policies without any additional tagging requirements\. For more information about tagging AWS DMS resources, see [Tagging AWS Database Migration Service Resources](CHAP_Tagging.md)\. 
+AWS DMS defines a set of common key/value pairs that are available for use in customer defined policies without any additional tagging requirements\. For more information about tagging AWS DMS resources, see [Tagging Resources in AWS Database Migration Service](CHAP_Tagging.md)\. 
 
 The following lists the standard tags available for use with AWS DMS: 
-
 +  aws:CurrentTime – Represents the request date and time, allowing the restriction of access based on temporal criteria\. 
-
 +  aws:EpochTime – This tag is similar to the aws:CurrentTime tag above, except that the current time is represented as the number of seconds elapsed since the Unix Epoch\. 
-
 +  aws:MultiFactorAuthPresent – This is a boolean tag that indicates whether or not the request was signed via multi\-factor authentication\. 
-
 +  aws:MultiFactorAuthAge – Provides access to the age of the multi\-factor authentication token \(in seconds\)\. 
-
 +  aws:principaltype \- Provides access to the type of principal \(user, account, federated user, etc\.\) for the current request\. 
-
 +  aws:SourceIp \- Represents the source ip address for the user issuing the request\. 
-
 +  aws:UserAgent – Provides information about the client application requesting a resource\. 
-
 +  aws:userid – Provides access to the ID of the user issuing the request\. 
-
 +  aws:username – Provides access to the name of the user issuing the request\. 
-
 +  dms:InstanceClass – Provides access to the compute size of the replication instance host\(s\)\. 
-
 +  dms:StorageSize \- Provides access to the storage volume size \(in GB\)\. 
 
 You can also define your own tags\. Customer\-defined tags are simple key/value pairs that are persisted in the AWS Tagging service and can be added to AWS DMS resources, including replication instances, endpoints, and tasks\. These tags are matched via IAM "Conditional" statements in policies, and are referenced using a specific conditional tag\. The tag keys are prefixed with "dms", the resource type, and the "tag" prefix\. The following shows the tag format:

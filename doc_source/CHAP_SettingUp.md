@@ -1,6 +1,6 @@
-# Setting Up<a name="CHAP_SettingUp"></a>
+# Setting Up for AWS Database Migration Service<a name="CHAP_SettingUp"></a>
 
-Before you use AWS Database Migration Service \(AWS DMS\) for the first time, you'll need to complete the following tasks:
+Before you use AWS Database Migration Service \(AWS DMS\) for the first time, complete the following tasks:
 
 1. [Sign Up for AWS](#CHAP_SettingUp.SignUp)
 
@@ -14,17 +14,17 @@ When you sign up for Amazon Web Services \(AWS\), your AWS account is automatica
 
 With AWS DMS, you pay only for the resources you use\. The AWS DMS replication instance that you create will be live \(not running in a sandbox\)\. You will incur the standard AWS DMS usage fees for the instance until you terminate it\. For more information about AWS DMS usage rates, see the [AWS DMS product page](http://aws.amazon.com/dms)\. If you are a new AWS customer, you can get started with AWS DMS for free; for more information, see [AWS Free Usage Tier](http://aws.amazon.com/free/)\.
 
-If you have an AWS account already, skip to the next task\. If you don't have an AWS account, use the following procedure to create one\.
+If you close your AWS account, all AWS DMS resources and configurations associated with your account are deleted after two days\. These resources include all replication instances, source and target endpoint configuration, replication tasks, and SSL certificates\. If after two days you decide to use AWS DMS again, you recreate the resources you need\.
 
-**To create an AWS account**
+If you have an AWS account already, skip to the next task\.
 
-1. Open [https://aws\.amazon\.com/](https://aws.amazon.com/), and then choose **Create an AWS Account**\.
-**Note**  
-This might be unavailable in your browser if you previously signed into the AWS Management Console\. In that case, choose **Sign in to a different account**, and then choose **Create a new AWS account**\.
+If you do not have an AWS account, use the following procedure to create one\.
+
+**To sign up for AWS**
+
+1. Open [https://aws\.amazon\.com/](https://aws.amazon.com/) and choose **Create an AWS Account**\.
 
 1. Follow the online instructions\.
-
-   Part of the sign\-up procedure involves receiving a phone call and entering a PIN using the phone keypad\.
 
 Note your AWS account number, because you'll need it for the next task\.
 
@@ -36,25 +36,27 @@ If you signed up for AWS but have not created an IAM user for yourself, you can 
 
 **To create an IAM user for yourself and add the user to an Administrators group**
 
-1. Use your AWS account email address and password to sign in to the [AWS Management Console](https://console.aws.amazon.com/) as the *[AWS account root user](http://docs.aws.amazon.com/IAM/latest/UserGuide/id_root-user.html)*\.
+1. Use your AWS account email address and password to sign in as the *[AWS account root user](http://docs.aws.amazon.com/IAM/latest/UserGuide/id_root-user.html)* to the IAM console at [https://console\.aws\.amazon\.com/iam/](https://console.aws.amazon.com/iam/)\.
+**Note**  
+We strongly recommend that you adhere to the best practice of using the **Administrator** IAM user below and securely lock away the root user credentials\. Sign in as the root user only to perform a few [account and service management tasks](http://docs.aws.amazon.com/general/latest/gr/aws_tasks-that-require-root.html)\.
 
 1. In the navigation pane of the console, choose **Users**, and then choose **Add user**\.
 
-1. For **User name**, type ** Administrator**\.
+1. For **User name**, type **Administrator**\.
 
-1. Select the check box next to **AWS Management Console access**, select **Custom password**, and then type the new user's password in the text box\. You can optionally select **Require password reset** to force the user to select a new password the next time the user signs in\.
+1. Select the check box next to **AWS Management Console access**, select **Custom password**, and then type the new user's password in the text box\. You can optionally select **Require password reset** to force the user to create a new password the next time the user signs in\.
 
 1. Choose **Next: Permissions**\.
 
-1. On the **Set permissions for user** page, choose **Add user to group**\.
+1. On the **Set permissions** page, choose **Add user to group**\.
 
 1. Choose **Create group**\.
 
-1. In the **Create group** dialog box, type ** Administrators**\.
+1. In the **Create group** dialog box, for **Group name** type **Administrators**\.
 
-1. For **Filter**, choose **Job function**\.
+1. For **Filter policies**, select the check box for **AWS managed \- job function**\.
 
-1. In the policy list, select the check box for ** AdministratorAccess**\. Then choose **Create group**\.
+1. In the policy list, select the check box for **AdministratorAccess**\. Then choose **Create group**\.
 
 1. Back in the list of groups, select the check box for your new group\. Choose **Refresh** if necessary to see the group in the list\.
 
@@ -81,11 +83,7 @@ To verify the sign\-in link for IAM users for your account, open the IAM console
 ## Migration Planning for AWS Database Migration Service<a name="CHAP_SettingUp.MigrationPlanning"></a>
 
 When planning a database migration using AWS Database Migration Service, consider the following:
-
-+ You will need to configure a network that connects your source and target databases to a AWS DMS replication instance\. This can be as simple as connecting two AWS resources in the same VPC as the replication instance to more complex configurations such as connecting an on\-premises database to an Amazon RDS DB instance over VPN\. For more information, see [Network Configurations for Database Migration](CHAP_ReplicationInstance.md#CHAP_ReplicationInstance.VPC.Configurations)
-
++ You will need to configure a network that connects your source and target databases to a AWS DMS replication instance\. This can be as simple as connecting two AWS resources in the same VPC as the replication instance to more complex configurations such as connecting an on\-premises database to an Amazon RDS DB instance over VPN\. For more information, see [Network Configurations for Database Migration](CHAP_ReplicationInstance.VPC.md#CHAP_ReplicationInstance.VPC.Configurations)
 + **Source and Target Endpoints** – You will need to know what information and tables in the source database need to be migrated to the target database\. AWS DMS supports basic schema migration, including the creation of tables and primary keys\. However, AWS DMS doesn't automatically create secondary indexes, foreign keys, user accounts, and so on in the target database\. Note that, depending on your source and target database engine, you may need to set up supplemental logging or modify other settings for a source or target database\. See the [Sources for Data Migration](CHAP_Source.md) and [Targets for Data Migration](CHAP_Target.md) sections for more information\.
-
 + **Schema/Code Migration** – AWS DMS doesn't perform schema or code conversion\. You can use tools such as Oracle SQL Developer, MySQL Workbench, or pgAdmin III to convert your schema\. If you want to convert an existing schema to a different database engine, you can use the AWS Schema Conversion Tool\. It can create a target schema and also can generate and create an entire schema: tables, indexes, views, and so on\. You can also use the tool to convert PL/SQL or TSQL to PgSQL and other formats\. For more information on the AWS Schema Conversion Tool, see [ AWS Schema Conversion Tool ](http://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_SchemaConversionTool.Installing.html)\.
-
-+ **Unsupported Data Types** – Some source data types need to be converted into the parallel data types for the target database\. For tables listing conversions between database data types, see [Reference for AWS Database Migration Service Including Data Conversion Reference and Additional Topics](CHAP_Reference.md)\. 
++ **Unsupported Data Types** – Some source data types need to be converted into the equivalent data types for the target database\. See the source or target section for your data store to find more information on supported data types\. 

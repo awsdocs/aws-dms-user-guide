@@ -1,10 +1,10 @@
-# Getting Started<a name="CHAP_GettingStarted"></a>
+# Getting Started with AWS Database Migration Service<a name="CHAP_GettingStarted"></a>
 
 AWS Database Migration Service \(AWS DMS\) helps you migrate databases to AWS easily and securely\. You can migrate your data to and from most widely used commercial and open\-source databases, such as Oracle, MySQL, and PostgreSQL\. The service supports homogeneous migrations such as Oracle to Oracle, and also heterogeneous migrations between different database platforms, such as Oracle to PostgreSQL or MySQL to Oracle\. 
 
 For information on the cost of database migration using AWS Database Migration Service, see the [AWS Database Migration Service pricing page](http://aws.amazon.com/dms/pricing/)\.
 
-
+**Topics**
 + [Start a Database Migration with AWS Database Migration Service](#CHAP_GettingStarted.Dashboard)
 + [Step 1: Welcome](#CHAP_GettingStarted.Welcome)
 + [Step 2: Create a Replication Instance](#CHAP_GettingStarted.ReplicationInstance)
@@ -14,18 +14,14 @@ For information on the cost of database migration using AWS Database Migration S
 
 ## Start a Database Migration with AWS Database Migration Service<a name="CHAP_GettingStarted.Dashboard"></a>
 
-There are several ways to begin a database migration\. You can select the AWS DMS console wizard that will walk you through each step of the process, or you can do each step by selecting the appropriate task from the navigation pane\. You can also use the AWS CLI; for information on using the CLI with AWS DMS, see [ AWS CLI for AWS DMS\.](http://docs.aws.amazon.com/cli/latest/reference/dms/index.html)\.
+You can begin a database migration in several ways\. You can select the AWS DMS console wizard that will walk you through each step of the process, or you can do each step by selecting the appropriate task from the navigation pane\. You can also use the AWS CLI; for information on using the CLI with AWS DMS, see [ AWS CLI for AWS DMS\.](http://docs.aws.amazon.com/cli/latest/reference/dms/index.html)\.
 
 To use the wizard, select **Getting started** for from the navigation pane on the AWS DMS console\. You can use the wizard to help create your first data migration\. Following the wizard process, you allocate a replication instance that performs all the processes for the migration, specify a source and a target database, and then create a task or set of tasks to define what tables and replication processes you want to use\. AWS DMS then creates your replication instance and performs the tasks on the data being migrated\.
 
 Alternatively, you can create each of the components of an AWS DMS database migration by selecting the items from the navigation pane\. For a database migration, you must do the following:
-
-+ Complete the tasks outlined in [Setting Up](CHAP_SettingUp.md)
-
++ Complete the tasks outlined in [Setting Up for AWS Database Migration Service](CHAP_SettingUp.md)
 + Allocate a replication instance that performs all the processes for the migration
-
 + Specify a source and a target database endpoint
-
 + Create a task or set of tasks to define what tables and replication processes you want to use
 
 ## Step 1: Welcome<a name="CHAP_GettingStarted.Welcome"></a>
@@ -35,12 +31,11 @@ If you start your database migration using the AWS DMS console wizard, you will 
 ![\[Get started with AWS DMS\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-gs-wizard1.png)
 
 **To start a database migration from the console's Welcome page**
-
 + Choose **Next**\.
 
 ## Step 2: Create a Replication Instance<a name="CHAP_GettingStarted.ReplicationInstance"></a>
 
-Your first task in migrating a database is to create a replication instance that has sufficient storage and processing power to perform the tasks you assign and migrate data from your source database to the target database\. The required size of this instance varies depending on the amount of data you need to migrate and the tasks that you need the instance to perform\. For more information about replication instances, see [Working with a Replication Instance in AWS Database Migration Service](CHAP_ReplicationInstance.md)\. 
+Your first task in migrating a database is to create a replication instance that has sufficient storage and processing power to perform the tasks you assign and migrate data from your source database to the target database\. The required size of this instance varies depending on the amount of data you need to migrate and the tasks that you need the instance to perform\. For more information about replication instances, see [Working with an AWS DMS Replication Instance](CHAP_ReplicationInstance.md)\. 
 
 The procedure following assumes that you have chosen the AWS DMS console wizard\. Note that you can also do this step by selecting **Replication instances** from the AWS DMS console's navigation pane and then selecting **Create replication instance**\.
 
@@ -104,13 +99,13 @@ The procedure following assumes that you have chosen the AWS DMS console wizard 
 ![\[Task settings\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-gs-wizard4a-settings.png)    
 [\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_GettingStarted.html)
 
-1. Choose the **Table mappings** tab, shown following, to set values for schema mapping and the mapping method\. If you choose **Custom**, you can specify the target schema and table values\. For more information about table mapping, see [Using Table Mapping with a Task to Select and Filter Data](CHAP_Tasks.CustomizingTasks.TableMapping.md)\.  
+1. Choose the **Table mappings** tab, shown following, to set values for schema mapping and the mapping method\. If you choose **Custom**, you can specify the target schema and table values\. For more information about table mapping, see [Using Table Mapping to Specify Task Settings](CHAP_Tasks.CustomizingTasks.TableMapping.md)\.  
 ![\[Table mapping\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-gs-wizard4-tablemapping.png)
 
 1. Once you have finished with the task settings, choose **Create task**\.
 
 ## Monitor Your Task<a name="CHAP_GettingStarted.Conclusion"></a>
 
-If you select **Start task on create** when you create a task, your task begins immediately to migrate your data when you choose **Create task**\. You can view statistics and monitoring information for your task by choosing the running task from the AWS Management Console\. The following screenshot shows the table statistics of a database migration\. For more information about monitoring, see [Monitoring AWS Database Migration Service Tasks](CHAP_Monitoring.md)
+If you select **Start task on create** when you create a task, your task begins immediately to migrate your data when you choose **Create task**\. You can view statistics and monitoring information for your task by choosing the running task from the AWS Management Console\. The following screenshot shows the table statistics of a database migration\. For more information about monitoring, see [Monitoring AWS DMS Tasks](CHAP_Monitoring.md)
 
 ![\[Status of replication\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-monitoring3.png)

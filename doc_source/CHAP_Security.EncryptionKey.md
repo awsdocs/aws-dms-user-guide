@@ -5,9 +5,7 @@ AWS DMS encrypts the storage used by a replication instance and the endpoint con
 The default KMS key \(`aws/dms`\) is created when you first launch a replication instance and you have not selected a custom KMS master key from the **Advanced** section of the **Create Replication Instance** page\. If you use the default KMS key, the only permissions you need to grant to the IAM user account you are using for migration are `kms:ListAliases` and `kms:DescribeKey`\. For more information about using the default KMS key, see [IAM Permissions Needed to Use AWS DMS](CHAP_Security.IAMPermissions.md)\. 
 
 To use a custom KMS key, assign permissions for the custom KMS key using one of the following options\.
-
 + Add the IAM user account used for the migration as a Key Administrator/Key User for the KMS custom key\. This will ensure that necessary KMS permissions are granted to the IAM user account\. Note that this action is in addition to the IAM permissions that you must grant to the IAM user account to use AWS DMS\. For more information about granting permissions to a key user, see [ Allows Key Users to Use the CMK](http://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default-allow-users)\.
-
 + If you do not want to add the IAM user account as a Key Administrator/Key User for your custom KMS key, then add the following additional permissions to the IAM permissions that you must grant to the IAM user account to use AWS DMS\. 
 
   ```

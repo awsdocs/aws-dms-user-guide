@@ -9,22 +9,17 @@ During a database migration to Amazon Redshift, AWS DMS first moves data to an S
 If you use the AWS Command Line Interface \(AWS CLI\) or the AWS DMS API to migrate data to Amazon Redshift, you must set up an AWS Identity and Access Management \(IAM\) role to allow S3 access\. For more information about creating this IAM role, see [Creating the IAM Roles to Use With the AWS CLI and AWS DMS API](CHAP_Security.APIRole.md)\.
 
 The Amazon Redshift endpoint provides full automation for the following:
-
 + Schema generation and data type mapping
-
 + Full load of source database tables
-
 + Incremental load of changes made to source tables
-
 + Application of schema changes in data definition language \(DDL\) made to the source tables
-
 + Synchronization between full load and change data capture \(CDC\) processes\.
 
 AWS Database Migration Service supports both full load and change processing operations\. AWS DMS reads the data from the source database and creates a series of comma\-separated value \(CSV\) files\. For full\-load operations, AWS DMS creates files for each table\. AWS DMS then copies the table files for each table to a separate folder in Amazon S3\. When the files are uploaded to Amazon S3, AWS DMS sends a copy command and the data in the files are copied into Amazon Redshift\. For change\-processing operations, AWS DMS copies the net changes to the CSV files\. AWS DMS then uploads the net change files to Amazon S3 and copies the data to Amazon Redshift\.
 
 For additional details on working with Amazon Redshift as a target for AWS DMS, see the following sections: 
 
-
+**Topics**
 + [Prerequisites for Using an Amazon Redshift Database as a Target for AWS Database Migration Service](#CHAP_Target.Redshift.Prerequisites)
 + [Limitations on Using Amazon Redshift as a Target for AWS Database Migration Service](#CHAP_Target.Redshift.Limitations)
 + [Configuring an Amazon Redshift Database as a Target for AWS Database Migration Service](#CHAP_Target.Redshift.Configuration)
@@ -35,26 +30,22 @@ For additional details on working with Amazon Redshift as a target for AWS DMS, 
 ## Prerequisites for Using an Amazon Redshift Database as a Target for AWS Database Migration Service<a name="CHAP_Target.Redshift.Prerequisites"></a>
 
 The following list describes the prerequisites necessary for working with Amazon Redshift as a target for data migration:
-
 + Use the AWS Management Console to launch an Amazon Redshift cluster\. You should note the basic information about your AWS account and your Amazon Redshift cluster, such as your password, user name, and database name\. You need these values when creating the Amazon Redshift target endpoint\. 
-
 + The Amazon Redshift cluster must be in the same AWS account and the same AWS Region as the replication instance\.
-
 + The AWS DMS replication instance needs network connectivity to the Amazon Redshift endpoint \(hostname and port\) that your cluster uses\.
-
 + AWS DMS uses an Amazon S3 bucket to transfer data to the Amazon Redshift database\. For AWS DMS to create the bucket, the DMS console uses an Amazon IAM role, `dms-access-for-endpoint`\. If you use the AWS CLI or DMS API to create a database migration with Amazon Redshift as the target database, you must create this IAM role\. For more information about creating this role, see [Creating the IAM Roles to Use With the AWS CLI and AWS DMS API](CHAP_Security.APIRole.md)\. 
++ AWS DMS converts BLOBs, CLOBs, and NCLOBs to a VARCHAR on the target Amazon Redshift instance\. Amazon Redshift doesn't support VARCHAR data types larger than 64 KB, so you can't store traditional LOBs on Amazon Redshift\. 
 
 ## Limitations on Using Amazon Redshift as a Target for AWS Database Migration Service<a name="CHAP_Target.Redshift.Limitations"></a>
 
 When using an Amazon Redshift database as a target, AWS DMS doesn't support the following:
-
-+ When migrating from MySQL/Aurora MySQL to Amazon Redshift, you cannot use DDL to alter a column from the BLOB data type to the NVARCHAR data type\.
-
-  For example, the following DDL is not supported\.
++ The following DDL is not supported:
 
   ```
-  ALTER TABLE table_name MODIFY column_name NVARCHAR(n);                   
+  ALTER TABLE <table name> MODIFY COLUMN <column name> <data type>;                   
   ```
++  AWS DMS cannot migrate or replicate changes to a schema with a name that begins with underscore \(\_\)\. If you have schemas that have a name that begins with an underscore, use mapping transformations to rename the schema on the target\. 
++  Amazon Redshift doesn't support VARCHARs larger than 64 KB\. LOBs from traditional databases can't be stored in Amazon Redshift\.
 
 ## Configuring an Amazon Redshift Database as a Target for AWS Database Migration Service<a name="CHAP_Target.Redshift.Configuration"></a>
 
@@ -122,6 +113,6 @@ For additional information about AWS DMS data types, see [Data Types for AWS Dat
 | UINT4 | INT4 | 
 | UINT8 | NUMERIC \(20,0\) | 
 | WSTRING |  If the length is 1–65,535, then use NVARCHAR \(length in bytes\)  If the length is 65,536–2,147,483,647, then use NVARCHAR \(65535\) | 
-| BLOB | VARCHAR \(maximum LOB size \*2\)  The maximum LOB size cannot exceed 31 KB\. | 
-| NCLOB | NVARCHAR \(maximum LOB size\)  The maximum LOB size cannot exceed 63 KB\. | 
-| CLOB | VARCHAR \(maximum LOB size\)  The maximum LOB size cannot exceed 63 KB\. | 
+| BLOB | VARCHAR \(maximum LOB size \*2\)  The maximum LOB size cannot exceed 31 KB\. Amazon Redshift doesn't support VARCHARs larger than 64 KB\. | 
+| NCLOB | NVARCHAR \(maximum LOB size\)  The maximum LOB size cannot exceed 63 KB\. Amazon Redshift doesn't support VARCHARs larger than 64 KB\. | 
+| CLOB | VARCHAR \(maximum LOB size\)  The maximum LOB size cannot exceed 63 KB\. Amazon Redshift doesn't support VARCHARs larger than 64 KB\. | 

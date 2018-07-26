@@ -7,9 +7,7 @@ SAP ASE versions 15, 15\.5, 15\.7, 16 and later are supported\.
 ## Prerequisites for Using a SAP ASE Database as a Target for AWS Database Migration Service<a name="CHAP_Target.SAP.Prerequisites"></a>
 
 Before you begin to work with a SAP ASE database as a target for AWS DMS, make sure that you have the following prerequisites:
-
 + You must provide SAP ASE account access to the AWS DMS user\. This user must have read/write privileges in the SAP ASE database\.
-
 + When replicating to SAP ASE version 15\.7 installed on a Windows EC2 instance configured with a non\-Latin language \(for example, Chinese\), AWS DMS requires SAP ASE 15\.7 SP121 to be installed on the target SAP ASE machine\.
 
 ## Extra Connection Attributes When Using SAP ASE as a Target for AWS DMS<a name="CHAP_Target.SAP.ConnectionAttrib"></a>
@@ -55,5 +53,4 @@ For additional information about AWS DMS data types, see [Data Types for AWS Dat
 | NCLOB | TEXT | 
 
 AWS DMS does not support tables that include fields with the following data types\. Replicated columns with these data types show as null\. 
-
 + User\-defined type \(UDT\)

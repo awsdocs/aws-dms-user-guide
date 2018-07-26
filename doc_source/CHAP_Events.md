@@ -1,4 +1,4 @@
-# Working with Events and Notifications<a name="CHAP_Events"></a>
+# Working with Events and Notifications in AWS Database Migration Service<a name="CHAP_Events"></a>
 
  AWS Database Migration Service \(AWS DMS\) uses Amazon Simple Notification Service \(Amazon SNS\) to provide notifications when an AWS DMS event occurs, for example the creation or deletion of a replication instance\. You can work with these notifications in any form supported by Amazon SNS for an AWS Region, such as an email message, a text message, or a call to an HTTP endpoint\. 
 
@@ -104,5 +104,4 @@ The AWS DMS console indicates that the subscription is being created\.
 ### AWS DMS API<a name="USER_Events.Subscribing.API"></a>
 
 **To subscribe to AWS DMS event notification by using the AWS DMS API**
-
 +  Call [ `CreateEventSubscription`](http://docs.aws.amazon.com/dms/latest/APIReference//API_CreateEventSubscription.html)\. 

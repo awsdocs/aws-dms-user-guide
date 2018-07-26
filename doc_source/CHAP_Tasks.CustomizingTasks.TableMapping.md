@@ -1,10 +1,10 @@
-# Using Table Mapping with a Task to Select and Filter Data<a name="CHAP_Tasks.CustomizingTasks.TableMapping"></a>
+# Using Table Mapping to Specify Task Settings<a name="CHAP_Tasks.CustomizingTasks.TableMapping"></a>
 
 Table mapping uses several types of rules to specify the data source, source schema, data, and any transformations that should occur during the task\. You can use table mapping to specify individual tables in a database to migrate and the schema to use for the migration\. In addition, you can use filters to specify what data from a given table column you want replicated and you can use transformations to modify the data written to the target database\. 
 
-## Selection and Transformation Table Mapping using the AWS Console<a name="CHAP_Tasks.CustomizingTasks.TableMapping.Console"></a>
+## Selection and Transformation Table Mapping Using the AWS Management Console<a name="CHAP_Tasks.CustomizingTasks.TableMapping.Console"></a>
 
-You can use the AWS console to perform table mapping, including specifying table selection and transformations\. In the AWS Console user interface, you use the **Where** section to specify the schema, table, and action \(include or exclude\)\. You use the **Filter** section to specify the column name in a table and the conditions you want to apply to the replication task\. Together these two actions create a selection rule\.
+You can use the AWS Management Console to perform table mapping, including specifying table selection and transformations\. In the AWS console user interface, you use the **Where** section to specify the schema, table, and action \(include or exclude\)\. You use the **Filter** section to specify the column name in a table and the conditions you want to apply to the replication task\. Together these two actions create a selection rule\.
 
 Transformations can be included in a table mapping after you have specified at least one selection rule\. Transformations can be used to rename a schema or table, add a prefix or suffix to a schema or table, or remove a table column\.
 
@@ -393,19 +393,12 @@ The following example transforms all tables in your source to remove the suffix 
 You can use source filters to limit the number and type of records transferred from your source to your target\. For example, you can specify that only employees with a location of headquarters are moved to the target database\. Filters are part of a selection rule\. You apply filters on a column of data\. 
 
 Source filters must follow these constraints:
-
 + A selection rule can have no filters or one or more filters\.
-
 + Every filter can have one or more filter conditions\.
-
 + If more than one filter is used, the list of filters will be combined as if using an AND operator between the filters\.
-
 + If more than one filter condition is used within a single filter, the list of filter conditions will be combined as if using an OR operator between the filter conditions\.
-
 + Filters are only applied when `rule-action = 'include'`\.
-
 + Filters require a column name and a list of filter conditions\. Filter conditions must have a filter operator and a value\.
-
 + Column names, table names, and schema names are case sensitive\. 
 
 ### Filtering by Time and Date<a name="CHAP_Tasks.CustomizingTasks.Filters.Dates"></a>

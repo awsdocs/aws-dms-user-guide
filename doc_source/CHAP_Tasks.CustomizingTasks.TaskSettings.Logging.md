@@ -7,29 +7,18 @@ There are several ways to enable Amazon CloudWatch logging\. You can select the 
 To delete the task logs, you can specify `"DeleteTaskLogs": true` in the JSON of the logging section of task settings\.
 
 You can specify logging for the following component activities:
-
 + SOURCE\_UNLOAD — Data is unloaded from the source database\.
-
 + SOURCE\_CAPTURE — Data is captured from the source database\.
-
 + TARGET\_LOAD — Data is loaded into the target database\.
-
 + TARGET\_APPLY — Data and DDL are applied to the target database\.
-
 + TASK\_MANAGER — The task manager triggers an event\.
 
 Once you specify a component activity, you can then specify the amount of information that is logged\. The following list is in order from the lowest level of information to the highest level of information\. The higher levels always include information from the lower levels\. These severity values include:
-
 + LOGGER\_SEVERITY\_ERROR — Error messages are written to the log\.
-
 + LOGGER\_SEVERITY\_WARNING — Warnings and error messages are written to the log\.
-
 + LOGGER\_SEVERITY\_INFO — Informational messages, warnings, and error messages are written to the log\.
-
-+ LOGGER\_SEVERITY\_DEFAULT — Debug messages, informational messages, warnings, and error messages are written to the log\.
-
++ LOGGER\_SEVERITY\_DEFAULT — Informational messages, warnings, and error messages are written to the log\.
 + LOGGER\_SEVERITY\_DEBUG — Debug messages, informational messages, warnings, and error messages are written to the log\.
-
 + LOGGER\_SEVERITY\_DETAILED\_DEBUG — All information is written to the log\.
 
 For example, the following JSON section gives task settings for logging for all component activities:

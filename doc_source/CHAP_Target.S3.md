@@ -10,7 +10,7 @@ The parameter `bucketFolder` contains the location where the \.csv files are sto
 <schema_name>/<table_name>/<time-stamp>.csv
 ```
 
-You can specify the column delimiter, row delimiter, and other parameters using the extra connection attributes\. For more information on the extra connection attributes, see [Extra Connection Attributes](#CHAP_Target.S3.Configuring) at the end of this section\.
+You can specify the column delimiter, row delimiter, and other parameters using the extra connection attributes\. For more information on the extra connection attributes, see [Extra Connection Attributes When Using Amazon S3 as a Target for AWS DMS](#CHAP_Target.S3.Configuring) at the end of this section\.
 
 When you use AWS DMS to replicate data changes, the first column of the CSV output file indicates how the data was changed as shown following:
 
@@ -22,13 +22,9 @@ D,101,Smith,Bob,13-Mar-17,Dallas
 ```
 
 For this example, suppose that there is an `EMPLOYEE` table in the source database\. AWS DMS writes data to the CSV file, in response to the following events:
-
 + A new employee \(Bob Smith, employee ID 101\) is hired on 4\-Jun\-14 at the New York office\. In the CSV file, the `I` in the first column indicates that a new row was `INSERT`ed into the EMPLOYEE table at the source database\.
-
 + On 8\-Oct\-15, Bob transfers to the Los Angeles office\. In the CSV file, the `U` indicates that the corresponding row in the EMPLOYEE table was `UPDATE`d to reflect Bob's new office location\. The rest of the line reflects the row in the EMPLOYEE table as it appears after the `UPDATE`\. 
-
 + On 13\-Mar,17, Bob transfers again to the Dallas office\. In the CSV file, the `U` indicates that this row was `UPDATE`d again\. The rest of the line reflects the row in the EMPLOYEE table as it appears after the `UPDATE`\.
-
 + After some time working in Dallas, Bob leaves the company\. In the CSV file, the `D` indicates that the row was `DELETE`d in the source table\. The rest of the line reflects how the row in the EMPLOYEE table appeared before it was deleted\.
 
 ## Prerequisites for Using Amazon S3 as a Target<a name="CHAP_Target.S3.Prerequisites"></a>
@@ -67,24 +63,20 @@ The AWS account you use for the migration must have write and delete access to t
 ## Limitations to Using Amazon S3 as a Target<a name="CHAP_Target.S3.Limitations"></a>
 
 The following limitations apply to a file in Amazon S3 that you are using as a target:
-
 + Only the following data definition language \(DDL\) commands are supported: TRUNCATE TABLE, DROP TABLE, and CREATE TABLE\.
-
 + Full LOB mode is not supported\.
-
 + Changes to the source table structure during full load are not supported\. Changes to the data are supported during full load\.
-
 + Multiple tasks that replicate data from the same source table to the same target S3 endpoint bucket result in those tasks writing to the same file\. We recommend that you specify different target endpoints \(buckets\) if your data source is from the same table\.
 
 ## Security<a name="CHAP_Target.S3.Security"></a>
 
 To use Amazon S3 as a target, the account used for the migration must have write and delete access to the Amazon S3 bucket that is used as the target\. You must specify the Amazon Resource Name \(ARN\) of an IAM role that has the permissions required to access Amazon S3\. 
 
-AWS DMS supports a set of predefined grants for Amazon S3, known as canned ACLs\. Each canned ACL has a set of grantees and permissions you can use to set permissions for the Amazon S3 bucket\. You can specify a canned ACL using the `cannedAclForObjects` on the connection string attribute for your S3 target endpoint\. For more information about using the extra connection attribute `cannedAclForObjects`, see [Extra Connection Attributes](#CHAP_Target.S3.Configuring) for more information\. For more information about Amazon S3 canned ACLs, see [Canned ACL](http://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl)\.
+AWS DMS supports a set of predefined grants for Amazon S3, known as canned ACLs\. Each canned ACL has a set of grantees and permissions you can use to set permissions for the Amazon S3 bucket\. You can specify a canned ACL using the `cannedAclForObjects` on the connection string attribute for your S3 target endpoint\. For more information about using the extra connection attribute `cannedAclForObjects`, see [Extra Connection Attributes When Using Amazon S3 as a Target for AWS DMS](#CHAP_Target.S3.Configuring) for more information\. For more information about Amazon S3 canned ACLs, see [Canned ACL](http://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl)\.
 
 The IAM role that you use for the migration must be able to perform the `s3:PutObjectAcl` API action\.
 
-## Extra Connection Attributes<a name="CHAP_Target.S3.Configuring"></a>
+## Extra Connection Attributes When Using Amazon S3 as a Target for AWS DMS<a name="CHAP_Target.S3.Configuring"></a>
 
 You can specify the following options as extra connection attributes\. Multiple extra connection attribute settings should be separated by a semicolon\.
 
@@ -99,4 +91,5 @@ You can specify the following options as extra connection attributes\. Multiple 
 | compressionType |  An optional parameter to use GZIP to compress the target files\. Set to NONE \(the default\) or do not use to leave the files uncompressed\. **Example:** `compressionType=GZIP;`  | 
 | csvRowDelimiter |  The delimiter used to separate rows in the source files\. The default is a carriage return \(`\n`\)\. **Example:** `csvRowDelimiter=\n;`  | 
 | csvDelimiter |  The delimiter used to separate columns in the source files\. The default is a comma\. **Example:** `csvDelimiter=,;`  | 
-| rfc4180 |  An optional parameter used to control RFC compliance behavior with data migrated to Amazon S3\. When using Amazon S3 as a target, if the data has quotes or a new line character in it then AWS DMS encloses the entire column with an additional "\. Every quote mark within the data is repeated twice\. This is in compliance with RFC 4180\. The default is a true\. **Example:** `rfc4180=false;`  | 
+|   `maxFileSize`   |   Specifies the maximum size \(in KB\) of any CSV file to be created while migrating to S3 target during full load\. Default value: 1048576 KB \(1 GB\) Valid values: 1 \- 1048576 **Example:** `maxFileSize=512`  | 
+| rfc4180 |  An optional parameter used to control RFC compliance behavior with data migrated to Amazon S3\. When using Amazon S3 as a target, if the data has quotes or a new line character in it then AWS DMS encloses the entire column with an additional "\. Every quote mark within the data is repeated twice\. This is in compliance with RFC 4180\. The default is `true`\. **Example:** `rfc4180=false;`  | 

@@ -24,7 +24,7 @@ For more information about transformations, see [ Selection and Transformation T
 
 For additional details on working with Oracle databases as a target for AWS DMS, see the following sections: 
 
-
+**Topics**
 + [Limitations on Oracle as a Target for AWS Database Migration Service](#CHAP_Target.Oracle.Limitations)
 + [User Account Privileges Required for Using Oracle as a Target](#CHAP_Target.Oracle.Privileges)
 + [Configuring an Oracle Database as a Target for AWS Database Migration Service](#CHAP_Target.Oracle.Configuration)
@@ -34,101 +34,58 @@ For additional details on working with Oracle databases as a target for AWS DMS,
 ## Limitations on Oracle as a Target for AWS Database Migration Service<a name="CHAP_Target.Oracle.Limitations"></a>
 
 Limitations when using Oracle as a target for data migration include the following:
-
 + AWS DMS does not create schema on the target Oracle database\. You have to create any schemas you want on the target Oracle database\. The schema name must already exist for the Oracle target\. Tables from source schema are imported to user/schema, which AWS DMS uses to connect to the target instance\. You must create multiple replication tasks if you have to migrate multiple schemas\. 
-
 + AWS DMS doesn't support the `Use direct path full load` option for tables with INDEXTYPE CONTEXT\. As a workaround, you can use array load\. 
-
 + In Batch Optimized Apply mode, loading into the net changes table uses Direct Path, which doesn't support XMLType\. As a workaround, you can use Transactional Apply mode\.
 
 ## User Account Privileges Required for Using Oracle as a Target<a name="CHAP_Target.Oracle.Privileges"></a>
 
 To use an Oracle target in an AWS Database Migration Service task, for the user account specified in the AWS DMS Oracle database definitions you need to grant the following privileges in the Oracle database:
-
 + SELECT ANY TRANSACTION 
-
 + SELECT on V$NLS\_PARAMETERS 
-
 + SELECT on V$TIMEZONE\_NAMES 
-
 + SELECT on ALL\_INDEXES 
-
 + SELECT on ALL\_OBJECTS 
-
 + SELECT on DBA\_OBJECTS
-
 + SELECT on ALL\_TABLES 
-
 + SELECT on ALL\_USERS 
-
 + SELECT on ALL\_CATALOG 
-
 + SELECT on ALL\_CONSTRAINTS 
-
 + SELECT on ALL\_CONS\_COLUMNS 
-
 + SELECT on ALL\_TAB\_COLS 
-
 + SELECT on ALL\_IND\_COLUMNS 
-
 + DROP ANY TABLE 
-
 + SELECT ANY TABLE
-
 + INSERT ANY TABLE 
-
 + UPDATE ANY TABLE
-
 + CREATE ANY VIEW
-
 + DROP ANY VIEW
-
 + CREATE ANY PROCEDURE
-
 + ALTER ANY PROCEDURE
-
 + DROP ANY PROCEDURE
-
 + CREATE ANY SEQUENCE
-
 + ALTER ANY SEQUENCE
-
 + DROP ANY SEQUENCE 
 
 For the requirements specified following, grant the additional privileges named:
-
 + To use a specific table list, grant SELECT on any replicated table and also ALTER on any replicated table\.
-
 + To allow a user to create a table in his default tablespace, grant the privilege GRANT UNLIMITED TABLESPACE\.
-
 + For logon, grant the privilege CREATE SESSION\.
-
 + If you are using a direct path, grant the privilege LOCK ANY TABLE\.
-
 + If the "DROP and CREATE table" or "TRUNCATE before loading" option is selected in the full load settings, and the target table schema is different from that for the AWS DMS user, grant the privilege DROP ANY TABLE\.
-
 + To store changes in change tables or an audit table when the target table schema is different from that for the AWS DMS user, grant the privileges CREATE ANY TABLE and CREATE ANY INDEX\.
 
 ### Read Privileges Required for AWS Database Migration Service on the Target Database<a name="CHAP_Target.Oracle.Privileges.Read"></a>
 
 The AWS DMS user account must be granted read permissions for the following DBA tables:
-
 + SELECT on DBA\_USERS
-
 + SELECT on DBA\_TAB\_PRIVS
-
 + SELECT on DBA\_OBJECTS
-
 + SELECT on DBA\_SYNONYMS
-
 + SELECT on DBA\_SEQUENCES
-
 + SELECT on DBA\_TYPES
-
 + SELECT on DBA\_INDEXES
-
 + SELECT on DBA\_TABLES
-
 + SELECT on DBA\_TRIGGERS
 
 If any of the required privileges cannot be granted to V$xxx, then grant them to V\_$xxx\.

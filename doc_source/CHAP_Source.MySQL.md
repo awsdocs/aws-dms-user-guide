@@ -8,7 +8,8 @@ In the following sections, the term "self\-managed" applies to any database that
 
 For additional details on working with MySQL\-compatible databases and AWS DMS, see the following sections\.
 
-
+**Topics**
++ [Migrating from MySQL to MySQL Using AWS DMS](#CHAP_Source.MySQL.Homogeneous)
 + [Using Any MySQL\-Compatible Database as a Source for AWS DMS](#CHAP_Source.MySQL.Prerequisites)
 + [Using a Self\-Managed MySQL\-Compatible Database as a Source for AWS DMS](#CHAP_Source.MySQL.CustomerManaged)
 + [Using a Amazon\-Managed MySQL\-Compatible Database as a Source for AWS DMS](#CHAP_Source.MySQL.AmazonManaged)
@@ -16,16 +17,72 @@ For additional details on working with MySQL\-compatible databases and AWS DMS, 
 + [Extra Connection Attributes When Using MySQL as a Source for AWS DMS](#CHAP_Source.MySQL.ConnectionAttrib)
 + [Source Data Types for MySQL](#CHAP_Source.MySQL.DataTypes)
 
+## Migrating from MySQL to MySQL Using AWS DMS<a name="CHAP_Source.MySQL.Homogeneous"></a>
+
+For a heterogeneous migration, where you are migrating from a database engine other than MySQL to a MySQL database, AWS DMS is almost always the best migration tool to use\. But for a homogeneous migration, where you are migrating from a MySQL database to a MySQL database, native tools can be more effective\.
+
+We recommend that you use native MySQL database migration tools such as `mysqldump` under the following conditions: 
++ You have a homogeneous migration, where you are migrating from a source MySQL database to a target MySQL database\. 
++ You are migrating an entire database\.
++ The native tools allow you to migrate your data with minimal downtime\. 
+
+You can import data from an existing MySQL or MariaDB database to an Amazon RDS MySQL or MariaDB DB instance\. You do so by copying the database with [mysqldump](http://dev.mysql.com/doc/refman/5.6/en/mysqldump.html) and piping it directly into the Amazon RDS MySQL or MariaDB DB instance\. The `mysqldump` command\-line utility is commonly used to make backups and transfer data from one MySQL or MariaDB server to another\. It is included with MySQL and MariaDB client software\.
+
+For more information about importing a MySQL database into Amazon RDS for MySQL or Amazon Aurora \(MySQL\), see [ Importing Data into a MySQL DB Instance ](http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide//MySQL.Procedural.Importing.Other.html) and [ Importing Data from a MySQL or MariaDB DB to an Amazon RDS MySQL or MariaDB DB Instance](http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide//MySQL.Procedural.Importing.SmallExisting.html)\. 
+
+### Using AWS DMS to Migrate Data from MySQL to MySQL<a name="CHAP_Source.MySQL.Homogeneous.DMS"></a>
+
+ AWS DMS can migrate data from, for example, a source MySQL database that is on premises to a target Amazon RDS for MySQL or Amazon Aurora \(MySQL\) instance\. Core or basic MySQL data types most often migrate successfully\. 
+
+Data types that are supported on the source database but are not supported on the target may not migrate successfully\. AWS DMS streams some data types as strings if the data type is unknown\. Some data types, such as XML and JSON, can successfully migrate as small files but can fail if the are large documents\. 
+
+The following table shows source MySQL data types and whether they can be migrated successfully:
+
+
+| Data type | Migrates successfully | Will partially migrate | Will not migrate | Comments | 
+| --- | --- | --- | --- | --- | 
+| INT | X |  |  |  | 
+| BIGINT | X |  |  |  | 
+| MEDIUMINT | X |  |  |  | 
+| TINYINT | X |  |  |  | 
+| DECIMAL\(p,s\) | X |  |  |  | 
+| BINARY | X |  |  |  | 
+| BIT\(M\) | X |  |  |  | 
+| BLOB | X |  |  |  | 
+| LONGBLOB | X |  |  |  | 
+| MEDIUMBLOB | X |  |  |  | 
+| TINYBLOB | X |  |  |  | 
+| DATE | X |  |  |  | 
+| DATETIME | X |  |  |  | 
+| TIME |  | X |  |  | 
+| TIMESTAMP | X |  |  |  | 
+| YEAR | X |  |  |  | 
+| DOUBLE | X |  |  |  | 
+| FLOAT |  | X |  |  | 
+| VARCHAR\(N\) | X |  |  |  | 
+| VARBINARY\(N\) | X |  |  |  | 
+| CHAR\(N\) | X |  |  |  | 
+| TEXT | X |  |  |  | 
+| LONGTEXT | X |  |  |  | 
+| MEDIUMTEXT | X |  |  |  | 
+| TINYTEXT | X |  |  |  | 
+| GEOMETRY |  |  | X |  | 
+| POINT |  |  | X |  | 
+| LINESTRING |  |  | X |  | 
+| POLYGON |  |  | X |  | 
+| MULTILINESTRING |  |  | X |  | 
+| MULTIPOLYGON |  |  | X |  | 
+| GEOMETRYCOLLECTION |  |  | X |  | 
+| ENUM |  | X |  |  | 
+| SET |  | X |  |  | 
+
 ## Using Any MySQL\-Compatible Database as a Source for AWS DMS<a name="CHAP_Source.MySQL.Prerequisites"></a>
 
 Before you begin to work with a MySQL database as a source for AWS DMS, make sure that you have the following prerequisites\. These prerequisites apply to either self\-managed or Amazon\-managed sources\.
 
 You must have an account for AWS DMS that has the Replication Admin role\. The role needs the following privileges:
-
 + **REPLICATION CLIENT** – This privilege is required for change data capture \(CDC\) tasks only\. In other words, full\-load\-only tasks don't require this privilege\.
-
 + **REPLICATION SLAVE** – This privilege is required for change data capture \(CDC\) tasks only\. In other words, full\-load\-only tasks don't require this privilege\.
-
 + **SUPER** – This privilege is required only in MySQL versions before 5\.6\.6\.
 
 The AWS DMS user must also have SELECT privileges for the source tables designated for replication\.
@@ -33,19 +90,12 @@ The AWS DMS user must also have SELECT privileges for the source tables designat
 ## Using a Self\-Managed MySQL\-Compatible Database as a Source for AWS DMS<a name="CHAP_Source.MySQL.CustomerManaged"></a>
 
 You can use the following self\-managed MySQL\-compatible databases as sources for AWS DMS:
-
 + MySQL Community Edition
-
 + MySQL Standard Edition
-
 + MySQL Enterprise Edition
-
 + MySQL Cluster Carrier Grade Edition
-
 + MariaDB Community Edition
-
 + MariaDB Enterprise Edition
-
 + MariaDB Column Store
 
 You must enable binary logging if you plan to use change data capture \(CDC\)\. To enable binary logging, the following parameters must be configured in MySQL’s `my.ini` \(Windows\) or `my.cnf` \(UNIX\) file\.
@@ -73,57 +123,37 @@ If your source uses the NDB \(clustered\) database engine, the following paramet
 ## Using a Amazon\-Managed MySQL\-Compatible Database as a Source for AWS DMS<a name="CHAP_Source.MySQL.AmazonManaged"></a>
 
 You can use the following Amazon\-managed MySQL\-compatible databases as sources for AWS DMS:
-
 + MySQL Community Edition
-
 + MariaDB Community Edition
-
 + Amazon Aurora MySQL
 
 When using an Amazon\-managed MySQL\-compatible database as a source for AWS DMS, make sure that you have the following prerequisites:
-
-+ You must enable automatic backups\. For more information on setting up automatic backups, see [Working with Automated Backups](http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.html) in the *Amazon Relational Database Service User Guide*\.
-
-+ You must enable binary logging if you plan to use change data capture \(CDC\)\. For more information on setting up binary logging for an Amazon RDS MySQL database, see [Working with Automated Backups](http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.html) in the *Amazon Relational Database Service User Guide*\.
-
++ You must enable automatic backups\. For more information on setting up automatic backups, see [Working with Automated Backups](http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.html) in the *Amazon RDS User Guide*\.
++ You must enable binary logging if you plan to use change data capture \(CDC\)\. For more information on setting up binary logging for an Amazon RDS MySQL database, see [Working with Automated Backups](http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.html) in the *Amazon RDS User Guide*\.
 + You must ensure that the binary logs are available to AWS DMS\. Because Amazon\-managed MySQL\-compatible databases purge the binary logs as soon as possible, you should increase the length of time that the logs remain available\. For example, to increase log retention to 24 hours, run the following command\. 
 
   ```
    call mysql.rds_set_configuration('binlog retention hours', 24);
   ```
-
 + The `binlog_format` parameter should be set to "ROW\."
-
-+ The `binlog_checksum `parameter should be set to "NONE"\. For more information about setting parameters in Amazon RDS MySQL, see [Working with Automated Backups](http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.html) in the *Amazon Relational Database Service User Guide*\.
-
++ The `binlog_checksum `parameter should be set to "NONE"\. For more information about setting parameters in Amazon RDS MySQL, see [Working with Automated Backups](http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.html) in the *Amazon RDS User Guide*\.
 + If you are using an Amazon RDS MySQL or Amazon RDS MariaDB read replica as a source, then backups must be enabled on the read replica\.
 
 ## Limitations on Using a MySQL Database as a Source for AWS DMS<a name="CHAP_Source.MySQL.Limitations"></a>
 
 When using a MySQL database as a source, AWS DMS doesn't support the following:
-
 +  Change data capture \(CDC\) is not supported for Amazon RDS MySQL 5\.5 or lower\. For Amazon RDS MySQL, you must use version 5\.6 or higher to enable CDC\.
-
-+  The date definition language \(DDL\) statements TRUNCATE PARTITION, DROP TABLE, and RENAME TABLE are not supported\.
-
++  The data definition language \(DDL\) statements DROP TABLE and RENAME TABLE are not supported\. Additionally, all DDL statements for partitioned tables are not supported\.
++  For partitioned tables on the source, when you set **Target table preparation mode** to **Drop tables on target**, AWS DMS creates a simple table without any partitions on the MySQL target\. To migrate partitioned tables to a partitioned table on the target, pre\-create the partitioned tables on the target MySQL database\.
 +  Using an ALTER TABLE<table\_name> ADD COLUMN <column\_name> statement to add columns to the beginning \(FIRST\) or the middle of a table \(AFTER\) is not supported\. Columns are always added to the end of the table\.
-
 + CDC is not supported when a table name contains uppercase and lowercase characters, and the source engine is hosted on an operating system with case\-insensitive file names\. An example is Windows or OS X using HFS\+\.
-
 +  The AR\_H\_USER header column is not supported\.
-
 +  The AUTO\_INCREMENT attribute on a column is not migrated to a target database column\.
-
 +  Capturing changes when the binary logs are not stored on standard block storage is not supported\. For example, CDC doesn't work when the binary logs are stored on Amazon S3\.
-
 +  AWS DMS creates target tables with the InnoDB storage engine by default\. If you need to use a storage engine other than InnoDB, you must manually create the table and migrate to it using [“do nothing” mode](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_GettingStarted.html)\.
-
 + You can't use Aurora MySQL read replicas as a source for AWS DMS\.
-
 +  If the MySQL\-compatible source is stopped during full load, the AWS DMS task doesn't stop with an error\. The task ends successfully, but the target might be out of sync with the source\. If this happens, either restart the task or reload the affected tables\.
-
 +  Indexes created on a portion of a column value aren't migrated\. For example, the index CREATE INDEX first\_ten\_chars ON customer \(name\(10\)\) isn't created on the target\.
-
 + In some cases, the task is configured to not replicate LOBs \("SupportLobs" is false in task settings or “Don't include LOB columns” is checked in the task console\)\. In these cases, AWS DMS doesn't migrate any MEDIUMBLOB, LONGBLOB, MEDIUMTEXT, and LONGTEXT columns to the target\.
 
   BLOB, TINYBLOB, TEXT, and TINYTEXT columns are not affected and are migrated to the target\.

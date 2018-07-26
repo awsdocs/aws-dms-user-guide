@@ -5,9 +5,7 @@ You can migrate data to PostgreSQL databases using AWS DMS, either from another 
 AWS DMS takes a table\-by\-table approach when migrating data from source to target in the Full Load phase\. Table order during the full load phase cannot be guaranteed\. Tables are out of sync during the full load phase and while cached transactions for individual tables are being applied\. As a result, active referential integrity constraints can result in task failure during the full load phase\.
 
 In PostgreSQL, foreign keys \(referential integrity constraints\) are implemented using triggers\. During the full load phase, AWS DMS loads each table one at a time\. We strongly recommend that you disable foreign key constraints during a full load, using one of the following methods:
-
 + Temporarily disable all triggers from the instance, and finish the full load\.
-
 + Use the `session_replication_role` parameter in PostgreSQL\.
 
 At any given time, a trigger can be in one of the following states: `origin`, `replica`, `always`, or `disabled`\. When the `session_replication_role` parameter is set to `replica`, only triggers in the `replica` state are active, and they are fired when they are called\. Otherwise, the triggers remain inactive\. 
@@ -18,7 +16,7 @@ In Amazon RDS, you can control set this parameter using a parameter group\. For 
 
 For additional details on working with a PostgreSQL database as a target for AWS DMS, see the following sections: 
 
-
+**Topics**
 + [Limitations on Using PostgreSQL as a Target for AWS Database Migration Service](#CHAP_Target.PostgreSQL.Limitations)
 + [Security Requirements When Using a PostgreSQL Database as a Target for AWS Database Migration Service](#CHAP_Target.PostgreSQL.Security)
 + [Extra Connection Attributes When Using PostgreSQL as a Target for AWS DMS](#CHAP_Target.PostgreSQL.ConnectionAttrib)
@@ -27,8 +25,8 @@ For additional details on working with a PostgreSQL database as a target for AWS
 ## Limitations on Using PostgreSQL as a Target for AWS Database Migration Service<a name="CHAP_Target.PostgreSQL.Limitations"></a>
 
 The following limitations apply when using a PostgreSQL database as a target for AWS DMS:
-
 + The JSON data type is converted to the Native CLOB data type\.
++ In an Oracle to PostgreSQL migration, if a column in Oracle contains a NULL character \(Hex value U\+0000\), AWS DMS converts the NULL character to a space \(Hex value U\+0020\)\. This is due to a PostgreSQL limitation\.
 
 ## Security Requirements When Using a PostgreSQL Database as a Target for AWS Database Migration Service<a name="CHAP_Target.PostgreSQL.Security"></a>
 

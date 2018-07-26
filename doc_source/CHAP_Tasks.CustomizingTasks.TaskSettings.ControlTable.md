@@ -1,11 +1,8 @@
 # Control Table Task Settings<a name="CHAP_Tasks.CustomizingTasks.TaskSettings.ControlTable"></a>
 
 Control tables provide information about the AWS DMS task, as well as useful statistics that you can use to plan and manage both the current migration task and future tasks\. You can apply these task settings in a JSON file or using the **Advanced Settings** link on the **Create task** page in the AWS DMS console\. In addition to the **Apply Exceptions \(dmslogs\.awsdms\_apply\_exceptions\)** table, which is always created, you can choose to create additional tables including the following:
-
 + **Replication Status \(dmslogs\.awsdms\_status\)** – This table provides details about the current task including task status, amount of memory consumed by the task, number of changes not yet applied to the target, and the position in the source database from which AWS DMS is currently reading\. It also indicates if the task is a full load or change data capture \(CDC\)\.
-
 + **Suspended Tables \(dmslogs\.awsdms\_suspended\_tables\)** – This table provides a list of suspended tables as well as the reason they were suspended\.
-
 + **Replication History \(dmslogs\.awsdms\_history\)** – This table provides information about the replication history including the number and volume of records processed during the task, latency at the end of a CDC task, and other statistics\.
 
 The **Apply Exceptions \(dmslogs\.awsdms\_apply\_exceptions\)** table contains the following parameters:
@@ -53,7 +50,5 @@ The **Replication Status \(dmslogs\.awsdms\_status\)** table contains the curren
 |  SOURCE\_TIMESTAMP \_APPLIED  |  timestamp  |  The timestamp of the last transaction commit\. In a bulk apply process, this value is the timestamp for the commit of the last transaction in the batch\.  | 
 
 Additional control table settings include the following:
-
 + `ControlSchema` – Use this option to indicate the database schema name for the AWS DMS target Control Tables\. If you do not enter any information in this field, then the tables are copied to the default location in the database\.
-
 + `HistoryTimeslotInMinutes` – Use this option to indicate the length of each time slot in the Replication History table\. The default is 5 minutes\.

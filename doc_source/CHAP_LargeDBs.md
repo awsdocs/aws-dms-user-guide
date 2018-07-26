@@ -9,9 +9,7 @@ AWS Snowball is an AWS service you can use to transfer data to the cloud at fast
 Amazon S3 is a storage and retrieval service\. To store an object in Amazon S3, you upload the file you want to store to a bucket\. When you upload a file, you can set permissions on the object and also on any metadata\.
 
 AWS DMS supports the following scenarios:
-
 + Migration from an on\-premises data warehouse to Amazon Redshift\. This approach involves a client\-side software installation of the AWS Schema Conversion Tool\. The tool reads information from the warehouse \(the extractor\), and then moves data to S3 or Snowball\. Then in the AWS Cloud, information is either read from S3 or Snowball and injected into Amazon Redshift\.
-
 + Migration from an on\-premises relational database to an Amazon RDS database\. This approach again involves a client\-side software installation of the AWS Schema Conversion Tool\. The tool reads information from a local database that AWS supports\. The tool then moves data to S3 or Snowball\. When the data is in the AWS Cloud, AWS DMS writes it to a supported database in either Amazon EC2 or Amazon RDS\.
 
 ## Process Overview<a name="CHAP_LargeDBs.Process"></a>
@@ -21,7 +19,7 @@ The process of using AWS DMS and AWS Snowball involves several steps, and it use
 **Note**  
 We recommend that you test your migration before you use the AWS Snowball device\. To do so, you can set up a task to send data, such as a single table, to an Amazon S3 bucket instead of the AWS Snowball device\.
 
-![\[ AWS Database Migration Service and AWS Snowball process\]](http://docs.aws.amazon.com/dms/latest/userguide/images/Snowball-flow.png)
+![\[AWS Database Migration Service and AWS Snowball process\]](http://docs.aws.amazon.com/dms/latest/userguide/images/Snowball-flow.png)
 
 The migration involves a local task, where AWS SCT moves the data to the AWS Snowball Edge device, an intermediate action where the data is copied from the AWS Snowball Edge device to an S3 bucket\. The process then involves a remote task where AWS DMS loads the data from the Amazon S3 bucket to the target data store on AWS\.
 
@@ -70,9 +68,7 @@ Download and install the AWS Schema Conversion Tool using the instructions at [ 
 In this step, you install the DMS Agent on a dedicated machine that has access to AWS and to the machine where AWS SCT was installed\. 
 
 You can install the DMS Agent on the following Linux platforms:
-
 + Red Hat Enterprise Linux versions 6\.2 through 6\.8, 7\.0 and 7\.1 \(64\-bit\)
-
 + SUSE Linux version 11\.1 \(64\-bit\)
 
 **To install the DMS Agent**
@@ -82,7 +78,7 @@ You can install the DMS Agent on the following Linux platforms:
 1. Run the following command as root to install the DMS Agent\. If you install or upgrade the DMS Agent on SUSE Linux, you must add the `--nodeps` parameter to the command\.
 
    ```
-   sudo rpm -i amazonrdsmigrationtool-2.2.1-R1.x86_64.rpm
+   sudo rpm -i aws-schema-conversion-tool-dms-agent-2.4.0-R2.x86_64.rpm
    ```
 
    The default installation location is /opt/amazon/aws\-schema\-conversion\-tool\-dms\-agent\. To install the DMS Agent in a non\-default directory, use `--prefix` `<path to new product dir>`\.
@@ -100,10 +96,10 @@ To configure the DMS Agent, you must provide a password and port number\. You us
 Run the following script to configure the DMS Agent\.
 
 ```
-sudo /opt/amazon/rdsmigrationtool/configure.sh 
+sudo /opt/amazon/aws-schema-conversion-tool-dms-agent/bin/configure.sh 
 ```
 
-### Step 4: Unlock the AWS Snowball Edge Device<a name="w3ab1c21c17c11"></a>
+### Step 4: Unlock the AWS Snowball Edge Device<a name="w3ab1c33c17c11"></a>
 
 You should run the commands that unlock and provide credentials to the Snowball Edge device from the machine where you installed the DMS Agent\. This way you can be sure that the DMS Agent call connect to the AWS Snowball Edge device\. For more information about unlocking the AWS Snowball Edge device, see [ Unlock the Snowball Edge ](http://docs.aws.amazon.com/snowball/latest/developer-guide/unlockappliance.html)\.
 
@@ -139,7 +135,7 @@ The AWS SCT Profile must be updated to use the DMS Agent\.
 1. Choose **Settings**, and then choose **Global Settings**\. Choose **AWS Service Profiles**\.
 
 1. Choose **Add New AWS Service Profile**\.  
-![\[ AWS Database Migration Service and AWS Snowball process\]](http://docs.aws.amazon.com/dms/latest/userguide/images/snowball-AWSserviceprofile.png)
+![\[AWS Database Migration Service and AWS Snowball process\]](http://docs.aws.amazon.com/dms/latest/userguide/images/snowball-AWSserviceprofile.png)
 
 1. Add the following profile information\.     
 [\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_LargeDBs.html)
@@ -157,10 +153,10 @@ Next, you register the DMS Agent in AWS SCT\. SCT then tries to connect to the a
 **To register the DMS Agent**
 
 1. Start AWS SCT, choose **View**, and then choose **Database Migration View \(DMS\)**\.  
-![\[ View dropdown menu\]](http://docs.aws.amazon.com/dms/latest/userguide/images/snowball-view-databasemigview.png)
+![\[View dropdown menu\]](http://docs.aws.amazon.com/dms/latest/userguide/images/snowball-view-databasemigview.png)
 
 1. Choose the **Agent** tab, and then choose **Register**\. The **New Agent Registration** dialog box appears\.  
-![\[ New Agent Registration dialog box\]](http://docs.aws.amazon.com/dms/latest/userguide/images/snowball-newagentregistration.png)
+![\[New Agent Registration dialog box\]](http://docs.aws.amazon.com/dms/latest/userguide/images/snowball-newagentregistration.png)
 
 1. Type your information in the **New Agent Registration** dialog box\.    
 [\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_LargeDBs.html)
@@ -275,10 +271,10 @@ Next, you create the task that is the end\-to\-end migration task\. The task inc
 **To create the end\-to\-end migration task**
 
 1. Start AWS SCT, choose **View**, and then choose **Database Migration View \(Local & DMS\)**\.  
-![\[View > Database Migration View (Local & DMS) \]](http://docs.aws.amazon.com/dms/latest/userguide/images/snowball-view-databasemigview.png)
+![\[View > Database Migration View (Local & DMS)\]](http://docs.aws.amazon.com/dms/latest/userguide/images/snowball-view-databasemigview.png)
 
 1. In the left panel that displays the schema from your source database, choose a schema object to migrate\. Open the context \(right\-click\) menu for the object, and then choose **Create Local & DMS Task**\.  
-![\[ AWS Database Migration Service and AWS Snowball process\]](http://docs.aws.amazon.com/dms/latest/userguide/images/snowball-contextmenucreatelocal.png)
+![\[AWS Database Migration Service and AWS Snowball process\]](http://docs.aws.amazon.com/dms/latest/userguide/images/snowball-contextmenucreatelocal.png)
 
 1. Add your task information\.    
 [\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_LargeDBs.html)
@@ -291,7 +287,7 @@ You can start the Local & DMS Task when all connections to endpoints are success
 
 You can monitor the DMS Agent logs by choosing **Show Log**\. The log details include agent server \(**Agent Log**\) and local running task \(**Task Log**\) logs\. Because the endpoint connectivity is done by the server \(since the local task is not running and there are no task logs\), connection issues are listed under the **Agent Log** tab\.
 
-![\[ Local task completed, waiting for the second task\]](http://docs.aws.amazon.com/dms/latest/userguide/images/snowball-tasklog.png)
+![\[Local task completed, waiting for the second task\]](http://docs.aws.amazon.com/dms/latest/userguide/images/snowball-tasklog.png)
 
 ### Step 12: Manage the AWS Snowball Appliance<a name="CHAP_LargeDBs.SBS.SnowballtoS3"></a>
 
@@ -299,16 +295,13 @@ Once the Snowball appliance is fully loaded, AWS SCT updates the status of the t
 
 To do so, disconnect the AWS Snowball appliance and ship back to AWS\. For more information about returning the AWS Snowball appliance to AWS, see the steps outlined in [Getting Started with AWS Snowball Edge: Your First Job](http://docs.aws.amazon.com/snowball/latest/developer-guide/common-get-start.html) in the AWS Snowball documentation\. You can use the AWS Snowball console or AWS SCT \(show details of the DMS task\) to check the status of the appliance and find out when AWS DMS begins to load data to the Amazon S3 bucket\.
 
-![\[ Local task completed, waiting for the second task\]](http://docs.aws.amazon.com/dms/latest/userguide/images/snowball-twotasksonedone.png)
+![\[Local task completed, waiting for the second task\]](http://docs.aws.amazon.com/dms/latest/userguide/images/snowball-twotasksonedone.png)
 
 After the AWS Snowball appliance arrives at AWS and unloads data to S3 bucket, you can see that the remote \(DMS\) task starts to run\. If the migration type you selected for the task was **Migrate existing data**, the status for the DMS task will show 100% complete when the data has been transferred from Amazon S3 to the target data store\. If you set the a task mode to include ongoing replication, then after full load is complete the task status shows that the task continues to run, while AWS DMS applies ongoing changes\.
 
 ### Limitations When Working with AWS Snowball and AWS Database Migration Service \(AWS DMS\)<a name="CHAP_LargeDBs.Limitations"></a>
 
 There are some limitations you should be aware of when working with AWS Snowball\.
-
 + The LOB mode limits LOB file size to 32K\.
-
 + If an error occurs during the data migration during the load from the local database to the AWS Snowball Edge device or when AWS DMS loads data from Amazon S3 to the target database, the task will restart if the error is recoverable\. If AWS DMS cannot recover from the error, the migration will stop\.
-
 + Every AWS SCT task creates two endpoint connections on AWS DMS\. If you create multiple tasks, you could reach a resource limit for the number of endpoints that can be created\.

@@ -90,33 +90,21 @@ The elements in this JSON document are as follows:
 `TableCount`—the number of source tables\. In this example, there is only one table\.
 
 `Tables`—an array consisting of one JSON map per source table\. In this example, there is only one map\. Each map consists of the following elements:
-
 + `TableName`—the name of the source table\.
-
 + `TablePath`—the path in your S3 bucket where AWS DMS can find the full data load file\. If a `bucketFolder` value is specified, this value is prepended to the path\.
-
 + `TableOwner`—the schema name for this table\.
-
 + `TableColumns`—an array of one or more maps, each of which describes a column in the source table:
-
   + `ColumnName`—the name of a column in the source table\.
-
   + `ColumnType`—the data type for the column\. For valid data types, see [Source Data Types for Amazon S3](#CHAP_Source.S3.DataTypes)\.
-
   + `ColumnLength`—the number of bytes in this column\.
-
   + `ColumnNullable`—\(optional\) a Boolean value that is `true` if this column can contain NULL values\. 
-
   + `ColumnIsPk`—\(optional\) a Boolean value that is `true` if this column is part of the primary key\. 
-
 + `TableColumnsTotal`—the total number of columns\. This number must match the number of elements in the `TableColumns` array\.
 
 In the example preceding, some of the columns are of type STRING\. In this case, use the `ColumnLength` element to specify the maximum number of characters\.
 
 `ColumnLength` applies for the following data types:
-
 + BYTE
-
 + STRING
 
 If you don't specify otherwise, AWS DMS assumes that `ColumnLength` is zero\.
@@ -154,13 +142,9 @@ s3://mybucket/changedata
 ```
 
 The records in a CDC file are formatted as follows:
-
 + Operation—the change operation to be performed: `INSERT`, `UPDATE`, or `DELETE`\. These keywords are case\-insensitive\.
-
 + Table name—the name of the source table\.
-
 + Schema name—the name of the source schema\.
-
 + Data—one or more columns that represent the data to be changed\.
 
 Following is an example CDC file for a table named `employee`\.
@@ -217,6 +201,7 @@ You can specify the following options as extra connection attributes\.
 | csvRowDelimiter |  The delimiter used to separate rows in the source files\. The default is a carriage return \(`\n`\)\. An example follows\. `csvRowDelimiter=\n;`  | 
 | csvDelimiter |  The delimiter used to separate columns in the source files\. The default is a comma\. An example follows\. `csvDelimiter=,;`  | 
 | externalTableDefinition |  A JSON object that describes how AWS DMS should interpret the data in the S3 bucket during the migration\. For more information, see [Defining External Tables for S3 as a Source for AWS DMS](#CHAP_Source.S3.ExternalTableDef)\. An example follows\. `externalTableDefinition=`*<json\_object>*  | 
+| ignoreHeaderRows |  When set to 1, AWS DMS ignores the first row header in a CSV file\. A value of 1 enables the feature, a value of 0 disables the feature\. The default is 0\. `ignoreHeaderRows=1`  | 
 
 ## Source Data Types for Amazon S3<a name="CHAP_Source.S3.DataTypes"></a>
 

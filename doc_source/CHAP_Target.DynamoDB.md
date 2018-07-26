@@ -11,13 +11,9 @@ When AWS DMS creates tables on an Amazon DynamoDB target endpoint, it creates as
 When AWS DMS sets Amazon DynamoDB parameter values for a migration task, the default Read Capacity Units \(RCU\) parameter value is set to 200\.
 
 The Write Capacity Units \(WCU\) parameter value is also set, but its value depends on several other settings:
-
 + The default value for the WCU parameter is 200\.
-
 + If the parallelLoadThreads parameter is set greater than 1 \(default is 0\), then the WCU parameter is set to 200 times the `parallelLoadThreads` value\.
-
 + In the US East \(N\. Virginia\) Region \(us\-east\-1\), the largest possible WCU parameter value is 40000\. If the AWS Region is us\-east\-1 and the WCU parameter value is greater than 40000, the WCU parameter value is set to 40000\.
-
 + In AWS Regions other than us\-east\-1, the largest possible WCU parameter value is 10000\. For any AWS Region other than us\-east\-1, if the WCU parameter value is set greater than 10000 the WCU parameter value is set to 10000\.
 
 ## Migrating from a Relational Database to a DynamoDB Table<a name="CHAP_Target.DynamoDB.RDBMS2DynamoDB"></a>
@@ -27,11 +23,8 @@ AWS DMS supports migrating data to DynamoDB’s scalar data types\. When migrati
 Currently AWS DMS supports single table to single table restructuring to DynamoDB scalar type attributes\. If you are migrating data into DynamoDB from a relational database table, you take data from a table and reformat it into DynamoDB scalar data type attributes\. These attributes can accept data from multiple columns, and you can map a column to an attribute directly\.
 
 AWS DMS supports the following DynamoDB scalar data types:
-
 + String
-
 + Number
-
 + Boolean
 
 **Note**  
@@ -56,7 +49,7 @@ Before you begin to work with a DynamoDB database as a target for AWS DMS, make 
 }
 ```
 
-The user account that you use for the migration to DynamoDB must have the following permissions:
+The role that you use for the migration to DynamoDB must have the following permissions:
 
 ```
 {
@@ -90,15 +83,10 @@ The user account that you use for the migration to DynamoDB must have the follow
 ## Limitations When Using DynamoDB as a Target for AWS Database Migration Service<a name="CHAP_Target.DynamoDB.Limitations"></a>
 
 The following limitations apply when using Amazon DynamoDB as a target:
-
 + DynamoDB limits the precision of the Number data type to 38 places\. Store all data types with a higher precision as a String\. You need to explicitly specify this using the object mapping feature\.
-
 + Because Amazon DynamoDB doesn’t have a Date data type, data using the Date data type are converted to strings\.
-
 + Amazon DynamoDB doesn't allow updates to the primary key attributes\. This restriction is important when using ongoing replication with change data capture \(CDC\) because it can result in unwanted data in the target\. Depending on how you have the object mapping, a CDC operation that updates the primary key can either fail or insert a new item with the updated primary key and incomplete data\.
-
 + AWS DMS only supports replication of tables with non\-composite primary keys, unless you specify an object mapping for the target table with a custom partition key or sort key, or both\.
-
 + AWS DMS doesn’t support LOB data unless it is a CLOB\. AWS DMS converts CLOB data into a DynamoDB string when migrating data\.
 
 ## Using Object Mapping to Migrate Data to DynamoDB<a name="CHAP_Target.DynamoDB.ObjectMapping"></a>
@@ -130,9 +118,7 @@ The structure for the rule is as follows:
 ```
 
 AWS DMS currently supports *map\-record\-to\-record* and *map\-record\-to\-document* as the only valid values for the `rule-action` parameter\. *map\-record\-to\-record* and *map\-record\-to\-document* specify what AWS DMS does by default to records that aren’t excluded as part of the `exclude-columns` attribute list; these values don’t affect the attribute\-mappings in any way\. 
-
 + *map\-record\-to\-record* can be used when migrating from a relational database to DynamoDB\. It uses the primary key from the relational database as the partition key in Amazon DynamoDB and creates an attribute for each column in the source database\. When using `map-record-to-record`, for any column in the source table not listed in the `exclude-columns` attribute list, AWS DMS creates a corresponding attribute on the target DynamoDB instance regardless of whether that source column is used in an attribute mapping\. 
-
 + *map\-record\-to\-document* puts source columns into a single, flat, DynamoDB map on the target using the attribute name "\_doc\." When using `map-record-to-document`, for any column in the source table not listed in the `exclude-columns` attribute list, AWS DMS places the data into a single, flat, DynamoDB map attribute on the source called "\_doc"\.
 
 One way to understand the difference between the `rule-action` parameters *map\-record\-to\-record* and *map\-record\-to\-document* is to see the two parameters in action\. For this example, assume that you are starting with a relational database table row with the following structure and data:
@@ -231,13 +217,9 @@ However, suppose that you use the same rules but change the `rule-action` parame
 You can use a feature of Amazon DynamoDB called conditional expressions to manipulate data that is being written to a DynamoDB table\. For more information about condition expressions in DynamoDB, see [Condition Expressions](http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.ConditionExpressions.html)\.
 
 A condition expression member consists of: 
-
 + an expression \(required\) 
-
 + expression attribute values \(optional\) \. Specifies a DynamoDB json structure of the attribute value
-
 + expression attribute names \(optional\)
-
 + options for when to use the condition expression \(optional\)\. The default is apply\-during\-cdc = false and apply\-during\-full\-load = true
 
 The structure for the rule is as follows:
@@ -287,33 +269,7 @@ The structure of the DynamoDB data is as follows:
 | CustomerName | StoreId | ContactDetails | DateOfBirth | 
 | --- | --- | --- | --- | 
 | Partition Key | Sort Key | N/A | 
-| 
-
-```
-Randy,Marsh
-``` | 
-
-```
-5
-``` | 
-
-```
-{
-    "Name": "Randy",
-    "Home": {
-        "Address": "221B Baker Street",
-        "Phone": 1234567890
-    },
-    "Work": {
-        "Address": "31 Spooner Street, Quahog",
-        "Phone": 9876541230
-    }
-}
-``` | 
-
-```
-02/29/1988
-``` | 
+| <pre>Randy,Marsh</pre> | <pre>5</pre> | <pre>{<br />    "Name": "Randy",<br />    "Home": {<br />        "Address": "221B Baker Street",<br />        "Phone": 1234567890<br />    },<br />    "Work": {<br />        "Address": "31 Spooner Street, Quahog",<br />        "Phone": 9876541230<br />    }<br />}</pre> | <pre>02/29/1988</pre> | 
 
 The following JSON shows the object mapping and column mapping used to achieve the DynamoDB structure:
 

@@ -4,7 +4,7 @@ You can encrypt connections for source and target endpoints by using Secure Sock
 
 Not all databases use SSL in the same way\. Amazon Aurora with MySQL compatibility uses the server name, the endpoint of the primary instance in the cluster, as the endpoint for SSL\. An Amazon Redshift endpoint already uses an SSL connection and does not require an SSL connection set up by AWS DMS\. An Oracle endpoint requires additional steps; for more information, see [SSL Support for an Oracle Endpoint](#CHAP_Security.SSL.Oracle)\.
 
-
+**Topics**
 + [Limitations on Using SSL with AWS Database Migration Service](#CHAP_Security.SSL.Limitations)
 + [Managing Certificates](#CHAP_Security.SSL.ManagingCerts)
 + [Enabling SSL for a MySQL\-compatible, PostgreSQL, or SQL Server Endpoint](#CHAP_Security.SSL.Procedure)
@@ -13,13 +13,9 @@ Not all databases use SSL in the same way\. Amazon Aurora with MySQL compatibili
 To assign a certificate to an endpoint, you provide the root certificate or the chain of intermediate CA certificates leading up to the root \(as a certificate bundle\), that was used to sign the server SSL certificate that is deployed on your endpoint\. Certificates are accepted as PEM formatted X509 files, only\. When you import a certificate, you receive an Amazon Resource Name \(ARN\) that you can use to specify that certificate for an endpoint\. If you use Amazon RDS, you can download the root CA and certificate bundle provided by Amazon RDS at [ https://s3\.amazonaws\.com/rds\-downloads/rds\-combined\-ca\-bundle\.pem](https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem)\. 
 
 You can choose from several SSL modes to use for your SSL certificate verification\. 
-
 + **none** – The connection is not encrypted\. This option is not secure, but requires less overhead\.
-
 + **require** – The connection is encrypted using SSL \(TLS\) but no CA verification is made\. This option is more secure, and requires more overhead\. 
-
 + **verify\-ca** – The connection is encrypted\. This option is more secure, and requires more overhead\. This option verifies the server certificate\. 
-
 + **verify\-full** – The connection is encrypted\. This option is more secure, and requires more overhead\. This option verifies the server certificate and verifies that the server hostname matches the hostname attribute for the certificate\. 
 
 Not all SSL modes work with all database endpoints\. The following table shows which SSL modes are supported for each database engine\.
@@ -34,24 +30,20 @@ Not all SSL modes work with all database endpoints\. The following table shows w
 | Oracle | Default | Not supported | Supported | Not Supported | 
 | SAP ASE | Default | SSL not enabled | SSL not enabled | Supported | 
 | MongoDB | Default | Supported | Not Supported | Supported | 
+| Db2 LUW | Default | Not Supported | Supported | Not Supported | 
 
 ## Limitations on Using SSL with AWS Database Migration Service<a name="CHAP_Security.SSL.Limitations"></a>
-
 + SSL connections to Amazon Redshift target endpoints are not supported\. AWS DMS uses an S3 bucket to transfer data to the Redshift database\. This transmission is encrypted by Amazon Redshift by default\. 
-
 +  SQL timeouts can occur when performing CDC tasks with SSL\-enabled Oracle endpoints\. If you have this issue, where CDC counters don't reflect the expected numbers, set the `MinimumTransactionSize` parameter from the `ChangeProcessingTuning` section of task settings to a lower value, starting with a value as low as 100\. For more information about the `MinimumTransactionSize` parameter, see [Change Processing Tuning Settings](CHAP_Tasks.CustomizingTasks.TaskSettings.ChangeProcessingTuning.md)\.
-
 + Certificates can only be imported in the \.PEM and \.SSO \(Oracle wallet\) formats\.
-
 + If your server SSL certificate is signed by an intermediate CA, make sure the entire certificate chain leading from the intermediate CA up to the root CA is imported as a single \.PEM file\.
-
 + If you are using self\-signed certificates on your server, choose **require** as your SSL mode\. The **require** SSL mode implicitly trusts the server’s SSL certificate and will not try to validate that the certificate was signed by a CA\. 
 
 ## Managing Certificates<a name="CHAP_Security.SSL.ManagingCerts"></a>
 
 You can use the DMS console to view and manage your SSL certificates\. You can also import your certificates using the DMS console\.
 
-![\[ AWS Database Migration Service SSL certificate management\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-certificatemgr.png)
+![\[AWS Database Migration Service SSL certificate management\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-certificatemgr.png)
 
 ## Enabling SSL for a MySQL\-compatible, PostgreSQL, or SQL Server Endpoint<a name="CHAP_Security.SSL.Procedure"></a>
 
@@ -92,7 +84,7 @@ You can also upload a certificate using the AWS DMS console when you create or m
 1. Choose an **SSL mode**\.
 
     If you select either the **verify\-ca** or **verify\-full** mode, you must specify the **CA certificate** that you want to use, as shown following\.   
-![\[ AWS Database Migration Service SSL certificate management\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-certificate2.png)
+![\[AWS Database Migration Service SSL certificate management\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-certificate2.png)
 
      
 
@@ -106,7 +98,7 @@ After you create your source and target endpoints, create a task that uses these
 
 Oracle endpoints in AWS DMS support `none` and `verify-ca` SSL modes\. To use SSL with an Oracle endpoint, you must upload the Oracle wallet for the endpoint instead of \.pem certificate files\. 
 
-
+**Topics**
 + [Using an Existing Certificate for Oracle SSL](#CHAP_Security.SSL.Oracle.Existing)
 + [Using a Self\-Signed Certificate for Oracle SSL](#CHAP_Security.SSL.Oracle.SelfSigned)
 
@@ -211,43 +203,48 @@ To use a self\-signed certificate for Oracle SSL, do the following\.
 
    ```
    orapki wallet add -wallet $ORACLE_HOME/self_signed_ssl_wallet 
-        -dn "CN=`hostname`, OU=Sample Department, O=Sample Company, 
-        L=NYC, ST=NY, C=US" -keysize 1024 -pwd <password>
+        -dn "CN=dms" -keysize 2048 -sign_alg sha256 -pwd <password>
    ```
 
-1. List the contents of the Oracle wallet\. The list should include the CSR\.
+1. Run the following command\.
 
    ```
-   orapki wallet display -wallet $ORACLE_HOME/self_signed_ssl_wallet
+    openssl pkcs12 -in ewallet.p12 -nodes -out nonoracle_wallet.pem
    ```
 
-1. Export the CSR from the Oracle wallet\.
+1. Put 'dms' as the common name\.
 
    ```
-   orapki wallet export -wallet $ORACLE_HOME/self_signed_ssl_wallet 
-        -dn "CN=`hostname`, OU=Sample Department, O=Sample Company, 
-        L=NYC, ST=NY, C=US" -request self-signed-oracle.csr -pwd <password>
+   openssl req -new -key nonoracle_wallet.pem -out certrequest.csr
    ```
 
-1. Sign the CSR using the root certificate\.
+1. Get the certificate signature\.
+
+   ```
+   openssl req -noout -text -in self-signed-oracle.csr  | grep -i signature
+   ```
+
+1. If the output from step 12 is `sha256WithRSAEncryption`, then run the following code\.
 
    ```
    openssl x509 -req -in self-signed-oracle.csr -CA self-rootCA.pem 
-        -CAkey self-rootCA.key -CAcreateserial -out self-signed-oracle.crt 
-        -days 365 -sha256
+   -CAkey self-rootCA.key -CAcreateserial 
+   -out self-signed-oracle.crt -days 365 -sha256
    ```
 
-1. Add the Client certificate to the server wallet\.
+1. If the output from step 12 is `md5WithRSAEncryption`, then run the following code\.
 
    ```
-   orapki wallet add -wallet $ORACLE_HOME/self_signed_ssl_wallet 
-        -user_cert -cert self-signed-oracle.crt -pwd <password>
+   openssl x509 -req -in certrequest.csr -CA self-rootCA.pem 
+   -CAkey self-rootCA.key -CAcreateserial 
+   -out certrequest.crt -days 365 -sha256
    ```
 
-1. List the content of the Oracle wallet\.
+1. Add the certificate to the wallet\.
 
    ```
-   orapki wallet display -wallet $ORACLE_HOME/self_signed_ssl_wallet
+   orapki wallet add -wallet $ORACLE_HOME/self_signed_ssl_wallet -user_cert 
+   -cert certrequest.crt -pwd <password>
    ```
 
 1. Configure *sqlnet\.ora* file \($ORACLE\_HOME/network/admin/sqlnet\.ora\)\.

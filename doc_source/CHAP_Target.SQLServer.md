@@ -8,7 +8,7 @@ For Amazon RDS instance databases, AWS DMS supports as a target SQL Server versi
 
 For additional details on working with AWS DMS and SQL Server target databases, see the following\.
 
-
+**Topics**
 + [Limitations on Using SQL Server as a Target for AWS Database Migration Service](#CHAP_Target.SQLServer.Limitations)
 + [Security Requirements When Using SQL Server as a Target for AWS Database Migration Service](#CHAP_Target.SQLServer.Security)
 + [Extra Connection Attributes When Using SQLServer as a Target for AWS DMS](#CHAP_Target.SQLServer.ConnectionAttrib)
@@ -17,17 +17,14 @@ For additional details on working with AWS DMS and SQL Server target databases, 
 ## Limitations on Using SQL Server as a Target for AWS Database Migration Service<a name="CHAP_Target.SQLServer.Limitations"></a>
 
 The following limitations apply when using a SQL Server database as a target for AWS DMS:
-
 + When you manually create a SQL Server target table with a computed column, full load replication is not supported when using the BCP bulk\-copy utility\. To use full load replication, disable the **Use BCP for loading tables** option in the console's **Advanced** tab\. For more information on working with BCP, see the [Microsoft SQL Server documentation](https://docs.microsoft.com/en-us/sql/relational-databases/import-export/import-and-export-bulk-data-by-using-the-bcp-utility-sql-server)\.
-
 + When replicating tables with SQL Server spatial data types \(GEOMETRY and GEOGRAPHY\), AWS DMS replaces any spatial reference identifier \(SRID\) that you might have inserted with the default SRID\. The default SRID is 0 for GEOMETRY and 4326 for GEOGRAPHY\.
++ Temporal tables are not supported\. Migrating temporal tables may work with a replication\-only task in transnational apply mode if those tables are manually created on the target\.
 
 ## Security Requirements When Using SQL Server as a Target for AWS Database Migration Service<a name="CHAP_Target.SQLServer.Security"></a>
 
 The following describes the security requirements for using AWS DMS with a Microsoft SQL Server target\.
-
 + AWS DMS user account must have at least the `db_owner` user role on the Microsoft SQL Server database you are connecting to\.
-
 + A Microsoft SQL Server system administrator must provide this permission to all AWS DMS user accounts\.
 
 ## Extra Connection Attributes When Using SQLServer as a Target for AWS DMS<a name="CHAP_Target.SQLServer.ConnectionAttrib"></a>

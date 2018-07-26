@@ -1,6 +1,6 @@
 # IAM Permissions Needed to Use AWS DMS<a name="CHAP_Security.IAMPermissions"></a>
 
-You need to use certain IAM permissions and IAM roles to use AWS DMS\. If you are signed in as an IAM user and want to use AWS DMS, your account administrator must attach the following policy to the IAM user, group, or role that you use to run AWS DMS\. For more information about IAM permissions, see the [IAM User Guide](http://docs.aws.amazon.com/IAM/latest/UserGuide/introduction_access-management.html)\. 
+You need to use certain IAM permissions and IAM roles to use AWS DMS\. If you are signed in as an IAM user and want to use AWS DMS, your account administrator must attach the policy discussed in this section to the IAM user, group, or role that you use to run AWS DMS\. For more information about IAM permissions, see the [IAM User Guide](http://docs.aws.amazon.com/IAM/latest/UserGuide/introduction_access-management.html)\. 
 
 The following set of permissions gives you access to AWS DMS, and also permissions for certain actions needed from other Amazon services such as AWS KMS, IAM, Amazon Elastic Compute Cloud \(Amazon EC2\), and Amazon CloudWatch\. CloudWatch monitors your AWS DMS migration in real time and collects and tracks metrics that indicate the progress of your migration\. You can use CloudWatch Logs to debug problems with a task\. 
 
