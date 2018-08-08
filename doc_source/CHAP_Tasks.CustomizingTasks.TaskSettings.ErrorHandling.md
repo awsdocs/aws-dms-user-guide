@@ -53,4 +53,4 @@ You can set the error handling behavior of your replication task during change d
 + `FailOnTransactionConsistencyBreached` – This option applies to tasks using Oracle as a source with CDC\. Set this to `true` to cause a task to fail when a transaction is open for more time than the specified timeout and could be dropped\. 
 
   When a CDC task starts with Oracle AWS DMS waits for a limited time for the oldest open transaction to close before starting CDC\. If the oldest open transaction doesn't close until the timeout is reached, then we normally start CDC anyway, ignoring that transaction\. if this setting is set to `true`, the task fails\.
-+ `FulloadIgnoreConflicts` – Set this to `false` to have AWS DMS ignore "zero rows affected" and "duplicates" errors when applying cached events\. If set to `true`, AWS DMS reports all errors instead of ignoring them\. The default is `false`\. 
++ `FullLoadIgnoreConflicts` – Set this to `false` to have AWS DMS ignore "zero rows affected" and "duplicates" errors when applying cached events\. If set to `true`, AWS DMS reports all errors instead of ignoring them\. The default is `false`\. 
