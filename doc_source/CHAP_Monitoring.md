@@ -16,7 +16,7 @@ For more information, see the following topics\.
 + [Monitoring Replication Tasks Using Amazon CloudWatch](#CHAP_Monitoring.CloudWatch)
 + [Data Migration Service Metrics](#CHAP_Monitoring.Metrics)
 + [Managing AWS DMS Task Logs](#CHAP_Monitoring.ManagingLogs)
-+ [Logging AWS DMS API Calls Using AWS CloudTrail](#CHAP_Monitoring.CloudTrail)
++ [Logging AWS DMS API Calls with AWS CloudTrail](#logging-using-cloudtrail)
 
 ## Task Status<a name="CHAP_Tasks.Status"></a>
 
@@ -233,26 +233,161 @@ To delete the task logs for a task, set the task setting `DeleteTaskLogs` to tru
 }
 ```
 
-## Logging AWS DMS API Calls Using AWS CloudTrail<a name="CHAP_Monitoring.CloudTrail"></a>
+## Logging AWS DMS API Calls with AWS CloudTrail<a name="logging-using-cloudtrail"></a>
 
-The AWS CloudTrail service logs all AWS Database Migration Service \(AWS DMS\) API calls made by or on behalf of your AWS account\. AWS CloudTrail stores this logging information in an S3 bucket\. You can use the information collected by CloudTrail to monitor AWS DMS activity, such as creating or deleting a replication instance or an endpoint\. For example, you can determine whether a request completed successfully and which user made the request\. To learn more about CloudTrail, see the [AWS CloudTrail User Guide](http://docs.aws.amazon.com/awscloudtrail/latest/userguide/)\.
+AWS DMS is integrated with AWS CloudTrail, a service that provides a record of actions taken by a user, role, or an AWS service in AWS DMS\. CloudTrail captures all API calls for AWS DMS as events, including calls from the AWS DMS console and from code calls to the AWS DMS APIs\. If you create a trail, you can enable continuous delivery of CloudTrail events to an Amazon S3 bucket, including events for AWS DMS\. If you don't configure a trail, you can still view the most recent events in the CloudTrail console in **Event history**\. Using the information collected by CloudTrail, you can determine the request that was made to AWS DMS, the IP address from which the request was made, who made the request, when it was made, and additional details\. 
 
-If an action is taken on behalf of your AWS account using the AWS DMS console or the AWS DMS command line interface, then AWS CloudTrail logs the action as calls made to the AWS DMS API\. For example, if you use the AWS DMS console to describe connections, or call the AWS CLI [describe\-connections](http://docs.aws.amazon.com//cli/latest/reference/dms/describe-connections.html) command, then the AWS CloudTrail log shows a call to the AWS DMS API [DescribeConnections](http://docs.aws.amazon.com/dms/latest/APIReference//API_DescribeConnections.html) action\. For a list of the AWS DMS API actions that are logged by AWS CloudTrail, see the [AWS DMS API Reference](http://docs.aws.amazon.com/dms/latest/APIReference//Welcome.html)\. 
+To learn more about CloudTrail, see the [AWS CloudTrail User Guide](http://docs.aws.amazon.com/awscloudtrail/latest/userguide/)\.
 
-### Configuring CloudTrail Event Logging<a name="USER_Auditing.CloudTrail"></a>
+### AWS DMS Information in CloudTrail<a name="service-name-info-in-cloudtrail"></a>
 
-CloudTrail creates audit trails in each region separately and stores them in an S3 bucket\. You can configure CloudTrail to use Amazon Simple Notification Service \(Amazon SNS\) to notify you when a log file is created, but that is optional\. CloudTrail will notify you frequently, so we recommend that you use Amazon SNS with an Amazon Simple Queue Service \(Amazon SQS\) queue and handle notifications programmatically\.
+CloudTrail is enabled on your AWS account when you create the account\. When activity occurs in AWS DMS, that activity is recorded in a CloudTrail event along with other AWS service events in **Event history**\. You can view, search, and download recent events in your AWS account\. For more information, see [Viewing Events with CloudTrail Event History](http://docs.aws.amazon.com/awscloudtrail/latest/userguide/view-cloudtrail-events.html)\. 
 
-You can enable CloudTrail using the AWS Management Console, CLI, or API\. When you enable CloudTrail logging, you can have the CloudTrail service create an S3 bucket for you to store your log files\. For details, see [Creating and Updating Your Trail](http://docs.aws.amazon.com/awscloudtrail/latest/userguide/setupyourtrail.html) in the *AWS CloudTrail User Guide*\. The *AWS CloudTrail User Guide* also contains information on how to [aggregate CloudTrail logs from multiple regions into a single S3 bucket](http://docs.aws.amazon.com/awscloudtrail/latest/userguide/aggregatinglogs.html)\.
+For an ongoing record of events in your AWS account, including events for AWS DMS, create a trail\. A trail enables CloudTrail to deliver log files to an Amazon S3 bucket\. By default, when you create a trail in the console, the trail applies to all regions\. The trail logs events from all regions in the AWS partition and delivers the log files to the Amazon S3 bucket that you specify\. Additionally, you can configure other AWS services to further analyze and act upon the event data collected in CloudTrail logs\. For more information, see: 
++ [Overview for Creating a Trail](http://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-create-and-update-a-trail.html)
++ [CloudTrail Supported Services and Integrations](http://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-aws-service-specific-topics.html#cloudtrail-aws-service-specific-topics-integrations)
++ [Configuring Amazon SNS Notifications for CloudTrail](http://docs.aws.amazon.com/awscloudtrail/latest/userguide/getting_notifications_top_level.html)
++ [Receiving CloudTrail Log Files from Multiple Regions](http://docs.aws.amazon.com/awscloudtrail/latest/userguide/receive-cloudtrail-log-files-from-multiple-regions.html) and [Receiving CloudTrail Log Files from Multiple Accounts](http://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-receive-logs-from-multiple-accounts.html)
 
-There is no cost to use the CloudTrail service\. However, standard rates for S3 usage apply, and also rates for Amazon SNS usage should you include that option\. For pricing details, see the [S3](http://aws.amazon.com/s3/pricing/) and [Amazon SNS](http://aws.amazon.com/sns/pricing/) pricing pages\.
+All AWS DMS actions are logged by CloudTrail and are documented in the [AWS Database Migration Service API Reference](http://docs.aws.amazon.com/dms/latest/APIReference/)\. For example, calls to the `CreateReplicationInstance`, `TestConnection` and `StartReplicationTask` actions generate entries in the CloudTrail log files\. 
 
-### AWS Database Migration Service Event Entries in CloudTrail Log Files<a name="USER_Auditing.CloudTrail_Events"></a>
+Every event or log entry contains information about who generated the request\. The identity information helps you determine the following: 
++ Whether the request was made with root or IAM user credentials\.
++ Whether the request was made with temporary security credentials for a role or federated user\.
++ Whether the request was made by another AWS service\.
 
-CloudTrail log files contain event information formatted using JSON\. An event record represents a single AWS API call and includes information about the requested action, the user that requested the action, the date and time of the request, and so on\. 
+For more information, see the [CloudTrail userIdentity Element](http://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-event-reference-user-identity.html)\.
 
-CloudTrail log files include events for all AWS API calls for your AWS account, not just calls to the AWS DMS API\. However, you can read the log files and scan for calls to the AWS DMS API using the `eventName` element\.
+### Understanding AWS DMS Log File Entries<a name="understanding-service-name-entries"></a>
 
-For more information about the different elements and values in CloudTrail log files, see [CloudTrail Event Reference](http://docs.aws.amazon.com/awscloudtrail/latest/userguide/eventreference.html) in the *AWS CloudTrail User Guide*\.
+A trail is a configuration that enables delivery of events as log files to an Amazon S3 bucket that you specify\. CloudTrail log files contain one or more log entries\. An event represents a single request from any source and includes information about the requested action, the date and time of the action, request parameters, and so on\. CloudTrail log files are not an ordered stack trace of the public API calls, so they do not appear in any specific order\. 
 
-You might also want to make use of one of the Amazon partner solutions that integrate with CloudTrail to read and analyze your CloudTrail log files\. For options, see the [AWS partners](http://aws.amazon.com/cloudtrail/partners/) page\.
+The following example shows a CloudTrail log entry that demonstrates the `RebootReplicationInstance` action\.
+
+```
+    {
+    "eventVersion": "1.05",
+    "userIdentity": {
+        "type": "AssumedRole",
+        "principalId": "AKIAIOSFODNN7EXAMPLE:johndoe",
+        "arn": "arn:aws:sts::123456789012:assumed-role/admin/johndoe",
+        "accountId": "123456789012",
+        "accessKeyId": "ASIAYFI33SINADOJJEZW",
+        "sessionContext": {
+            "attributes": {
+                "mfaAuthenticated": "false",
+                "creationDate": "2018-08-01T16:42:09Z"
+            },
+            "sessionIssuer": {
+                "type": "Role",
+                "principalId": "AKIAIOSFODNN7EXAMPLE",
+                "arn": "arn:aws:iam::123456789012:role/admin",
+                "accountId": "123456789012",
+                "userName": "admin"
+            }
+        }
+    },
+    "eventTime": "2018-08-02T00:11:44Z",
+    "eventSource": "dms.amazonaws.com",
+    "eventName": "RebootReplicationInstance",
+    "awsRegion": "us-east-1",
+    "sourceIPAddress": "72.21.198.64",
+    "userAgent": "console.amazonaws.com",
+    "requestParameters": {
+        "forceFailover": false,
+        "replicationInstanceArn": "arn:aws:dms:us-east-1:123456789012:rep:EX4MBJ2NMRDL3BMAYJOXUGYPUE"
+    },
+    "responseElements": {
+        "replicationInstance": {
+            "replicationInstanceIdentifier": "replication-instance-1",
+            "replicationInstanceStatus": "rebooting",
+            "allocatedStorage": 50,
+            "replicationInstancePrivateIpAddresses": [
+                "172.31.20.204"
+            ],
+            "instanceCreateTime": "Aug 1, 2018 11:56:21 PM",
+            "autoMinorVersionUpgrade": true,
+            "engineVersion": "2.4.3",
+            "publiclyAccessible": true,
+            "replicationInstanceClass": "dms.t2.medium",
+            "availabilityZone": "us-east-1b",
+            "kmsKeyId": "arn:aws:kms:us-east-1:123456789012:key/f7bc0f8e-1a3a-4ace-9faa-e8494fa3921a",
+            "replicationSubnetGroup": {
+                "vpcId": "vpc-1f6a9c6a",
+                "subnetGroupStatus": "Complete",
+                "replicationSubnetGroupArn": "arn:aws:dms:us-east-1:123456789012:subgrp:EDHRVRBAAAPONQAIYWP4NUW22M",
+                "subnets": [
+                    {
+                        "subnetIdentifier": "subnet-cbfff283",
+                        "subnetAvailabilityZone": {
+                            "name": "us-east-1b"
+                        },
+                        "subnetStatus": "Active"
+                    },
+                    {
+                        "subnetIdentifier": "subnet-d7c825e8",
+                        "subnetAvailabilityZone": {
+                            "name": "us-east-1e"
+                        },
+                        "subnetStatus": "Active"
+                    },
+                    {
+                        "subnetIdentifier": "subnet-6746046b",
+                        "subnetAvailabilityZone": {
+                            "name": "us-east-1f"
+                        },
+                        "subnetStatus": "Active"
+                    },
+                    {
+                        "subnetIdentifier": "subnet-bac383e0",
+                        "subnetAvailabilityZone": {
+                            "name": "us-east-1c"
+                        },
+                        "subnetStatus": "Active"
+                    },
+                    {
+                        "subnetIdentifier": "subnet-42599426",
+                        "subnetAvailabilityZone": {
+                            "name": "us-east-1d"
+                        },
+                        "subnetStatus": "Active"
+                    },
+                    {
+                        "subnetIdentifier": "subnet-da327bf6",
+                        "subnetAvailabilityZone": {
+                            "name": "us-east-1a"
+                        },
+                        "subnetStatus": "Active"
+                    }
+                ],
+                "replicationSubnetGroupIdentifier": "default-vpc-1f6a9c6a",
+                "replicationSubnetGroupDescription": "default group created by console for vpc id vpc-1f6a9c6a"
+            },
+            "replicationInstanceEniId": "eni-0d6db8c7137cb9844",
+            "vpcSecurityGroups": [
+                {
+                    "vpcSecurityGroupId": "sg-f839b688",
+                    "status": "active"
+                }
+            ],
+            "pendingModifiedValues": {},
+            "replicationInstancePublicIpAddresses": [
+                "18.211.48.119"
+            ],
+            "replicationInstancePublicIpAddress": "18.211.48.119",
+            "preferredMaintenanceWindow": "fri:22:44-fri:23:14",
+            "replicationInstanceArn": "arn:aws:dms:us-east-1:123456789012:rep:EX4MBJ2NMRDL3BMAYJOXUGYPUE",
+            "replicationInstanceEniIds": [
+                "eni-0d6db8c7137cb9844"
+            ],
+            "multiAZ": false,
+            "replicationInstancePrivateIpAddress": "172.31.20.204",
+            "patchingPrecedence": 0
+        }
+    },
+    "requestID": "a3c83c11-95e8-11e8-9d08-4b8f2b45bfd5",
+    "eventID": "b3c4adb1-e34b-4744-bdeb-35528062a541",
+    "eventType": "AwsApiCall",
+    "recipientAccountId": "123456789012"
+}
+```

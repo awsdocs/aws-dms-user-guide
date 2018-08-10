@@ -99,7 +99,7 @@ Run the following script to configure the DMS Agent\.
 sudo /opt/amazon/aws-schema-conversion-tool-dms-agent/bin/configure.sh 
 ```
 
-### Step 4: Unlock the AWS Snowball Edge Device<a name="w3ab1c33c17c11"></a>
+### Step 4: Unlock the AWS Snowball Edge Device<a name="w4ab1c33c17c11"></a>
 
 You should run the commands that unlock and provide credentials to the Snowball Edge device from the machine where you installed the DMS Agent\. This way you can be sure that the DMS Agent call connect to the AWS Snowball Edge device\. For more information about unlocking the AWS Snowball Edge device, see [ Unlock the Snowball Edge ](http://docs.aws.amazon.com/snowball/latest/developer-guide/unlockappliance.html)\.
 
