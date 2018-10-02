@@ -186,17 +186,7 @@ For migration tasks that are running when you choose to upgrade the replication 
 
 ### Upgrading the Engine Version of a Replication Instance<a name="CHAP_ReplicationInstance.EngineVersions.Upgrading"></a>
 
-AWS periodically releases new versions of the AWS DMS replication engine software, with new features and performance improvements\. The following is a summary of available AWS DMS engine versions\.
-
-
-****  
-
-| Version | Summary  | 
-| --- | --- | 
-| 2\.4\.x |  [\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_ReplicationInstance.html) | 
-| 2\.3\.x |  [\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_ReplicationInstance.html) | 
-| 2\.2\.x |  [\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_ReplicationInstance.html) | 
-| 1\.9\.x | Cumulative release of AWS DMS replication engine software\. | 
+AWS periodically releases new versions of the AWS DMS replication engine software, with new features and performance improvements\. Check [Release Notes](CHAP_ReleaseNotes) for details.
 
 #### Upgrading the Engine Version Using the Console<a name="Upgrading.Console"></a>
 
