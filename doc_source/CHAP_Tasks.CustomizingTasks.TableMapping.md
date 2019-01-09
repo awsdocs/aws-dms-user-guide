@@ -110,6 +110,8 @@ For table mapping rules that use the transformation rule type, the following val
 
 [\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_Tasks.CustomizingTasks.TableMapping.html)
 
+"valute" => "value"
+
 **Example Rename a Schema**  
 The following example renames a schema from **Test** in your source to **Test1** in your target endpoint:  
 
