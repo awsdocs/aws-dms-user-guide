@@ -38,7 +38,7 @@ SQL Server’s log sequence number \(LSN\) has three parts:
 + Starting offset of a log block
 + Slot number
  An example LSN is as follows: 00000014:00000061:0001   
-To get the start point for a SQL Server migratin task based on your transaction log backup settings, use the fn\_dblog\(\) or fn\_dump\_dblog\(\) function in SQL Server\.   
+To get the start point for a SQL Server migration task based on your transaction log backup settings, use the fn\_dblog\(\) or fn\_dump\_dblog\(\) function in SQL Server\.   
 In order to use CDC native start point with SQL Server, you must create a publication on any table participating in ongoing replication\. For more information about creating a publication, see [ Creating a SQL Server Publication for Ongoing Replication](CHAP_Source.SQLServer.md#CHAP_Source.SQLServer.CDC.Publication)\. AWS DMS creates the publication automatically when you use CDC without native start point\.
 
 **Oracle**  
