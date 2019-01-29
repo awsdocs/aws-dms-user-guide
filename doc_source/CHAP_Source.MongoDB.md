@@ -55,7 +55,7 @@ db.createUser(
 )
 ```
 
-The following code creates a user with minimal privileges on the database to be migrated\.
+The following code creates a user with privileges to do the initial data load from the source database\.
 
 ```
 use <database_to_migrate>
@@ -63,7 +63,19 @@ db.createUser(
 { 
     user: "<dms-user>",
     pwd: "<password>",
-    roles: [ { role: "read", db: "local" }, "read"] 
+    roles: [ { role: "read", db: "<database_to_migrate>" } ] 
+})
+```
+
+If you're also going to use CDC (see the next section), your user must also have access to the `local` database:
+
+```
+use <database_to_migrate>
+db.createUser( 
+{ 
+    user: "<dms-user>",
+    pwd: "<password>",
+    roles: [ { role: "read", db: "local" }, { role: "read", db: "<database_to_migrate>" } ] 
 })
 ```
 
@@ -73,13 +85,9 @@ To use ongoing replication or change data capture \(CDC\) with MongoDB, AWS DMS 
 
 You can use CDC with either the primary or secondary node of a MongoDB replica set as the source endpoint\.
 
+Remember to give your user permissions to access the `local` database that stores the oplog - see the previous section\.
+
 **To convert a standalone instance to a replica set**
-
-1. Using the command line, connect to `mongo`\.
-
-   ```
-   mongo localhost
-   ```
 
 1. Stop the `mongod` service\.
 
@@ -87,13 +95,26 @@ You can use CDC with either the primary or secondary node of a MongoDB replica s
    service mongod stop
    ```
 
-1. Restart `mongod` using the following command:
+1. Restart `mongod` using the following command (or set the appropriate parameter in your `mongodb.conf`):
 
    ```
    mongod --replSet "rs0" --auth -port <port_number>
    ```
 
-1. Test the connection to the replica set using the following commands:
+1. Using the command line, connect to `mongo`\.
+
+   ```
+   mongo localhost
+   ```
+   
+1. In the mongo console initiate the replica set using your host's internal DNS name:
+
+   ```
+   > rs.initiate({ _id: "rs0", members: [ { _id: 0, host: "<internal_DNS_name>:<port_number>"} ] })
+   ```
+   You should see the mongo command prompt change to `PRIMARY` after a few seconds.
+
+1. Test the connection to the replica set using the following command (in versions prior to 3.6 the `host` parameter may need to be formatted differently):
 
    ```
    mongo -u root -p <password> --host rs0/localhost:<port_number> 
