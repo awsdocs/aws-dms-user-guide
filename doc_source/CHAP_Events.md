@@ -64,6 +64,7 @@ The following table shows the possible categories and events for the replication
 | --- | --- | --- | 
 |  StateChange  |  DMS\-EVENT\-0069  |  REPLICATION\_TASK\_STARTED – The replication task has started\.   | 
 |  StateChange  |  DMS\-EVENT\-0077  |  REPLICATION\_TASK\_STOPPED – The replication task has stopped\.   | 
+|  StateChange  |  DMS\-EVENT\-0079  |  STOPPED\_AFTER\_FULL\_LOAD – The replication task has stopped after full load\.   | 
 |  Failure  |  DMS\-EVENT\-0078  |  REPLICATION\_TASK\_FAILED – A replication task has failed\.   | 
 |  Deletion  |  DMS\-EVENT\-0073  |  REPLICATION\_TASK\_DELETED – The replication task has been deleted\.   | 
 |  Creation  |  DMS\-EVENT\-0074  |  REPLICATION\_TASK\_CREATED – The replication task has been created\.  | 
