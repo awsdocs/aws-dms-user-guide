@@ -80,12 +80,12 @@ The following table shows source MySQL data types and whether they can be migrat
 
 Before you begin to work with a MySQL database as a source for AWS DMS, make sure that you have the following prerequisites\. These prerequisites apply to either self\-managed or Amazon\-managed sources\.
 
-You must have an account for AWS DMS that has the Replication Admin role\. The role needs the following privileges:
+You must have an account for AWS DMS that has the **Replication Admin role**\. The role needs the following privileges:
 + **REPLICATION CLIENT** – This privilege is required for change data capture \(CDC\) tasks only\. In other words, full\-load\-only tasks don't require this privilege\.
 + **REPLICATION SLAVE** – This privilege is required for change data capture \(CDC\) tasks only\. In other words, full\-load\-only tasks don't require this privilege\.
 + **SUPER** – This privilege is required only in MySQL versions before 5\.6\.6\.
 
-The AWS DMS user must also have SELECT privileges for the source tables designated for replication\.
+The AWS DMS user must also have **SELECT privileges for the source tables** designated for replication\.
 
 ## Using a Self\-Managed MySQL\-Compatible Database as a Source for AWS DMS<a name="CHAP_Source.MySQL.CustomerManaged"></a>
 
