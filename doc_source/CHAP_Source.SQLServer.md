@@ -155,7 +155,7 @@ The steps in this procedure apply only for tables with primary keys\. You still 
 
 ### Creating a SQL Server Publication for Ongoing Replication<a name="CHAP_Source.SQLServer.CDC.Publication"></a>
 
-To use CDC with SQL Server, you must create a publication for each table that is participating in ongoing replication\.
+To use CDC with SQL Server, you must create a publication containing an article for each table that is participating in ongoing replication\.
 
 **To create a publication for SQL Server ongoing replication**
 
@@ -269,23 +269,17 @@ To use AlwaysOn Availability Groups as a source in AWS DMS, do the following:
 
 When you start an AWS DMS task for the first time, it might take longer than usual to start because the creation of the table articles is being duplicated by the Availability Groups Server\. 
 
-## Configuring a SQL Server Database as a Replication Source for AWS DMS<a name="CHAP_Source.SQLServer.Configuration"></a>
-
-You can configure a SQL Server database as a replication source for AWS DMS \(AWS DMS\)\. For the most complete replication of changes, we recommend that you use the Enterprise, Standard, or Developer edition of SQL Server\. One of these versions is required because these are the only versions that include MS\-Replication\(EE,SE\) and MS\-CDC\(EE,DEV\)\. The source SQL Server must also be configured for full backups\. In addition, AWS DMS must connect with a user \(a SQL Server instance login\) that has the sysadmin fixed server role on the SQL Server database you are connecting to\. 
-
-Following, you can find information about configuring SQL Server as a replication source for AWS DMS\.
-
 ## Extra Connection Attributes When Using SQL Server as a Source for AWS DMS<a name="CHAP_Source.SQLServer.ConnectionAttrib"></a>
 
-You can use extra connection attributes to configure your SQL Server source\. You specify these settings when you create the source endpoint\. Multiple extra connection attribute settings should be separated by a semicolon\.
+You can use extra connection attributes to configure your SQL Server source\. You specify these settings when you create the source endpoint\. Multiple extra connection attribute settings should be separated by a semicolon\. No white space should exist between the attribute and the value.
 
 The following table shows the extra connection attributes you can use with SQL Server as a source:
 
 
 | Name | Description | 
 | --- | --- | 
-| `safeguardPolicy` | For optimal performance, AWS DMS tries to capture all unread changes from the active transaction log \(TLOG\)\. However, sometimes due to truncation, the active TLOG might not contain all of the unread changes\. When this occurs, AWS DMS accesses the backup log to capture the missing changes\. To minimize the need to access the backup log, AWS DMS prevents truncation using one of the following methods:  1\. **Start transactions in the database:** This is the default method\. When this method is used, AWS DMS prevents TLOG truncation by mimicking a transaction in the database\. As long as such a transaction is open, changes that appear after the transaction started aren't truncated\. If you need Microsoft Replication to be enabled in your database, then you must choose this method\.  2\.** Exclusively use sp\_repldone within a single task:** When this method is used, AWS DMS reads the changes and then uses sp\_repldone to mark the TLOG transactions as ready for truncation\. Although this method does not involve any transactional activities, it can only be used when Microsoft Replication is not running\. Also, when using this method, only one AWS DMS task can access the database at any given time\. Therefore, if you need to run parallel AWS DMS tasks against the same database, use the default method\.  Default value: `RELY_ON_SQL_SERVER_REPLICATION_AGENT`  Valid values: \{`EXCLUSIVE_AUTOMATIC_TRUNCATION`, `RELY_ON_SQL_SERVER_REPLICATION_AGENT`\}  Example: `safeguardPolicy= RELY_ON_SQL_SERVER_REPLICATION_AGENT ` | 
-| `readBackupOnly` | When this parameter is set to `Y`, AWS DMS only reads changes from transaction log backups and does not read from the active transaction log file during ongoing replication\. Setting this parameter to `Y` can add up some source latency to ongoing replication but it lets you control active transaction log file growth during full load and ongoing replication tasks\.  Valid values: `N` or `Y`\. The default is `N`\.  Example: `readBackupOnly=Y`  | 
+| `safeguardPolicy` | For optimal performance, AWS DMS tries to capture all unread changes from the active transaction log \(TLOG\)\. However, sometimes due to truncation, the active TLOG might not contain all of the unread changes\. When this occurs, AWS DMS accesses the backup log to capture the missing changes\. To minimize the need to access the backup log, AWS DMS prevents truncation using one of the following methods:  1\. **Start transactions in the database:** This is the default method\. When this method is used, AWS DMS prevents TLOG truncation by mimicking a transaction in the database\. As long as such a transaction is open, changes that appear after the transaction started aren't truncated\. If you need Microsoft Replication to be enabled in your database, then you must choose this method\.  2\.** Exclusively use sp\_repldone within a single task:** When this method is used, AWS DMS reads the changes and then uses sp\_repldone to mark the TLOG transactions as ready for truncation\. Although this method does not involve any transactional activities, it can only be used when Microsoft Replication is not running\. Also, when using this method, only one AWS DMS task can access the database at any given time\. Therefore, if you need to run parallel AWS DMS tasks against the same database, use the default method\.  Default value: `RELY_ON_SQL_SERVER_REPLICATION_AGENT`  Valid values: \{`EXCLUSIVE_AUTOMATIC_TRUNCATION`, `RELY_ON_SQL_SERVER_REPLICATION_AGENT`\}  Example: `safeguardPolicy=RELY_ON_SQL_SERVER_REPLICATION_AGENT ` | 
+| `readBackupOnly` | When this parameter is set to `Y`, AWS DMS only reads changes from transaction log backups and does not read from the active transaction log file during ongoing replication\. Setting this parameter to `Y` can add up some source latency to ongoing replication but it lets you control active transaction log file growth during full load and ongoing replication tasks\.  Valid values: `N` or `Y`\. The default is `N`\.  Example: `readBackupOnly=Y` (Ensure no extra white space characters, otherwise DMS will revert to capturing changes from the active transaction log\.) | 
 
 ## Source Data Types for SQL Server<a name="CHAP_Source.SQLServer.DataTypes"></a>
 
