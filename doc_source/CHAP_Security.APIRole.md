@@ -142,7 +142,7 @@ If you use Amazon Redshift as your target database, you must create the IAM role
 1. Create a JSON file with the IAM policy following\. Name the JSON file `dmsAssumeRolePolicyDocument3.json`\. 
 
    ```
-    {
+   {
      "Version": "2012-10-17",
      "Statement": [
        {
