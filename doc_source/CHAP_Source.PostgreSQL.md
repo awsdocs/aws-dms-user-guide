@@ -310,7 +310,7 @@ CREATE OR REPLACE FUNCTION fnRenames.pg_create_logical_replication_slot(slot_nam
    temporary BOOLEAN DEFAULT FALSE, OUT slot_name name, OUT xlog_position pg_lsn) RETURNS RECORD AS $$ 
    SELECT slot_name::NAME, lsn::pg_lsn FROM pg_catalog.pg_create_logical_replication_slot(slot_name, plugin, 
    temporary); $$ LANGUAGE SQL;
-ALTER <user name> USER SET search_path = fnRenames, pg_catalog, "$user", public;
+ALTER USER <user name> SET search_path = fnRenames, pg_catalog, "$user", public;
 
 -- DROP SCHEMA fnRenames CASCADE;
 -- ALTER USER PG_User SET search_path TO DEFAULT;
