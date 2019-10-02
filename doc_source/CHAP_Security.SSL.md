@@ -215,7 +215,7 @@ To use a self\-signed certificate for Oracle SSL, do the following\.
 1. Put 'dms' as the common name\.
 
    ```
-   openssl req -new -key nonoracle_wallet.pem -out certrequest.csr
+   openssl req -new -key nonoracle_wallet.pem -out self-signed-oracle.csr
    ```
 
 1. Get the certificate signature\.
@@ -235,16 +235,16 @@ To use a self\-signed certificate for Oracle SSL, do the following\.
 1. If the output from step 12 is `md5WithRSAEncryption`, then run the following code\.
 
    ```
-   openssl x509 -req -in certrequest.csr -CA self-rootCA.pem 
+   openssl x509 -req -in self-signed-oracle.csr -CA self-rootCA.pem 
    -CAkey self-rootCA.key -CAcreateserial 
-   -out certrequest.crt -days 365 -sha256
+   -out self-signed-oracle.crt -days 365 -md5
    ```
 
 1. Add the certificate to the wallet\.
 
    ```
    orapki wallet add -wallet $ORACLE_HOME/self_signed_ssl_wallet -user_cert 
-   -cert certrequest.crt -pwd <password>
+   -cert self-signed-oracle.crt -pwd <password>
    ```
 
 1. Configure *sqlnet\.ora* file \($ORACLE\_HOME/network/admin/sqlnet\.ora\)\.
