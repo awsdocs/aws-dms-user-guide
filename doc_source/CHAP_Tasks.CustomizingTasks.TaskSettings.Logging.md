@@ -25,24 +25,29 @@ For example, the following JSON section gives task settings for logging for all 
 
 ```
 …
-  "Logging": {
-    "EnableLogging": true,
-    "LogComponents": [{
-        "Id": "SOURCE_UNLOAD",
-        "Severity": "LOGGER_SEVERITY_DEFAULT"
-    },{
-        "Id": "SOURCE_CAPTURE",
-        "Severity": "LOGGER_SEVERITY_DEFAULT"
-    },{
-        "Id": "TARGET_LOAD",
-        "Severity": "LOGGER_SEVERITY_DEFAULT"
-    },{
-        "Id": "TARGET_APPLY",
-        "Severity": "LOGGER_SEVERITY_INFO"
-    },{
-        "Id": "TASK_MANAGER",
-        "Severity": "LOGGER_SEVERITY_DEBUG"
-    }]
-  }, 
+"Logging": {
+  "EnableLogging": True,
+  "LogComponents": [{
+      "Id": "SOURCE_UNLOAD",
+      "Severity": "LOGGER_SEVERITY_ERROR"
+    },
+    {
+      "Id": "TARGET_LOAD",
+      "Severity": "LOGGER_SEVERITY_ERROR"
+    },
+    {
+      "Id": "SOURCE_CAPTURE",
+      "Severity": "LOGGER_SEVERITY_ERROR"
+    },
+    {
+      "Id": "TARGET_APPLY",
+      "Severity": "LOGGER_SEVERITY_ERROR"
+    },
+    {
+      "Id": "TASK_MANAGER",
+      "Severity": "LOGGER_SEVERITY_ERROR"
+    }
+  ]
+},
 …
 ```
