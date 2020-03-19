@@ -142,7 +142,7 @@ To migrate this information to DynamoDB, you create rules to map the data into a
     },
     {
       "rule-type": "object-mapping",
-      "rule-id": "1",
+      "rule-id": "2",
       "rule-name": "TransformToDDB",
       "rule-action": "map-record-to-record",
       "object-locator": {
