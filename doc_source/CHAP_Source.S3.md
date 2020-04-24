@@ -116,7 +116,7 @@ For a column of the NUMERIC type, you need to specify the precision and scale\. 
     {
         "ColumnName": "HourlyRate",
         "ColumnType": "NUMERIC",
-        "ColumnPrecision": "5"
+        "ColumnPrecision": "5",
         "ColumnScale": "2"
     }
 ...
