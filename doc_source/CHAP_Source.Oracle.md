@@ -217,6 +217,8 @@ An Amazon\-managed database is a database that is on an Amazon service such as A
 
 To grant privileges on Oracle databases on Amazon RDS, use the stored procedure `rdsadmin.rdsadmin_util.grant_sys_object`\. For more information, see [Granting SELECT or EXECUTE privileges to SYS Objects](http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Appendix.Oracle.CommonDBATasks.html#Appendix.Oracle.CommonDBATasks.TransferPrivileges)\.
 
+In Oracle 12c granting permissions were modified for security purposes. As a result, GRANT SELECT for some objects does not work. If you encounter an ORA-01031: 'insufficient privileges' error while running any of the GRANT statements below, try GRANT READ instead. 
+
 Grant the following to the AWS DMS user account used to access the source Oracle endpoint\.
 +  `GRANT SELECT ANY TABLE to <dms_user>;`
 +  `GRANT SELECT on ALL_VIEWS to <dms_user>;`
