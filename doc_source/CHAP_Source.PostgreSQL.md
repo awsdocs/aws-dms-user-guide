@@ -74,7 +74,7 @@ The following table shows source PostgreSQL data types and whether they can be m
 | TEXT | X |  |  |  | 
 | BYTEA | X |  |  |  | 
 | TIMESTAMP | X |  |  |  | 
-| TIMESTAMP\(Z\) |  | X |  |  | 
+| TIMESTAMP\(Z\) | X |  |  |  | 
 | DATE | X |  |  |  | 
 | TIME | X |  |  |  | 
 | TIME \(z\) |  | X |  |  | 
@@ -126,7 +126,7 @@ The only security requirement when using PostgreSQL as a source is that the user
 
 The following limitations apply when using PostgreSQL as a source for AWS DMS:
 + A captured table must have a primary key\. If a table doesn't have a primary key, AWS DMS ignores DELETE and UPDATE record operations for that table\.
-+ Timestamp with a time zone type column is not supported\.
++ ~~Timestamp with a time zone type column is not supported\.~~ Supported since version AWS DMS 3.4.2
 + AWS DMS ignores an attempt to update a primary key segment\. In these cases, the target identifies the update as one that didn't update any rows\. However, because the results of updating a primary key in PostgreSQL are unpredictable, no records are written to the exceptions table\.
 + AWS DMS doesn't support the **Start Process Changes from Timestamp** run option\.
 + AWS DMS supports full load and change processing on Amazon RDS for PostgreSQL\. For information on how to prepare a PostgreSQL DB instance and to set it up for using CDC, see [Setting Up an Amazon RDS PostgreSQL DB Instance as a Source](#CHAP_Source.PostgreSQL.RDSPostgreSQL)\.
@@ -354,7 +354,7 @@ For additional information about AWS DMS data types, see [Data Types for AWS Dat
 |  BYTEA  |  BLOB  | 
 |  TIMESTAMP  |  TIMESTAMP  | 
 |  TIMESTAMP \(z\)  |  TIMESTAMP  | 
-|  TIMESTAMP with time zone  |  Not supported  | 
+|  TIMESTAMP with time zone  |  TIMESTAMPTZ  | 
 |  DATE  |  DATE  | 
 |  TIME  |  TIME  | 
 |  TIME \(z\)  |  TIME  | 
