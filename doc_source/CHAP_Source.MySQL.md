@@ -220,6 +220,7 @@ For additional information about AWS DMS data types, see [Data Types for AWS Dat
 
 **Note**  
 If the DATETIME and TIMESTAMP data types are specified with a "zero" value \(that is, 0000\-00\-00\), make sure that the target database in the replication task supports "zero" values for the DATETIME and TIMESTAMP data types\. Otherwise, these values are recorded as null on the target\.
+If the DATETIME data type is specified with a length value greater than 0 \(that is, 2020\-01\-01\ 00\:00\:00\.000\), the scale length will not persist to the target endpoint, even if the target supports the length value. This will result in appropriate rounding on DATETIME values \(that is, 2020\-01\-01\ 00\:00\:00\).
 
 The following MySQL data types are supported in full load only\.
 
