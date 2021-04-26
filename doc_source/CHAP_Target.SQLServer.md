@@ -1,46 +1,45 @@
-# Using a Microsoft SQL Server Database as a Target for AWS Database Migration Service<a name="CHAP_Target.SQLServer"></a>
+# Using a Microsoft SQL Server database as a target for AWS Database Migration Service<a name="CHAP_Target.SQLServer"></a>
 
 You can migrate data to Microsoft SQL Server databases using AWS DMS\. With an SQL Server database as a target, you can migrate data from either another SQL Server database or one of the other supported databases\.
 
-For on\-premises and Amazon EC2 instance databases, AWS DMS supports as a target SQL Server versions 2005, 2008, 2008R2, 2012, 2014, and 2016, for the Enterprise, Standard, Workgroup, and Developer editions\. The Web and Express editions are not supported\.
+For on\-premises and Amazon EC2 instance databases, AWS DMS supports as a target SQL Server versions 2005, 2008, 2008R2, 2012, 2014, 2016, 2017, and 2019\. The Enterprise, Standard, Workgroup, Developer, and Web editions are supported by AWS DMS\.
 
-For Amazon RDS instance databases, AWS DMS supports as a target SQL Server versions 2008R2, 2012, 2014, and 2016, for the Enterprise, Standard, Workgroup, and Developer editions are supported\. The Web and Express editions are not supported\.
+For Amazon RDS instance databases, AWS DMS supports as a target SQL Server versions 2008R2, 2012, 2014, 2016, 2017, and 2019\. The Enterprise, Standard, Workgroup, Developer, and Web editions are supported by AWS DMS\.
+
+**Note**  
+Support for Microsoft SQL Server version 2019 as a target is available in AWS DMS versions 3\.3\.2 and later\.
 
 For additional details on working with AWS DMS and SQL Server target databases, see the following\.
 
-**Topics**
-+ [Limitations on Using SQL Server as a Target for AWS Database Migration Service](#CHAP_Target.SQLServer.Limitations)
-+ [Security Requirements When Using SQL Server as a Target for AWS Database Migration Service](#CHAP_Target.SQLServer.Security)
-+ [Extra Connection Attributes When Using SQLServer as a Target for AWS DMS](#CHAP_Target.SQLServer.ConnectionAttrib)
-+ [Target Data Types for Microsoft SQL Server](#CHAP_Target.SQLServer.DataTypes)
-
-## Limitations on Using SQL Server as a Target for AWS Database Migration Service<a name="CHAP_Target.SQLServer.Limitations"></a>
+## Limitations on using SQL Server as a target for AWS Database Migration Service<a name="CHAP_Target.SQLServer.Limitations"></a>
 
 The following limitations apply when using a SQL Server database as a target for AWS DMS:
-+ When you manually create a SQL Server target table with a computed column, full load replication is not supported when using the BCP bulk\-copy utility\. To use full load replication, disable the **Use BCP for loading tables** option in the console's **Advanced** tab\. For more information on working with BCP, see the [Microsoft SQL Server documentation](https://docs.microsoft.com/en-us/sql/relational-databases/import-export/import-and-export-bulk-data-by-using-the-bcp-utility-sql-server)\.
++ When you manually create a SQL Server target table with a computed column, full load replication is not supported when using the BCP bulk\-copy utility\. To use full load replication, disable the **Use BCP for loading tables** option on the **Advanced** tab on the AWS Management Console\. For more information on working with BCP, see the [Microsoft SQL Server documentation](https://docs.microsoft.com/en-us/sql/relational-databases/import-export/import-and-export-bulk-data-by-using-the-bcp-utility-sql-server)\.
 + When replicating tables with SQL Server spatial data types \(GEOMETRY and GEOGRAPHY\), AWS DMS replaces any spatial reference identifier \(SRID\) that you might have inserted with the default SRID\. The default SRID is 0 for GEOMETRY and 4326 for GEOGRAPHY\.
-+ Temporal tables are not supported\. Migrating temporal tables may work with a replication\-only task in transnational apply mode if those tables are manually created on the target\.
++ Temporal tables are not supported\. Migrating temporal tables may work with a replication\-only task in transactional apply mode if those tables are manually created on the target\.
++ Currently, `boolean` data types in a PostgreSQL source are migrated to a SQLServer target as the `bit` data type with inconsistent values\. As a workaround, precreate the table with a `VARCHAR(1)` data type for the column \(or let AWS DMS create the table\)\. Then have downstream processing treat an "F" as False and a "T" as True\.
++ DMS doesn't support bring your own license \(BYOL\) for Microsoft SQL Server\. For more information, see [Amazon Web Services and Microsoft, Frequently Asked Questions](https://aws.amazon.com/windows/faq/)\.
 
-## Security Requirements When Using SQL Server as a Target for AWS Database Migration Service<a name="CHAP_Target.SQLServer.Security"></a>
+## Security requirements when using SQL Server as a target for AWS Database Migration Service<a name="CHAP_Target.SQLServer.Security"></a>
 
-The following describes the security requirements for using AWS DMS with a Microsoft SQL Server target\.
-+ AWS DMS user account must have at least the `db_owner` user role on the Microsoft SQL Server database you are connecting to\.
-+ A Microsoft SQL Server system administrator must provide this permission to all AWS DMS user accounts\.
+The following describes the security requirements for using AWS DMS with a Microsoft SQL Server target:
++ The AWS DMS user account must have at least the `db_owner` user role on the SQL Server database that you are connecting to\.
++ A SQL Server system administrator must provide this permission to all AWS DMS user accounts\.
 
-## Extra Connection Attributes When Using SQLServer as a Target for AWS DMS<a name="CHAP_Target.SQLServer.ConnectionAttrib"></a>
+## Extra connection attributes when using SQL Server as a target for AWS DMS<a name="CHAP_Target.SQLServer.ConnectionAttrib"></a>
 
-You can use extra connection attributes to configure your SQL Server target\. You specify these settings when you create the target endpoint\. Multiple extra connection attribute settings should be separated by a semicolon\.
+You can use extra connection attributes to configure your SQL Server target\. You specify these settings when you create the target endpoint\. If you have multiple connection attribute settings, separate them from each other by semicolons with no additional white space\.
 
 The following table shows the extra connection attributes that you can use when SQL Server is the target\.
 
 [\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_Target.SQLServer.html)
 
-## Target Data Types for Microsoft SQL Server<a name="CHAP_Target.SQLServer.DataTypes"></a>
+## Target data types for Microsoft SQL Server<a name="CHAP_Target.SQLServer.DataTypes"></a>
 
-The following table shows the Microsoft SQL Server target data types that are supported when using AWS DMS and the default mapping from AWS DMS data types\. For additional information about AWS DMS data types, see [Data Types for AWS Database Migration Service](CHAP_Reference.DataTypes.md)\.
+The following table shows the Microsoft SQL Server target data types that are supported when using AWS DMS and the default mapping from AWS DMS data types\. For additional information about AWS DMS data types, see [Data types for AWS Database Migration Service](CHAP_Reference.DataTypes.md)\.
 
 
-|  AWS DMS Data Type  |  SQL Server Data Type  | 
+|  AWS DMS data type  |  SQL Server data type  | 
 | --- | --- | 
 |  BOOLEAN  |  TINYINT  | 
 |  BYTES  |  VARBINARY\(length\)  | 
@@ -51,7 +50,7 @@ The following table shows the Microsoft SQL Server target data types that are su
 |  INT2  |  SMALLINT  | 
 |  INT4  | INT | 
 |  INT8  |  BIGINT  | 
-|  NUMERIC  |  NUMBER \(p,s\)  | 
+|  NUMERIC  |  NUMERIC \(p,s\)  | 
 |  REAL4  |  REAL  | 
 |  REAL8  | FLOAT | 
 |  STRING  |  If the column is a date or time column, then do the following:  [\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_Target.SQLServer.html) If the column is not a date or time column, use VARCHAR \(length\)\.  | 
@@ -61,5 +60,5 @@ The following table shows the Microsoft SQL Server target data types that are su
 |  UINT8  |  BIGINT  | 
 |  WSTRING  |  NVARCHAR \(length\)  | 
 |  BLOB  |  VARBINARY\(max\) IMAGE To use this data type with AWS DMS, you must enable the use of BLOBs for a specific task\. AWS DMS supports BLOB data types only in tables that include a primary key\.  | 
-|  CLOB  |  VARCHAR\(max\) To use this data type with AWS DMS, you must enable the use of CLOBs for a specific task\. During CDC, AWS DMS supports CLOB data types only in tables that include a primary key\.  | 
+|  CLOB  |  VARCHAR\(max\) To use this data type with AWS DMS, you must enable the use of CLOBs for a specific task\. During change data capture \(CDC\), AWS DMS supports CLOB data types only in tables that include a primary key\.  | 
 |  NCLOB  |  NVARCHAR\(max\) To use this data type with AWS DMS, you must enable the use of NCLOBs for a specific task\. During CDC, AWS DMS supports NCLOB data types only in tables that include a primary key\.  | 

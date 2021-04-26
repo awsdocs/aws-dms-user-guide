@@ -1,14 +1,14 @@
-# Data Types for AWS Database Migration Service<a name="CHAP_Reference.DataTypes"></a>
+# Data types for AWS Database Migration Service<a name="CHAP_Reference.DataTypes"></a>
 
-AWS Database Migration Service uses built\-in data types to migrate data from one database engine type to a different database engine type\. The following table shows the built\-in data types and their descriptions\.
+AWS Database Migration Service uses built\-in data types to migrate data from a source database engine type to a target database engine type\. The following table shows the built\-in data types and their descriptions\.
 
 
-|  AWS DMS Data Types  |  Description  | 
+|  AWS DMS data types  |  Description  | 
 | --- | --- | 
 |  STRING  |  A character string\.  | 
 |  WSTRING  |  A double\-byte character string\.  | 
 |  BOOLEAN  |  A Boolean value\.  | 
-|  BYTES  |  A binary data value\.  | 
+|  BYTE  |  A binary data value\.  | 
 |  DATE  |  A date value: year, month, day\.  | 
 |  TIME  |  A time value: hour, minutes, seconds\.  | 
 |  DATETIME  |  A timestamp value: year, month, day, hour, minute, second, fractional seconds\. The fractional seconds have a maximum scale of 9 digits\.  | 
@@ -26,3 +26,6 @@ AWS Database Migration Service uses built\-in data types to migrate data from on
 |  BLOB  |   Binary large object\. This data type can be used only with Oracle endpoints\.  | 
 |  CLOB  |  Character large object\.    | 
 |  NCLOB  |  Native character large object\.    | 
+
+**Note**  
+AWS DMS can't migrate any LOB data type to an Apache Kafka endpoint\.

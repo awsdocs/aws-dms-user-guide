@@ -1,111 +1,168 @@
-# Troubleshooting Migration Tasks in AWS Database Migration Service<a name="CHAP_Troubleshooting"></a>
+# Troubleshooting migration tasks in AWS Database Migration Service<a name="CHAP_Troubleshooting"></a>
 
-The following sections provide information on troubleshooting issues with AWS Database Migration Service \(AWS DMS\)\. 
+Following, you can find topics about troubleshooting issues with AWS Database Migration Service \(AWS DMS\)\. These topics can help you to resolve common issues using both AWS DMS and selected endpoint databases\. 
+
+If you have opened an AWS Support case, your support engineer might identify a potential issue with one of your endpoint database configurations\. Your engineer might also ask you to run a support script to return diagnostic information about your database\. For details about downloading, running, and uploading the diagnostic information from this type of support script, see [Working with diagnostic support scripts in AWS DMS](CHAP_SupportScripts.md)\.
 
 **Topics**
-+ [Slow Running Migration Tasks](#CHAP_Troubleshooting.General.SlowTask)
-+ [Task Status Bar Not Moving](#CHAP_Troubleshooting.General.StatusBar)
-+ [Missing Foreign Keys and Secondary Indexes](#CHAP_Troubleshooting.General.MissingSecondaryObjs)
-+ [Amazon RDS Connection Issues](#CHAP_Troubleshooting.General.RDSConnection)
-+ [Networking Issues](#CHAP_Troubleshooting.General.Network)
-+ [CDC Stuck After Full Load](#CHAP_Troubleshooting.General.CDCStuck)
-+ [Primary Key Violation Errors When Restarting a Task](#CHAP_Troubleshooting.General.PKErrors)
-+ [Initial Load of Schema Fails](#CHAP_Troubleshooting.General.SchemaLoadFail)
-+ [Tasks Failing With Unknown Error](#CHAP_Troubleshooting.General.TasksFail)
-+ [Task Restart Loads Tables From the Beginning](#CHAP_Troubleshooting.General.RestartLoad)
-+ [Number of Tables Per Task](#CHAP_Troubleshooting.General.TableLimit)
-+ [Troubleshooting Oracle Specific Issues](#CHAP_Troubleshooting.Oracle)
-+ [Troubleshooting MySQL Specific Issues](#CHAP_Troubleshooting.MySQL)
-+ [Troubleshooting PostgreSQL Specific Issues](#CHAP_Troubleshooting.PostgreSQL)
-+ [Troubleshooting Microsoft SQL Server Specific Issues](#CHAP_Troubleshooting.SQLServer)
-+ [Troubleshooting Amazon Redshift Specific Issues](#CHAP_Troubleshooting.Redshift)
-+ [Troubleshooting Amazon Aurora MySQL Specific Issues](#CHAP_Troubleshooting.Aurora)
++ [Migration tasks run slowly](#CHAP_Troubleshooting.General.SlowTask)
++ [Task status bar doesn't move](#CHAP_Troubleshooting.General.StatusBar)
++ [Task completes but nothing was migrated](#CHAP_Troubleshooting.General.NothingMigrated)
++ [Foreign keys and secondary indexes are missing](#CHAP_Troubleshooting.General.MissingSecondaryObjs)
++ [Issues occur with connecting to Amazon RDS](#CHAP_Troubleshooting.General.RDSConnection)
++ [Networking issues occur](#CHAP_Troubleshooting.General.Network)
++ [CDC is stuck after full load](#CHAP_Troubleshooting.General.CDCStuck)
++ [Primary key violation errors occur when you restart a task](#CHAP_Troubleshooting.General.PKErrors)
++ [Initial load of a schema fails](#CHAP_Troubleshooting.General.SchemaLoadFail)
++ [Tasks fail with an unknown error](#CHAP_Troubleshooting.General.TasksFail)
++ [Task restart loads tables from the beginning](#CHAP_Troubleshooting.General.RestartLoad)
++ [Number of tables per task causes issues](#CHAP_Troubleshooting.General.TableLimit)
++ [Tasks fail when a primary key is created on a LOB column](#CHAP_Troubleshooting.General.PKLOBColumn)
++ [Duplicate records occur on a target table without a primary key](#CHAP_Troubleshooting.General.DuplicateRecords)
++ [Source endpoints fall in the reserved IP range](#CHAP_Troubleshooting.General.ReservedIP)
++ [Troubleshooting issues with Oracle](#CHAP_Troubleshooting.Oracle)
++ [Troubleshooting issues with MySQL](#CHAP_Troubleshooting.MySQL)
++ [Troubleshooting issues with PostgreSQL](#CHAP_Troubleshooting.PostgreSQL)
++ [Troubleshooting issues with Microsoft SQL Server](#CHAP_Troubleshooting.SQLServer)
++ [Troubleshooting issues with Amazon Redshift](#CHAP_Troubleshooting.Redshift)
++ [Troubleshooting issues with Amazon Aurora MySQL](#CHAP_Troubleshooting.Aurora)
++ [Working with diagnostic support scripts in AWS DMS](CHAP_SupportScripts.md)
 
-## Slow Running Migration Tasks<a name="CHAP_Troubleshooting.General.SlowTask"></a>
+## Migration tasks run slowly<a name="CHAP_Troubleshooting.General.SlowTask"></a>
 
-Several issues can cause a migration task to run slowly, or cause subsequent tasks to run slower than the initial task\. The most common reason for a migration task running slowly is that there are inadequate resources allocated to the AWS DMS replication instance\. Check your replication instance's use of CPU, memory, swap files, and IOPS to ensure that your instance has enough resources for the tasks you are running on it\. For example, multiple tasks with Amazon Redshift as an endpoint are IO intensive\. You can increase IOPS for your replication instance or split your tasks across multiple replication instances for a more efficient migration\.
+Several issues can cause a migration task to run slowly, or cause subsequent tasks to run slower than the initial task\. 
 
-For more information about determining the size of your replication instance, see [Choosing the Optimum Size for a Replication Instance](CHAP_BestPractices.md#CHAP_BestPractices.SizingReplicationInstance)
+The most common reason for a migration task running slowly is that there are inadequate resources allocated to the AWS DMS replication instance\. To make sure that your instance has enough resources for the tasks you are running on it, check your replication instance's use of CPU, memory, swap files, and IOPS\. For example, multiple tasks with Amazon Redshift as an endpoint are I/O intensive\. You can increase IOPS for your replication instance or split your tasks across multiple replication instances for a more efficient migration\.
+
+For more information about determining the size of your replication instance, see [Choosing the optimum size for a replication instance](CHAP_BestPractices.SizingReplicationInstance.md)\.
 
 You can increase the speed of an initial migration load by doing the following:
-+ If your target is an Amazon RDS DB instance, ensure that Multi\-AZ is not enabled for the target DB instance\.
-+ Turn off any automatic backups or logging on the target database during the load, and turn back on those features once the migration is complete\.
-+ If the feature is available on the target, use Provisioned IOPS\.
-+ If your migration data contains LOBs, ensure that the task is optimized for LOB migration\. See [Target Metadata Task Settings](CHAP_Tasks.CustomizingTasks.TaskSettings.TargetMetadata.md) for more information on optimizing for LOBs\.
++ If your target is an Amazon RDS DB instance, make sure that Multi\-AZ isn't enabled for the target DB instance\.
++ Turn off any automatic backups or logging on the target database during the load, and turn back on those features after your migration is complete\.
++ If the feature is available on your target, use provisioned IOPS\.
++ If your migration data contains LOBs, make sure that the task is optimized for LOB migration\. For more information on optimizing for LOBs, see [Target metadata task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.TargetMetadata.md)\.
 
-## Task Status Bar Not Moving<a name="CHAP_Troubleshooting.General.StatusBar"></a>
+## Task status bar doesn't move<a name="CHAP_Troubleshooting.General.StatusBar"></a>
 
-The task status bar gives an estimation of the task's progress\. The quality of this estimate depends on the quality of the source database’s table statistics; the better the table statistics, the more accurate the estimation\. For a task with only one table that has no estimated rows statistic, we are unable to provide any kind of percentage complete estimate\. In this case, the task state and the indication of rows loaded can be used to confirm that the task is indeed running and making progress\.
+The task status bar gives an estimation of the task's progress\. The quality of this estimate depends on the quality of the source database's table statistics; the better the table statistics, the more accurate the estimation\. 
 
-## Missing Foreign Keys and Secondary Indexes<a name="CHAP_Troubleshooting.General.MissingSecondaryObjs"></a>
+For a task with only one table that has no estimated rows statistic, AWS DMS can't provide any kind of percentage complete estimate\. In this case, use the task state and the indication of rows loaded to confirm that the task is running and making progress\.
 
- AWS DMS creates tables, primary keys, and in some cases unique indexes, but it doesn't create any other objects that are not required to efficiently migrate the data from the source\. For example, it doesn't create secondary indexes, non\-primary key constraints, or data defaults\. 
+## Task completes but nothing was migrated<a name="CHAP_Troubleshooting.General.NothingMigrated"></a>
 
-To migrate secondary objects from your database, use the database's native tools if you are migrating to the same database engine as your source database\. Use the Schema Conversion Tool if you are migrating to a different database engine than that used by your source database to migrate secondary objects\.
+Do the following if nothing was migrated after your task has completed\.
++ Check if the user that created the endpoint has read access to the table you intend to migrate\.
++ Check if the object you want to migrate is a table\. If it is a view, update table mappings and specify the object\-locator as “view” or “all”\. For more information, see [ Specifying table selection and transformations rules from the console](CHAP_Tasks.CustomizingTasks.TableMapping.Console.md)\. 
 
-## Amazon RDS Connection Issues<a name="CHAP_Troubleshooting.General.RDSConnection"></a>
+## Foreign keys and secondary indexes are missing<a name="CHAP_Troubleshooting.General.MissingSecondaryObjs"></a>
 
-There can be several reasons why you are unable to connect to an Amazon RDS DB instance that you set as an endpoint\. These include:
-+ Username and password combination is incorrect\.
+ AWS DMS creates tables, primary keys, and in some cases unique indexes, but it doesn't create any other objects that aren't required to efficiently migrate the data from the source\. For example, it doesn't create secondary indexes, non\-primary key constraints, or data defaults\. 
+
+To migrate secondary objects from your database, use the database's native tools if you are migrating to the same database engine as your source database\. Use the AWS Schema Conversion Tool \(AWS SCT\) if you are migrating to a different database engine than that used by your source database to migrate secondary objects\.
+
+## Issues occur with connecting to Amazon RDS<a name="CHAP_Troubleshooting.General.RDSConnection"></a>
+
+There can be several reasons why you can't connect to an Amazon RDS DB instance that you set as a source or target\. Some items to check follow:
++ Check that the user name and password combination is correct\.
 + Check that the endpoint value shown in the Amazon RDS console for the instance is the same as the endpoint identifier you used to create the AWS DMS endpoint\.
 + Check that the port value shown in the Amazon RDS console for the instance is the same as the port assigned to the AWS DMS endpoint\.
 + Check that the security group assigned to the Amazon RDS DB instance allows connections from the AWS DMS replication instance\.
-+ If the AWS DMS replication instance and the Amazon RDS DB instance are not in the same VPC, check that the DB instance is publicly accessible\.
++ If the AWS DMS replication instance and the Amazon RDS DB instance aren't in the same virtual private cloud \(VPC\), check that the DB instance is publicly accessible\.
 
-### Error Message: Incorrect thread connection string: incorrect thread value 0<a name="CHAP_Troubleshooting.General.RDSConnection.ConnectionString"></a>
+### Error message: Incorrect thread connection string: Incorrect thread value 0<a name="CHAP_Troubleshooting.General.RDSConnection.ConnectionString"></a>
 
-This error can often occur when you are testing the connection to an endpoint\. The error indicates that there is an error in the connection string, such as a space after the host IP address or a bad character was copied into the connection string\.
+This error can often occur when you are testing the connection to an endpoint\. This error indicates that there is an error in the connection string\. An example is a space after the host IP address\. Another is a bad character copied into the connection string\.
 
-## Networking Issues<a name="CHAP_Troubleshooting.General.Network"></a>
+## Networking issues occur<a name="CHAP_Troubleshooting.General.Network"></a>
 
-The most common networking issue involves the VPC security group used by the AWS DMS replication instance\. By default, this security group has rules that allow egress to 0\.0\.0\.0/0 on all ports\. If you modify this security group or use your own security group, egress must, at a minimum, be permitted to the source and target endpoints on the respective database ports\.
+The most common networking issue involves the VPC security group used by the AWS DMS replication instance\. By default, this security group has rules that allow egress to 0\.0\.0\.0/0 on all ports\. In many cases, you modify this security group or use your own security group\. If so, at a minimum, make sure to give egress to the source and target endpoints on their respective database ports\.
 
-Other configuration related issues include:
-+  **Replication instance and both source and target endpoints in the same VPC** — The security group used by the endpoints must allow ingress on the database port from the replication instance\. Ensure that the security group used by the replication instance has ingress to the endpoints, or you can create a rule in the security group used by the endpoints that allows the private IP address of the replication instance access\. 
-+  **Source endpoint is outside the VPC used by the replication instance \(using Internet Gateway\)** — The VPC security group must include routing rules that send traffic not destined for the VPC to the Internet Gateway\. In this configuration, the connection to the endpoint appears to come from the public IP address on the replication instance\. 
-+  **Source endpoint is outside the VPC used by the replication instance \(using NAT Gateway\)** — You can configure a network address translation \(NAT\) gateway using a single Elastic IP Address bound to a single Elastic Network Interface which then receives a NAT identifier \(nat\-\#\#\#\#\#\)\. If the VPC includes a default route to that NAT Gateway instead of the Internet Gateway, the replication instance will instead appear to contact the Database Endpoint using the public IP address of the Internet Gateway\. In this case, the ingress to the Database Endpoint outside the VPC needs to allow ingress from the NAT address instead of the Replication Instance’s public IP Address\. 
+Other configuration\-related issues can include the following:
++  **Replication instance and both source and target endpoints in the same VPC** – The security group used by the endpoints must allow ingress on the database port from the replication instance\. Make sure that the security group used by the replication instance has ingress to the endpoints\. Or you can create a rule in the security group used by the endpoints that allows the private IP address of the replication instance access\. 
++  **Source endpoint is outside the VPC used by the replication instance \(using an internet gateway\)** – The VPC security group must include routing rules that send traffic that isn't for the VPC to the internet gateway\. In this configuration, the connection to the endpoint appears to come from the public IP address on the replication instance\. 
++  **Source endpoint is outside the VPC used by the replication instance \(using a NAT gateway\)** – You can configure a network address translation \(NAT\) gateway using a single elastic IP address bound to a single elastic network interface\. This NAT gateway receives a NAT identifier \(nat\-\#\#\#\#\#\)\. 
 
-## CDC Stuck After Full Load<a name="CHAP_Troubleshooting.General.CDCStuck"></a>
+  In some cases, the VPC includes a default route to that NAT gateway instead of the internet gateway\. In such cases, the replication instance instead appears to contact the database endpoint using the public IP address of the internet gateway\. Here, the ingress to the database endpoint outside the VPC needs to allow ingress from the NAT address instead of the replication instance's public IP address\. 
 
-Slow or stuck replication changes can occur after a full load migration when several AWS DMS settings conflict with each other\. For example, if the **Target table preparation mode** parameter is set to **Do nothing** or **Truncate**, then you have instructed AWS DMS to do no setup on the target tables, including creating primary and unique indexes\. If you haven't created primary or unique keys on the target tables, then AWS DMS must do a full table scan for each update, which can significantly impact performance\.
+For information about using your own on\-premises name server, see [ Using your own on\-premises name server ](CHAP_BestPractices.md#CHAP_BestPractices.Rte53DNSResolver)\. 
 
-## Primary Key Violation Errors When Restarting a Task<a name="CHAP_Troubleshooting.General.PKErrors"></a>
+## CDC is stuck after full load<a name="CHAP_Troubleshooting.General.CDCStuck"></a>
 
-This error can occur when data remains in the target database from a previous migration task\. If the **Target table preparation mode** parameter is set to **Do nothing**, AWS DMS does not do any preparation on the target table, including cleaning up data inserted from a previous task\. In order to restart your task and avoid these errors, you must remove rows inserted into the target tables from the previous running of the task\.
+Slow or stuck replication changes can occur after a full load migration when several AWS DMS settings conflict with each other\. 
 
-## Initial Load of Schema Fails<a name="CHAP_Troubleshooting.General.SchemaLoadFail"></a>
+For example, suppose that the **Target table preparation mode** parameter is set to **Do nothing** or **Truncate**\. In this case, you have instructed AWS DMS to do no setup on the target tables, including creating primary and unique indexes\. If you haven't created primary or unique keys on the target tables, AWS DMS does a full table scan for each update\. This approach can affect performance significantly\.
 
-If your initial load of your schemas fails with an error of `Operation:getSchemaListDetails:errType=, status=0, errMessage=, errDetails=`, then the user account used by AWS DMS to connect to the source endpoint does not have the necessary permissions\. 
+## Primary key violation errors occur when you restart a task<a name="CHAP_Troubleshooting.General.PKErrors"></a>
 
-## Tasks Failing With Unknown Error<a name="CHAP_Troubleshooting.General.TasksFail"></a>
+This error can occur when data remains in the target database from a previous migration task\. If the **Target table preparation mode** option is set to **Do nothing**, AWS DMS doesn't do any preparation on the target table, including cleaning up data inserted from a previous task\. 
 
-The cause of these types of error can be varied, but often we find that the issue involves insufficient resources allocated to the AWS DMS replication instance\. Check the replication instance's use of CPU, memory, swap files, and IOPS to ensure your instance has enough resources to perform the migration\. For more information on monitoring, see [Data Migration Service Metrics](CHAP_Monitoring.md#CHAP_Monitoring.Metrics)\.
+To restart your task and avoid these errors, remove rows inserted into the target tables from the previous running of the task\.
 
-## Task Restart Loads Tables From the Beginning<a name="CHAP_Troubleshooting.General.RestartLoad"></a>
+## Initial load of a schema fails<a name="CHAP_Troubleshooting.General.SchemaLoadFail"></a>
 
- AWS DMS restarts table loading from the beginning when it has not finished the initial load of a table\. When a task is restarted, AWS DMS does not reload tables that completed the initial load but will reload tables from the beginning when the initial load did not complete\.
+In some cases, the initial load of your schemas might fail with an error of `Operation:getSchemaListDetails:errType=, status=0, errMessage=, errDetails=`\. 
 
-## Number of Tables Per Task<a name="CHAP_Troubleshooting.General.TableLimit"></a>
+In such cases, the user account used by AWS DMS to connect to the source endpoint doesn't have the necessary permissions\. 
 
-While there is no set limit on the number of tables per replication task, we have generally found that limiting the number of tables in a task to less than 60,000 is a good rule of thumb\. Resource use can often be a bottleneck when a single task uses more than 60,000 tables\. 
+## Tasks fail with an unknown error<a name="CHAP_Troubleshooting.General.TasksFail"></a>
 
-## Troubleshooting Oracle Specific Issues<a name="CHAP_Troubleshooting.Oracle"></a>
+The cause of unknown types of error can be varied\. However, often we find that the issue involves insufficient resources allocated to the AWS DMS replication instance\. 
 
-The following issues are specific to using AWS DMS with Oracle databases\.
+To make sure that your replication instance has enough resources to perform the migration, check your instance's use of CPU, memory, swap files, and IOPS\. For more information on monitoring, see [AWS Database Migration Service metrics](CHAP_Monitoring.md#CHAP_Monitoring.Metrics)\.
+
+## Task restart loads tables from the beginning<a name="CHAP_Troubleshooting.General.RestartLoad"></a>
+
+ AWS DMS restarts table loading from the beginning when it hasn't finished the initial load of a table\. When a task is restarted, AWS DMS reloads tables from the beginning when the initial load didn't complete\.
+
+## Number of tables per task causes issues<a name="CHAP_Troubleshooting.General.TableLimit"></a>
+
+There is no set limit on the number of tables per replication task\. However, we recommend limiting the number of tables in a task to less than 60,000, as a rule of thumb\. Resource use can often be a bottleneck when a single task uses more than 60,000 tables\. 
+
+## Tasks fail when a primary key is created on a LOB column<a name="CHAP_Troubleshooting.General.PKLOBColumn"></a>
+
+In FULL LOB or LIMITED LOB mode, AWS DMS doesn't support replication of primary keys that are LOB data types\. 
+
+DMS initially migrates a row with a LOB column as null, then later updates the LOB column\. So, when the primary key is created on a LOB column, the initial insert fails since the primary key can't be null\. As a workaround, add another column as primary key and remove the primary key from the LOB column\.
+
+## Duplicate records occur on a target table without a primary key<a name="CHAP_Troubleshooting.General.DuplicateRecords"></a>
+
+Running a full load and CDC task can create duplicate records on target tables that don't have a primary key or unique index\. To avoid duplicating records on target tables during full load and CDC tasks, make sure that target tables have a primary key or unique index\.
+
+## Source endpoints fall in the reserved IP range<a name="CHAP_Troubleshooting.General.ReservedIP"></a>
+
+If an AWS DMS source database uses an IP address within the reserved IP range of 192\.168\.0\.0/24, the source endpoint connection test fails\. The steps following provide a possible workaround:
+
+1. Find one Amazon EC2 instance that isn't in the reserved range that can communicate to the source database at 192\.168\.0\.0/24\.
+
+1. Install a socat proxy and run it\. The following shows an example\.
+
+   ```
+   yum install socat
+                   
+   socat -d -d -lmlocal2 tcp4-listen:database port,bind=0.0.0.0,reuseaddr,fork tcp4:source_database_ip_address:database_port
+   &
+   ```
+
+Use the EC2 instance IP address and the database port given preceding for the AWS DMS endpoint\. Make sure that the endpoint has the security group that allows AWS DMS to talk to it at the database port\.
+
+## Troubleshooting issues with Oracle<a name="CHAP_Troubleshooting.Oracle"></a>
+
+Following, you can learn about troubleshooting issues specific to using AWS DMS with Oracle databases\.
 
 **Topics**
-+ [Pulling Data from Views](#CHAP_Troubleshooting.Oracle.Views)
++ [Pulling data from views](#CHAP_Troubleshooting.Oracle.Views)
 + [Migrating LOBs from Oracle 12c](#CHAP_Troubleshooting.Oracle.12cLOBs)
-+ [Switching Between Oracle LogMiner and Binary Reader](#CHAP_Troubleshooting.Oracle.LogMinerBinaryReader)
-+ [Error: Oracle CDC stopped 122301 Oracle CDC maximum retry counter exceeded\.](#CHAP_Troubleshooting.Oracle.CDCStopped)
-+ [Automatically Add Supplemental Logging to an Oracle Source Endpoint](#CHAP_Troubleshooting.Oracle.AutoSupplLogging)
-+ [LOB Changes not being Captured](#CHAP_Troubleshooting.Oracle.LOBChanges)
-+ [Error: ORA\-12899: value too large for column <column\-name>](#CHAP_Troubleshooting.Oracle.ORA12899)
++ [Switching between Oracle LogMiner and Binary Reader](#CHAP_Troubleshooting.Oracle.LogMinerBinaryReader)
++ [Error: Oracle CDC stopped 122301 oracle CDC maximum retry counter exceeded\.](#CHAP_Troubleshooting.Oracle.CDCStopped)
++ [Automatically add supplemental logging to an Oracle source endpoint](#CHAP_Troubleshooting.Oracle.AutoSupplLogging)
++ [LOB changes aren't being captured](#CHAP_Troubleshooting.Oracle.LOBChanges)
++ [Error: ORA\-12899: Value too large for column *column\-name*](#CHAP_Troubleshooting.Oracle.ORA12899)
 + [NUMBER data type being misinterpreted](#CHAP_Troubleshooting.Oracle.Numbers)
++ [Records missing during full load](#CHAP_Troubleshooting.Oracle.RecordsMissing)
 
-### Pulling Data from Views<a name="CHAP_Troubleshooting.Oracle.Views"></a>
+### Pulling data from views<a name="CHAP_Troubleshooting.Oracle.Views"></a>
 
-You can pull data once from a view; you cannot use it for ongoing replication\. To be able to extract data from views, you must add the following code to the **Extra connection attributes** in the **Advanced** section of the Oracle source endpoint\. Note that when you extract data from a view, the view is shown as a table on the target schema\.
+You can pull data once from a view; you can't use it for ongoing replication\. To be able to extract data from views, you must add the following code to **Extra connection attributes** in the **Advanced** section of the Oracle source endpoint page\. When you extract data from a view, the view is shown as a table on the target schema\.
 
 ```
 exposeViews=true
@@ -113,57 +170,57 @@ exposeViews=true
 
 ### Migrating LOBs from Oracle 12c<a name="CHAP_Troubleshooting.Oracle.12cLOBs"></a>
 
-AWS DMS can use two methods to capture changes to an Oracle database, Binary Reader and Oracle LogMiner\. By default, AWS DMS uses Oracle LogMiner to capture changes\. However, on Oracle 12c, Oracle LogMiner does not support LOB columns\. To capture changes to LOB columns on Oracle 12c, use Binary Reader\.
+AWS DMS can use two methods to capture changes to an Oracle database, Binary Reader and Oracle LogMiner\. By default, AWS DMS uses Oracle LogMiner to capture changes\. However, on Oracle 12c, Oracle LogMiner doesn't support LOB columns\. To capture changes to LOB columns on Oracle 12c, use Binary Reader\.
 
-### Switching Between Oracle LogMiner and Binary Reader<a name="CHAP_Troubleshooting.Oracle.LogMinerBinaryReader"></a>
+### Switching between Oracle LogMiner and Binary Reader<a name="CHAP_Troubleshooting.Oracle.LogMinerBinaryReader"></a>
 
 AWS DMS can use two methods to capture changes to a source Oracle database, Binary Reader and Oracle LogMiner\. Oracle LogMiner is the default\. To switch to using Binary Reader for capturing changes, do the following:
 
-**To use Binary Reader for capturing changes**
+**To use binary reader for capturing changes**
 
-1.  Sign in to the AWS Management Console and select DMS\. 
+1. Sign in to the AWS Management Console and open the AWS DMS console at [https://console\.aws\.amazon\.com/dms/v2/](https://console.aws.amazon.com/dms/v2/)\.
 
-1. Select **Endpoints**\.
+1. Choose **Endpoints**\.
 
-1. Select the Oracle source endpoint that you want to use Binary Reader\.
+1. Choose the Oracle source endpoint that you want to use Binary Reader\.
 
-1. Select **Modify**\.
+1. Choose **Modify**\.
 
-1. Select Advanced, and then add the following code to the Extra connection attributes text box:
+1. Choose **Advanced**, and then add the following code for **Extra connection attributes**\.
 
    ```
    useLogminerReader=N
    ```
 
-1. Use an Oracle developer tool such as SQL\-Plus to grant the following additional privilege to the AWS DMS user account used to connect to the Oracle endpoint:
+1. Use an Oracle developer tool such as SQL\-Plus to grant the following additional privilege to the AWS DMS user account used to connect to the Oracle endpoint\.
 
    ```
    SELECT ON V_$TRANSPORTABLE_PLATFORM
    ```
 
-### Error: Oracle CDC stopped 122301 Oracle CDC maximum retry counter exceeded\.<a name="CHAP_Troubleshooting.Oracle.CDCStopped"></a>
+### Error: Oracle CDC stopped 122301 oracle CDC maximum retry counter exceeded\.<a name="CHAP_Troubleshooting.Oracle.CDCStopped"></a>
 
 This error occurs when the needed Oracle archive logs have been removed from your server before AWS DMS was able to use them to capture changes\. Increase your log retention policies on your database server\. For an Amazon RDS database, run the following procedure to increase log retention\. For example, the following code increases log retention on an Amazon RDS DB instance to 24 hours\.
 
 ```
-Exec rdsadmin.rdsadmin_util.set_configuration(‘archivelog retention hours’,24);
+exec rdsadmin.rdsadmin_util.set_configuration('archivelog retention hours',24);
 ```
 
-### Automatically Add Supplemental Logging to an Oracle Source Endpoint<a name="CHAP_Troubleshooting.Oracle.AutoSupplLogging"></a>
+### Automatically add supplemental logging to an Oracle source endpoint<a name="CHAP_Troubleshooting.Oracle.AutoSupplLogging"></a>
 
 By default, AWS DMS has supplemental logging turned off\. To automatically turn on supplemental logging for a source Oracle endpoint, do the following:
 
-**To add supplemental logging to a source Oracle endpoint**
+**To add supplemental logging to a source oracle endpoint**
 
-1.  Sign in to the AWS Management Console and select **DMS**\. 
+1. Sign in to the AWS Management Console and open the AWS DMS console at [https://console\.aws\.amazon\.com/dms/v2/](https://console.aws.amazon.com/dms/v2/)\.
 
-1. Select **Endpoints**\.
+1. Choose **Endpoints**\.
 
-1. Select the Oracle source endpoint that you want to add supplemental logging to\.
+1. Choose the Oracle source endpoint that you want to add supplemental logging to\.
 
-1. Select **Modify**\.
+1. Choose **Modify**\.
 
-1. Select **Advanced**, and then add the following code to the **Extra connection attributes** text box:
+1. Choose **Advanced**, and then add the following code to the **Extra connection attributes** text box:
 
    ```
    addSupplementalLogging=Y
@@ -171,46 +228,58 @@ By default, AWS DMS has supplemental logging turned off\. To automatically turn 
 
 1. Choose **Modify**\.
 
-### LOB Changes not being Captured<a name="CHAP_Troubleshooting.Oracle.LOBChanges"></a>
+### LOB changes aren't being captured<a name="CHAP_Troubleshooting.Oracle.LOBChanges"></a>
 
 Currently, a table must have a primary key for AWS DMS to capture LOB changes\. If a table that contains LOBs doesn't have a primary key, there are several actions you can take to capture LOB changes:
 + Add a primary key to the table\. This can be as simple as adding an ID column and populating it with a sequence using a trigger\.
-+ Create a materialized view of the table that includes a system generated ID as the primary key and migrate the materialized view rather than the table\.
++ Create a materialized view of the table that includes a system\-generated ID as the primary key and migrate the materialized view rather than the table\.
 + Create a logical standby, add a primary key to the table, and migrate from the logical standby\.
 
-### Error: ORA\-12899: value too large for column <column\-name><a name="CHAP_Troubleshooting.Oracle.ORA12899"></a>
+### Error: ORA\-12899: Value too large for column *column\-name*<a name="CHAP_Troubleshooting.Oracle.ORA12899"></a>
 
-The error "ORA\-12899: value too large for column <column\-name>" is often caused by a mismatch in the character sets used by the source and target databases or when NLS settings differ between the two databases\. A common cause of this error is when the source database NLS\_LENGTH\_SEMANTICS parameter is set to CHAR and the target database NLS\_LENGTH\_SEMANTICS parameter is set to BYTE\.
+The error "ORA\-12899: value too large for column *column\-name*" is often caused by a couple of issues\. 
+
+In one of these issues, there's a mismatch in the character sets used by the source and target databases\. 
+
+In another of these issues, national language support \(NLS\) settings differ between the two databases\. A common cause of this error is when the source database NLS\_LENGTH\_SEMANTICS parameter is set to CHAR and the target database NLS\_LENGTH\_SEMANTICS parameter is set to BYTE\.
 
 ### NUMBER data type being misinterpreted<a name="CHAP_Troubleshooting.Oracle.Numbers"></a>
 
-The Oracle NUMBER data type is converted into various AWS DMS datatypes, depending on the precision and scale of NUMBER\. These conversions are documented here [Using an Oracle Database as a Source for AWS DMSUsing an IBM Db2 for Linux, Unix, and Windows Database \(Db2 LUW\) as a Source for AWS DMS](CHAP_Source.Oracle.md)\. The way the NUMBER type is converted can also be affected by using extra connection attributes for the source Oracle endpoint\. These extra connection attributes are documented in [Extra Connection Attributes When Using Oracle as a Source for AWS DMS](CHAP_Source.Oracle.md#CHAP_Source.Oracle.ConnectionAttrib)\.
+The Oracle NUMBER data type is converted into various AWS DMS data types, depending on the precision and scale of NUMBER\. These conversions are documented here [Source data types for Oracle](CHAP_Source.Oracle.md#CHAP_Source.Oracle.DataTypes)\. The way the NUMBER type is converted can also be affected by using extra connection attributes for the source Oracle endpoint\. These extra connection attributes are documented in [Extra connection attributes when using Oracle as a source for AWS DMS](CHAP_Source.Oracle.md#CHAP_Source.Oracle.ConnectionAttrib)\.
 
-## Troubleshooting MySQL Specific Issues<a name="CHAP_Troubleshooting.MySQL"></a>
+### Records missing during full load<a name="CHAP_Troubleshooting.Oracle.RecordsMissing"></a>
 
-The following issues are specific to using AWS DMS with MySQL databases\.
+When performing a full load, AWS DMS looks for open transactions at the database level and waits for the transaction to be committed\. For example, based on the task setting `TransactionConsistencyTimeout=600`, AWS DMS waits for 10 minutes even if the open transaction is on a table not included in table mapping\. But if the open transaction is on a table included in table mapping, and the transaction is not committed in time, missing records in the target table result\.
+
+You can modify the `TransactionConsistencyTimeout` task setting and increase wait time if you know that open transactions will take longer to commit\.
+
+Also, note the default value of the `FailOnTransactionConsistencyBreached` task setting is `false`\. This means AWS DMS continues to apply other transactions but open transactions are missed\. If you want the task to fail when open transactions aren't closed in time, you can set `FailOnTransactionConsistencyBreached` to `true`\.
+
+## Troubleshooting issues with MySQL<a name="CHAP_Troubleshooting.MySQL"></a>
+
+Following, you can learn about troubleshooting issues specific to using AWS DMS with MySQL databases\.
 
 **Topics**
-+ [CDC Task Failing for Amazon RDS DB Instance Endpoint Because Binary Logging Disabled](#CHAP_Troubleshooting.MySQL.CDCTaskFail)
++ [CDC task failing for Amazon RDS DB instance endpoint because binary logging disabled](#CHAP_Troubleshooting.MySQL.CDCTaskFail)
 + [Connections to a target MySQL instance are disconnected during a task](#CHAP_Troubleshooting.MySQL.ConnectionDisconnect)
-+ [Adding Autocommit to a MySQL\-compatible Endpoint](#CHAP_Troubleshooting.MySQL.Autocommit)
-+ [Disable Foreign Keys on a Target MySQL\-compatible Endpoint](#CHAP_Troubleshooting.MySQL.DisableForeignKeys)
-+ [Characters Replaced with Question Mark](#CHAP_Troubleshooting.MySQL.CharacterReplacement)
-+ ["Bad event" Log Entries](#CHAP_Troubleshooting.MySQL.BadEvent)
-+ [Change Data Capture with MySQL 5\.5](#CHAP_Troubleshooting.MySQL.MySQL55CDC)
-+ [Increasing Binary Log Retention for Amazon RDS DB Instances](#CHAP_Troubleshooting.MySQL.BinLogRetention)
-+ [Log Message: Some changes from the source database had no impact when applied to the target database\.](#CHAP_Troubleshooting.MySQL.NoImpact)
++ [Adding autocommit to a MySQL\-compatible endpoint](#CHAP_Troubleshooting.MySQL.Autocommit)
++ [Disable foreign keys on a target MySQL\-compatible endpoint](#CHAP_Troubleshooting.MySQL.DisableForeignKeys)
++ [Characters replaced with question mark](#CHAP_Troubleshooting.MySQL.CharacterReplacement)
++ ["Bad event" log entries](#CHAP_Troubleshooting.MySQL.BadEvent)
++ [Change data capture with MySQL 5\.5](#CHAP_Troubleshooting.MySQL.MySQL55CDC)
++ [Increasing binary log retention for Amazon RDS DB instances](#CHAP_Troubleshooting.MySQL.BinLogRetention)
++ [Log message: Some changes from the source database had no impact when applied to the target database\.](#CHAP_Troubleshooting.MySQL.NoImpact)
 + [Error: Identifier too long](#CHAP_Troubleshooting.MySQL.IDTooLong)
-+ [Error: Unsupported Character Set Causes Field Data Conversion to Fail](#CHAP_Troubleshooting.MySQL.UnsupportedCharacterSet)
-+ [Error: Codepage 1252 to UTF8 \[120112\] A field data conversion failed](#CHAP_Troubleshooting.MySQL.DataConversionFailed)
++ [Error: Unsupported character set causes field data conversion to fail](#CHAP_Troubleshooting.MySQL.UnsupportedCharacterSet)
++ [Error: Codepage 1252 to UTF8 \[120112\] a field data conversion failed](#CHAP_Troubleshooting.MySQL.DataConversionFailed)
 
-### CDC Task Failing for Amazon RDS DB Instance Endpoint Because Binary Logging Disabled<a name="CHAP_Troubleshooting.MySQL.CDCTaskFail"></a>
+### CDC task failing for Amazon RDS DB instance endpoint because binary logging disabled<a name="CHAP_Troubleshooting.MySQL.CDCTaskFail"></a>
 
 This issue occurs with Amazon RDS DB instances because automated backups are disabled\. Enable automatic backups by setting the backup retention period to a non\-zero value\.
 
 ### Connections to a target MySQL instance are disconnected during a task<a name="CHAP_Troubleshooting.MySQL.ConnectionDisconnect"></a>
 
-If you have a task with LOBs that is getting disconnected from a MySQL target with the following type of errors in the task log, you might need to adjust some of your task settings\. 
+If you have a task with LOBs that is getting disconnected from a MySQL target, you might see the following type of errors in the task log\. 
 
 ```
 [TARGET_LOAD ]E: RetCode: SQL_ERROR SqlState: 08S01 NativeError: 
@@ -224,6 +293,8 @@ to MySQL server during query [122502] ODBC general error.
 [122502] ODBC general error.
 ```
 
+In this case, you might need to adjust some of your task settings\.
+
 To solve the issue where a task is being disconnected from a MySQL target, do the following:
 + Check that you have your database variable `max_allowed_packet` set large enough to hold your largest LOB\.
 + Check that you have the following variables set to have a large timeout value\. We suggest you use a value of at least 5 minutes for each of these variables\.
@@ -232,19 +303,21 @@ To solve the issue where a task is being disconnected from a MySQL target, do th
   + `wait_timeout` 
   + `interactive_timeout` 
 
-### Adding Autocommit to a MySQL\-compatible Endpoint<a name="CHAP_Troubleshooting.MySQL.Autocommit"></a>
+### Adding autocommit to a MySQL\-compatible endpoint<a name="CHAP_Troubleshooting.MySQL.Autocommit"></a>
+
+
 
 **To add autocommit to a target MySQL\-compatible endpoint**
 
-1.  Sign in to the AWS Management Console and select **DMS**\. 
+1. Sign in to the AWS Management Console and open the AWS DMS console at [https://console\.aws\.amazon\.com/dms/v2/](https://console.aws.amazon.com/dms/v2/)\.
 
-1. Select **Endpoints**\.
+1. Choose **Endpoints**\.
 
-1. Select the MySQL\-compatible target endpoint that you want to add autocommit to\.
+1. Choose the MySQL\-compatible target endpoint that you want to add autocommit to\.
 
-1. Select **Modify**\.
+1. Choose **Modify**\.
 
-1. Select **Advanced**, and then add the following code to the **Extra connection attributes** text box:
+1. Choose **Advanced**, and then add the following code to the **Extra connection attributes** text box:
 
    ```
    Initstmt= SET AUTOCOMMIT=1
@@ -252,21 +325,21 @@ To solve the issue where a task is being disconnected from a MySQL target, do th
 
 1. Choose **Modify**\.
 
-### Disable Foreign Keys on a Target MySQL\-compatible Endpoint<a name="CHAP_Troubleshooting.MySQL.DisableForeignKeys"></a>
+### Disable foreign keys on a target MySQL\-compatible endpoint<a name="CHAP_Troubleshooting.MySQL.DisableForeignKeys"></a>
 
-You can disable foreign key checks on MySQL by adding the following to the **Extra Connection Attributes** in the **Advanced** section of the target MySQL, Amazon Aurora with MySQL compatibility, or MariaDB endpoint\.
+You can disable foreign key checks on MySQL by adding the following to the **Extra Connection Attributes** in the **Advanced** section of the target MySQL, Amazon Aurora MySQL\-Compatible Edition, or MariaDB endpoint\.
 
 **To disable foreign keys on a target MySQL\-compatible endpoint**
 
-1.  Sign in to the AWS Management Console and select **DMS**\. 
+1. Sign in to the AWS Management Console and open the AWS DMS console at [https://console\.aws\.amazon\.com/dms/v2/](https://console.aws.amazon.com/dms/v2/)\.
 
-1. Select **Endpoints**\.
+1. Choose **Endpoints**\.
 
-1. Select the MySQL, Aurora MySQL, or MariaDB target endpoint that you want to disable foreign keys\.
+1. Choose the MySQL, Aurora MySQL, or MariaDB target endpoint that you want to disable foreign keys\.
 
-1. Select **Modify**\.
+1. Choose **Modify**\.
 
-1. Select **Advanced**, and then add the following code to the **Extra connection attributes** text box:
+1. Choose **Advanced**, and then add the following code to the **Extra connection attributes** text box:
 
    ```
    Initstmt=SET FOREIGN_KEY_CHECKS=0
@@ -274,29 +347,31 @@ You can disable foreign key checks on MySQL by adding the following to the **Ext
 
 1. Choose **Modify**\.
 
-### Characters Replaced with Question Mark<a name="CHAP_Troubleshooting.MySQL.CharacterReplacement"></a>
+### Characters replaced with question mark<a name="CHAP_Troubleshooting.MySQL.CharacterReplacement"></a>
 
-The most common situation that causes this issue is when the source endpoint characters have been encoded by a character set that AWS DMS doesn't support\. For example, AWS DMS does not support the UTF8MB4 character set\.
+The most common situation that causes this issue is when the source endpoint characters have been encoded by a character set that AWS DMS doesn't support\. For example, AWS DMS engine versions prior to version 3\.1\.1 didn't support the UTF8MB4 character set\.
 
-### "Bad event" Log Entries<a name="CHAP_Troubleshooting.MySQL.BadEvent"></a>
+### "Bad event" log entries<a name="CHAP_Troubleshooting.MySQL.BadEvent"></a>
 
-"Bad event" entries in the migration logs usually indicate that an unsupported DDL operation was attempted on the source database endpoint\. Unsupported DDL operations cause an event that the replication instance cannot skip so a bad event is logged\. To fix this issue, restart the task from the beginning, which will reload the tables and will start capturing changes at a point after the unsupported DDL operation was issued\.
+"Bad event" entries in the migration logs usually indicate that an unsupported data definition language \(DDL\) operation was attempted on the source database endpoint\. Unsupported DDL operations cause an event that the replication instance can't skip, so a bad event is logged\. 
 
-### Change Data Capture with MySQL 5\.5<a name="CHAP_Troubleshooting.MySQL.MySQL55CDC"></a>
+To fix this issue, restart the task from the beginning\. Doing this reloads the tables and starts capturing changes at a point after the unsupported DDL operation was issued\.
 
-AWS DMS change data capture \(CDC\) for Amazon RDS MySQL\-compatible databases requires full image row\-based binary logging, which is not supported in MySQL version 5\.5 or lower\. To use AWS DMS CDC, you must up upgrade your Amazon RDS DB instance to MySQL version 5\.6\.
+### Change data capture with MySQL 5\.5<a name="CHAP_Troubleshooting.MySQL.MySQL55CDC"></a>
 
-### Increasing Binary Log Retention for Amazon RDS DB Instances<a name="CHAP_Troubleshooting.MySQL.BinLogRetention"></a>
+AWS DMS change data capture \(CDC\) for Amazon RDS MySQL\-compatible databases requires full image row\-based binary logging, which isn't supported in MySQL version 5\.5 or lower\. To use AWS DMS CDC, you must up upgrade your Amazon RDS DB instance to MySQL version 5\.6\.
+
+### Increasing binary log retention for Amazon RDS DB instances<a name="CHAP_Troubleshooting.MySQL.BinLogRetention"></a>
 
 AWS DMS requires the retention of binary log files for change data capture\. To increase log retention on an Amazon RDS DB instance, use the following procedure\. The following example increases the binary log retention to 24 hours\. 
 
 ```
-Call mysql.rds_set_configuration(‘binlog retention hours’, 24);
+call mysql.rds_set_configuration('binlog retention hours', 24);
 ```
 
-### Log Message: Some changes from the source database had no impact when applied to the target database\.<a name="CHAP_Troubleshooting.MySQL.NoImpact"></a>
+### Log message: Some changes from the source database had no impact when applied to the target database\.<a name="CHAP_Troubleshooting.MySQL.NoImpact"></a>
 
-When AWS DMS updates a MySQL database column’s value to its existing value, a message of `zero rows affected` is returned from MySQL\. This behavior is unlike other database engines such as Oracle and SQL Server that perform an update of one row, even when the replacing value is the same as the current one\. 
+When AWS DMS updates a MySQL database column's value to its existing value, a message of `zero rows affected` is returned from MySQL\. This behavior is unlike other database engines such as Oracle and SQL Server\. These engines update one row, even when the replacing value is the same as the current one\. 
 
 ### Error: Identifier too long<a name="CHAP_Troubleshooting.MySQL.IDTooLong"></a>
 
@@ -305,33 +380,35 @@ The following error occurs when an identifier is too long:
 ```
 TARGET_LOAD E: RetCode: SQL_ERROR SqlState: HY000 NativeError: 
 1059 Message: MySQLhttp://ODBC 5.3(w) Driverhttp://mysqld-5.6.10Identifier 
-name ‘<name>’ is too long 122502 ODBC general error. (ar_odbc_stmt.c:4054)
+name 'name' is too long 122502 ODBC general error. (ar_odbc_stmt.c:4054)
 ```
 
-When AWS DMS is set to create the tables and primary keys in the target database, it currently does not use the same names for the Primary Keys that were used in the source database\. Instead, AWS DMS creates the Primary Key name based on the tables name\. When the table name is long, the auto\-generated identifier created can be longer than the allowed limits for MySQL\. The solve this issue, currently, pre\-create the tables and Primary Keys in the target database and use a task with the task setting **Target table preparation mode** set to **Do nothing** or **Truncate** to populate the target tables\.
+In some cases, you set AWS DMS to create the tables and primary keys in the target database\. In these cases, DMS currently doesn't use the same names for the primary keys that were used in the source database\. Instead, DMS creates the primary key name based on the table name\. When the table name is long, the autogenerated identifier created can be longer than the allowed limits for MySQL\. 
 
-### Error: Unsupported Character Set Causes Field Data Conversion to Fail<a name="CHAP_Troubleshooting.MySQL.UnsupportedCharacterSet"></a>
+To solve this issue, the current approach is to first precreate the tables and primary keys in the target database\. Then use a task with the task setting **Target table preparation mode** set to **Do nothing** or **Truncate** to populate the target tables\.
+
+### Error: Unsupported character set causes field data conversion to fail<a name="CHAP_Troubleshooting.MySQL.UnsupportedCharacterSet"></a>
 
 The following error occurs when an unsupported character set causes a field data conversion to fail:
 
 ```
-"[SOURCE_CAPTURE ]E: Column ‘<column name>' uses an unsupported character set [120112] 
+"[SOURCE_CAPTURE ]E: Column 'column-name' uses an unsupported character set [120112] 
 A field data conversion failed. (mysql_endpoint_capture.c:2154)
 ```
 
-This error often occurs because of tables or databases using UTF8MB4 encoding\. AWS DMS does not support the UTF8MB4 character set\. In addition, check your database's parameters related to connections\. The following command can be used to see these parameters:
+In AWS DMS engine versions prior to 3\.1\.1, this error often occurred because of tables or databases using UTF8MB4 encoding\. These engine versions didn't support the UTF8MB4 character set\. In addition, check your database's parameters related to connections\. The following command can be used to set these parameters\.
 
 ```
 SHOW VARIABLES LIKE '%char%';
 ```
 
-### Error: Codepage 1252 to UTF8 \[120112\] A field data conversion failed<a name="CHAP_Troubleshooting.MySQL.DataConversionFailed"></a>
+### Error: Codepage 1252 to UTF8 \[120112\] a field data conversion failed<a name="CHAP_Troubleshooting.MySQL.DataConversionFailed"></a>
 
  The following error can occur during a migration if you have non codepage\-1252 characters in the source MySQL database\.
 
 ```
   
-[SOURCE_CAPTURE ]E: Error converting column ‘column_xyz’ in table
+[SOURCE_CAPTURE ]E: Error converting column 'column_xyz' in table
 'table_xyz with codepage 1252 to UTF8 [120112] A field data conversion failed. 
 (mysql_endpoint_capture.c:2248)
 ```
@@ -346,26 +423,29 @@ CharsetMapping=utf8,65001
 CharsetMapping=latin1,65001
 ```
 
-## Troubleshooting PostgreSQL Specific Issues<a name="CHAP_Troubleshooting.PostgreSQL"></a>
+## Troubleshooting issues with PostgreSQL<a name="CHAP_Troubleshooting.PostgreSQL"></a>
 
-The following issues are specific to using AWS DMS with PostgreSQL databases\.
+Following, you can learn about troubleshooting issues specific to using AWS DMS with PostgreSQL databases\.
 
 **Topics**
 + [JSON data types being truncated](#CHAP_Troubleshooting.PostgreSQL.JSONTruncation)
-+ [Columns of a user defined data type not being migrated correctly](#CHAP_Troubleshooting.PostgreSQL.UserDefinedDataType)
++ [Columns of a user\-defined data type not being migrated correctly](#CHAP_Troubleshooting.PostgreSQL.UserDefinedDataType)
 + [Error: No schema has been selected to create in](#CHAP_Troubleshooting.PostgreSQL.NoSchema)
-+ [Deletes and updates to a table are not being replicated using CDC](#CHAP_Troubleshooting.PostgreSQL.DeletesNotReplicated)
-+ [Truncate statements are not being propagated](#CHAP_Troubleshooting.PostgreSQL.Truncate)
++ [Deletes and updates to a table aren't being replicated using CDC](#CHAP_Troubleshooting.PostgreSQL.DeletesNotReplicated)
++ [Truncate statements aren't being propagated](#CHAP_Troubleshooting.PostgreSQL.Truncate)
 + [Preventing PostgreSQL from capturing DDL](#CHAP_Troubleshooting.PostgreSQL.NoCaptureDDL)
 + [Selecting the schema where database objects for capturing DDL are created](#CHAP_Troubleshooting.PostgreSQL.SchemaDDL)
 + [Oracle tables missing after migrating to PostgreSQL](#CHAP_Troubleshooting.PostgreSQL.OracleTablesMissing)
-+ [Task Using View as a Source Has No Rows Copied](#CHAP_Troubleshooting.PostgreSQL.ViewTask)
++ [ReplicationSlotDiskUsage increases and restart\_lsn stops moving forward during long transactions, such as ETL workloads](#CHAP_Troubleshooting.PostgreSQL.AvoidLongTransactions)
++ [Task using view as a source has no rows copied](#CHAP_Troubleshooting.PostgreSQL.ViewTask)
 
 ### JSON data types being truncated<a name="CHAP_Troubleshooting.PostgreSQL.JSONTruncation"></a>
 
- AWS DMS treats the JSON data type in PostgreSQL as an LOB data type column\. This means that the LOB size limitation when you use Limited LOB mode applies to JSON data\. For example, if Limited LOB mode is set to 4096 KB, any JSON data larger than 4096 KB is truncated at the 4096 KB limit and will fail the validation test in PostgreSQL\.
+ AWS DMS treats the JSON data type in PostgreSQL as an LOB data type column\. This means that the LOB size limitation when you use limited LOB mode applies to JSON data\. 
 
-For example, the following log information shows JSON that was truncated due to the Limited LOB mode setting and failed validation\.
+For example, suppose that limited LOB mode is set to 4,096 KB\. In this case, any JSON data larger than 4,096 KB is truncated at the 4,096 KB limit and fails the validation test in PostgreSQL\.
+
+The following log information shows JSON that was truncated due to the limited LOB mode setting and failed validation\.
 
 ```
 03:00:49
@@ -389,21 +469,25 @@ For example, the following log information shows JSON that was truncated due to 
   Error while executing the query [1022502] (ar_odbc_stmt.c:2421)
 ```
 
-### Columns of a user defined data type not being migrated correctly<a name="CHAP_Troubleshooting.PostgreSQL.UserDefinedDataType"></a>
+### Columns of a user\-defined data type not being migrated correctly<a name="CHAP_Troubleshooting.PostgreSQL.UserDefinedDataType"></a>
 
 When replicating from a PostgreSQL source, AWS DMS creates the target table with the same data types for all columns, apart from columns with user\-defined data types\. In such cases, the data type is created as "character varying" in the target\. 
 
 ### Error: No schema has been selected to create in<a name="CHAP_Troubleshooting.PostgreSQL.NoSchema"></a>
 
-The error "SQL\_ERROR SqlState: 3F000 NativeError: 7 Message: ERROR: no schema has been selected to create in" can occur when your JSON table mapping contains a wild card value for the schema but the source database doesn't support that value\.
+In some case, you might see the error "SQL\_ERROR SqlState: 3F000 NativeError: 7 Message: ERROR: no schema has been selected to create in"\. 
 
-### Deletes and updates to a table are not being replicated using CDC<a name="CHAP_Troubleshooting.PostgreSQL.DeletesNotReplicated"></a>
+This error can occur when your JSON table mapping contains a wildcard value for the schema but the source database doesn't support that value\.
 
-Delete and Update operations during change data capture \(CDC\) are ignored if the source table does not have a primary key\. AWS DMS supports change data capture \(CDC\) for PostgreSQL tables with primary keys; if a table does not have a primary key, the WAL logs do not include a before image of the database row and AWS DMS cannot update the table\. Create a primary key on the source table if you want delete operations to be replicated\.
+### Deletes and updates to a table aren't being replicated using CDC<a name="CHAP_Troubleshooting.PostgreSQL.DeletesNotReplicated"></a>
 
-### Truncate statements are not being propagated<a name="CHAP_Troubleshooting.PostgreSQL.Truncate"></a>
+Delete and update operations during change data capture \(CDC\) are ignored if the source table doesn't have a primary key\. AWS DMS supports change data capture \(CDC\) for PostgreSQL tables with primary keys\. 
 
-When using change data capture \(CDC\), TRUNCATE operations are not supported by AWS DMS\.
+If a table doesn't have a primary key, the write\-ahead \(WAL\) logs don't include a before image of the database row\. In this case, AWS DMS can't update the table\. For delete operations to be replicated, create a primary key on the source table\.
+
+### Truncate statements aren't being propagated<a name="CHAP_Troubleshooting.PostgreSQL.Truncate"></a>
+
+When using change data capture \(CDC\), TRUNCATE operations aren't supported by AWS DMS\.
 
 ### Preventing PostgreSQL from capturing DDL<a name="CHAP_Troubleshooting.PostgreSQL.NoCaptureDDL"></a>
 
@@ -423,32 +507,49 @@ ddlArtifactsSchema=xyzddlschema
 
 ### Oracle tables missing after migrating to PostgreSQL<a name="CHAP_Troubleshooting.PostgreSQL.OracleTablesMissing"></a>
 
-Oracle defaults to uppercase table names while PostgreSQL defaults to lowercase table names\. When performing a migration from Oracle to PostgreSQL you will most likely need to supply transformation rules under the table mapping section of your task to convert the case of your table names\.
+In this case, your tables and data are generally still accessible\. 
 
-Your tables and data are still accessible; if you migrated your tables without using transformation rules to convert the case of your table names, you will need to enclose your table names in quotes when referencing them\.
+Oracle defaults to uppercase table names, and PostgreSQL defaults to lowercase table names\. When you perform a migration from Oracle to PostgreSQL, we suggest that you supply certain transformation rules under your task's table\-mapping section\. These are transformation rules to convert the case of your table names\.
 
-### Task Using View as a Source Has No Rows Copied<a name="CHAP_Troubleshooting.PostgreSQL.ViewTask"></a>
+If you migrated your tables without using transformation rules to convert the case of your table names, enclose your table names in quotation marks when referencing them\.
 
-A View as a PostgreSQL source endpoint is not supported by AWS DMS\.
+### ReplicationSlotDiskUsage increases and restart\_lsn stops moving forward during long transactions, such as ETL workloads<a name="CHAP_Troubleshooting.PostgreSQL.AvoidLongTransactions"></a>
 
-## Troubleshooting Microsoft SQL Server Specific Issues<a name="CHAP_Troubleshooting.SQLServer"></a>
+When logical replication is enabled, the maximum number of changes kept in memory per transaction is 4MB\. After that, changes are spilled to disk\. As a result `ReplicationSlotDiskUsage` increases, and `restart_lsn` doesn’t advance until the transaction is completed/aborted and the rollback finishes\. Since it is a long transaction, it can take a long time to rollback\.
 
-The following issues are specific to using AWS DMS with Microsoft SQL Server databases\.
+So, avoid long running transactions when logical replication is enabled\. Instead, try to break the transaction into several smaller transactions\.
+
+### Task using view as a source has no rows copied<a name="CHAP_Troubleshooting.PostgreSQL.ViewTask"></a>
+
+To migrate a view, set `table-type` to `all` or `view`\. For more information, see [ Specifying table selection and transformations rules from the console](CHAP_Tasks.CustomizingTasks.TableMapping.Console.md)\. 
+
+Sources that support views include the following\.
++ Oracle
++ Microsoft SQL Server
++ MySQL
++ PostgreSQL
++ IBM Db2 LUW
++ SAP Adaptive Server Enterprise \(ASE\)
+
+## Troubleshooting issues with Microsoft SQL Server<a name="CHAP_Troubleshooting.SQLServer"></a>
+
+Following, you can learn about troubleshooting issues specific to using AWS DMS with Microsoft SQL Server databases\.
 
 **Topics**
-+ [Special Permissions for AWS DMS user account to use CDC](#CHAP_Troubleshooting.SQLServer.Permissions)
-+ [Errors Capturing Changes for SQL Server Database](#CHAP_Troubleshooting.SQLServer.CDCErrors)
-+ [Missing Identity Columns](#CHAP_Troubleshooting.SQLServer.IdentityColumns)
-+ [Error: SQL Server Does Not Support Publications](#CHAP_Troubleshooting.SQLServer.Publications)
-+ [Changes Not Appearing in Target](#CHAP_Troubleshooting.SQLServer.NoChanges)
++ [Special permissions for AWS DMS user account to use CDC](#CHAP_Troubleshooting.SQLServer.Permissions)
++ [Errors capturing changes for SQL server database](#CHAP_Troubleshooting.SQLServer.CDCErrors)
++ [Missing identity columns](#CHAP_Troubleshooting.SQLServer.IdentityColumns)
++ [Error: SQL Server doesn't support publications](#CHAP_Troubleshooting.SQLServer.Publications)
++ [Changes don't appear in your target](#CHAP_Troubleshooting.SQLServer.NoChanges)
++ [Non\-uniform table mapped across partitions](#CHAP_Troubleshooting.SQLServer.Nonuniform)
 
-### Special Permissions for AWS DMS user account to use CDC<a name="CHAP_Troubleshooting.SQLServer.Permissions"></a>
+### Special permissions for AWS DMS user account to use CDC<a name="CHAP_Troubleshooting.SQLServer.Permissions"></a>
 
-The user account used with AWS DMS requires the SQL Server SysAdmin role in order to operate correctly when using change data capture \(CDC\)\. CDC for SQL Server is only available for on\-premises databases or databases on an EC2 instance\.
+The user account used with AWS DMS requires the SQL Server SysAdmin role in order to operate correctly when using change data capture \(CDC\)\. 
 
-### Errors Capturing Changes for SQL Server Database<a name="CHAP_Troubleshooting.SQLServer.CDCErrors"></a>
+### Errors capturing changes for SQL server database<a name="CHAP_Troubleshooting.SQLServer.CDCErrors"></a>
 
-Errors during change data capture \(CDC\) can often indicate that one of the pre\-requisites was not met\. For example, the most common overlooked pre\-requisite is a full database backup\. The task log indicates this omission with the following error:
+Errors during change data capture \(CDC\) can often indicate that one of the prerequisites wasn't met\. For example, the most common overlooked prerequisite is a full database backup\. The task log indicates this omission with the following error:
 
 ```
 SOURCE_CAPTURE E: No FULL database backup found (under the 'FULL' recovery model). 
@@ -456,13 +557,13 @@ To enable all changes to be captured, you must perform a full database backup.
 120438 Changes may be missed. (sqlserver_log_queries.c:2623)
 ```
 
-Review the pre\-requisites listed for using SQL Server as a source in [Using a Microsoft SQL Server Database as a Source for AWS DMS](CHAP_Source.SQLServer.md)\.
+Review the prerequisites listed for using SQL Server as a source in [Using a Microsoft SQL Server database as a source for AWS DMS](CHAP_Source.SQLServer.md)\.
 
-### Missing Identity Columns<a name="CHAP_Troubleshooting.SQLServer.IdentityColumns"></a>
+### Missing identity columns<a name="CHAP_Troubleshooting.SQLServer.IdentityColumns"></a>
 
-AWS DMS does not support identity columns when you create a target schema\. You must add them after the initial load has completed\.
+AWS DMS doesn't support identity columns when you create a target schema\. You must add them after the initial load has completed\.
 
-### Error: SQL Server Does Not Support Publications<a name="CHAP_Troubleshooting.SQLServer.Publications"></a>
+### Error: SQL Server doesn't support publications<a name="CHAP_Troubleshooting.SQLServer.Publications"></a>
 
 The following error is generated when you use SQL Server Express as a source endpoint:
 
@@ -471,60 +572,81 @@ RetCode: SQL_ERROR SqlState: HY000 NativeError: 21106
 Message: This edition of SQL Server does not support publications.
 ```
 
-AWS DMS currently does not support SQL Server Express as a source or target\.
+AWS DMS currently doesn't support SQL Server Express as a source or target\.
 
-### Changes Not Appearing in Target<a name="CHAP_Troubleshooting.SQLServer.NoChanges"></a>
+### Changes don't appear in your target<a name="CHAP_Troubleshooting.SQLServer.NoChanges"></a>
 
-AWS DMS requires that a source SQL Server database be in either ‘FULL’ or ‘BULK LOGGED’ data recovery model in order to consistently capture changes\. The ‘SIMPLE’ model is not supported\. 
+AWS DMS requires that a source SQL Server database be in either 'FULL' or 'BULK LOGGED' data recovery model in order to consistently capture changes\. The 'SIMPLE' model isn't supported\. 
 
-The SIMPLE recovery model logs the minimal information needed to allow users to recover their database\. All inactive log entries are automatically truncated when a checkpoint occurs\. All operations are still logged, but as soon as a checkpoint occurs the log is automatically truncated, which means that it becomes available for re\-use and older log entries can be over\-written\. When log entries are overwritten, changes cannot be captured, and that is why AWS DMS doesn't support the SIMPLE data recovery model\. For information on other required pre\-requisites for using SQL Server as a source, see [Using a Microsoft SQL Server Database as a Source for AWS DMS](CHAP_Source.SQLServer.md)\.
+The SIMPLE recovery model logs the minimal information needed to allow users to recover their database\. All inactive log entries are automatically truncated when a checkpoint occurs\. 
 
-## Troubleshooting Amazon Redshift Specific Issues<a name="CHAP_Troubleshooting.Redshift"></a>
+All operations are still logged\. However, as soon as a checkpoint occurs the log is automatically truncated\. This truncation means that the log becomes available for reuse and older log entries can be overwritten\. When log entries are overwritten, changes can't be captured\. This issue is why AWS DMS doesn't support the SIMPLE data recovery model\. For information on other required prerequisites for using SQL Server as a source, see [Using a Microsoft SQL Server database as a source for AWS DMS](CHAP_Source.SQLServer.md)\.
 
-The following issues are specific to using AWS DMS with Amazon Redshift databases\.
+### Non\-uniform table mapped across partitions<a name="CHAP_Troubleshooting.SQLServer.Nonuniform"></a>
+
+During change data capture \(CDC\), migration of a table with a specialized structure is suspended when AWS DMS can't properly perform CDC on the table\. Messages like these are issued:
+
+```
+[SOURCE_CAPTURE ]W: Table is not uniformly mapped across partitions. Therefore - it is excluded from CDC (sqlserver_log_metadata.c:1415)
+[SOURCE_CAPTURE ]I: Table has been mapped and registered for CDC. (sqlserver_log_metadata.c:835)
+```
+
+When running CDC on SQL Server tables, AWS DMS parses the SQL Server tlogs\. On each tlog record, AWS DMS parses hexadecimal values containing data for columns that were inserted, updated, or deleted during a change\. 
+
+To parse the hexadecimal record, AWS DMS reads the table metadata from the SQL Server system tables\. Those system tables identify what the specially structured table columns are and reveal some of their internal properties, such as "xoffset" and "null bit position"\. 
+
+AWS DMS expects that metadata to be the same for all raw partitions of the table\. But in some cases, specially structured tables don't have the same metadata on all of their partitions\. In these cases, AWS DMS can suspend CDC on that table to avoid parsing changes incorrectly and providing the target with incorrect data\. Workarounds include the following:
++ If the table has a clustered index, perform an index rebuild\.
++ If the table doesn't have a clustered index, add a clustered index to the table \(you can drop it later if you want\)\.
+
+## Troubleshooting issues with Amazon Redshift<a name="CHAP_Troubleshooting.Redshift"></a>
+
+Following, you can learn about troubleshooting issues specific to using AWS DMS with Amazon Redshift databases\.
 
 **Topics**
-+ [Loading into a Amazon Redshift Cluster in a Different Region Than the AWS DMS Replication Instance](#CHAP_Troubleshooting.Redshift.Regions)
++ [Loading in to an Amazon Redshift cluster in a different AWS Region](#CHAP_Troubleshooting.Redshift.Regions)
 + [Error: Relation "awsdms\_apply\_exceptions" already exists](#CHAP_Troubleshooting.Redshift.AlreadyExists)
-+ [Errors with Tables Whose Name Begins with "awsdms\_changes"](#CHAP_Troubleshooting.Redshift.Changes)
-+ [Seeing Tables in Cluster with Names Like dms\.awsdms\_changes000000000XXXX](#CHAP_Troubleshooting.Redshift.TempTables)
-+ [Permissions Required to Work with Amazon Redshift](#CHAP_Troubleshooting.Redshift.Permissions)
++ [Errors with tables whose name begins with "awsdms\_changes"](#CHAP_Troubleshooting.Redshift.Changes)
++ [Seeing tables in clusters with names like dms\.awsdms\_changes000000000XXXX](#CHAP_Troubleshooting.Redshift.TempTables)
++ [Permissions required to work with Amazon Redshift](#CHAP_Troubleshooting.Redshift.Permissions)
 
-### Loading into a Amazon Redshift Cluster in a Different Region Than the AWS DMS Replication Instance<a name="CHAP_Troubleshooting.Redshift.Regions"></a>
+### Loading in to an Amazon Redshift cluster in a different AWS Region<a name="CHAP_Troubleshooting.Redshift.Regions"></a>
 
-This can't be done\. AWS DMS requires that the AWS DMS replication instance and a Redshift cluster be in the same region\.
+You can't load into an Amazon Redshift cluster in a different AWS Region than your AWS DMS replication instance\. DMS requires that your replication instance and your Amazon Redshift cluster be in the same Region\.
 
 ### Error: Relation "awsdms\_apply\_exceptions" already exists<a name="CHAP_Troubleshooting.Redshift.AlreadyExists"></a>
 
-The error "Relation "awsdms\_apply\_exceptions" already exists" often occurs when a Redshift endpoint is specified as a PostgreSQL endpoint\. To fix this issue, modify the endpoint and change the **Target engine** to "redshift\."
+The error "Relation 'awsdms\_apply\_exceptions' already exists" often occurs when a Redshift endpoint is specified as a PostgreSQL endpoint\. To fix this issue, modify the endpoint and change the **Target engine** to "redshift\."
 
-### Errors with Tables Whose Name Begins with "awsdms\_changes"<a name="CHAP_Troubleshooting.Redshift.Changes"></a>
+### Errors with tables whose name begins with "awsdms\_changes"<a name="CHAP_Troubleshooting.Redshift.Changes"></a>
 
-Error messages that relate to tables with names that begin with "awsdms\_changes" often occur when two tasks that are attempting to load data into the same Amazon Redshift cluster are running concurrently\. Due to the way temporary tables are named, concurrent tasks can conflict when updating the same table\.
+Table error messages with names that begin with "awsdms\_changes" can occur when two tasks trying to load data into the same Amazon Redshift cluster run concurrently\. Due to the way temporary tables are named, concurrent tasks can conflict when updating the same table\.
 
-### Seeing Tables in Cluster with Names Like dms\.awsdms\_changes000000000XXXX<a name="CHAP_Troubleshooting.Redshift.TempTables"></a>
+### Seeing tables in clusters with names like dms\.awsdms\_changes000000000XXXX<a name="CHAP_Troubleshooting.Redshift.TempTables"></a>
 
-AWS DMS creates temporary tables when data is being loaded from files stored in S3\. The name of these temporary tables have the prefix "dms\.awsdms\_changes\." These tables are required so AWS DMS can store data when it is first loaded and before it is placed in its final target table\.
+AWS DMS creates temporary tables when data is being loaded from files stored in Amazon S3\. The names of these temporary tables each have the prefix `dms.awsdms_changes`\. These tables are required so AWS DMS can store data when it is first loaded and before it is placed in its final target table\.
 
-### Permissions Required to Work with Amazon Redshift<a name="CHAP_Troubleshooting.Redshift.Permissions"></a>
+### Permissions required to work with Amazon Redshift<a name="CHAP_Troubleshooting.Redshift.Permissions"></a>
 
-To use AWS DMS with Amazon Redshift, the user account you use to access Amazon Redshift must have the following permissions:
-+ CRUD \(Select, Insert, Update, Delete\) 
-+ Bulk Load
-+ Create, Alter, Drop \(if required by the task's definition\)
+To use AWS DMS with Amazon Redshift, the user account that you use to access Amazon Redshift must have the following permissions:
++ CRUD \(Choose, Insert, Update, Delete\) 
++ Bulk load
++ Create, alter, drop \(if required by the task's definition\)
 
-To see all the pre\-requisites required for using Amazon Redshift as a target, see [Using an Amazon Redshift Database as a Target for AWS Database Migration Service](CHAP_Target.Redshift.md)\.
+To see the prerequisites required for using Amazon Redshift as a target, see [Using an Amazon Redshift database as a target for AWS Database Migration Service](CHAP_Target.Redshift.md)\.
 
-## Troubleshooting Amazon Aurora MySQL Specific Issues<a name="CHAP_Troubleshooting.Aurora"></a>
+## Troubleshooting issues with Amazon Aurora MySQL<a name="CHAP_Troubleshooting.Aurora"></a>
 
-The following issues are specific to using AWS DMS with Amazon Aurora MySQL databases\.
+Following, you can learn about troubleshooting issues specific to using AWS DMS with Amazon Aurora MySQL databases\.
 
 **Topics**
 + [Error: CHARACTER SET UTF8 fields terminated by ',' enclosed by '"' lines terminated by '\\n'](#CHAP_Troubleshooting.Aurora.ANSIQuotes)
 
 ### Error: CHARACTER SET UTF8 fields terminated by ',' enclosed by '"' lines terminated by '\\n'<a name="CHAP_Troubleshooting.Aurora.ANSIQuotes"></a>
 
-If you are using Amazon Aurora MySQL as a target and see an error like the following in the logs, this usually indicates that you have ANSI\_QUOTES as part of the SQL\_MODE parameter\. Having ANSI\_QUOTES as part of the SQL\_MODE parameter causes double quotes to be handled like quotes and can create issues when you run a task\. To fix this error, remove ANSI\_QUOTES from the SQL\_MODE parameter\.
+If you are using Amazon Aurora MySQL as a target, you might see an error like the following in the logs\. This type of error usually indicates that you have ANSI\_QUOTES as part of the SQL\_MODE parameter\. Having ANSI\_QUOTES as part of the SQL\_MODE parameter causes double quotation marks to be handled like quotation marks and can create issues when you run a task\. 
+
+To fix this error, remove ANSI\_QUOTES from the SQL\_MODE parameter\.
 
 ```
 2016-11-02T14:23:48 [TARGET_LOAD ]E: Load data sql statement. load data local infile 

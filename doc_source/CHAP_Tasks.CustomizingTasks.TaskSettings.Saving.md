@@ -1,8 +1,8 @@
-# Saving Task Settings<a name="CHAP_Tasks.CustomizingTasks.TaskSettings.Saving"></a>
+# Saving task settings<a name="CHAP_Tasks.CustomizingTasks.TaskSettings.Saving"></a>
 
 You can save the settings for a task as a JSON file, in case you want to reuse the settings for another task\. 
 
-For example, the following JSON file contains settings saved for a task:
+For example, the following JSON file contains settings saved for a task\.
 
 ```
 {

@@ -1,21 +1,35 @@
-# Best Practices for AWS Database Migration Service<a name="CHAP_BestPractices"></a>
+# Best practices for AWS Database Migration Service<a name="CHAP_BestPractices"></a>
 
 To use AWS Database Migration Service \(AWS DMS\) most effectively, see this section's recommendations on the most efficient way to migrate your data\. 
 
 **Topics**
-+ [Improving the Performance of an AWS DMS Migration](#CHAP_BestPractices.Performance)
-+ [Choosing the Optimum Size for a Replication Instance](#CHAP_BestPractices.SizingReplicationInstance)
-+ [Reducing the Load on Your Source Database](#CHAP_BestPractices.ReducingLoad)
-+ [Using the Task Log to Troubleshoot Migration Issues](#CHAP_BestPractices.TaskLog)
-+ [Converting Schema](#CHAP_BestPractices.SchemaConversion)
-+ [Migrating Large Binary Objects \(LOBs\)](#CHAP_BestPractices.LOBS)
-+ [Ongoing Replication](#CHAP_BestPractices.OnGoingReplication)
-+ [Changing the User and Schema for an Oracle Target](#CHAP_BestPractices.ChangeOracleSchema)
-+ [Improving Performance When Migrating Large Tables](#CHAP_BestPractices.LargeTables)
++ [Migration planning for AWS Database Migration Service](#CHAP_SettingUp.MigrationPlanning)
++ [Improving the performance of an AWS DMS migration](#CHAP_BestPractices.Performance)
++ [Reducing the load on your source database](#CHAP_BestPractices.ReducingLoad)
++ [Reducing the bottlenecks on your target database](#CHAP_BestPractices.ReducingBottlenecks)
++ [Using the task log to troubleshoot migration issues](#CHAP_BestPractices.TaskLog)
++ [Using data validation during migration](#CHAP_BestPractices.DataValidation)
++ [Converting schema](#CHAP_BestPractices.SchemaConversion)
++ [Monitoring your AWS DMS tasks using metrics](#CHAP_BestPractices.Metrics)
++ [Events and notifications](#CHAP_BestPractices.Events)
++ [Migrating large binary objects \(LOBs\)](#CHAP_BestPractices.LOBS)
++ [Ongoing replication](#CHAP_BestPractices.OnGoingReplication)
++ [Improving performance when migrating large tables using row filtering](#CHAP_BestPractices.LargeTables)
++ [Using your own on\-premises name server](#CHAP_BestPractices.Rte53DNSResolver)
++ [Changing the user and schema for an Oracle target](#CHAP_BestPractices.ChangeOracleSchema)
++ [Changing table and index tablespaces for an Oracle target](#CHAP_BestPractices.ChangeOracleTablespace)
 
-## Improving the Performance of an AWS DMS Migration<a name="CHAP_BestPractices.Performance"></a>
+## Migration planning for AWS Database Migration Service<a name="CHAP_SettingUp.MigrationPlanning"></a>
 
- A number of factors affect the performance of your AWS DMS migration:
+When planning a database migration using AWS Database Migration Service, consider the following:
++ To connect your source and target databases to an AWS DMS replication instance, you configure a network\. Doing this can be as simple as connecting two AWS resources in the same virtual private cloud \(VPC\) as your replication instance\. It can range to more complex configurations such as connecting an on\-premises database to an Amazon RDS DB instance over a virtual private network \(VPN\)\. For more information, see [Network configurations for database migration](CHAP_ReplicationInstance.VPC.md#CHAP_ReplicationInstance.VPC.Configurations)\.
++ **Source and target endpoints** – Make sure that you know what information and tables in the source database need to be migrated to the target database\. AWS DMS supports basic schema migration, including the creation of tables and primary keys\. However, AWS DMS doesn't automatically create secondary indexes, foreign keys, user accounts, and so on, in the target database\. Depending on your source and target database engine, you might need to set up supplemental logging or modify other settings for a source or target database\. For more information, see [Sources for data migration](CHAP_Source.md) and [Targets for data migration](CHAP_Target.md)\.
++ **Schema and code migration** – AWS DMS doesn't perform schema or code conversion\. You can use tools such as Oracle SQL Developer, MySQL Workbench, and pgAdmin III to convert your schema\. To convert an existing schema to a different database engine, you can use the AWS Schema Conversion Tool \(AWS SCT\)\. It can create a target schema and can generate and create an entire schema: tables, indexes, views, and so on\. You can also use the tool to convert PL/SQL or TSQL to PgSQL and other formats\. For more information on the AWS SCT, see the [AWS SCT User Guide](https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_Welcome.html)\.
++ **Unsupported data types** – Make sure that you can convert source data types into the equivalent data types for the target database\. For more information on supported data types, see the source or target section for your data store\. 
+
+## Improving the performance of an AWS DMS migration<a name="CHAP_BestPractices.Performance"></a>
+
+A number of factors affect the performance of your AWS DMS migration:
 + Resource availability on the source
 + The available network throughput
 + The resource capacity of the replication server
@@ -23,94 +37,153 @@ To use AWS Database Migration Service \(AWS DMS\) most effectively, see this sec
 + The type and distribution of source data
 + The number of objects to be migrated
 
-In our tests, we've migrated a terabyte of data in approximately 12 to 13 hours using a single AWS DMS task and under ideal conditions\. These ideal conditions included using source databases running on Amazon EC2 and in Amazon RDS with target databases in Amazon RDS, all in the same Availability Zone\. Our source databases contained a representative amount of relatively evenly distributed data with a few large tables containing up to 250 GB of data\. The source data didn't contain complex data types such as LOB data\.
+You can improve performance by using some or all of the best practices mentioned following\. Whether you can use one of these practices depends on your specific use case\. You can find limitations following as appropriate\. 
 
-You can improve performance by using some or all of the best practices mentioned following\. Whether you can use one of these practices or not depends in large part on your specific use case\. We mention limitations as appropriate\. 
+**Provisioning a proper replication server**  
+AWS DMS is a managed service that runs on an Amazon EC2 instance\. This service connects to the source database, reads the source data, formats the data for consumption by the target database, and loads the data into the target database\.   
+Most of this processing happens in memory\. However, large transactions might require some buffering on disk\. Cached transactions and log files are also written to disk\. In the following sections, you can find what to consider when you choose your replication server\.
 
-** Loading Multiple Tables in Parallel **  
+**CPU**  
+AWS DMS is designed for heterogeneous migrations, but it also supports homogeneous migrations\. To perform a homogeneous migration, first convert each source data type to its equivalent AWS DMS data type\. Then convert each AWS DMS type data to the target data type\. You can find references for these conversions for each database engine within the *AWS DMS User Guide*\.   
+For AWS DMS to perform these conversions optimally, the CPU must be available when the conversions happen\. Overloading the CPU and not having enough CPU resources can result in slow migrations, which can also cause other side effects\.
+
+**Replication instance class**  
+Some of the smaller instance classes are sufficient for testing the service or for small migrations\. If your migration involves a large number of tables, or if you intend to run multiple concurrent replication tasks, consider using one of the larger instances\. A larger instance can be a good idea because the service consumes a fair amount of memory and CPU\.  
+T2 type instances are designed to provide moderate baseline performance and the capability to burst to significantly higher performance, as required by your workload\. They are intended for workloads that don't use the full CPU often or consistently, but that occasionally need to burst\. T2 instances are well suited for general purpose workloads, such as web servers, developer environments, and small databases\. If you're troubleshooting a slow migration and using a T2 instance type, check the CPU Utilization host metric\. It can show you if you're bursting over the baseline for that instance type\.  
+The C4 instance classes are designed to deliver the highest level of processor performance for computer\-intensive workloads\. They achieve significantly higher packet per second \(PPS\) performance, lower network jitter, and lower network latency\. AWS DMS can be CPU\-intensive, especially when performing heterogeneous migrations and replications such as migrating from Oracle to PostgreSQL\. C4 instances can be a good choice for these situations\.  
+The R4 instance classes are memory optimized for memory\-intensive workloads\. Ongoing migrations or replications of high\-throughput transaction systems using AWS DMS can, at times, consume large amounts of CPU and memory\. R4 instances include more memory per vCPU\.
+
+**AWS DMS support for R5 and C5 instance classes**  
+The R5 instance classes are memory\-optimized instances that are designed to deliver fast performance for workloads that process large data sets in memory\. Ongoing migrations or replications of high\-throughput transaction systems using AWS DMS can, at times, consume large amounts of CPU and memory\. R5 instances deliver 5 percent additional memory per vCPU than R4 and the largest size provides 768 GiB of memory\. In addition, R5 instances deliver a 10 percent price per GiB improvement and a \~20% increased CPU performance over R4\.  
+The C5 instance classes optimized for compute\-intensive workloads and deliver cost\-effective high performance at a low price per compute ratio\. They achieve significantly higher network performance\. Elastic Network Adapter \(ENA\) provides C5 instances with up to 25 Gbps of network bandwidth and up to 14 Gbps of dedicated bandwidth to Amazon EBS\. AWS DMS can be CPU\-intensive, especially when performing heterogeneous migrations and replications such as migrating from Oracle to PostgreSQL\. C5 instances can be a good choice for these situations\.
+
+**Storage**  
+Depending on the instance class, your replication server comes with either 50 GB or 100 GB of data storage\. This storage is used for log files and any cached changes that are collected during the load\. If your source system is busy or takes large transactions, you might need to increase your storage\. If you're running multiple tasks on the replication server, you might also need a storage increase\. However, the default amount is usually sufficient\.  
+All storage volumes in AWS DMS are GP2 or General\-Purpose solid\-state drives \(SSDs\)\. GP2 volumes come with a base performance of three I/O operations per second \(IOPS\), with abilities to burst up to 3,000 IOPS on a credit basis\. As a rule of thumb, check the `ReadIOPS` and `WriteIOPS` metrics for the replication instance\. Make sure that the sum of these values doesn't cross the base performance for that volume\.
+
+**Multi\-AZ**  
+Choosing a Multi\-AZ instance can protect your migration from storage failures\. Most migrations are transient and aren't intended to run for long periods of time\. If you use AWS DMS for ongoing replication purposes, choosing a Multi\-AZ instance can improve your availability should a storage issue occur\.
+
+** Loading multiple tables in parallel **  
  By default, AWS DMS loads eight tables at a time\. You might see some performance improvement by increasing this slightly when using a very large replication server, such as a dms\.c4\.xlarge or larger instance\. However, at some point, increasing this parallelism reduces performance\. If your replication server is relatively small, such as a dms\.t2\.medium, we recommend that you reduce the number of tables loaded in parallel\.   
 To change this number in the AWS Management Console, open the console, choose **Tasks**, choose to create or modify a task, and then choose **Advanced Settings**\. Under **Tuning Settings**, change the **Maximum number of tables to load in parallel** option\.   
 To change this number using the AWS CLI, change the `MaxFullLoadSubTasks` parameter under `TaskSettings`\.
 
-**Working with Indexes, Triggers and Referential Integrity Constraints**  
- Indexes, triggers, and referential integrity constraints can affect your migration performance and cause your migration to fail\. How these affect migration depends on whether your replication task is a full load task or an ongoing replication \(CDC\) task\.  
-For a full load task, we recommend that you drop primary key indexes, secondary indexes, referential integrity constraints, and data manipulation language \(DML\) triggers\. Alternatively, you can delay their creation until after the full load tasks are complete\. You don't need indexes during a full load task and indexes will incur maintenance overhead if they are present\. Because the full load task loads groups of tables at a time, referential integrity constraints are violated\. Similarly, insert, update, and delete triggers can cause errors, for example, if a row insert is triggered for a previously bulk loaded table\. Other types of triggers also affect performance due to added processing\.  
-You can build primary key and secondary indexes before a full load task if your data volumes are relatively small and the additional migration time doesn't concern you\. Referential integrity constraints and triggers should always be disabled\.  
-For a full load \+ CDC task, we recommend that you add secondary indexes before the CDC phase\. Because AWS DMS uses logical replication, secondary indexes that support DML operations should be in\-place to prevent full table scans\. You can pause the replication task before the CDC phase to build indexes, create triggers, and create referential integrity constraints before you restart the task\.
+**Using parallel full load**  
+You can use a parallel load from Oracle, Microsoft SQL Server, MySQL, Sybase, and IBM Db2 LUW sources based on partitions and subpartitions\. Doing this can improve overall full load duration\. In addition, while running an AWS DMS migration task, you can accelerate the migration of large or partitioned tables\. To do this, split the table into segments and load the segments in parallel in the same migration task\.  
+To use a parallel load, create a table mapping rule of type `table-settings` with the `parallel-load` option\. Within the `table-settings` rule, specify the selection criteria for the table or tables that you want to load in parallel\. To specify the selection criteria, set the `type` element for `parallel-load` to one of the settings following:  
++ `partitions-auto`
++ `subpartitions-auto`
++ `partitions-list`
++ `ranges`
++ `none`
+For more information on these settings, see [Table and collection settings rules and operations](CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Tablesettings.md)\.
 
-** Disable Backups and Transaction Logging **  
- When migrating to an Amazon RDS database, it’s a good idea to disable backups and Multi\-AZ on the target until you’re ready to cut over\. Similarly, when migrating to non\-Amazon RDS systems, disabling any logging on the target until after cut over is usually a good idea\. 
+**Working with indexes, triggers, and referential integrity constraints**  
+Indexes, triggers, and referential integrity constraints can affect your migration performance and cause your migration to fail\. How these affect migration depends on whether your replication task is a full load task or an ongoing replication \(change data capture, or CDC\) task\.  
+For a full load task, we recommend that you drop primary key indexes, secondary indexes, referential integrity constraints, and data manipulation language \(DML\) triggers\. Or you can delay their creation until after the full load tasks are complete\. You don't need indexes during a full load task, and indexes incur maintenance overhead if they are present\. Because the full load task loads groups of tables at a time, referential integrity constraints are violated\. Similarly, insert, update, and delete triggers can cause errors, for example if a row insert is triggered for a previously bulk loaded table\. Other types of triggers also affect performance due to added processing\.  
+If your data volumes are relatively small and the additional migration time doesn't concern you, you can build primary key and secondary indexes before a full load task\. Always turn off referential integrity constraints and triggers\.  
+For a full load plus CDC task, we recommend that you add secondary indexes before the CDC phase\. Because AWS DMS uses logical replication, make sure that secondary indexes that support DML operations are in place to prevent full table scans\. You can pause the replication task before the CDC phase to build indexes, create triggers, and create referential integrity constraints before you restart the task\.
 
-** Use Multiple Tasks **  
- Sometimes using multiple tasks for a single migration can improve performance\. If you have sets of tables that don’t participate in common transactions, you might be able to divide your migration into multiple tasks\. Transactional consistency is maintained within a task, so it’s important that tables in separate tasks don't participate in common transactions\. Additionally, each task independently reads the transaction stream, so be careful not to put too much stress on the source database\.  
-You can use multiple tasks to create separate streams of replication to parallelize the reads on the source, the processes on the replication instance, and the writes to the target database\.
+** Turn off backups and transaction logging **  
+ When migrating to an Amazon RDS database, it's a good idea to turn off backups and Multi\-AZ on the target until you're ready to cut over\. Similarly, when migrating to systems other than Amazon RDS, turning off any logging on the target until after cutover is usually a good idea\. 
 
-** Optimizing Change Processing **  
- By default, AWS DMS processes changes in a transactional mode, which preserves transactional integrity\. If you can afford temporary lapses in transactional integrity, you can use the batch optimized apply option instead\. This option efficiently groups transactions and applies them in batches for efficiency purposes\. Using the batch optimized apply option almost always violates referential integrity constraints, so you should disable these during the migration process and enable them again as part of the cut over process\. 
+** Use multiple tasks **  
+ Sometimes using multiple tasks for a single migration can improve performance\. If you have sets of tables that don't participate in common transactions, you might be able to divide your migration into multiple tasks\. Transactional consistency is maintained within a task, so it's important that tables in separate tasks don't participate in common transactions\. Also, each task independently reads the transaction stream, so be careful not to put too much stress on the source database\.  
+You can use multiple tasks to create separate streams of replication\. By doing this, you can parallelize the reads on the source, the processes on the replication instance, and the writes to the target database\.
 
-## Choosing the Optimum Size for a Replication Instance<a name="CHAP_BestPractices.SizingReplicationInstance"></a>
+** Optimizing change processing **  
+ By default, AWS DMS processes changes in a transactional mode, which preserves transactional integrity\. If you can afford temporary lapses in transactional integrity, you can use the batch optimized apply option instead\. This option efficiently groups transactions and applies them in batches for efficiency purposes\. Using the batch optimized apply option almost always violates referential integrity constraints\. So we recommend that you turn these constraints off during the migration process and turn them on again as part of the cutover process\. 
 
-Choosing the appropriate replication instance depends on several factors of your use case\. To help understand how replication instance resources are used, see the following discussion\. It covers the common scenario of a full load \+ CDC task\. 
+## Reducing the load on your source database<a name="CHAP_BestPractices.ReducingLoad"></a>
 
-During a full load task, AWS DMS loads tables individually\. By default, eight tables are loaded at a time\. AWS DMS captures ongoing changes to the source during a full load task so the changes can be applied later on the target endpoint\. The changes are cached in memory; if available memory is exhausted, changes are cached to disk\. When a full load task completes for a table, AWS DMS immediately applies the cached changes to the target table\.
+AWS DMS uses some resources on your source database\. During a full load task, AWS DMS performs a full table scan of the source table for each table processed in parallel\. Also, each task that you create as part of a migration queries the source for changes as part of the CDC process\. For AWS DMS to perform CDC for some sources, such as Oracle, you might need to increase the amount of data written to your database's change log\. 
 
-After all outstanding cached changes for a table have been applied, the target endpoint is in a transactionally consistent state\. At this point, the target is in\-sync with the source endpoint with respect to the last cached changes\. AWS DMS then begins ongoing replication between the source and target\. To do so, AWS DMS takes change operations from the source transaction logs and applies them to the target in a transactionally consistent manner \(assuming batch optimized apply is not selected\)\. AWS DMS streams ongoing changes through memory on the replication instance, if possible\. Otherwise, AWS DMS writes changes to disk on the replication instance until they can be applied on the target\.
+If you find that you're overburdening your source database, reduce the number of tasks or tables for each task for your migration\. Each task gets source changes independently, so consolidating tasks can decrease the change capture workload\.
 
-You have some control over how the replication instance handles change processing, and how memory is used in that process\. For more information on how to tune change processing, see [Change Processing Tuning Settings](CHAP_Tasks.CustomizingTasks.TaskSettings.ChangeProcessingTuning.md)\. 
+## Reducing the bottlenecks on your target database<a name="CHAP_BestPractices.ReducingBottlenecks"></a>
 
-From the preceding explanation, you can see that total available memory is a key consideration\. If the replication instance has sufficient memory that AWS DMS can stream cached and ongoing changes without writing them to disk, migration performance increases greatly\. Similarly, configuring the replication instance with enough disk space to accommodate change caching and log storage also increases performance\. The maximum IOPs possible depend on the selected disk size\.
+During the migration, try to remove any processes that compete for write resources on your target database:
++ Turn off unnecessary triggers\.
++ Turn off secondary indexes during initial load and turn them back on later during ongoing replication\.
++ With RDS databases, it's a good idea to turn off backups and Multi\-AZ until the cutover\.
++ While migrating to non\-RDS systems, it's a good idea turn off any logging on the target until the cutover\.
 
-Consider the following factors when choosing a replication instance class and available disk storage:
-+ Table size – Large tables take longer to load and so transactions on those tables must be cached until the table is loaded\. After a table is loaded, these cached transactions are applied and are no longer held on disk\.
-+ Data manipulation language \(DML\) activity – A busy database generates more transactions\. These transactions must be cached until the table is loaded\. Transactions to an individual table are applied as soon as possible after the table is loaded, until all tables are loaded\. 
-+ Transaction size – Long\-running transactions can generate many changes\. For best performance, if AWS DMS applies changes in transactional mode, sufficient memory must be available to stream all changes in the transaction\. 
-+ Total size of the migration – Large migrations take longer and they generate a proportionally large number of log files\.
-+ Number of tasks – The more tasks, the more caching is likely to be required, and the more log files are generated\.
-+ Large objects – Tables with LOBs take longer to load\.
+## Using the task log to troubleshoot migration issues<a name="CHAP_BestPractices.TaskLog"></a>
 
-Anecdotal evidence shows that log files consume the majority of space required by AWS DMS\. The default storage configurations are usually sufficient\. 
+In some cases, AWS DMS can encounter issues for which warnings or error messages appear only in the task log\. In particular, data truncation issues or row rejections due to foreign key violations are only written in the task log\. Therefore, be sure to review the task log when migrating a database\. To view the task log, configure Amazon CloudWatch as part of task creation\.
 
-However, replication instances that run several tasks might require more disk space\. Additionally, if your database includes large and active tables, you might need to increase disk space for transactions that are cached to disk during a full load task\. For example, if your load takes 24 hours and you produce 2GB of transactions each hour, you might want to ensure that you have 48GB of space for cached transactions\. Also, the more storage space you allocate to the replication instance, the higher the IOPS you get\.
+For more information, see [Monitoring replication tasks using Amazon CloudWatch](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Monitoring.html#CHAP_Monitoring.CloudWatch)\.
 
-The guidelines preceding don’t cover all possible scenarios\. It’s critically important to consider the specifics of your particular use case when you determine the size of your replication instance\. After your migration is running, monitor the CPU, freeable memory, storage free, and IOPS of your replication instance\. Based on the data you gather, you can size your replication instance up or down as needed\.
+## Using data validation during migration<a name="CHAP_BestPractices.DataValidation"></a>
 
-## Reducing the Load on Your Source Database<a name="CHAP_BestPractices.ReducingLoad"></a>
+We highly recommend that you use data validation to ensure that your data was migrated accurately from the source to the target\. If you turn on data validation for a task, AWS DMS begins comparing the source and target data immediately after a full load is performed for a table\.
 
-AWS DMS uses some resources on your source database\. During a full load task, AWS DMS performs a full table scan of the source table for each table processed in parallel\. Additionally, each task you create as part of a migration queries the source for changes as part of the CDC process\. For AWS DMS to perform CDC for some sources, such as Oracle, you might need to increase the amount of data written to your database's change log\. 
+Data validation works with the following databases wherever AWS DMS supports them as source and target endpoints:
++ Oracle
++ PostgreSQL
++ MySQL
++ MariaDB
++ Microsoft SQL Server
++ Amazon Aurora MySQL\-Compatible Edition
++ Amazon Aurora PostgreSQL\-Compatible Edition
++ IBM Db2 LUW
 
-If you find you are overburdening your source database, you can reduce the number of tasks or tables for each task for your migration\. Each task gets source changes independently, so consolidating tasks can decrease the change capture workload\.
+For more information, see [AWS DMS data validation](CHAP_Validating.md)\.
 
-## Using the Task Log to Troubleshoot Migration Issues<a name="CHAP_BestPractices.TaskLog"></a>
+## Converting schema<a name="CHAP_BestPractices.SchemaConversion"></a>
 
-In some cases, AWS DMS can encounter issues for which warnings or error messages appear only in the task log\. In particular, data truncation issues or row rejections due to foreign key violations are only written in the task log\. Therefore, be sure to review the task log when migrating a database\. To enable viewing of the task log, configure Amazon CloudWatch as part of task creation\.
+AWS DMS doesn't perform schema or code conversion\. If you want to convert an existing schema to a different database engine, you can use AWS SCT\. AWS SCT converts your source objects, table, indexes, views, triggers, and other system objects into the target data definition language \(DDL\) format\. You can also use AWS SCT to convert most of your application code, like PL/SQL or TSQL, to the equivalent target language\. 
 
-## Converting Schema<a name="CHAP_BestPractices.SchemaConversion"></a>
-
-AWS DMS doesn't perform schema or code conversion\. If you want to convert an existing schema to a different database engine, you can use the AWS Schema Conversion Tool \(AWS SCT\)\. AWS SCT converts your source objects, table, indexes, views, triggers, and other system objects into the target data definition language \(DDL\) format\. You can also use AWS SCT to convert most of your application code, like PL/SQL or TSQL, to the equivalent target language\. 
-
-You can get AWS SCT as a free download from AWS\. For more information on AWS SCT, see the [ AWS Schema Conversion Tool User Guide](http://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_SchemaConversionTool.Installing.html)\.
+You can get AWS SCT as a free download from AWS\. For more information on AWS SCT, see the [ AWS Schema Conversion Tool User Guide](https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_SchemaConversionTool.Installing.html)\.
 
 If your source and target endpoints are on the same database engine, you can use tools such as Oracle SQL Developer, MySQL Workbench, or PgAdmin4 to move your schema\.
 
-## Migrating Large Binary Objects \(LOBs\)<a name="CHAP_BestPractices.LOBS"></a>
+## Monitoring your AWS DMS tasks using metrics<a name="CHAP_BestPractices.Metrics"></a>
 
-In general, AWS DMS migrates LOB data in two phases\. 
+You have several options for monitoring metrics for your tasks using the AWS DMS console:
 
-1. AWS DMS creates a new row in the target table and populates the row with all data except the associated LOB value\. 
+Host metrics  
+You can find host metrics on the **CloudWatch metrics** tab for each particular replication instance\. Here, you can monitor whether your replication instance is sized appropriately\.
+
+Replication task metrics  
+Metrics for replication tasks, including incoming and committed changes, and latency between the replication host and source/target databases can be found on the **CloudWatch metrics** tab for each particular task\.
+
+Table metrics  
+You can find individual table metrics on the **Table statistics** tab for each individual task\. These metrics include these numbers:  
++ Rows loaded during the full load\.
++ Inserts, updates, and deletes since the task started\.
++ DDL operations since the task started\.
+
+For more information on metrics monitoring, see [Monitoring AWS DMS tasks](CHAP_Monitoring.md)\.
+
+## Events and notifications<a name="CHAP_BestPractices.Events"></a>
+
+AWS DMS uses Amazon SNS to provide notifications when an AWS DMS event occurs, for example the creation or deletion of a replication instance\. You can work with these notifications in any form supported by Amazon SNS for an AWS Region\. These can include email messages, text messages, or calls to an HTTP endpoint\.
+
+For more information, see [Working with events and notifications in AWS Database Migration Service](CHAP_Events.md)\.
+
+## Migrating large binary objects \(LOBs\)<a name="CHAP_BestPractices.LOBS"></a>
+
+In general, AWS DMS migrates LOB data in two phases: 
+
+1. AWS DMS creates a new row in the target table and populates the row with all data except the associated LOB value\.
 
 1. AWS DMS updates the row in the target table with the LOB data\.
 
-This migration process for LOBs requires that, during the migration, all LOB columns on the target table must be nullable\. This is so even if the LOB columns aren't nullable on the source table\. If AWS DMS creates the target tables, it sets LOB columns to nullable by default\. If you create the target tables using some other mechanism, such as import or export, you must ensure that the LOB columns are nullable before you start the migration task\.
+This migration process for LOBs requires that, during the migration, all LOB columns on the target table must be nullable\. This is so even if the LOB columns aren't nullable on the source table\. If AWS DMS creates the target tables, it sets LOB columns to nullable by default\. In some cases, you might create the target tables using some other mechanism, such as import or export\. In such cases, make sure that the LOB columns are nullable before you start the migration task\.
 
 This requirement has one exception\. Suppose that you perform a homogeneous migration from an Oracle source to an Oracle target, and you choose **Limited Lob mode**\. In this case, the entire row is populated at once, including any LOB values\. For such a case, AWS DMS can create the target table LOB columns with not\-nullable constraints, if needed\.
 
-### Using Limited LOB Mode<a name="CHAP_BestPractices.LOBS.LimitedLOBMode"></a>
+### Using limited LOB mode<a name="CHAP_BestPractices.LOBS.LimitedLOBMode"></a>
 
- AWS DMS uses two methods that balance performance and convenience when your migration contains LOB values\.
-+ **Limited LOB mode** migrates all LOB values up to a user\-specified size limit \(default is 32 KB\)\. LOB values larger than the size limit must be manually migrated\. **Limited LOB mode**, the default for all migration tasks, typically provides the best performance\. However you need to ensure that the **Max LOB size** parameter setting is correct\. This parameter should be set to the largest LOB size for all your tables\.
-+ **Full LOB mode** migrates all LOB data in your tables, regardless of size\. **Full LOB mode** provides the convenience of moving all LOB data in your tables, but the process can have a significant impact on performance\.
+ AWS DMS uses two methods that balance performance and convenience when your migration contains LOB values:
 
-For some database engines, such as PostgreSQL, AWS DMS treats JSON data types like LOBs\. Make sure that if you have chosen **Limited LOB mode** the **Max LOB size** option is set to a value that doesn't cause the JSON data to be truncated\. 
+1. **Limited LOB mode** migrates all LOB values up to a user\-specified size limit \(default is 32 KB\)\. LOB values larger than the size limit must be manually migrated\. **Limited LOB mode**, the default for all migration tasks, typically provides the best performance\. However, ensure that the **Max LOB size** parameter setting is correct\. Set this parameter to the largest LOB size for all your tables\.
+
+1. **Full LOB mode** migrates all LOB data in your tables, regardless of size\. **Full LOB mode** provides the convenience of moving all LOB data in your tables, but the process can have a significant impact on performance\.
+
+For some database engines, such as PostgreSQL, AWS DMS treats JSON data types like LOBs\. Make sure that if you chose **Limited LOB mode**, the **Max LOB size** option is set to a value that doesn't cause the JSON data to be truncated\. 
 
 AWS DMS provides full support for using large object data types \(BLOBs, CLOBs, and NCLOBs\)\. The following source endpoints have full LOB support:
 + Oracle
@@ -123,41 +196,238 @@ The following target endpoints have full LOB support:
 
 The following target endpoint has limited LOB support\. You can't use an unlimited LOB size for this target endpoint\.
 + Amazon Redshift
++ Amazon S3
 
 For endpoints that have full LOB support, you can also set a size limit for LOB data types\. 
 
-## Ongoing Replication<a name="CHAP_BestPractices.OnGoingReplication"></a>
+### Improved LOB performance<a name="CHAP_BestPractices.LOBS.Performance"></a>
 
-AWS DMS provides ongoing replication of data, keeping the source and target databases in sync\. It replicates only a limited amount of data definition language \(DDL\)\. AWS DMS doesn't propagate items such as indexes, users, privileges, stored procedures, and other database changes not directly related to table data\. 
+With AWS DMS engine versions 3\.1\.x, you can improve the loading of LOB data in several ways\. While migrating LOB data, you can specify the different LOB optimization settings following\.
 
-If you plan to use ongoing replication, you should enable the **Multi\-AZ** option when you create your replication instance\. By choosing the **Multi\-AZ** option you get high availability and failover support for the replication instance\. However, this option can have an impact on performance\.
+#### Per table LOB settings<a name="CHAP_BestPractices.LOBS.Performance.PerTable"></a>
 
-## Changing the User and Schema for an Oracle Target<a name="CHAP_BestPractices.ChangeOracleSchema"></a>
+Using per table LOB settings, you can override task\-level LOB settings for some or all of your tables\. To do this, define the `lob-settings` in your `table-settings` rule\. Following is an example table that includes some large LOB values\.
 
-When using Oracle as a target, AWS DMS assumes that the data should be migrated into the schema and user that is used to connect to the target\. If you want to migrate data to a different schema, use a schema transformation to do so\. Schema in Oracle is connected to the username that is used in the endpoint connection\. In order to read from an X schema and write into X schema on the target, we need to rename the X schema \(being read from source\) and instruct AWS DMS to write data into X schema on target\.
+```
+SET SERVEROUTPUT ON
+CREATE TABLE TEST_CLOB
+(
+ID NUMBER,
+C1 CLOB,
+C2 VARCHAR2(4000)
+);
+DECLARE
+bigtextstring CLOB := '123';
+iINT;
+BEGIN
+WHILE Length(bigtextstring) <= 60000 LOOP
+bigtextstring := bigtextstring || '000000000000000000000000000000000';
+END LOOP;
+INSERT INTO TEST_CLOB (ID, C1, C2) VALUES (0, bigtextstring,'AnyValue');
+END;
+/
+SELECT * FROM TEST_CLOB;
+COMMIT
+```
 
-For example, if you want to migrate from the user source schema PERFDATA to the target data PERFDATA, you'll need to create a transformation as follows:
+Next, create a migration task and modify the LOB handling for your table using the new `lob-settings` rule\. The `bulk-max-siz` value determines the maximum LOB size \(KB\)\. It's truncated if it's bigger than the size specified\.
+
+```
+{
+	"rules": [{
+			"rule-type": "selection",
+			"rule-id": "1",
+			"rule-name": "1",
+			"object-locator": {
+				"schema-name": "HR",
+				"table-name": "TEST_CLOB"
+			},
+			"rule-action": "include"
+		    },
+		    {
+			"rule-type": "table-settings",
+			"rule-id": "2",
+			"rule-name": "2",
+			"object-locator": {
+				"schema-name": "HR",
+				"table-name": "TEST_CLOB"
+			},
+			"lob-settings": {
+				"mode": "limited",
+				"bulk-max-size": 16
+			}
+		    }
+	         ]
+}
+```
+
+Even if this AWS DMS task is created with `FullLobMode : true`, the per table LOB settings direct AWS DMS to truncate LOB data in this particular table to 16,000\. You can check the task logs to confirm this\.
+
+```
+721331968: 2018-09-11T19:48:46:979532 [SOURCE_UNLOAD] W: The value of column 'C' in table
+'HR.TEST_CLOB' was truncated to length 16384
+```
+
+#### Inline LOB settings<a name="CHAP_BestPractices.LOBS.Performance.Inline"></a>
+
+When you create an AWS DMS task, the LOB mode determines how LOBs are handled\.
+
+With full LOB mode and limited LOB mode, each has its own benefits and disadvantages\. Inline LOB mode combines the advantages of both full LOB mode and limited LOB mode\.
+
+You can use inline LOB mode when you need to replicate both small and large LOBs, and most of the LOBs are small\. When you choose this option, during full load the AWS DMS task transfers the small LOBs inline, which is more efficient\. The AWS DMS task transfers the large LOBs by performing a lookup from the source table\.
+
+During change processing, both small and large LOBs are replicated by performing a lookup from the source table\.
+
+When you use inline LOB mode, the AWS DMS task checks all of the LOB sizes to determine which ones to transfer inline\. LOBs larger than the specified size are replicated using full LOB mode\. Therefore, if you know that most of the LOBs are larger than the specified setting, it's better not to use this option\. Instead, allow an unlimited LOB size\.
+
+You configure this option using an attribute in task settings, `InlineLobMaxSize`, which is only available when `FullLobMode` is set to `true`\. The default value for `InlineLobMaxSize` is 0\. The range is 1 KB–2 GB\.
+
+For example, you might use the AWS DMS task settings following\. Here, setting `InlineLobMaxSize` to a value of 5 results in all LOBs larger than 5,000 being transferred inline\.
+
+```
+{
+  "TargetMetadata": {
+  "TargetSchema": "",
+  "SupportLobs": true,
+  "FullLobMode": true,
+  "LobChunkSize": 64,
+  "LimitedSizeLobMode": false,
+  "LobMaxSize": 32,
+  "InlineLobMaxSize": 5,
+  "LoadMaxFileSize": 0,
+  "ParallelLoadThreads": 0,
+  "ParallelLoadBufferSize":0,
+  "BatchApplyEnabled": false,
+  "TaskRecoveryTableEnabled": false},
+  . . .
+}
+```
+
+## Ongoing replication<a name="CHAP_BestPractices.OnGoingReplication"></a>
+
+AWS DMS provides ongoing replication of data, keeping the source and target databases in sync\. It replicates only a limited amount of data definition language \(DDL\) statements\. AWS DMS doesn't propagate items such as indexes, users, privileges, stored procedures, and other database changes not directly related to table data\. 
+
+If you plan to use ongoing replication, set the **Multi\-AZ** option when you create your replication instance\. By choosing **Multi\-AZ**, you get high availability and failover support for the replication instance\. However, this option can have an impact on performance and can slow down replication while applying changes to the target system\.
+
+Before you upgrade your source or target databases, we recommend that you stop any AWS DMS tasks that are running on these databases\. Resume the tasks after your upgrades are complete\.
+
+## Improving performance when migrating large tables using row filtering<a name="CHAP_BestPractices.LargeTables"></a>
+
+To improve the performance when migrating a large table, you can break the migration into more than one task\. To break the migration into multiple tasks using row filtering, use a key or a partition key\. For example, if you have an integer primary key ID from 1 to 8,000,000, you can create eight tasks using row filtering to migrate 1 million records each\.
+
+To apply row filtering in the console, open the console, choose **Tasks**, and create a new task\. In the **Table mappings** section, add a value for **Selection Rule**\. You can then add a column filter with either a less than or equal to, greater than or equal to, equal to, or range condition \(between two values\)\. For more information about column filtering, see [ Specifying table selection and transformations rules from the console](CHAP_Tasks.CustomizingTasks.TableMapping.Console.md)\.
+
+Or if you have a large partitioned table that is partitioned by date, you can migrate data based on date\. For example, suppose that you have a table partitioned by month, and only the current month's data is updated\. In this case, you can create a full load task for each static monthly partition and create a full load plus CDC task for the currently updated partition\.
+
+## Using your own on\-premises name server<a name="CHAP_BestPractices.Rte53DNSResolver"></a>
+
+Usually, an AWS DMS replication instance uses the Domain Name System \(DNS\) resolver in an Amazon EC2 instance to resolve domain endpoints\. However, you can use your own on\-premises name server to resolve certain endpoints if you use the Amazon Route 53 Resolver\. With this tool, you can query between on\-premises and AWS using inbound and outbound endpoints, forwarding rules, and a private connection\. The benefits of using an on\-premises name server include improved security and ease of use behind a firewall\.
+
+If you have inbound endpoints, you can use DNS queries that originate on\-premises to resolve AWS hosted domains\. To configure the endpoints, assign IP addresses in each subnet that you want to provide a resolver\. To establish connectivity between your on\-premises DNS infrastructure and AWS, use AWS Direct Connect or a virtual private network \(VPN\)\.
+
+Outbound endpoints connect to your on\-premises name server\. The name server only grants access to IP addresses included in an allow list and set in an outbound endpoint\. The IP address of your name server is the target IP address\. When you choose a security group for an outbound endpoint, choose the same security group used by the replication instance\. 
+
+To forward select domains to the name server, use forwarding rules\. An outbound endpoint can handle multiple forwarding rules\. The scope of the forwarding rule is your virtual private cloud \(VPC\)\. By using a forwarding rule associated with a VPC, you can provision a logically isolated section of the AWS Cloud\. From this logically isolated section, you can launch AWS resources in a virtual network\.
+
+You can configure domains hosted within your on\-premises DNS infrastructure as conditional forwarding rules that set up outbound DNS queries\. When a query is made to one of those domains, rules trigger an attempt to forward DNS requests to servers that were configured with the rules\. Again, a private connection over AWS Direct Connect or VPN is required\. 
+
+The following diagram shows the Route 53 Resolver architecture\.
+
+![\[Route 53 Resolver Architecture\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-resolver-howitworks.png)
+
+For more information about AWS Route\-53 DNS Resolver, see [Getting started with Route 53 Resolver](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-getting-started.html) in the *Amazon Route 53 Developer Guide*\.
+
+### Using Amazon Route 53 Resolver with AWS DMS<a name="CHAP_BestPractices.Rte53DNSResolver.Set-up"></a>
+
+You can create an on\-premises name server for AWS DMS to resolve endpoints using [Amazon Route 53 Resolver](https://aws.amazon.com/route53/)\. 
+
+**To create an on\-premises name server for DMS based on Route 53**
+
+1. Sign in to the AWS Management Console and open the Route 53 console at [https://console\.aws\.amazon\.com/route53/](https://console.aws.amazon.com/route53/)\.
+
+1. On the Route 53 console, choose the AWS Region where you want to configure your Route 53 Resolver\. The Route 53 Resolver is specific to a Region\.
+
+1. Choose the query direction—inbound, outbound, or both\.
+
+1. Provide your inbound query configuration:
+
+   1. Enter an endpoint name and choose a VPC\. 
+
+   1. Assign one or more subnets from within the VPC \(for example, choose two for availability\)\. 
+
+   1. Assign specific IP addresses to use as endpoints, or have Route 53 Resolver assign them automatically\.
+
+1. Create a rule for your on\-premises domain so that workloads inside the VPC can route DNS queries to your DNS infrastructure\.
+
+1. Enter one or more IP addresses for your on\-premises DNS servers\.
+
+1. Submit your rule\. 
+
+When everything is created, your VPC is associated with your inbound and outbound rules and can start routing traffic\. 
+
+For more information about Route 53 Resolver, see [Getting started with Route 53 Resolver](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-getting-started.html) in the *Amazon Route 53 Developer Guide*\.
+
+## Changing the user and schema for an Oracle target<a name="CHAP_BestPractices.ChangeOracleSchema"></a>
+
+When you use Oracle as a target, AWS DMS migrates the data to the schema owned by the target endpoint's user\. 
+
+For example, suppose that you're migrating a schema named `PERFDATA` to an Oracle target endpoint, and that the target endpoint user name is `MASTER`\. AWS DMS connects to the Oracle target as `MASTER` and populates the `MASTER` schema with database objects from `PERFDATA`\.
+
+To override this behavior, provide a schema transformation\. For example, to migrate the `PERFDATA` schema objects to a `PERFDATA` schema at the target endpoint, use the following transformation\.
+
+```
+{
+    "rule-type": "transformation",
+    "rule-id": "2",
+    "rule-name": "2",
+    "object-locator": {
+        "schema-name": "PERFDATA"
+    },
+    "rule-target": "schema",
+    "rule-action": "rename",
+    "value": "PERFDATA"
+}
+```
+
+For more information about transformations, see [ Specifying table selection and transformations rules using JSON](CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.md)\.
+
+## Changing table and index tablespaces for an Oracle target<a name="CHAP_BestPractices.ChangeOracleTablespace"></a>
+
+
+
+When using Oracle as a target, AWS DMS migrates all tables and indexes to the default tablespace in the target\. For example, suppose that your source is a database engine other than Oracle\. All of the target tables and indexes are migrated to the same default tablespace\.
+
+To override this behavior, provide corresponding tablespace transformations\. For example, suppose that you want to migrate tables and indexes to table and index tablespaces in the Oracle target that are named after the schema in the source\. In this case, you can use transformations similar to the following\. Here, the schema in the source is named `INVENTORY` and corresponding table and index tablespaces in the target are named `INVENTORYTBL` and `INVENTORYIDX`\.
 
 ```
 {
    "rule-type": "transformation",
-   "rule-id": "2",
-   "rule-name": "2",
+   "rule-id": "3",
+   "rule-name": "3",
    "rule-action": "rename",
-   "rule-target": "schema",
+   "rule-target": "table-tablespace",
    "object-locator": {
-   "schema-name": "PERFDATA"
+      "schema-name": "INVENTORY",
+      "table-name": "%",
+      "table-tablespace-name": "%"
+   },
+   "value": "INVENTORYTBL"
 },
-"value": "PERFDATA"
+{
+   "rule-type": "transformation",
+   "rule-id": "4
+   "rule-name": "4",
+   "rule-action": "rename",
+   "rule-target": "index-tablespace",
+   "object-locator": {
+      "schema-name": "INVENTORY",
+      "table-name": "%",
+      "index-tablespace-name": "%"
+   },
+   "value": "INVENTORYIDX"
 }
 ```
 
-For more information about transformations, see [ Selection and Transformation Table Mapping using JSON](CHAP_Tasks.CustomizingTasks.TableMapping.md#CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation)\.
+For more information about transformations, see [ Specifying table selection and transformations rules using JSON](CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.md)\.
 
-## Improving Performance When Migrating Large Tables<a name="CHAP_BestPractices.LargeTables"></a>
-
-If you want to improve the performance when migrating a large table, you can break the migration into more than one task\. To break the migration into multiple tasks using row filtering, use a key or a partition key\. For example, if you have an integer primary key ID from 1 to 8,000,000, you can create eight tasks using row filtering to migrate 1 million records each\.
-
-To apply row filtering in the AWS Management Console, open the console, choose **Tasks**, and create a new task\. In the **Table mappings** section, add a value for **Selection Rule**\. You can then add a column filter with either a less than or equal to, greater than or equal to, equal to, or range condition \(between two values\)\. For more information about column filtering, see [ Selection and Transformation Table Mapping Using the AWS Management Console ](CHAP_Tasks.CustomizingTasks.TableMapping.md#CHAP_Tasks.CustomizingTasks.TableMapping.Console)\.
-
-Alternatively, if you have a large partitioned table that is partitioned by date, you can migrate data based on date\. For example, suppose that you have a table partitioned by month, and only the current month’s data is updated\. In this case, you can create a full load task for each static monthly partition and create a full load \+ CDC task for the currently updated partition\.
+When Oracle is both source and target, you can preserve existing table or index tablespace assignments by setting the Oracle source extra connection attribute `enableHomogenousTablespace=true`\. For more information, see [Extra connection attributes when using Oracle as a source for AWS DMS](CHAP_Source.Oracle.md#CHAP_Source.Oracle.ConnectionAttrib)\.

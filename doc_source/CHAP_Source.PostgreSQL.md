@@ -1,66 +1,352 @@
-# Using a PostgreSQL Database as a Source for AWS DMS<a name="CHAP_Source.PostgreSQL"></a>
+# Using a PostgreSQL database as an AWS DMS source<a name="CHAP_Source.PostgreSQL"></a>
 
-You can migrate data from one or many PostgreSQL databases using AWS DMS\. With a PostgreSQL database as a source, you can migrate data to either another PostgreSQL database or one of the other supported databases\. AWS DMS supports a PostgreSQL version 9\.4 and later database as a source for on\-premises databases, databases on an EC2 instance, and databases on an Amazon RDS DB instance\. 
+You can migrate data from one or many PostgreSQL databases using AWS DMS\. With a PostgreSQL database as a source, you can migrate data to either another PostgreSQL database or one of the other supported databases\. AWS DMS supports a PostgreSQL version 9\.4 and later \(for versions 9\.x\), 10\.x, 11\.x, and 12\.x database as a source for these types of databases: 
++ On\-premises databases
++ Databases on an Amazon EC2 instance
++ Databases on an Amazon RDS DB instance
++ Databases on an Amazon Aurora DB instance with PostgreSQL compatibility
 
+
+
+
+|  PostgreSQL source version  |  AWS DMS version to use  | 
+| --- | --- | 
+|  9\.x, 10\.x, 11\.x  |  Use any available AWS DMS version\.  | 
+|  12\.x  |  Use AWS DMS version 3\.3\.3 and above\.  | 
+
+You can use Secure Socket Layers \(SSL\) to encrypt connections between your PostgreSQL endpoint and the replication instance\. For more information on using SSL with a PostgreSQL endpoint, see [Using SSL with AWS Database Migration Service](CHAP_Security.md#CHAP_Security.SSL)\.
+
+As an additional security requirement when using PostgreSQL as a source, the user account specified must be a registered user in the PostgreSQL database\.
+
+To configure a PostgreSQL database as an AWS DMS source endpoint, do the following:
++ Create a PostgreSQL user with appropriate permissions to provide AWS DMS access to your PostgreSQL source database\.
 **Note**  
-PostgreSQL versions 10\.x and later contain numerous changes in function names and folder names from previous versions\. If you are using PostgreSQL version 10\.x or later as a source for AWS DMS, see the topic [Using PostgreSQL Version 10\.x and Later as a Source for AWS DMS](#CHAP_Source.PostgreSQL.v10) for information on preparing a database as a source for AWS DMS\.
+If your PostgreSQL source database is self\-managed, see [Working with self\-managed PostgreSQL databases as a source in AWS DMS](#CHAP_Source.PostgreSQL.Prerequisites) for more information\.
+If your PostgreSQL source database is managed by Amazon RDS, see [Working with AWS\-managed PostgreSQL databases as DMS sources](#CHAP_Source.PostgreSQL.RDSPostgreSQL) for more information\.
++ Create a PostgreSQL source endpoint that conforms with your chosen PostgreSQL database configuration\.
++ Create a task or set of tasks to migrate your tables\.
 
-You can use SSL to encrypt connections between your PostgreSQL endpoint and the replication instance\. For more information on using SSL with a PostgreSQL endpoint, see [Using SSL With AWS Database Migration Service](CHAP_Security.SSL.md)\.
+  To create a full\-load\-only task, no further endpoint configuration is needed\.
 
-For a homogeneous migration from a PostgreSQL database to a PostgreSQL database on AWS, the following is true:
-+ JSONB columns on the source are migrated to JSONB columns on the target\. 
-+ JSON columns are migrated as JSON columns on the target\. 
-+ HSTORE columns are migrated as HSTORE columns on the target\. 
-
-For a heterogeneous migration with PostgreSQL as the source and a different database engine as the target, the situation is different\. In this case, JSONB, JSON, and HSTORE columns are converted to the AWS DMS intermediate type of NCLOB and then translated to the corresponding NCLOB column type on the target\. In this case, AWS DMS treats JSONB data as if it were a LOB column\. During the full load phase of a migration, the target column must be nullable\.
-
-AWS DMS supports change data capture \(CDC\) for PostgreSQL tables with primary keys\. If a table doesn't have a primary key, the write\-ahead logs \(WAL\) don't include a before image of the database row and AWS DMS can't update the table\. 
-
-AWS DMS supports CDC on Amazon RDS PostgreSQL databases when the DB instance is configured to use logical replication\. Amazon RDS supports logical replication for a PostgreSQL DB instance version 9\.4\.9 and higher and 9\.5\.4 and higher\.
-
-For additional details on working with PostgreSQL databases and AWS DMS, see the following sections\. 
+  Before you create a task for change data capture \(a CDC\-only or full\-load and CDC task\), see [Enabling CDC using a self\-managed PostgreSQL database as a AWS DMS source](#CHAP_Source.PostgreSQL.Prerequisites.CDC) or [Enabling CDC with an AWS\-managed PostgreSQL DB instance with AWS DMS](#CHAP_Source.PostgreSQL.RDSPostgreSQL.CDC)\.
 
 **Topics**
-+ [Migrating from PostgreSQL to PostgreSQL Using AWS DMS](#CHAP_Source.PostgreSQL.Homogeneous)
-+ [Prerequisites for Using a PostgreSQL Database as a Source for AWS DMS](#CHAP_Source.PostgreSQL.Prerequisites)
-+ [Security Requirements When Using a PostgreSQL Database as a Source for AWS DMS](#CHAP_Source.PostgreSQL.Security)
-+ [Limitations on Using a PostgreSQL Database as a Source for AWS DMS](#CHAP_Source.PostgreSQL.Limitations)
-+ [Setting Up an Amazon RDS PostgreSQL DB Instance as a Source](#CHAP_Source.PostgreSQL.RDSPostgreSQL)
-+ [Removing AWS DMS Artifacts from a PostgreSQL Source Database](#CHAP_Source.PostgreSQL.CleanUp)
-+ [Additional Configuration Settings When Using a PostgreSQL Database as a Source for AWS DMS](#CHAP_Source.PostgreSQL.Advanced)
-+ [Using PostgreSQL Version 10\.x and Later as a Source for AWS DMS](#CHAP_Source.PostgreSQL.v10)
-+ [Extra Connection Attributes When Using PostgreSQL as a Source for AWS DMS](#CHAP_Source.PostgreSQL.ConnectionAttrib)
-+ [Source Data Types for PostgreSQL](#CHAP_Source.PostgreSQL.DataTypes)
++ [Working with self\-managed PostgreSQL databases as a source in AWS DMS](#CHAP_Source.PostgreSQL.Prerequisites)
++ [Working with AWS\-managed PostgreSQL databases as DMS sources](#CHAP_Source.PostgreSQL.RDSPostgreSQL)
++ [Enabling change data capture \(CDC\) using logical replication](#CHAP_Source.PostgreSQL.Security)
++ [Using native CDC start points to set up a CDC load of a PostgreSQL source](#CHAP_Source.PostgreSQL.v10)
++ [Migrating from PostgreSQL to PostgreSQL using AWS DMS](#CHAP_Source.PostgreSQL.Homogeneous)
++ [Removing AWS DMS artifacts from a PostgreSQL source database](#CHAP_Source.PostgreSQL.CleanUp)
++ [Additional configuration settings when using a PostgreSQL database as a DMS source](#CHAP_Source.PostgreSQL.Advanced)
++ [Extra connection attributes when using PostgreSQL as a DMS source](#CHAP_Source.PostgreSQL.ConnectionAttrib)
++ [Limitations on using a PostgreSQL database as a DMS source](#CHAP_Source.PostgreSQL.Limitations)
++ [Source data types for PostgreSQL](#CHAP_Source-PostgreSQL-DataTypes)
 
-## Migrating from PostgreSQL to PostgreSQL Using AWS DMS<a name="CHAP_Source.PostgreSQL.Homogeneous"></a>
+## Working with self\-managed PostgreSQL databases as a source in AWS DMS<a name="CHAP_Source.PostgreSQL.Prerequisites"></a>
 
-For a heterogeneous migration, where you are migrating from a database engine other than PostgreSQL to a PostgreSQL database, AWS DMS is almost always the best migration tool to use\. But for a homogeneous migration, where you are migrating from a PostgreSQL database to a PostgreSQL database, native tools can be more effective\.
+With a self\-managed PostgreSQL database as a source, you can migrate data to either another PostgreSQL database, or one of the other target databases supported by AWS DMS\. The database source can be an on\-premises database or a self\-managed engine running on an Amazon EC2 instance\. You can use a DB instance for both full\-load tasks and change data capture \(CDC\) tasks\.
 
-We recommend that you use native PostgreSQL database migration tools such as `pg_dump` under the following conditions: 
+### Prerequisites to using a self\-managed PostgreSQL database as a AWS DMS source<a name="CHAP_Source.PostgreSQL.Prerequisites.SelfManaged"></a>
+
+Before migrating data from a self\-managed PostgreSQL source database, do the following: 
++ Make sure that you use a PostgreSQL database that is version 9\.4\.x or later\.
++ For full\-load plus CDC tasks or CDC\-only tasks, grant superuser permissions for the user account specified for the PostgreSQL source database\. The user account needs superuser permissions to access replication\-specific functions in the source\. For full\-load only tasks, the user account needs SELECT permissions on tables to migrate them\.
++ Add the IP address of the AWS DMS replication server to the `pg_hba.conf` configuration file and enable replication and socket connections\. An example follows\.
+
+  ```
+              # Replication Instance
+              host all all 12.3.4.56/00 md5
+              # Allow replication connections from localhost, by a user with the
+              # replication privilege.
+              host replication dms 12.3.4.56/00 md5
+  ```
+
+  PostgreSQL's `pg_hba.conf` configuration file controls client authentication\. \(HBA stands for host\-based authentication\.\) The file is traditionally stored in the database cluster's data directory\. 
++ If you're configuring a database as a source for logical replication using AWS DMS see [Enabling CDC using a self\-managed PostgreSQL database as a AWS DMS source](#CHAP_Source.PostgreSQL.Prerequisites.CDC)
+
+**Note**  
+Some AWS DMS transactions are idle for some time before the DMS engine uses them again\. By using the parameter `idle_in_transaction_session_timeout` in PostgreSQL versions 9\.6 and later, you can cause idle transactions to time out and fail\. Don't end idle transactions when you use AWS DMS\. 
+
+### Enabling CDC using a self\-managed PostgreSQL database as a AWS DMS source<a name="CHAP_Source.PostgreSQL.Prerequisites.CDC"></a>
+
+AWS DMS supports change data capture \(CDC\) using logical replication\. To enable logical replication of a self\-managed PostgreSQL source database, set the following parameters and values in the `postgresql.conf` configuration file:
++ Set `wal_level = logical`\.
++ Set `max_replication_slots` to a value greater than 1\.
+
+  Set the `max_replication_slots` value according to the number of tasks that you want to run\. For example, to run five tasks you set a minimum of five slots\. Slots open automatically as soon as a task starts and remain open even when the task is no longer running\. Make sure to manually delete open slots\.
++ Set `max_wal_senders` to a value greater than 1\.
+
+  The `max_wal_senders` parameter sets the number of concurrent tasks that can run\.
++ Set `wal_sender_timeout =0`\.
+
+  The `wal_sender_timeout` parameter ends replication connections that are inactive longer than the specified number of milliseconds\. Although the default is 60 seconds, we recommend that you set this parameter to zero\. Doing this turns off the timeout mechanism\.
+
+Some parameters are static, and you can only set them at server start\. Any changes to their entries in the configuration file \(for a self\-managed database\) or DB parameter group \(for an RDS PostgreSQL database\) are ignored until the server is restarted\. For more information, see the [PostgreSQL documentation](https://www.postgresql.org/docs/current/intro-whatis.html)\.
+
+For more information about enabling CDC, see [Enabling change data capture \(CDC\) using logical replication](#CHAP_Source.PostgreSQL.Security)\.
+
+## Working with AWS\-managed PostgreSQL databases as DMS sources<a name="CHAP_Source.PostgreSQL.RDSPostgreSQL"></a>
+
+You can use an AWS\-managed PostgreSQL DB instance as a source for AWS DMS\. You can perform both full\-load tasks and change data capture \(CDC\) tasks using an AWS\-managed PostgreSQL source\. 
+
+### Prerequisites for using an AWS\-managed PostgreSQL database as a DMS source<a name="CHAP_Source.PostgreSQL.RDSPostgreSQL.Prerequisites"></a>
+
+Before migrating data from an AWS\-managed PostgreSQL source database, do the following:
++ Use the AWS master user account for the PostgreSQL DB instance as the user account for the PostgreSQL source endpoint for AWS DMS\. The master user account has the required roles that allow it to set up CDC\. If you use an account other than the master user account, the account must have the `rds_superuser` role and the `rds_replication` role\. The `rds_replication` role grants permissions to manage logical slots and to stream data using logical slots\.
+
+  If you don't use the master user account for the DB instance, make sure to create several objects from the master user account for the account that you use\. For information about creating these, see [Migrating an Amazon RDS for PostgreSQL database without using the master user account](#CHAP_Source.PostgreSQL.RDSPostgreSQL.NonMasterUser)\.
++ If your source database is in a virtual private cloud \(VPC\), choose the VPC security group that provides access to the DB instance where the database resides\. This is needed for the DMS replication instance to connect successfully to the source DB instance\. When the database and DMS replication instance are in same VPC, add the appropriate security group to its own inbound rules\.
+
+**Note**  
+Some AWS DMS transactions are idle for some time before the DMS engine uses them again\. By using the parameter `idle_in_transaction_session_timeout` in PostgreSQL versions 9\.6 and later, you can cause idle transactions to time out and fail\. Don't end idle transactions when you use AWS DMS\.
+
+### Enabling CDC with an AWS\-managed PostgreSQL DB instance with AWS DMS<a name="CHAP_Source.PostgreSQL.RDSPostgreSQL.CDC"></a>
+
+AWS DMS supports CDC on Amazon RDS PostgreSQL databases when the DB instance is configured to use logical replication\. The table following summarizes the logical replication compatibility of each AWS\-managed PostgreSQL version\. 
+
+You can't use RDS PostgreSQL read replicas for CDC \(ongoing replication\)\.
+
+
+|  Aurora PostgreSQL version  |  AWS DMS full load support   |  AWS DMS CDC support  | 
+| --- | --- | --- | 
+|  Aurora PostgreSQL version 2\.1 with PostgreSQL 10\.5 compatibility \(or lower\)  |  Yes  |  No  | 
+|  Aurora PostgreSQL version 2\.2 with PostgreSQL 10\.6 compatibility \(or higher\) till version 3\.3 with PostgreSQL 11\.8 compatibility  |  Yes  |  Yes  | 
+
+**To enable logical replication for an RDS PostgreSQL DB instance**
+
+1. Use the AWS master user account for the PostgreSQL DB instance as the user account for the PostgreSQL source endpoint\. The master user account has the required roles that allow it to set up CDC\. 
+
+   If you use an account other than the master user account, make sure to create several objects from the master account for the account that you use\. For more information, see [Migrating an Amazon RDS for PostgreSQL database without using the master user account](#CHAP_Source.PostgreSQL.RDSPostgreSQL.NonMasterUser)\.
+
+1. Set the `rds.logical_replication` parameter in your DB parameter group to 1\. This static parameter requires a reboot of the DB instance to take effect\. As part of applying this parameter, AWS DMS sets the `wal_level`, `max_wal_senders`, `max_replication_slots`, and `max_connections` parameters\. These parameter changes can increase write ahead log \(WAL\) generation, so only set `rds.logical_replication` when you use logical replication slots\.
+
+1. Set the `wal_sender_timeout` parameter to 0, as a best practice\. Setting this parameter to 0 prevents PostgreSQL from terminating replication connections that are inactive longer than the specified timeout\. When AWS DMS migrates data, replication connections need to be able to last longer than the specified timeout\.
+
+### Migrating an Amazon RDS for PostgreSQL database without using the master user account<a name="CHAP_Source.PostgreSQL.RDSPostgreSQL.NonMasterUser"></a>
+
+IIn some cases, you might not use the master user account for the Amazon RDS PostgreSQL DB instance that you are using as a source\. In these cases, you create several objects to capture data definition language \(DDL\) events\. You create these objects in the account other than the master account and then create a trigger in the master user account\.
+
+**Note**  
+If you set the `captureDDLs` extra connection attribute to *N* on the source endpoint, you don't have to create the following table and trigger on the source database\.
+
+Use the following procedure to create these objects\.
+
+**To create objects**
+
+1. Choose the schema where the objects are to be created\. The default schema is `public`\. Ensure that the schema exists and is accessible by the `NoPriv` account\. 
+
+1. Log in to the PostgreSQL DB instance using the user account other than the master account, here the `NoPriv` account\.
+
+1. Create the table `awsdms_ddl_audit` by running the following command, replacing `objects_schema` in the code following with the name of the schema to use\.
+
+   ```
+   create table objects_schema.awsdms_ddl_audit
+   (
+     c_key    bigserial primary key,
+     c_time   timestamp,    -- Informational
+     c_user   varchar(64),  -- Informational: current_user
+     c_txn    varchar(16),  -- Informational: current transaction
+     c_tag    varchar(24),  -- Either 'CREATE TABLE' or 'ALTER TABLE' or 'DROP TABLE'
+     c_oid    integer,      -- For future use - TG_OBJECTID
+     c_name   varchar(64),  -- For future use - TG_OBJECTNAME
+     c_schema varchar(64),  -- For future use - TG_SCHEMANAME. For now - holds current_schema
+     c_ddlqry  text         -- The DDL query associated with the current DDL event
+   )
+   ```
+
+1. Create the function `awsdms_intercept_ddl` by running the following command, replacing `objects_schema` in the code following with the name of the schema to use\.
+
+   ```
+   CREATE OR REPLACE FUNCTION objects_schema.awsdms_intercept_ddl()
+     RETURNS event_trigger
+   LANGUAGE plpgsql
+   SECURITY DEFINER
+     AS $$
+     declare _qry text;
+   BEGIN
+     if (tg_tag='CREATE TABLE' or tg_tag='ALTER TABLE' or tg_tag='DROP TABLE') then
+            SELECT current_query() into _qry;
+            insert into objects_schema.awsdms_ddl_audit
+            values
+            (
+            default,current_timestamp,current_user,cast(TXID_CURRENT()as varchar(16)),tg_tag,0,'',current_schema,_qry
+            );
+            delete from objects_schema.awsdms_ddl_audit;
+   end if;
+   END;
+   $$;
+   ```
+
+1. Log out of the `NoPriv` account and log in with an account that has the `rds_superuser` role assigned to it\.
+
+1. Create the event trigger `awsdms_intercept_ddl` by running the following command\.
+
+   ```
+   CREATE EVENT TRIGGER awsdms_intercept_ddl ON ddl_command_end 
+   EXECUTE PROCEDURE objects_schema.awsdms_intercept_ddl();
+   ```
+
+When you have completed the procedure preceding, you can create the AWS DMS source endpoint using the `NoPriv` account\.
+
+## Enabling change data capture \(CDC\) using logical replication<a name="CHAP_Source.PostgreSQL.Security"></a>
+
+You can use PostgreSQL's native logical replication feature to enable change data capture \(CDC\) during database migration for PostgreSQL sources\. You can use this feature with a self\-managed PostgreSQL and also an Amazon RDS for PostgreSQL DB instance\. This approach reduces downtime and help ensure that the target database is in sync with the source PostgreSQL database\.
+
+AWS DMS supports CDC for PostgreSQL tables with primary keys\. If a table doesn't have a primary key, the write\-ahead logs \(WAL\) don't include a before image of the database row\. In this case, DMS can't update the table\. Here, you can use additional configuration settings and use table replica identity as a workaround\. However, this approach can generate extra logs\. We recommend that you use table replica identity as a workaround only after careful testing\. For more information, see [Additional configuration settings when using a PostgreSQL database as a DMS source](#CHAP_Source.PostgreSQL.Advanced)\.
+
+For full load and CDC and CDC only tasks, AWS DMS uses logical replication slots to retain WAL logs for replication until the logs are decoded\. On restart \(not resume\) for a full load and CDC task or a CDC task, the replication slot gets recreated\.
+
+**Note**  
+For logical decoding, DMS uses either test\_decoding or pglogical plugin\. If the pglogical plugin is available on a source PostgreSQL database, DMS creates a replication slot using pglogical, otherwise a test\_decoding plugin is used\.
+
+### Configuring the pglogical plugin<a name="CHAP_Source.PostgreSQL.Security.Pglogical"></a>
+
+Implemented as a PostgreSQL extension, the pglogical plugin is a logical replication system and model for selective data replication\. The table following identifies source PostgreSQL database versions that support the pglogical plugin\.
+
+
+|  PostgreSQL source   |  Supports pglogical  | 
+| --- | --- | 
+|  Self\-managed PostgreSQL 9\.4 or higher  |  Yes  | 
+|  Amazon RDS PostgreSQL 9\.5 or lower  |  No  | 
+|  Amazon RDS PostgreSQL 9\.6 or higher  |  Yes  | 
+|  Aurora PostgreSQL 1\.x till 2\.5\.x  |  No  | 
+|  Aurora PostgreSQL 2\.6\.x or higher  |  Yes  | 
+|  Aurora PostgreSQL 3\.3\.x or higher  |  Supported  | 
+
+Before configuring pglogical for use with AWS DMS, first enable logical replication for change data capture \(CDC\) on your PostgreSQL source database\. 
++ For information about enabling logical replication for CDC on *self\-managed* PostgreSQL source databases, see [Enabling CDC using a self\-managed PostgreSQL database as a AWS DMS source](#CHAP_Source.PostgreSQL.Prerequisites.CDC)
++ For information about enabling logical replication for CDC on *AWS\-managed* PostgreSQL source databases, see [Enabling CDC with an AWS\-managed PostgreSQL DB instance with AWS DMS](#CHAP_Source.PostgreSQL.RDSPostgreSQL.CDC)\.
+
+After logical replication is enabled on your PostgreSQL source database, use the steps following to configure pglogical for use with DMS\.
+
+**To use the pglogical plugin for logical replication on a PostgreSQL source database with AWS DMS**
+
+1. Create a pglogical extension on your source PostgreSQL database:
+
+   1. Set the correct parameter:
+      + For self\-managed PostgreSQL databases, set the database parameter `shared_preload_libraries= 'pglogical'`\.
+      + For Amazon RDS PostgreSQL and Amazon Aurora PostgreSQL\-Compatible Edition databases, set the parameter `shared_preload_libraries` to `pglogical` in the same RDS parameter group\.
+
+   1. Restart your PostgreSQL source database\.
+
+   1. On the PostgreSQL database, run the command, `create extension pglogical;`
+
+1. Run the command following to verify that pglogical installed successfully:
+
+   `select * FROM pg_catalog.pg_extension`
+
+1. Enable a CDC task to use a native start point as follows:
+
+   1. Create a replication slot, as shown following:
+
+      ```
+      SELECT * FROM pg_create_logical_replication_slot('replication_slot_name', 'pglogical');                        
+      ```
+
+   1. Create two replication sets, as shown following:
+
+      ```
+      select pglogical.create_replication_set('replication_slot_name', true, false, false, true);
+      select pglogical.create_replication_set('replication_slot_name', false, true, true, false);
+      ```
+
+   An example follows\.
+
+   ```
+   SELECT * FROM pg_create_logical_replication_slot('test_slot', 'pglogical');
+                           
+   select pglogical.create_replication_set('itest_slot', true, false, false, true);
+   select pglogical.create_replication_set('test_slot', false, true, true, false);
+   ```
+
+You can now create a AWS DMS task that performs change data capture for your PostgreSQL source database endpoint\.
+
+**Note**  
+If you don't enable pglogical on your PostgreSQL source database, AWS DMS uses the `test_decoding` plugin by default\. When pglogical is enabled for logical decoding, AWS DMS uses pglogical by default\. But you can set the extra connection attribute, `PluginName` to use the `test_decoding` plugin instead\.
+
+## Using native CDC start points to set up a CDC load of a PostgreSQL source<a name="CHAP_Source.PostgreSQL.v10"></a>
+
+To enable native CDC start points with PostgreSQL as a source, set the `slotName` extra connection attribute to the name of an existing logical replication slot when you create the endpoint\. This logical replication slot holds ongoing changes from the time of endpoint creation, so it supports replication from a previous point in time\. 
+
+PostgreSQL writes the database changes to WAL files that are discarded only after AWS DMS successfully reads changes from the logical replication slot\. Using logical replication slots can protect logged changes from being deleted before they are consumed by the replication engine\. 
+
+However, depending on rate of change and consumption, changes being held in a logical replication slot can cause elevated disk usage\. We recommend that you set space usage alarms in the source PostgreSQL instance when you use logical replication slots\. For more information on setting the `slotName` extra connection attribute, see [Extra connection attributes when using PostgreSQL as a DMS source](#CHAP_Source.PostgreSQL.ConnectionAttrib)\.
+
+The following procedure walks through this approach in more detail\.
+
+**To use a native CDC start point to set up a CDC load of a PostgreSQL source endpoint**
+
+1. Identify the logical replication slot used by an earlier replication task \(a parent task\) that you want to use as a start point\. Then query the `pg_replication_slots` view on your source database to make sure that this slot doesn't have any active connections\. If it does, resolve and close them before proceeding\.
+
+   For the following steps, assume that your logical replication slot is `abc1d2efghijk_34567890_z0yx98w7_6v54_32ut_1srq_1a2b34c5d67ef`\. 
+
+1. Create a new source endpoint that includes the following extra connection attribute setting\.
+
+   ```
+   slotName=abc1d2efghijk_34567890_z0yx98w7_6v54_32ut_1srq_1a2b34c5d67ef;
+   ```
+
+1. Create a new CDC\-only task using the AWS CLI or AWS DMS API\. For example, using the CLI you might run the `create-replication-task` command following\. 
+
+   AWS DMS doesn't currently support creating a CDC task with a native start point using the console\.
+
+   ```
+   aws dms create-replication-task --replication-task-identifier postgresql-slot-name-test 
+   --source-endpoint-arn arn:aws:dms:us-west-2:012345678901:endpoint:ABCD1EFGHIJK2LMNOPQRST3UV4 
+   --target-endpoint-arn arn:aws:dms:us-west-2:012345678901:endpoint:ZYX9WVUTSRQONM8LKJIHGF7ED6 
+   --replication-instance-arn arn:aws:dms:us-west-2:012345678901:rep:AAAAAAAAAAA5BB4CCC3DDDD2EE 
+   --migration-type cdc --table-mappings "file://mappings.json" --cdc-start-position "4AF/B00000D0" 
+   --replication-task-settings "file://task-pg.json"
+   ```
+
+   In the preceding command, the following options are set:
+   + The `source-endpoint-arn` option is set to the new value that you created in step 2\.
+   + The `replication-instance-arn` option is set to the same value as for the parent task from step 1\.
+   + The `table-mappings` and `replication-task-settings` options are set to the same values as for the parent task from step 1\.
+   + The `cdc-start-position` option is set to a start position value\. To find this start position, either query the `pg_replication_slots` view on your source database or view the console details for the parent task in step 1\. For more information, see [Determining a CDC native start point](CHAP_Task.CDC.md#CHAP_Task.CDC.StartPoint.Native)\.
+
+   When this CDC task runs, AWS DMS raises an error if the specified logical replication slot doesn't exist\. It also raises an error if the task isn't created with a valid setting for `cdc-start-position`\.
+
+## Migrating from PostgreSQL to PostgreSQL using AWS DMS<a name="CHAP_Source.PostgreSQL.Homogeneous"></a>
+
+When you migrate from a database engine other than PostgreSQL to a PostgreSQL database, AWS DMS is almost always the best migration tool to use\. But when you are migrating from a PostgreSQL database to a PostgreSQL database, PostgreSQL tools can be more effective\.
+
+### Using PostgreSQL native tools to migrate data<a name="CHAP_Source.PostgreSQL.Homogeneous.Native"></a>
+
+We recommend that you use PostgreSQL database migration tools such as `pg_dump` under the following conditions: 
 + You have a homogeneous migration, where you are migrating from a source PostgreSQL database to a target PostgreSQL database\. 
 + You are migrating an entire database\.
 + The native tools allow you to migrate your data with minimal downtime\. 
 
-The `pg_dump` utility uses the COPY command to create a schema and data dump of a PostgreSQL database\. The dump script generated by `pg_dump` loads data into a database with the same name and recreates the tables, indexes, and foreign keys\. You can use the `pg_restore` command and the `-d` parameter to restore the data to a database with a different name\.
+The pg\_dump utility uses the COPY command to create a schema and data dump of a PostgreSQL database\. The dump script generated by pg\_dump loads data into a database with the same name and recreates the tables, indexes, and foreign keys\. To restore the data to a database with a different name, use the `pg_restore` command and the `-d` parameter\.
 
-For more information about importing a PostgreSQL database into Amazon RDS for PostgreSQL or Amazon Aurora \(PostgreSQL\), see [http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide//PostgreSQL.Procedural.Importing.html](http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide//PostgreSQL.Procedural.Importing.html)\. 
+If you are migrating data from a PostgreSQL source database running on EC2 to an Amazon RDS for PostgreSQL target, you can use the pglogical plugin\.
 
-### Using DMS to Migrate Data from PostgreSQL to PostgreSQL<a name="CHAP_Source.PostgreSQL.Homogeneous.DMS"></a>
+For more information about importing a PostgreSQL database into Amazon RDS for PostgreSQL or Amazon Aurora PostgreSQL\-Compatible Edition, see [https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/PostgreSQL.Procedural.Importing.html](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/PostgreSQL.Procedural.Importing.html)\.
 
- AWS DMS can migrate data from, for example, a source PostgreSQL database that is on premises to a target Amazon RDS for PostgreSQL or Amazon Aurora \(PostgreSQL\) instance\. Core or basic PostgreSQL data types most often migrate successfully\. 
+### Using DMS to migrate data from PostgreSQL to PostgreSQL<a name="CHAP_Source.PostgreSQL.Homogeneous.DMS"></a>
 
-Data types that are supported on the source database but are not supported on the target may not migrate successfully\. AWS DMS streams some data types as strings if the data type is unknown\. Some data types, such as XML and JSON, can successfully migrate as small files but can fail if the are large documents\. 
+ AWS DMS can migrate data, for example, from a source PostgreSQL database that is on premises to a target Amazon RDS for PostgreSQL or Aurora PostgreSQL instance\. Core or basic PostgreSQL data types most often migrate successfully\.
 
-The following table shows source PostgreSQL data types and whether they can be migrated successfully:
+**Note**  
+When replicating partitioned tables from a PostgreSQL source to PostgreSQL target, you don’t need to mention the parent table as part of the selection criteria in the DMS task\. Mentioning the parent table causes data to be duplicated in child tables on the target, possibly causing a PK violation\. By selecting child tables alone in the table mapping selection criteria, the parent table is automatically populated\.
+
+Data types that are supported on the source database but aren't supported on the target might not migrate successfully\. AWS DMS streams some data types as strings if the data type is unknown\. Some data types, such as XML and JSON, can successfully migrate as small files but can fail if they are large documents\. 
+
+When performing data type migration, be aware of the following:
++ In some cases, the PostgreSQL NUMERIC\(p,s\) data type doesn't specify any precision and scale\. For DMS versions 3\.4\.2 and earlier, DMS uses a precision of 28 and a scale of 6 by default, NUMERIC\(28,6\)\. For example, the value 0\.611111104488373 from the source is converted to 0\.611111 on the PostgreSQL target\.
++ A table with an ARRAY data type must have a primary key\. A table with an ARRAY data type missing a primary key gets suspended during full load\.
+
+The following table shows source PostgreSQL data types and whether they can be migrated successfully\.
 
 
-| Data type | Migrates successfully | Will partially migrate | Will not migrate | Comments | 
+| Data type | Migrates successfully | Partially migrates | Doesn't migrate | Comments | 
 | --- | --- | --- | --- | --- | 
 | INTEGER | X |  |  |  | 
 | SMALLINT | X |  |  |  | 
 | BIGINT | X |  |  |  | 
-| NUMERIC/DECIMAL\(p,s\) |  | X |  | With 0<p<39 and 0<s | 
-| NUMERIC/DECIMAL |  | X |  | p>38 or p=s=0 | 
+| NUMERIC/DECIMAL\(p,s\) |  | X |  | Where 0<p<39 and 0<s | 
+| NUMERIC/DECIMAL |  | X |  | Where p>38 or p=s=0 | 
 | REAL | X |  |  |  | 
 | DOUBLE | X |  |  |  | 
 | SMALLSERIAL | X |  |  |  | 
@@ -81,172 +367,49 @@ The following table shows source PostgreSQL data types and whether they can be m
 | INTERVAL |  | X |  |  | 
 | BOOLEAN | X |  |  |  | 
 | ENUM |  |  | X |  | 
-| CIDR |  |  | X |  | 
+| CIDR | X |  |  |  | 
 | INET |  |  | X |  | 
 | MACADDR |  |  | X |  | 
 | TSVECTOR |  |  | X |  | 
 | TSQUERY |  |  | X |  | 
 | XML |  | X |  |  | 
-| POINT |  |  | X |  | 
+| POINT | X |  |  | PostGIS spatial data type | 
 | LINE |  |  | X |  | 
 | LSEG |  |  | X |  | 
 | BOX |  |  | X |  | 
 | PATH |  |  | X |  | 
-| POLYGON |  |  | X |  | 
+| POLYGON | X |  |  | PostGIS spatial data type | 
 | CIRCLE |  |  | X |  | 
 | JSON |  | X |  |  | 
-| ARRAY |  |  | X |  | 
+| ARRAY | X |  |  | Requires Primary Key | 
 | COMPOSITE |  |  | X |  | 
 | RANGE |  |  | X |  | 
+| LINESTRING | X |  |  | PostGIS spatial data type | 
+| MULTIPOINT | X |  |  | PostGIS spatial data type | 
+| MULTILINESTRING | X |  |  | PostGIS spatial data type | 
+| MULTIPOLYGON | X |  |  | PostGIS spatial data type | 
+| GEOMETRYCOLLECTION | X |  |  | PostGIS spatial data type | 
 
-## Prerequisites for Using a PostgreSQL Database as a Source for AWS DMS<a name="CHAP_Source.PostgreSQL.Prerequisites"></a>
+### Migrating PostGIS spatial data types<a name="CHAP_Source.PostgreSQL.DataTypes.Spatial"></a>
 
-For a PostgreSQL database to be a source for AWS DMS, you should do the following: 
-+ Use a PostgreSQL database that is version 9\.4\.x or later\.
-+ Grant superuser permissions for the user account specified for the PostgreSQL source database\.
-+ Add the IP address of the AWS DMS replication server to the `pg_hba.conf` configuration file\.
-+ Set the following parameters and values in the `postgresql.conf` configuration file:
-  + Set `wal_level = logical`
-  + Set `max_replication_slots` to a value greater than 1\.
+*Spatial data* identifies the geometry information of an object or location in space\. PostgreSQL object\-relational databases support PostGIS spatial data types\. 
 
-    The `max_replication_slots` value should be set according to the number of tasks that you want to run\. For example, to run five tasks you need to set a minimum of five slots\. Slots open automatically as soon as a task starts and remain open even when the task is no longer running\. You need to manually delete open slots\.
-  + Set `max_wal_senders` to a value greater than 1\.
+Before migrating PostgreSQL spatial data objects, ensure that the PostGIS plugin is enabled at the global level\. Doing this ensures that AWS DMS creates the exact source spatial data columns for the PostgreSQL target DB instance\.
 
-    The `max_wal_senders` parameter sets the number of concurrent tasks that can run\.
-  + Set `wal_sender_timeout =0`
+For PostgreSQL to PostgreSQL homogeneous migrations, AWS DMS supports the migration of PostGIS geometric and geographic \(geodetic coordinates\) data object types and subtypes such as the following:
++  POINT 
++  LINESTRING 
++  POLYGON 
++  MULTIPOINT 
++  MULTILINESTRING 
++  MULTIPOLYGON 
++  GEOMETRYCOLLECTION 
 
-    The `wal_sender_timeout` parameter terminates replication connections that are inactive longer than the specified number of milliseconds\. Although the default is 60 seconds, we recommend that you set this parameter to zero, which disables the timeout mechanism\.
-+ The parameter `idle_in_transaction_session_timeout` in PostgreSQL versions 9\.6 and later lets you cause idle transactions to time out and fail\. Some AWS DMS transactions are idle for some time before the AWS DMS engine uses them again\. Do not end idle transactions when you use AWS DMS\. 
+## Removing AWS DMS artifacts from a PostgreSQL source database<a name="CHAP_Source.PostgreSQL.CleanUp"></a>
 
-## Security Requirements When Using a PostgreSQL Database as a Source for AWS DMS<a name="CHAP_Source.PostgreSQL.Security"></a>
+To capture DDL events, AWS DMS creates various artifacts in the PostgreSQL database when a migration task starts\. When the task completes, you might want to remove these artifacts\.
 
-The only security requirement when using PostgreSQL as a source is that the user account specified must be a registered user in the PostgreSQL database\.
-
-## Limitations on Using a PostgreSQL Database as a Source for AWS DMS<a name="CHAP_Source.PostgreSQL.Limitations"></a>
-
-The following limitations apply when using PostgreSQL as a source for AWS DMS:
-+ A captured table must have a primary key\. If a table doesn't have a primary key, AWS DMS ignores DELETE and UPDATE record operations for that table\.
-+ Timestamp with a time zone type column is not supported\.
-+ AWS DMS ignores an attempt to update a primary key segment\. In these cases, the target identifies the update as one that didn't update any rows\. However, because the results of updating a primary key in PostgreSQL are unpredictable, no records are written to the exceptions table\.
-+ AWS DMS doesn't support the **Start Process Changes from Timestamp** run option\.
-+ AWS DMS supports full load and change processing on Amazon RDS for PostgreSQL\. For information on how to prepare a PostgreSQL DB instance and to set it up for using CDC, see [Setting Up an Amazon RDS PostgreSQL DB Instance as a Source](#CHAP_Source.PostgreSQL.RDSPostgreSQL)\.
-+ Replication of multiple tables with the same name but where each name has a different case \(for example table1, TABLE1, and Table1\) can cause unpredictable behavior, and therefore AWS DMS doesn't support it\.
-+ AWS DMS supports change processing of CREATE, ALTER, and DROP DDL statements for tables unless the tables are held in an inner function or procedure body block or in other nested constructs\.
-
-  For example, the following change is not captured:
-
-  ```
-  CREATE OR REPLACE FUNCTION attu.create_distributors1() RETURNS void
-  LANGUAGE plpgsql
-  AS $$
-  BEGIN
-  create table attu.distributors1(did serial PRIMARY KEY,name
-  varchar(40) NOT NULL);
-  END;
-  $$;
-  ```
-+ AWS DMS doesn't support change processing of TRUNCATE operations\.
-+ The OID LOB data type is not migrated to the target\.
-+ If your source is an on\-premises PostgreSQL database or a PostgreSQL database on an Amazon EC2 instance, ensure that the `test_decoding` output plugin \(found in the Postgres contrib package\) is installed on your source endpoint\. For more information about the test\-decoding plugin, see the [ PostgreSQL documentation](https://www.postgresql.org/docs/10/static/test-decoding.html)\.
-+ AWS DMS doesn’t support change processing to set column default values \(using the ALTER COLUMN SET DEFAULT clause on ALTER TABLE statements\)\.
-+ AWS DMS doesn’t support change processing to set column nullability \(using the ALTER COLUMN \[SET\|DROP\] NOT NULL clause on ALTER TABLE statements\)\.
-+ AWS DMS doesn't support replication of partitioned tables\. When a partitioned table is detected, the following occurs:
-  + The endpoint reports a list of parent and child tables\.
-  + AWS DMS creates the table on the target as a regular table with the same properties as the selected tables\.
-  + If the parent table in the source database has the same primary key value as its child tables, a "duplicate key" error is generated\.
-
-**Note**  
-To replicate partitioned tables from a PostgreSQL source to a PostgreSQL target, you first need to manually create the parent and child tables on the target\. Then you define a separate task to replicate to those tables\. In such a case, you set the task configuration to **Truncate before loading**\.
-
-## Setting Up an Amazon RDS PostgreSQL DB Instance as a Source<a name="CHAP_Source.PostgreSQL.RDSPostgreSQL"></a>
-
-You can use an Amazon RDS for PostgreSQL DB instance or Read Replica as a source for AWS DMS\. A DB instance can be used for both full\-load and CDC \(ongoing replication\); a Read Replica can only be used for full\-load tasks and cannot be used for CDC\.
-
-You use the AWS master user account for the PostgreSQL DB instance as the user account for the PostgreSQL source endpoint for AWS DMS\. The master user account has the required roles that allow it to set up change data capture \(CDC\)\. If you use an account other than the master user account, the account must have the rds\_superuser role and the rds\_replication role\. The rds\_replication role grants permissions to manage logical slots and to stream data using logical slots\.
-
-If you don't use the master user account for the DB instance, you must create several objects from the master user account for the account that you use\. For information about creating the needed objects, see [Migrating an Amazon RDS for PostgreSQL Database Without Using the Master User Account](#CHAP_Source.PostgreSQL.RDSPostgreSQL.NonMasterUser)\.
-
-### Using CDC with an RDS for PostgreSQL DB Instance<a name="CHAP_Source.PostgreSQL.RDSPostgreSQL.CDC"></a>
-
-You can use PostgreSQL's native logical replication feature to enable CDC during a database migration of an Amazon RDS PostgreSQL DB instance\. This approach reduces downtime and ensures that the target database is in sync with the source PostgreSQL database\. Amazon RDS supports logical replication for a PostgreSQL DB instance version 9\.4\.9 and higher and 9\.5\.4 and higher\.
-
-**Note**  
-Amazon RDS for PostgreSQL Read Replicas cannot be used for CDC \(ongoing replication\)\.
-
-To enable logical replication for an RDS PostgreSQL DB instance, do the following:
-+ In general, use the AWS master user account for the PostgreSQL DB instance as the user account for the PostgreSQL source endpoint\. The master user account has the required roles that allow it to set up CDC\. If you use an account other than the master user account, you must create several objects from the master account for the account that you use\. For more information, see [Migrating an Amazon RDS for PostgreSQL Database Without Using the Master User Account](#CHAP_Source.PostgreSQL.RDSPostgreSQL.NonMasterUser)\.
-+ Set the `rds.logical_replication` parameter in your DB parameter group to 1\. This is a static parameter that requires a reboot of the DB instance for the parameter to take effect\. As part of applying this parameter, AWS DMS sets the `wal_level`, `max_wal_senders`, `max_replication_slots`, and `max_connections` parameters\. These parameter changes can increase WAL generation, so you should only set the `rds.logical_replication` parameter when you are using logical slots\.
-+  A best practice is to set the `wal_sender_timeout` parameter to 0\. Setting this parameter to 0 prevents PostgreSQL from terminating replication connections that are inactive longer than the specified timeout\. When AWS DMS is migrating data, replication connections need to be able to last longer than the specified timeout\. 
-
-### Migrating an Amazon RDS for PostgreSQL Database Without Using the Master User Account<a name="CHAP_Source.PostgreSQL.RDSPostgreSQL.NonMasterUser"></a>
-
-If you don't use the master user account for the Amazon RDS PostgreSQL DB instance that you are using as a source, you need to create several objects to capture data definition language \(DDL\) events\. You create these objects in the account other than the master account and then create a trigger in the master user account\.
-
-**Note**  
-If you set the `captureDDL` parameter to *N* on the source endpoint, you don't have to create the following table and trigger on the source database\.
-
-Use the following procedure to create these objects\. The user account other than the master account is referred to as the `NoPriv` account in this procedure\.
-
-**To create objects**
-
-1. Choose the schema where the objects are to be created\. The default schema is `public`\. Ensure that the schema exists and is accessible by the `NoPriv` account\. 
-
-1. Log in to the PostgreSQL DB instance using the `NoPriv` account\.
-
-1. Create the table `awsdms_ddl_audit` by running the following command, replacing `<objects_schema>` in the code following with the name of the schema to use\.
-
-   ```
-   create table <objects_schema>.awsdms_ddl_audit
-   (
-     c_key    bigserial primary key,
-     c_time   timestamp,    -- Informational
-     c_user   varchar(64),  -- Informational: current_user
-     c_txn    varchar(16),  -- Informational: current transaction
-     c_tag    varchar(24),  -- Either 'CREATE TABLE' or 'ALTER TABLE' or 'DROP TABLE'
-     c_oid    integer,      -- For future use - TG_OBJECTID
-     c_name   varchar(64),  -- For future use - TG_OBJECTNAME
-     c_schema varchar(64),  -- For future use - TG_SCHEMANAME. For now - holds current_schema
-     c_ddlqry  text         -- The DDL query associated with the current DDL event
-   )
-   ```
-
-1. Create the function `awsdms_intercept_ddl` by running the following command, replacing `<objects_schema>` in the code following with the name of the schema to use\.
-
-   ```
-   CREATE OR REPLACE FUNCTION <objects_schema>.awsdms_intercept_ddl()
-     RETURNS event_trigger
-   LANGUAGE plpgsql
-   SECURITY DEFINER
-     AS $$
-     declare _qry text;
-   BEGIN
-     if (tg_tag='CREATE TABLE' or tg_tag='ALTER TABLE' or tg_tag='DROP TABLE') then
-            SELECT current_query() into _qry;
-            insert into <objects_schema>.awsdms_ddl_audit
-            values
-            (
-            default,current_timestamp,current_user,cast(TXID_CURRENT()as varchar(16)),tg_tag,0,'',current_schema,_qry
-            );
-            delete from <objects_schema>.awsdms_ddl_audit;
-   end if;
-   END;
-   $$;
-   ```
-
-1. Log out of the `NoPriv` account and log in with an account that has the `rds_superuser` role assigned to it\.
-
-1. Create the event trigger `awsdms_intercept_ddl` by running the following command\.
-
-   ```
-   CREATE EVENT TRIGGER awsdms_intercept_ddl ON ddl_command_end 
-   EXECUTE PROCEDURE <objects_schema>.awsdms_intercept_ddl();
-   ```
-
-When you have completed the procedure preceding, you can create the AWS DMS source endpoint using the `NoPriv` account\.
-
-## Removing AWS DMS Artifacts from a PostgreSQL Source Database<a name="CHAP_Source.PostgreSQL.CleanUp"></a>
-
-To capture DDL events, AWS DMS creates various artifacts in the PostgreSQL database when a migration task starts\. When the task completes, you might want to remove these artifacts\. To remove the artifacts, issue the following statements \(in the order they appear\), where `{AmazonRDSMigration}` is the schema in which the artifacts were created:
+To remove the artifacts, issue the following statements \(in the order they appear\), where `{AmazonRDSMigration}` is the schema in which the artifacts were created\. Dropping a schema should be done with extreme caution\. Never drop an operational schema, especially not a public one\.
 
 ```
 drop event trigger awsdms_intercept_ddl;
@@ -260,81 +423,71 @@ drop table {AmazonRDSMigration}.awsdms_ddl_audit
 drop schema {AmazonRDSMigration}
 ```
 
-**Note**  
-Dropping a schema should be done with extreme caution, if at all\. Never drop an operational schema, especially not a public one\.
-
-## Additional Configuration Settings When Using a PostgreSQL Database as a Source for AWS DMS<a name="CHAP_Source.PostgreSQL.Advanced"></a>
+## Additional configuration settings when using a PostgreSQL database as a DMS source<a name="CHAP_Source.PostgreSQL.Advanced"></a>
 
 You can add additional configuration settings when migrating data from a PostgreSQL database in two ways:
-+ You can add values to the extra connection attribute to capture DDL events and to specify the schema in which the operational DDL database artifacts are created\. For more information, see [Extra Connection Attributes When Using PostgreSQL as a Source for AWS DMS](#CHAP_Source.PostgreSQL.ConnectionAttrib)\.
-+ You can override connection string parameters\. Select this option if you need to do either of the following:
-  + Specify internal AWS DMS parameters\. Such parameters are rarely required and are therefore not exposed in the user interface\.
++ You can add values to the extra connection attribute to capture DDL events and to specify the schema in which the operational DDL database artifacts are created\. For more information, see [Extra connection attributes when using PostgreSQL as a DMS source](#CHAP_Source.PostgreSQL.ConnectionAttrib)\.
++ You can override connection string parameters\. Choose this option to do either of the following:
+  + Specify internal AWS DMS parameters\. Such parameters are rarely required so aren't exposed in the user interface\.
   + Specify pass\-through \(passthru\) values for the specific database client\. AWS DMS includes pass\-through parameters in the connection sting passed to the database client\.
++ By using the table\-level parameter `REPLICATE IDENTITY` in PostgreSQL versions 9\.4, you can control information written to write\-ahead logs \(WALs\)\. In particular, it does so for WALs that identify rows that are updated or deleted\. `REPLICATE IDENTITY FULL` records the old values of all columns in the row\. Use `REPLICATE IDENTITY FULL` carefully for each table as `FULL` generates an extra number of WALs that might not be necessary\.
 
-## Using PostgreSQL Version 10\.x and Later as a Source for AWS DMS<a name="CHAP_Source.PostgreSQL.v10"></a>
+## Extra connection attributes when using PostgreSQL as a DMS source<a name="CHAP_Source.PostgreSQL.ConnectionAttrib"></a>
 
- PostgreSQL version 10\.x and later have numerous changes in function names and folder names from previous PostgreSQL versions\. These changes make certain migration actions not backward compatible\.
+You can use extra connection attributes to configure your PostgreSQL source\. You specify these settings when you create the source endpoint\. If you have multiple connection attribute settings, separate them from each other by semicolons with no additional white space \(for example, `oneSetting;thenAnother`\)\.
 
-Because most of the name changes are superficial, AWS DMS has created wrapper functions that let AWS DMS work with PostgreSQL version 10\.x and later\. The wrapper functions are prioritized higher than functions in `pg_catalog`\. In addition, we ensure that schema visibility of existing schemas isn't changed so that we don't override any other system catalog functions such as user\-defined functions\.
-
-To use these wrapper functions before you perform any migration tasks, run the following SQL code on the source PostgreSQL database\. Use the same AWS DMS user account as you are using for the target database\.
-
-```
-BEGIN;
-CREATE SCHEMA IF NOT EXISTS fnRenames;
-CREATE OR REPLACE FUNCTION fnRenames.pg_switch_xlog() RETURNS pg_lsn AS $$ 
-   SELECT pg_switch_wal(); $$ LANGUAGE SQL;
-CREATE OR REPLACE FUNCTION fnRenames.pg_xlog_replay_pause() RETURNS VOID AS $$ 
-   SELECT pg_wal_replay_pause(); $$ LANGUAGE SQL;
-CREATE OR REPLACE FUNCTION fnRenames.pg_xlog_replay_resume() RETURNS VOID AS $$ 
-   SELECT pg_wal_replay_resume(); $$ LANGUAGE SQL;
-CREATE OR REPLACE FUNCTION fnRenames.pg_current_xlog_location() RETURNS pg_lsn AS $$ 
-   SELECT pg_current_wal_lsn(); $$ LANGUAGE SQL;
-CREATE OR REPLACE FUNCTION fnRenames.pg_is_xlog_replay_paused() RETURNS boolean AS $$ 
-   SELECT pg_is_wal_replay_paused(); $$ LANGUAGE SQL;
-CREATE OR REPLACE FUNCTION fnRenames.pg_xlogfile_name(lsn pg_lsn) RETURNS TEXT AS $$ 
-   SELECT pg_walfile_name(lsn); $$ LANGUAGE SQL;
-CREATE OR REPLACE FUNCTION fnRenames.pg_last_xlog_replay_location() RETURNS pg_lsn AS $$ 
-   SELECT pg_last_wal_replay_lsn(); $$ LANGUAGE SQL;
-CREATE OR REPLACE FUNCTION fnRenames.pg_last_xlog_receive_location() RETURNS pg_lsn AS $$ 
-   SELECT pg_last_wal_receive_lsn(); $$ LANGUAGE SQL;
-CREATE OR REPLACE FUNCTION fnRenames.pg_current_xlog_flush_location() RETURNS pg_lsn AS $$ 
-   SELECT pg_current_wal_flush_lsn(); $$ LANGUAGE SQL;
-CREATE OR REPLACE FUNCTION fnRenames.pg_current_xlog_insert_location() RETURNS pg_lsn AS $$ 
-   SELECT pg_current_wal_insert_lsn(); $$ LANGUAGE SQL;
-CREATE OR REPLACE FUNCTION fnRenames.pg_xlog_location_diff(lsn1 pg_lsn, lsn2 pg_lsn) RETURNS NUMERIC AS $$ 
-   SELECT pg_wal_lsn_diff(lsn1, lsn2); $$ LANGUAGE SQL;
-CREATE OR REPLACE FUNCTION fnRenames.pg_xlogfile_name_offset(lsn pg_lsn, OUT TEXT, OUT INTEGER) AS $$ 
-   SELECT pg_walfile_name_offset(lsn); $$ LANGUAGE SQL;
-CREATE OR REPLACE FUNCTION fnRenames.pg_create_logical_replication_slot(slot_name name, plugin name, 
-   temporary BOOLEAN DEFAULT FALSE, OUT slot_name name, OUT xlog_position pg_lsn) RETURNS RECORD AS $$ 
-   SELECT slot_name::NAME, lsn::pg_lsn FROM pg_catalog.pg_create_logical_replication_slot(slot_name, plugin, 
-   temporary); $$ LANGUAGE SQL;
-ALTER <user name> USER SET search_path = fnRenames, pg_catalog, "$user", public;
-
--- DROP SCHEMA fnRenames CASCADE;
--- ALTER USER PG_User SET search_path TO DEFAULT;
-COMMIT;
-```
-
-## Extra Connection Attributes When Using PostgreSQL as a Source for AWS DMS<a name="CHAP_Source.PostgreSQL.ConnectionAttrib"></a>
-
-You can use extra connection attributes to configure your PostgreSQL source\. You specify these settings when you create the source endpoint\. Multiple extra connection attribute settings should be separated by a semicolon\.
-
-The following table shows the extra connection attributes you can use when using PostgreSQL as a source for AWS DMS:
+The following table shows the extra connection attributes that you can use when using PostgreSQL as a source for AWS DMS\.
 
 [\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.PostgreSQL.html)
 
-## Source Data Types for PostgreSQL<a name="CHAP_Source.PostgreSQL.DataTypes"></a>
+## Limitations on using a PostgreSQL database as a DMS source<a name="CHAP_Source.PostgreSQL.Limitations"></a>
+
+The following limitations apply when using PostgreSQL as a source for AWS DMS:
++ AWS DMS doesn't work with Amazon RDS for PostgreSQL 10\.4 or Amazon Aurora PostgreSQL 10\.4 either as source or target\.
++ A captured table must have a primary key\. If a table doesn't have a primary key, AWS DMS ignores DELETE and UPDATE record operations for that table\.
++ AWS DMS ignores an attempt to update a primary key segment\. In these cases, the target identifies the update as one that didn't update any rows\. However, because the results of updating a primary key in PostgreSQL are unpredictable, no records are written to the exceptions table\.
++ AWS DMS doesn't support the **Start Process Changes from Timestamp** run option\.
++ Replication of multiple tables with the same name where each name has a different case \(for example, table1, TABLE1, and Table1\) can cause unpredictable behavior\. Because of this issue, AWS DMS doesn't support this type of replication\.
++ In most cases, AWS DMS supports change processing of CREATE, ALTER, and DROP DDL statements for tables\. AWS DMS doesn't support this change processing if the tables are held in an inner function or procedure body block or in other nested constructs\.
+
+  For example, the following change isn't captured\.
+
+  ```
+  CREATE OR REPLACE FUNCTION attu.create_distributors1() RETURNS void
+  LANGUAGE plpgsql
+  AS $$
+  BEGIN
+  create table attu.distributors1(did serial PRIMARY KEY,name
+  varchar(40) NOT NULL);
+  END;
+  $$;
+  ```
++ Currently, `boolean` data types in a PostgreSQL source are migrated to a SQL Server target as `bit` data type with inconsistent values\. As a workaround, precreate the table with a `VARCHAR(1)` data type for the column \(or have AWS DMS create the table\)\. Then have downstream processing treat an "F" as False and a "T" as True\.
++ AWS DMS doesn't support change processing of TRUNCATE operations\.
++ The OID LOB data type isn't migrated to the target\.
++ If your source is a PostgreSQL database that is on\-premises or on an Amazon EC2 instance, ensure that the test\_decoding output plugin is installed on your source endpoint\. You can find this plugin in the Postgres contrib package\. For more information about the test\-decoding plugin, see the [PostgreSQL documentation](https://www.postgresql.org/docs/10/static/test-decoding.html)\.
++ AWS DMS doesn't support change processing to set and unset column default values \(using the ALTER COLUMN SET DEFAULT clause on ALTER TABLE statements\)\.
++ AWS DMS doesn't support change processing to set column nullability \(using the ALTER COLUMN \[SET\|DROP\] NOT NULL clause on ALTER TABLE statements\)\.
++ When logical replication is enabled, the maximum number of changes kept in memory per transaction is 4 MB\. After that, changes are spilled to disk\. As a result `ReplicationSlotDiskUsage` increases, and `restart_lsn` doesn’t advance until the transaction is completed or stopped and the rollback finishes\. Because it is a long transaction, it can take a long time to rollback\. So, avoid long running transactions when logical replication is enabled\. Instead, break the transaction into several smaller transactions\.
++ A table with an ARRAY data type must have a primary key\. A table with an ARRAY data type missing a primary key gets suspended during full load\.
++ AWS DMS doesn't support replication of partitioned tables\. When a partitioned table is detected, the following occurs:
+  + The endpoint reports a list of parent and child tables\.
+  + AWS DMS creates the table on the target as a regular table with the same properties as the selected tables\.
+  + If the parent table in the source database has the same primary key value as its child tables, a "duplicate key" error is generated\.
++ To replicate partitioned tables from a PostgreSQL source to a PostgreSQL target, first manually create the parent and child tables on the target\. Then define a separate task to replicate to those tables\. In such a case, set the task configuration to **Truncate before loading**\.
++ The PostgreSQL `NUMERIC` data type isn't fixed in size\. When transferring data that is a `NUMERIC` data type but without precision and scale, DMS uses `NUMERIC(28,6)` \(a precision of 28 and scale of 6\) by default\. As an example, the value 0\.611111104488373 from the source is converted to 0\.611111 on the PostgreSQL target\.
++ CDC is not supported for Aurora PostgreSQL Serverless as a SOURCE\.
+
+## Source data types for PostgreSQL<a name="CHAP_Source-PostgreSQL-DataTypes"></a>
 
 The following table shows the PostgreSQL source data types that are supported when using AWS DMS and the default mapping to AWS DMS data types\.
 
 For information on how to view the data type that is mapped in the target, see the section for the target endpoint you are using\.
 
-For additional information about AWS DMS data types, see [Data Types for AWS Database Migration Service](CHAP_Reference.DataTypes.md)\.
+For additional information about AWS DMS data types, see [Data types for AWS Database Migration Service](CHAP_Reference.DataTypes.md)\.
 
 
-|  PostgreSQL Data Types  |  AWS DMS Data Types  | 
+|  PostgreSQL data types  |  DMS data types  | 
 | --- | --- | 
 |  INTEGER  |  INT4  | 
 |  SMALLINT  |  INT2  | 
@@ -346,7 +499,7 @@ For additional information about AWS DMS data types, see [Data Types for AWS Dat
 |  SMALLSERIAL  |  INT2  | 
 |  SERIAL  |  INT4  | 
 |  BIGSERIAL  |  INT8  | 
-|  MONEY  |  NUMERIC\(38,4\) Note: The MONEY data type is mapped to FLOAT in SQL Server\.  | 
+|  MONEY  |  NUMERIC\(38,4\) The MONEY data type is mapped to FLOAT in SQL Server\.  | 
 |  CHAR  |  WSTRING \(1\)  | 
 |  CHAR\(N\)  |  WSTRING \(n\)  | 
 |  VARCHAR\(N\)  |  WSTRING \(n\)  | 
@@ -354,7 +507,7 @@ For additional information about AWS DMS data types, see [Data Types for AWS Dat
 |  BYTEA  |  BLOB  | 
 |  TIMESTAMP  |  TIMESTAMP  | 
 |  TIMESTAMP \(z\)  |  TIMESTAMP  | 
-|  TIMESTAMP with time zone  |  Not supported  | 
+|  TIMESTAMP WITH TIME ZONE  |  TIMESTAMP  | 
 |  DATE  |  DATE  | 
 |  TIME  |  TIME  | 
 |  TIME \(z\)  |  TIME  | 
@@ -386,3 +539,10 @@ For additional information about AWS DMS data types, see [Data Types for AWS Dat
 |  INT8RANGE  |  STRING \(255\)  | 
 |  NUMRANGE  |  STRING \(255\)  | 
 |  STRRANGE  |  STRING \(255\)  | 
+
+### Working with LOB source data types for PostgreSQL<a name="CHAP_Source-PostgreSQL-DataTypes-LOBs"></a>
+
+PostgreSQL column sizes affect the conversion of PostgreSQL LOB data types to AWS DMS data types\. To work with this, take the following steps for the following AWS DMS data types:
++ BLOB – Set **Limit LOB size to** the **Maximum LOB size \(KB\)** value at task creation\.
++ CLOB – Replication handles each character as a UTF8 character\. Therefore, find the length of the longest character text in the column, shown here as `max_num_chars_text` and use it to specify the value for **Limit LOB size to**\. If the data includes 4\-byte characters, multiply by 2 to specify the **Limit LOB size to** value, which is in bytes\. In this case, **Limit LOB size to** is equal to `max_num_chars_text` multiplied by 2\.
++ NCLOB – Replication handles each character as a double\-byte character\. Therefore, find the length of the longest character text in the column \(`max_num_chars_text`\) and multiply by 2 to specify the value for **Limit LOB size to**\. In this case, **Limit LOB size to** is equal to `max_num_chars_text` multiplied by 2\. If the data includes 4\-byte characters, multiply by 2 again\. In this case, **Limit LOB size to** is equal to `max_num_chars_text` multiplied by 4\.

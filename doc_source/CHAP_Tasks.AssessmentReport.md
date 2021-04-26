@@ -1,116 +1,74 @@
-# Creating a Task Assessment Report<a name="CHAP_Tasks.AssessmentReport"></a>
+# Enabling and working with premigration assessments for a task<a name="CHAP_Tasks.AssessmentReport"></a>
 
-The task assessment feature identifies data types that might not get migrated correctly\. During a task assessment, AWS DMS reads the source database schema and creates a list of data types\. It then compares this list to a pre\-defined list of data types supported by AWS DMS\. AWS DMS creates a report you can look at to see if your migration task has unsupported data types\. 
+A premigration assessment evaluates specified components of a database migration task to help identify any problems that might prevent a migration task from running as expected\. This assessment gives you a chance to identify issues before you run a new or modified task\. You can then fix problems before they occur while running the migration task itself\. This can avoid delays in completing a given database migration needed to repair data and your database environment\.
 
-The task assessment report includes a summary that lists the unsupported data types and the column count for each one\. It includes a list of data structures in JSON for each unsupported data type\. You can use the report to modify the source data types and improve the migration success\.
+AWS DMS provides access two different types of premigration assessments\. The first type of premigration assessment, a premigration assessment run, is a functional superset of the second type, a data type assessment\. They are described in the following topics:
 
-There are two levels of unsupported data types\. Data types that are shown on the report as “not supported” can’t be migrated\. Data types that are shown on the report as “partially supported” might be converted to another data type and not migrate as you expect\.
+**Note**  
+If you do a premigration assessment run that includes the data type assessment, you don't need to do a data type assessment separately\.
 
-For example, the following is a sample task assessment report\.
+1. [Specifying, starting, and viewing premigration assessment runs](CHAP_Tasks.AssessmentReport1.md) – A premigration assessment run specifies one or more individual assessments to run based on a new or existing migration task configuration\. Each individual assessment evaluates a specific element of a supported relational source or target database depending on considerations such as the migration type, supported objects, index configuration, and other task settings, such as table mappings that identify the schemas and tables to migrate\. 
 
-```
-{
-    "summary":{
-        "task-name":"test15",
-        "not-supported":{
-            "data-type": [
-                "sql-variant"
+   For example, an individual assessment might evaluate what source data types or primary key formats can and can't be migrated, possibly based on the AWS DMS engine version\. You can start and view the results of the latest assessment run and view the results of all prior assessment runs for a task either using the AWS DMS Management Console or using the AWS CLI and SDKs to access the AWS DMS API\. You can also view the results of prior assessment runs for a task in an Amazon S3 bucket that you have selected for AWS DMS to store these results\.
+**Note**  
+The number and types of available individual assessments can increase over time\. For more information about periodic updates, see [Specifying individual assessments](CHAP_Tasks.AssessmentReport1.md#CHAP_Tasks.AssessmentReport1.Individual)\. 
+
+1. [Starting and viewing data type assessments](CHAP_Tasks.AssessmentReport2.md) – A data type assessment returns the results of a single type of premigration assessment in a single JSON structure: the data types that might not be migrated correctly in a supported relational source database instance\. This report returns the results for all problem data types found in the columns of every schema and table in the source database that is mapped for migration\. You can create and view the results of the latest data type assessment using the AWS CLI and SDKs to access the AWS DMS API\. You can also view the results of the latest data type assessment using the AWS DMS Management Console\. You can view the results of prior data type assessments in an Amazon S3 bucket for your account where AWS DMS stores these reports\.
+
+## Storing premigration assessment runs in an S3 Bucket<a name="CHAP_Tasks.AssessmentReport.IAM"></a>
+
+The Identity and Access Management \(IAM\) policy following allows DMS to store preassessment results in the S3 bucket that you create\.
+
+**To access an S3 bucket for a premigration assessment**
+
+1. Create a service role using IAM and attach an IAM policy like the following to your service role\.
+
+   ```
+   //Policy to access S3 bucket
+   
+   {
+      "Version":"2012-10-17",
+      "Statement":[
+         {
+            "Effect":"Allow",
+            "Action":[
+               "s3:PutObject",
+               "s3:DeleteObject",
+               "s3:GetObject",
+               "s3:PutObjectTagging"
             ],
-            "column-count":3
-        },
-        "partially-supported":{
-            "data-type":[
-                "float8",
-                "jsonb"
+            "Resource":[
+               "arn:aws:s3:::my-bucket/*"
+            ]
+         },
+         {
+            "Effect":"Allow",
+            "Action":[
+               "s3:ListBucket",
+               "s3:GetBucketLocation"
             ],
-            "column-count":2
-        }
-    },
-    "types":[  
-        {  
-            "data-type":"float8",
-            "support-level":"partially-supported",
-            "schemas":[  
-                {      
-                    "schema-name":"schema1",
-                    "tables":[  
-                        {  
-                            "table-name":"table1",
-                            "columns":[  
-                                "column1",
-                                "column2"
-                            ]
-                        },
-                        {  
-                            "table-name":"table2",
-                            "columns":[  
-                                "column3",
-                                "column4"
-                            ]
-                        }
-                    ]
-                },
-                {  
-                    "schema-name":"schema2",
-                    "tables":[  
-                        {  
-                            "table-name":"table3",
-                            "columns":[  
-                                "column5",
-                                "column6"
-                            ]
-                        },
-                        {  
-                            "table-name":"table4",
-                            "columns":[  
-                                "column7",
-                                "column8"
-                            ]
-                        }
-                    ]
-                }
+            "Resource":[
+               "arn:aws:s3:::my-bucket"
             ]
-        },
-        {  
-            "datatype":"int8",
-            "support-level":"partially-supported",
-            "schemas":[  
-                {  
-                    "schema-name":"schema1",
-                    "tables":[  
-                        {  
-                            "table-name":"table1",
-                            "columns":[  
-                                "column9",
-                                "column10"
-                            ]
-                        },
-                        {  
-                            "table-name":"table2",
-                            "columns":[  
-                                "column11",
-                                "column12"
-                            ]
-                        }
-                    ]
-                }
-            ]
-        }
-    ]
-}
-```
+         }
+      ]
+   }
+   ```
 
-The latest task assessment report can be viewed from the **Assessment** tab on the **Tasks page** on the AWS console\. AWS DMS stores previous task assessment reports in an Amazon S3 bucket\. The Amazon S3 bucket name is in the following format\.
+1. Edit the trust relationship and attach the following IAM role to your service role, allowing DMS to assume the role\.
 
-```
-dms-<customerId>-<customerDNS>
-```
-
-The report is stored in the bucket in a folder named with the task name\. The report’s file name is the date of the assessment in the format yyyy\-mm\-dd\-hh\-mm\. You can view and compare previous task assessment reports from the Amazon S3 console\.
-
-AWS DMS also creates an AWS Identity and Access Management \(IAM\) role to allow access to the S3 bucket; the role name is dms\-access\-for\-tasks\. The role uses the `AmazonDMSRedshiftS3Role` policy\.
-
-You can enable the task assessment feature using the AWS console, the AWS CLI, or the DMS API:
-+ On the console, choose **Task Assessment** when creating or modifying a task\. To view the task assessment report using the console, choose the task on the **Tasks** page and choose the **Assessment results** tab in the details section\.
-+ The CLI commands are `start-replication-task-assessment` to begin a task assessment and `describe-replication-task-assessment-results` to receive the task assessment report in JSON format\.
-+ The AWS DMS API uses the `StartReplicationTaskAssessment` action to begin a task assessment and the `DescribeReplicationTaskAssessment` action to receive the task assessment report in JSON format\.
+   ```
+   {
+      "Version":"2012-10-17",
+      "Statement":[
+         {
+            "Sid":"",
+            "Effect":"Allow",
+            "Principal":{
+               "Service":"dms.amazonaws.com"
+            },
+            "Action":"sts:AssumeRole"
+         }
+      ]
+   }
+   ```

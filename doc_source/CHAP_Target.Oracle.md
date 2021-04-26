@@ -1,10 +1,14 @@
-# Using an Oracle Database as a Target for AWS Database Migration Service<a name="CHAP_Target.Oracle"></a>
+# Using an Oracle database as a target for AWS Database Migration Service<a name="CHAP_Target.Oracle"></a>
 
-You can migrate data to Oracle database targets using AWS DMS, either from another Oracle database or from one of the other supported databases\. You can use Secure Sockets Layer \(SSL\) to encrypt connections between your Oracle endpoint and the replication instance\. For more information on using SSL with an Oracle endpoint, see [Using SSL With AWS Database Migration Service](CHAP_Security.SSL.md)\.
+You can migrate data to Oracle database targets using AWS DMS, either from another Oracle database or from one of the other supported databases\. You can use Secure Sockets Layer \(SSL\) to encrypt connections between your Oracle endpoint and the replication instance\. For more information on using SSL with an Oracle endpoint, see [Using SSL with AWS Database Migration Service](CHAP_Security.md#CHAP_Security.SSL)\. AWS DMS also supports the use of Oracle transparent data encryption \(TDE\) to encrypt data at rest in the target database because Oracle TDE does not require an encryption key or password to write to the database\.
 
-AWS DMS supports Oracle versions 10g, 11g, and 12c for on\-premises and EC2 instances for the Enterprise, Standard, Standard One, and Standard Two editions as targets\. AWS DMS supports Oracle versions 11g \(versions 11\.2\.0\.3\.v1 and later\) and 12c for Amazon RDS instance databases for the Enterprise, Standard, Standard One, and Standard Two editions\.
+AWS DMS supports Oracle versions 10g, 11g, 12c, 18c, and 19c for on\-premises and EC2 instances for the Enterprise, Standard, Standard One, and Standard Two editions as targets\. AWS DMS supports Oracle versions 11g \(version 11\.2\.0\.3\.v1 and later\), 12c, 18c, and 19c for Amazon RDS instance databases for the Enterprise, Standard, Standard One, and Standard Two editions\.
 
-When using Oracle as a target, we assume that the data should be migrated into the schema or user that is used for the target connection\. If you want to migrate data to a different schema, you need to use a schema transformation to do so\. For example, suppose that your target endpoint connects to the user RDSMASTER and you want to migrate from the user PERFDATA to PERFDATA\. In this case, create a transformation as follows\.
+**Note**  
+Support for Oracle version 19c as a target is available in AWS DMS versions 3\.3\.2 and later\.  
+Support for Oracle version 18c as a target is available in AWS DMS versions 3\.3\.1 and later\.
+
+When you use Oracle as a target, we assume that the data is to be migrated into the schema or user that is used for the target connection\. If you want to migrate data to a different schema, use a schema transformation to do so\. For example, suppose that your target endpoint connects to the user `RDSMASTER` and you want to migrate from the user `PERFDATA1` to `PERFDATA2`\. In this case, create a transformation like the following\.
 
 ```
 {
@@ -14,33 +18,54 @@ When using Oracle as a target, we assume that the data should be migrated into t
    "rule-action": "rename",
    "rule-target": "schema",
    "object-locator": {
-   "schema-name": "PERFDATA"
+   "schema-name": "PERFDATA1"
 },
-"value": "PERFDATA"
+"value": "PERFDATA2"
 }
 ```
 
-For more information about transformations, see [ Selection and Transformation Table Mapping using JSON](CHAP_Tasks.CustomizingTasks.TableMapping.md#CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation)\.
+When using Oracle as a target, AWS DMS migrates all tables and indexes to default table and index tablespaces in the target\. If you want to migrate tables and indexes to different table and index tablespaces, use a tablespace transformation to do so\. For example, suppose that you have a set of tables in the `INVENTORY` schema assigned to some tablespaces in the Oracle source\. For the migration, you want to assign all of these tables to a single `INVENTORYSPACE` tablespace in the target\. In this case, create a transformation like the following\.
+
+```
+{
+   "rule-type": "transformation",
+   "rule-id": "3",
+   "rule-name": "3",
+   "rule-action": "rename",
+   "rule-target": "table-tablespace",
+   "object-locator": {
+      "schema-name": "INVENTORY",
+      "table-name": "%",
+      "table-tablespace-name": "%"
+   },
+   "value": "INVENTORYSPACE"
+}
+```
+
+For more information about transformations, see [ Specifying table selection and transformations rules using JSON](CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.md)\.
+
+If Oracle is both source and target, you can preserve existing table or index tablespace assignments by setting the Oracle source extra connection attribute, `enableHomogenousTablespace=true`\. For more information, see [Extra connection attributes when using Oracle as a source for AWS DMS](CHAP_Source.Oracle.md#CHAP_Source.Oracle.ConnectionAttrib)
 
 For additional details on working with Oracle databases as a target for AWS DMS, see the following sections: 
 
 **Topics**
-+ [Limitations on Oracle as a Target for AWS Database Migration Service](#CHAP_Target.Oracle.Limitations)
-+ [User Account Privileges Required for Using Oracle as a Target](#CHAP_Target.Oracle.Privileges)
-+ [Configuring an Oracle Database as a Target for AWS Database Migration Service](#CHAP_Target.Oracle.Configuration)
-+ [Extra Connection Attributes When Using Oracle as a Target for AWS DMS](#CHAP_Target.Oracle.ConnectionAttrib)
-+ [Target Data Types for Oracle](#CHAP_Target.Oracle.DataTypes)
++ [Limitations on Oracle as a target for AWS Database Migration Service](#CHAP_Target.Oracle.Limitations)
++ [User account privileges required for using Oracle as a target](#CHAP_Target.Oracle.Privileges)
++ [Configuring an Oracle database as a target for AWS Database Migration Service](#CHAP_Target.Oracle.Configuration)
++ [Extra connection attributes when using Oracle as a target for AWS DMS](#CHAP_Target.Oracle.ConnectionAttrib)
++ [Target data types for Oracle](#CHAP_Target.Oracle.DataTypes)
 
-## Limitations on Oracle as a Target for AWS Database Migration Service<a name="CHAP_Target.Oracle.Limitations"></a>
+## Limitations on Oracle as a target for AWS Database Migration Service<a name="CHAP_Target.Oracle.Limitations"></a>
 
 Limitations when using Oracle as a target for data migration include the following:
-+ AWS DMS does not create schema on the target Oracle database\. You have to create any schemas you want on the target Oracle database\. The schema name must already exist for the Oracle target\. Tables from source schema are imported to user/schema, which AWS DMS uses to connect to the target instance\. You must create multiple replication tasks if you have to migrate multiple schemas\. 
++ AWS DMS doesn't create schema on the target Oracle database\. You have to create any schemas you want on the target Oracle database\. The schema name must already exist for the Oracle target\. Tables from source schema are imported to the user or schema, which AWS DMS uses to connect to the target instance\. To migrate multiple schemas, create multiple replication tasks\. 
 + AWS DMS doesn't support the `Use direct path full load` option for tables with INDEXTYPE CONTEXT\. As a workaround, you can use array load\. 
-+ In Batch Optimized Apply mode, loading into the net changes table uses Direct Path, which doesn't support XMLType\. As a workaround, you can use Transactional Apply mode\.
++ With the batch optimized apply option, loading into the net changes table uses a direct path, which doesn't support XML type\. As a workaround, you can use transactional apply mode\.
++ Empty strings migrated from source databases can be treated differently by the Oracle target \(converted to one\-space strings, for example\)\. This can result in AWS DMS validation reporting a mismatch\.
 
-## User Account Privileges Required for Using Oracle as a Target<a name="CHAP_Target.Oracle.Privileges"></a>
+## User account privileges required for using Oracle as a target<a name="CHAP_Target.Oracle.Privileges"></a>
 
-To use an Oracle target in an AWS Database Migration Service task, for the user account specified in the AWS DMS Oracle database definitions you need to grant the following privileges in the Oracle database:
+To use an Oracle target in an AWS Database Migration Service task, grant the following privileges in the Oracle database\. You grant these to the user account specified in the Oracle database definitions for AWS DMS\.
 + SELECT ANY TRANSACTION 
 + SELECT on V$NLS\_PARAMETERS 
 + SELECT on V$TIMEZONE\_NAMES 
@@ -67,15 +92,15 @@ To use an Oracle target in an AWS Database Migration Service task, for the user 
 + ALTER ANY SEQUENCE
 + DROP ANY SEQUENCE 
 
-For the requirements specified following, grant the additional privileges named:
+For the requirements specified following, grant these additional privileges:
 + To use a specific table list, grant SELECT on any replicated table and also ALTER on any replicated table\.
-+ To allow a user to create a table in his default tablespace, grant the privilege GRANT UNLIMITED TABLESPACE\.
++ To allow a user to create a table in a default tablespace, grant the privilege GRANT UNLIMITED TABLESPACE\.
 + For logon, grant the privilege CREATE SESSION\.
 + If you are using a direct path, grant the privilege LOCK ANY TABLE\.
-+ If the "DROP and CREATE table" or "TRUNCATE before loading" option is selected in the full load settings, and the target table schema is different from that for the AWS DMS user, grant the privilege DROP ANY TABLE\.
-+ To store changes in change tables or an audit table when the target table schema is different from that for the AWS DMS user, grant the privileges CREATE ANY TABLE and CREATE ANY INDEX\.
++ For some full load scenarios, you might choose the "DROP and CREATE table" or "TRUNCATE before loading" option where a target table schema is different from the DMS user's\. In this case, grant DROP ANY TABLE\.
++ To store changes in change tables or an audit table where the target table schema is different from the DMS user's, grant CREATE ANY TABLE and CREATE ANY INDEX\.
 
-### Read Privileges Required for AWS Database Migration Service on the Target Database<a name="CHAP_Target.Oracle.Privileges.Read"></a>
+### Read privileges required for AWS Database Migration Service on the target database<a name="CHAP_Target.Oracle.Privileges.Read"></a>
 
 The AWS DMS user account must be granted read permissions for the following DBA tables:
 + SELECT on DBA\_USERS
@@ -90,24 +115,24 @@ The AWS DMS user account must be granted read permissions for the following DBA 
 
 If any of the required privileges cannot be granted to V$xxx, then grant them to V\_$xxx\.
 
-## Configuring an Oracle Database as a Target for AWS Database Migration Service<a name="CHAP_Target.Oracle.Configuration"></a>
+## Configuring an Oracle database as a target for AWS Database Migration Service<a name="CHAP_Target.Oracle.Configuration"></a>
 
-Before using an Oracle database as a data migration target, you must provide an Oracle user account to AWS DMS\. The user account must have read/write privileges on the Oracle database, as specified in the section [User Account Privileges Required for Using Oracle as a Target](#CHAP_Target.Oracle.Privileges)\.
+Before using an Oracle database as a data migration target, you must provide an Oracle user account to AWS DMS\. The user account must have read/write privileges on the Oracle database, as specified in [User account privileges required for using Oracle as a target](#CHAP_Target.Oracle.Privileges)\.
 
-## Extra Connection Attributes When Using Oracle as a Target for AWS DMS<a name="CHAP_Target.Oracle.ConnectionAttrib"></a>
+## Extra connection attributes when using Oracle as a target for AWS DMS<a name="CHAP_Target.Oracle.ConnectionAttrib"></a>
 
-You can use extra connection attributes to configure your Oracle target\. You specify these settings when you create the target endpoint\. Multiple extra connection attribute settings should be separated by a semicolon\.
+You can use extra connection attributes to configure your Oracle target\. You specify these settings when you create the target endpoint\. If you have multiple connection attribute settings, separate them from each other by semicolons with no additional white space\.
 
 The following table shows the extra connection attributes available when using Oracle as a target\.
 
 [\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_Target.Oracle.html)
 
-## Target Data Types for Oracle<a name="CHAP_Target.Oracle.DataTypes"></a>
+## Target data types for Oracle<a name="CHAP_Target.Oracle.DataTypes"></a>
 
 A target Oracle database used with AWS DMS supports most Oracle data types\. The following table shows the Oracle target data types that are supported when using AWS DMS and the default mapping from AWS DMS data types\. For more information about how to view the data type that is mapped from the source, see the section for the source you are using\.
 
 
-|  AWS DMS Data Type  |  Oracle Data Type  | 
+|  AWS DMS data type  |  Oracle data type  | 
 | --- | --- | 
 |  BOOLEAN  |  NUMBER \(1\)  | 
 |  BYTES  |  RAW \(length\)  | 
@@ -128,6 +153,6 @@ A target Oracle database used with AWS DMS supports most Oracle data types\. The
 |  UINT8  |  NUMBER \(19\)  | 
 |  WSTRING  |  If length > 2000: NCLOB In all other cases: NVARCHAR2 \(length\)  | 
 |  BLOB  |  BLOB To use this data type with AWS DMS, you must enable the use of BLOBs for a specific task\. BLOB data types are supported only in tables that include a primary key  | 
-|  CLOB  |  CLOB To use this data type with AWS DMS, you must enable the use of CLOBs for a specific task\. During CDC, CLOB data types are supported only in tables that include a primary key\.  | 
-|  NCLOB  |  NCLOB To use this data type with AWS DMS, you must enable the use of NCLOBs for a specific task\. During CDC, NCLOB data types are supported only in tables that include a primary key\.  | 
-| XMLTYPE |  The XMLTYPE target data type is only relevant in Oracle\-to\-Oracle replication tasks\. When the source database is Oracle, the source data types are replicated "as is" to the Oracle target\. For example, an XMLTYPE data type on the source is created as an XMLTYPE data type on the target\.  | 
+|  CLOB  |  CLOB To use this data type with AWS DMS, you must enable the use of CLOBs for a specific task\. During change data capture \(CDC\), CLOB data types are supported only in tables that include a primary key\. STRING Beginning with AWS DMS 3\.3\.3, an Oracle VARCHAR2 data type on the source with a declared size greater than 4000 bytes maps through the AWS DMS CLOB to a STRING on the Oracle target\.  | 
+|  NCLOB  |  NCLOB To use this data type with AWS DMS, you must enable the use of NCLOBs for a specific task\. During CDC, NCLOB data types are supported only in tables that include a primary key\. WSTRING Beginning with AWS DMS 3\.3\.3, an Oracle VARCHAR2 data type on the source with a declared size greater than 4000 bytes maps through the AWS DMS NCLOB to a WSTRING on the Oracle target\.   | 
+| XMLTYPE |  The XMLTYPE target data type is only relevant in Oracle\-to\-Oracle replication tasks\. When the source database is Oracle, the source data types are replicated as\-is to the Oracle target\. For example, an XMLTYPE data type on the source is created as an XMLTYPE data type on the target\.  | 

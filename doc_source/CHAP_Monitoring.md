@@ -1,43 +1,56 @@
-# Monitoring AWS DMS Tasks<a name="CHAP_Monitoring"></a>
+# Monitoring AWS DMS tasks<a name="CHAP_Monitoring"></a>
 
-You can monitor the progress of your task by checking the task status and by monitoring the task's control table\. For more information about control tables, see [Control Table Task Settings](CHAP_Tasks.CustomizingTasks.TaskSettings.ControlTable.md)\.
+Monitoring is an important part of maintaining the reliability, availability, and performance of AWS DMS and your AWS solutions\. You should collect monitoring data from all of the parts of your AWS solution so that you can more easily debug a multi\-point failure if one occurs\. AWS provides several tools for monitoring your AWS DMS tasks and resources, and responding to potential incidents:
 
-You can also monitor the progress of your tasks using Amazon CloudWatch\. By using the AWS Management Console, the AWS Command Line Interface \(CLI\), or AWS DMS API, you can monitor the progress of your task and also the resources and network connectivity used\.
+**AWS DMS events and notifications**  
+AWS DMS uses Amazon Simple Notification Service \(Amazon SNS\) to provide notifications when an AWS DMS event occurs, for example the creation or deletion of a replication instance\. AWS DMS groups events into categories that you can subscribe to, so you can be notified when an event in that category occurs\. For example, if you subscribe to the Creation category for a given replication instance, you are notified whenever a creation\-related event occurs that affects your replication instance\. You can work with these notifications in any form supported by Amazon SNS for an AWS Region, such as an email message, a text message, or a call to an HTTP endpoint\. For more information, see [Working with events and notifications in AWS Database Migration Service](CHAP_Events.md)
 
-Finally, you can monitor the status of your source tables in a task by viewing the table state\.
+**Task status**  
+You can monitor the progress of your task by checking the task status and by monitoring the task's control table\. Task status indicates the condition of a AWS DMS task and its associated resources\. It includes such indications as if the task is being created, starting, running, or stopped\. It also includes the current state of the tables that the task is migrating, such as if a full load of a table has begun or is in progress and details such as the number of inserts, deletes, and updates have occurred for the table\. For more information about monitoring task and task resource condition, see [Task status](#CHAP_Tasks.Status) and [Table state during tasks](#CHAP_Tasks.CustomizingTasks.TableState)\. For more information about control tables, see [Control table task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.ControlTable.md)\.
 
-Note that the "last updated" column the DMS console only indicates the time that AWS DMS last updated the table statistics record for a table\. It does not indicate the time of the last update to the table\.
+**Amazon CloudWatch alarms and logs**  
+Using Amazon CloudWatch alarms, you watch one or more task metrics over a time period that you specify\. If a metric exceeds a given threshold, a notification is sent to an Amazon SNS topic\. CloudWatch alarms do not invoke actions because they are in a particular state\. Rather the state must have changed and been maintained for a specified number of periods\. AWS DMS also uses CloudWatch to log task information during the migration process\. You can use the AWS CLI or the AWS DMS API to view information about the task logs\. For more information about using CloudWatch with AWS DMS, see [Monitoring replication tasks using Amazon CloudWatch](#CHAP_Monitoring.CloudWatch)\. For more information about monitoring AWS DMS metrics, see [AWS Database Migration Service metrics](#CHAP_Monitoring.Metrics)\. For more information about using AWS DMS task logs, see [Viewing and managing AWS DMS task logs](#CHAP_Monitoring.ManagingLogs)\.
+
+**AWS CloudTrail logs**  
+AWS DMS is integrated with AWS CloudTrail, a service that provides a record of actions taken by a user, IAM role, or an AWS service in AWS DMS\. CloudTrail captures all API calls for AWS DMS as events, including calls from the AWS DMS console and from code calls to the AWS DMS API operations\. If you create a trail, you can enable continuous delivery of CloudTrail events to an Amazon S3 bucket, including events for AWS DMS\. If you don't configure a trail, you can still view the most recent events in the CloudTrail console in **Event history**\. Using the information collected by CloudTrail, you can determine the request that was made to AWS DMS, the IP address from which the request was made, who made the request, when it was made, and additional details\. For more information, see [Logging AWS DMS API calls with AWS CloudTrail](#logging-using-cloudtrail)\.
+
+**Database logs**  
+You can view, download, and watch database logs for your task endpoints using the AWS Management Console, AWS CLI, or the API for your AWS database service\. For more information, see the documentation for your database service at [AWS documentation](https://docs.aws.amazon.com/index.html?nc2=h_ql_doc_do_v)\.
 
 For more information, see the following topics\.
 
 **Topics**
-+ [Task Status](#CHAP_Tasks.Status)
-+ [Table State During Tasks](#CHAP_Tasks.CustomizingTasks.TableState)
-+ [Monitoring Replication Tasks Using Amazon CloudWatch](#CHAP_Monitoring.CloudWatch)
-+ [Data Migration Service Metrics](#CHAP_Monitoring.Metrics)
-+ [Managing AWS DMS Task Logs](#CHAP_Monitoring.ManagingLogs)
-+ [Logging AWS DMS API Calls with AWS CloudTrail](#logging-using-cloudtrail)
++ [Task status](#CHAP_Tasks.Status)
++ [Table state during tasks](#CHAP_Tasks.CustomizingTasks.TableState)
++ [Monitoring replication tasks using Amazon CloudWatch](#CHAP_Monitoring.CloudWatch)
++ [AWS Database Migration Service metrics](#CHAP_Monitoring.Metrics)
++ [Viewing and managing AWS DMS task logs](#CHAP_Monitoring.ManagingLogs)
++ [Logging AWS DMS API calls with AWS CloudTrail](#logging-using-cloudtrail)
 
-## Task Status<a name="CHAP_Tasks.Status"></a>
+## Task status<a name="CHAP_Tasks.Status"></a>
 
 The task status indicated the condition of the task\. The following table shows the possible statuses a task can have:
 
 
-| Task Status | Description | 
+| Task status | Description | 
 | --- | --- | 
 |   **Creating**   |  AWS DMS is creating the task\.  | 
 |   **Running**   |  The task is performing the migration duties specified\.   | 
 |   **Stopped**   |  The task is stopped\.   | 
 |   **Stopping**   |  The task is being stopped\. This is usually an indication of user intervention in the task\.  | 
 |   **Deleting**   |  The task is being deleted, usually from a request for user intervention\.   | 
-|   **Failed**   |  The task has failed\. See the task log files for more information\.  | 
+|   **Failed**   |  The task has failed\. For more information, see the task log files\.  | 
 |   **Starting**   |  The task is connecting to the replication instance and to the source and target endpoints\. Any filters and transformations are being applied\.  | 
 |   **Ready**   |  The task is ready to run\. This status usually follows the "creating" status\.  | 
 |   **Modifying**   |  The task is being modified, usually due to a user action that modified the task settings\.  | 
+|   **Moving**   |  The task is in the process of being moved to another replication instance\. The replication remains in this state until the move is complete\. Deleting the task is the only operation allowed on the replication task while it’s being moved\.  | 
+|   **Failed\-move **   |  The task move has failed for any reason, such as not having enough storage space on the target replication instance\. When a replication task is in this state, it can be started, modified, moved, or deleted\.  | 
 
-The task status bar gives an estimation of the task's progress\. The quality of this estimate depends on the quality of the source database’s table statistics; the better the table statistics, the more accurate the estimation\. For tasks with only one table that has no estimated rows statistic, we are unable to provide any kind of percentage complete estimate\. In this case, the task state and the indication of rows loaded can be used to confirm that the task is indeed running and making progress\.
+The task status bar gives an estimation of the task's progress\. The quality of this estimate depends on the quality of the source database's table statistics; the better the table statistics, the more accurate the estimation\. For tasks with only one table that has no estimated rows statistic, we are unable to provide any kind of percentage complete estimate\. In this case, the task state and the indication of rows loaded can be used to confirm that the task is indeed running and making progress\.
 
-## Table State During Tasks<a name="CHAP_Tasks.CustomizingTasks.TableState"></a>
+Note that the "last updated" column the DMS console only indicates the time that AWS DMS last updated the table statistics record for a table\. It does not indicate the time of the last update to the table\.
+
+## Table state during tasks<a name="CHAP_Tasks.CustomizingTasks.TableState"></a>
 
 The AWS DMS console updates information regarding the state of your tables during migration\. The following table shows the possible state values:
 
@@ -53,9 +66,9 @@ The AWS DMS console updates information regarding the state of your tables durin
 |   **Table cancelled**   |  Loading of the table has been cancelled\.   | 
 |   **Table error**   |  An error occurred when loading the table\.  | 
 
-## Monitoring Replication Tasks Using Amazon CloudWatch<a name="CHAP_Monitoring.CloudWatch"></a>
+## Monitoring replication tasks using Amazon CloudWatch<a name="CHAP_Monitoring.CloudWatch"></a>
 
-You can use Amazon CloudWatch alarms or events to more closely track your migration\. For more information about Amazon CloudWatch, see [What Are Amazon CloudWatch, Amazon CloudWatch Events, and Amazon CloudWatch Logs?](http://docs.aws.amazon.com/AmazonCloudWatch/latest/DeveloperGuide/WhatIsCloudWatch.html) in the Amazon CloudWatch User Guide\. Note that there is a charge for using Amazon CloudWatch\.
+You can use Amazon CloudWatch alarms or events to more closely track your migration\. For more information about Amazon CloudWatch, see [What are Amazon CloudWatch, Amazon CloudWatch Events, and Amazon CloudWatch Logs?](https://docs.aws.amazon.com/AmazonCloudWatch/latest/DeveloperGuide/WhatIsCloudWatch.html) in the Amazon CloudWatch User Guide\. Note that there is a charge for using Amazon CloudWatch\.
 
 The AWS DMS console shows basic CloudWatch statistics for each task, including the task status, percent complete, elapsed time, and table statistics, as shown following\. Select the replication task and then select the **Task monitoring** tab\.
 
@@ -69,11 +82,11 @@ In addition, if you select a replication instance from the **Replication Instanc
 
 ![\[AWS DMS monitoring\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-monitoring4.png)
 
-## Data Migration Service Metrics<a name="CHAP_Monitoring.Metrics"></a>
+## AWS Database Migration Service metrics<a name="CHAP_Monitoring.Metrics"></a>
 
 AWS DMS provides statistics for the following: 
-+ **Host Metrics** – Performance and utilization statistics for the replication host, provided by Amazon CloudWatch\. For a complete list of the available metrics, see [Replication Instance Metrics](#CHAP_Monitoring.Metrics.CloudWatch)\.
-+ **Replication Task Metrics** – Statistics for replication tasks including incoming and committed changes, and latency between the replication host and both the source and target databases\. For a complete list of the available metrics, see [Replication Task Metrics](#CHAP_Monitoring.Metrics.Task)\.
++ **Host Metrics** – Performance and utilization statistics for the replication host, provided by Amazon CloudWatch\. For a complete list of the available metrics, see [Replication instance metrics](#CHAP_Monitoring.Metrics.CloudWatch)\.
++ **Replication Task Metrics** – Statistics for replication tasks including incoming and committed changes, and latency between the replication host and both the source and target databases\. For a complete list of the available metrics, see [Replication task metrics](#CHAP_Monitoring.Metrics.Task)\.
 + **Table Metrics** – Statistics for tables that are in the process of being migrated, including the number of insert, update, delete, and DDL statements completed\.
 
 Task metrics are divided into statistics between the replication host and the source endpoint, and statistics between the replication host and the target endpoint\. You can determine the total statistic for a task by adding two related statistics together\. For example, you can determine the total latency, or replica lag, for a task by combining the **CDCLatencySource** and **CDCLatencyTarget** values\.
@@ -84,36 +97,64 @@ For the replication instance, the **FreeableMemory** metric requires clarificati
 
 While the **FreeableMemory** metric does not reflect actual free memory available, the combination of the **FreeableMemory** and **SwapUsage** metrics can indicate if the replication instance is overloaded\.
 
-Monitor these two metrics for the following conditions\.
-
- • The **FreeableMemory** metric approaching zero\.
-
- • The **SwapUsage** metric increases or fluctuates\.
+Monitor these two metrics for the following conditions:
++ The **FreeableMemory** metric approaching zero\.
++ The **SwapUsage** metric increases or fluctuates\.
 
 If you see either of these two conditions, they indicate that you should consider moving to a larger replication instance\. You should also consider reducing the number and type of tasks running on the replication instance\. Full Load tasks require more memory than tasks that just replicate changes\.
 
-### Replication Instance Metrics<a name="CHAP_Monitoring.Metrics.CloudWatch"></a>
+To estimate the actual memory requirements for a migration task, AWS DMS roughly uses the methods following\.
+
+**Full LOB mode \(using single row\+update, commit rate\)**  
+`Memory: (# of lob columns in a table) x (Number of table in parallel, default is 8) x (lob chunk size) x (Commit rate during full load) = 2 * 8 *64(k) * 10000k`  
+You can modify your task to reduce **Commit rate during full load**\. To change this number in the AWS Management Console, open the console, choose **Tasks**, choose to create or modify a task, and then choose **Advanced Settings**\. Under **Tuning Settings**, change the **Commit rate during full load** option\.
+
+**Limited LOB mode \(using array\)**  
+`Memory: (# of lob columns in a table) x (Number of table in parallel, default is 8) x maxlobSize x bulkArraySize = 2 * 8 * 4096(k) * 1000`
+
+For AWS DMS to perform conversions optimally, the CPU must be available when the conversions happen\. Overloading the CPU and not having enough CPU resources can result in slow migrations\. AWS DMS can be CPU\-intensive, especially when performing heterogeneous migrations and replications such as migrating from Oracle to PostgreSQL\. Use of a C4 replication instance class can be a good choice for these situations\. For more information, see [Choosing the right AWS DMS replication instance for your migration](CHAP_ReplicationInstance.Types.md)\.
+
+### Replication instance metrics<a name="CHAP_Monitoring.Metrics.CloudWatch"></a>
 
 Replication instance monitoring include Amazon CloudWatch metrics for the following statistics:
 
+**AvailableMemory**  
+An estimate of how much memory is available for starting new applications, without swapping\. For more information, see `MemAvailable` value in `/proc/memInfo` section of the [Linux man\-pages](https://man7.org/linux/man-pages/man5/proc.5.html)\.  
+Units: Bytes
+
+**CPUAllocated**  
+The percentage of CPU maximally allocated for the task \(0 means no limit\)\.  
+Units: Percent
+
 **CPUUtilization**  
  The amount of CPU used\.  
- Units: Bytes 
+ Units: Percent 
+
+**DiskQueueDepth**  
+The number of outstanding read/write requests \(I/Os\) waiting to access the disk\.   
+ Units: Count 
 
 **FreeStorageSpace**  
  The amount of available storage space\.  
+Units: Bytes
+
+**FreeMemory**  
+The amount of physical memory available for use by applications, page cache, and for the kernel’s own data structures\. For more information, see `MemFree` value in `/proc/memInfo` section of the [Linux man\-pages](https://man7.org/linux/man-pages/man5/proc.5.html)\.  
 Units: Bytes
 
 **FreeableMemory**  
  The amount of available random access memory\.  
 Units: Bytes
 
+**MemoryAllocated **  
+The maximum allocation of memory for the task \(0 means no limits\)\. Units: MiB
+
 **WriteIOPS**  
- The average number of disk I/O operations per second\.  
+ The average number of disk write I/O operations per second\.  
 Units: Count/Second
 
 **ReadIOPS**  
- The average number of disk I/O operations per second\.  
+ The average number of disk read I/O operations per second\.  
 Units: Count/Second
 
 **WriteThroughput**  
@@ -125,37 +166,31 @@ Units: Bytes/Second
 Units: Bytes/Second
 
 **WriteLatency**  
- The average amount of time taken per disk I/O operation\.  
-Units: Seconds
+ The average amount of time taken per disk I/O \(output\) operation\.  
+Units: Milliseconds
 
 **ReadLatency**  
- The average amount of time taken per disk I/O operation\.  
-Units: Seconds
+ The average amount of time taken per disk I/O \(input\) operation\.  
+Units: Milliseconds
 
 **SwapUsage**  
  The amount of swap space used on the replication instance\.  
 Units: Bytes
 
 **NetworkTransmitThroughput**  
- The outgoing \(Transmit\) network traffic on the replication instance, including both customer database traffic and AWS DMS traffic used for monitoring and replication\.  
+The outgoing \(Transmit\) network traffic on the replication instance, including both customer database traffic and AWS DMS traffic used for monitoring and replication\.  
 Units: Bytes/second
 
 **NetworkReceiveThroughput**  
- The incoming \(Receive\) network traffic on the replication instance, including both customer database traffic and AWS DMS traffic used for monitoring and replication\.  
+The incoming \(Receive\) network traffic on the replication instance, including both customer database traffic and AWS DMS traffic used for monitoring and replication\.  
 Units: Bytes/second
 
-### Replication Task Metrics<a name="CHAP_Monitoring.Metrics.Task"></a>
+### Replication task metrics<a name="CHAP_Monitoring.Metrics.Task"></a>
 
 Replication task monitoring includes metrics for the following statistics:
 
-**FullLoadThroughputBandwidthSource**  
-Incoming network bandwidth from a full load from the source in kilobytes \(KB\) per second\.
-
 **FullLoadThroughputBandwidthTarget**  
-Outgoing network bandwidth from a full load for the target in KB per second\.
-
-**FullLoadThroughputRowsSource**  
-Incoming changes from a full load from the source in rows per second\.
+Outgoing data transmitted from a full load for the target in KB per second\.
 
 **FullLoadThroughputRowsTarget**  
 Outgoing changes from a full load for the target in rows per second\.
@@ -164,22 +199,22 @@ Outgoing changes from a full load for the target in rows per second\.
 The total number of change events at a point\-in\-time that are waiting to be applied to the target\. Note that this is not the same as a measure of the transaction change rate of the source endpoint\. A large number for this metric usually indicates AWS DMS is unable to apply captured changes in a timely manner, thus causing high target latency\.
 
 **CDCChangesMemorySource**  
-Amount of rows accumulating in a memory and waiting to be committed from the source\.
+Amount of rows accumulating in a memory and waiting to be committed from the source\. You can view this metric together with CDCChangesDiskSource\.
 
 **CDCChangesMemoryTarget**  
-Amount of rows accumulating in a memory and waiting to be committed to the target\.
+Amount of rows accumulating in a memory and waiting to be committed to the target\. You can view this metric together with CDCChangesDiskTarget\.
 
 **CDCChangesDiskSource**  
-Amount of rows accumulating on disk and waiting to be committed from the source\.
+Amount of rows accumulating on disk and waiting to be committed from the source\. You can view this metric together with CDCChangesMemorySource\.
 
 **CDCChangesDiskTarget**  
-Amount of rows accumulating on disk and waiting to be committed to the target\. 
+Amount of rows accumulating on disk and waiting to be committed to the target\. You can view this metric together with CDCChangesMemoryTarget\. 
 
 **CDCThroughputBandwidthSource**  
-Network bandwidth for the target in KB per second\. CDCThroughputBandwidth records bandwidth on sampling points\. If no network traffic is found, the value is zero\. Because CDC does not issue long\-running transactions, network traffic may not be recorded\.
+Incoming data received for the source in KB per second\. CDCThroughputBandwidth records incoming data received on sampling points\. If no task network traffic is found, the value is zero\. Because CDC does not issue long\-running transactions, network traffic may not be recorded\.
 
 **CDCThroughputBandwidthTarget**  
-Network bandwidth for the target in KB per second\. CDCThroughputBandwidth records bandwidth on sampling points\. If no network traffic is found, the value is zero\. Because CDC does not issue long\-running transactions, network traffic may not be recorded\.
+Outgoing data transmitted for the target in KB per second\. CDCThroughputBandwidth records outgoing data transmitted on sampling points\. If no task network traffic is found, the value is zero\. Because CDC does not issue long\-running transactions, network traffic may not be recorded\.
 
 **CDCThroughputRowsSource**  
 Incoming task changes from the source in rows per second\.
@@ -188,14 +223,36 @@ Incoming task changes from the source in rows per second\.
 Outgoing task changes for the target in rows per second\.
 
 **CDCLatencySource**  
-The gap, in seconds, between the last event captured from the source endpoint and current system time stamp of the AWS DMS instance\. If no changes have been captured from the source due to task scoping, AWS DMS sets this value to zero\.
+The gap, in seconds, between the last event captured from the source endpoint and current system time stamp of the AWS DMS instance\. CDCLatencySource represents the latency between source and replication instance\. High CDCLatencySource means the process of capturing changes from source is delayed\. To identify latency in an ongoing replication, you can view this metric together with CDCLatencyTarget\. If both CDCLatencySource and CDCLatencyTarget are high, investigate CDCLatencySource first\.
 
 **CDCLatencyTarget**  
-The gap, in seconds, between the first event timestamp waiting to commit on the target and the current timestamp of the AWS DMS instance\. This value occurs if there are transactions that are not handled by target\. Otherwise, target latency is the same as source latency if all transactions are applied\. Target latency should never be smaller than the source latency\.
+The gap, in seconds, between the first event timestamp waiting to commit on the target and the current timestamp of the AWS DMS instance\. CDCLatencyTarget represents the latency between replication instance and target\. When CDCLatencyTarget is high, it indicates the process of applying change events to the target is delayed\. To identify latency in an ongoing replication, you can view this metric together with CDCLatencySource\. If CDCLatencyTarget is high but CDCLatencySource isn’t high, investigate if:  
++ No primary keys or indexes are in the target
++ Resource bottlenecks occur in the target or replication instance
++ Network issues reside between replication instance and target
 
-## Managing AWS DMS Task Logs<a name="CHAP_Monitoring.ManagingLogs"></a>
+**CPUUtilization**  
+The percentage of CPU being used by a task\. Units: Percent
 
-AWS DMS uses Amazon CloudWatch to log task information during the migration process\. You can use the AWS CLI or the AWS DMS API to view information about the task logs\. To do this, use the `describe-replication-instance-task-logs` AWS CLI command or the AWS DMS API action `DescribeReplicationInstanceTaskLogs`\. 
+**SwapUsage**  
+The amount of swap used by the task\. Units: Bytes
+
+**MemoryUsage**  
+The resident set size \(RSS\) occupied by a task\. It indicates the portion of memory occupied by a task held in main memory \(RAM\)\. Since parts of the occupied memory are paged out, or parts of the executable are never loaded, MemoryUsage doesn’t include memory held in swap space or file system\.
+
+## Viewing and managing AWS DMS task logs<a name="CHAP_Monitoring.ManagingLogs"></a>
+
+You can use Amazon CloudWatch to log task information during an AWS DMS migration process\. You enable logging when you select task settings\. For more information, see [Logging task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.Logging.md)\.
+
+To view logs of a task that ran, follow these steps:
+
+1. Open the AWS DMS console, and choose **Database migration tasks** from the navigation pane\. The Database migration tasks dialog appears\. 
+
+1. Select the name of your task\. The Overview details dialog appears\.
+
+1. Locate the **Migration task logs** section and choose **View CloudWatch Logs**\.
+
+In addition, you can use the AWS CLI or AWS DMS API to view information about task logs\. To do this, use the `describe-replication-instance-task-logs` AWS CLI command or the AWS DMS API action `DescribeReplicationInstanceTaskLogs`\. 
 
 For example, the following AWS CLI command shows the task log metadata in JSON format\.
 
@@ -233,32 +290,32 @@ To delete the task logs for a task, set the task setting `DeleteTaskLogs` to tru
 }
 ```
 
-## Logging AWS DMS API Calls with AWS CloudTrail<a name="logging-using-cloudtrail"></a>
+## Logging AWS DMS API calls with AWS CloudTrail<a name="logging-using-cloudtrail"></a>
 
-AWS DMS is integrated with AWS CloudTrail, a service that provides a record of actions taken by a user, role, or an AWS service in AWS DMS\. CloudTrail captures all API calls for AWS DMS as events, including calls from the AWS DMS console and from code calls to the AWS DMS APIs\. If you create a trail, you can enable continuous delivery of CloudTrail events to an Amazon S3 bucket, including events for AWS DMS\. If you don't configure a trail, you can still view the most recent events in the CloudTrail console in **Event history**\. Using the information collected by CloudTrail, you can determine the request that was made to AWS DMS, the IP address from which the request was made, who made the request, when it was made, and additional details\. 
+AWS DMS is integrated with AWS CloudTrail, a service that provides a record of actions taken by a user, role, or an AWS service in AWS DMS\. CloudTrail captures all API calls for AWS DMS as events, including calls from the AWS DMS console and from code calls to the AWS DMS API operations\. If you create a trail, you can enable continuous delivery of CloudTrail events to an Amazon S3 bucket, including events for AWS DMS\. If you don't configure a trail, you can still view the most recent events in the CloudTrail console in **Event history**\. Using the information collected by CloudTrail, you can determine the request that was made to AWS DMS, the IP address from which the request was made, who made the request, when it was made, and additional details\. 
 
-To learn more about CloudTrail, see the [AWS CloudTrail User Guide](http://docs.aws.amazon.com/awscloudtrail/latest/userguide/)\.
+To learn more about CloudTrail, see the [AWS CloudTrail User Guide](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/)\.
 
-### AWS DMS Information in CloudTrail<a name="service-name-info-in-cloudtrail"></a>
+### AWS DMS information in CloudTrail<a name="service-name-info-in-cloudtrail"></a>
 
-CloudTrail is enabled on your AWS account when you create the account\. When activity occurs in AWS DMS, that activity is recorded in a CloudTrail event along with other AWS service events in **Event history**\. You can view, search, and download recent events in your AWS account\. For more information, see [Viewing Events with CloudTrail Event History](http://docs.aws.amazon.com/awscloudtrail/latest/userguide/view-cloudtrail-events.html)\. 
+CloudTrail is enabled on your AWS account when you create the account\. When activity occurs in AWS DMS, that activity is recorded in a CloudTrail event along with other AWS service events in **Event history**\. You can view, search, and download recent events in your AWS account\. For more information, see [Viewing events with CloudTrail event history](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/view-cloudtrail-events.html)\. 
 
-For an ongoing record of events in your AWS account, including events for AWS DMS, create a trail\. A trail enables CloudTrail to deliver log files to an Amazon S3 bucket\. By default, when you create a trail in the console, the trail applies to all regions\. The trail logs events from all regions in the AWS partition and delivers the log files to the Amazon S3 bucket that you specify\. Additionally, you can configure other AWS services to further analyze and act upon the event data collected in CloudTrail logs\. For more information, see: 
-+ [Overview for Creating a Trail](http://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-create-and-update-a-trail.html)
-+ [CloudTrail Supported Services and Integrations](http://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-aws-service-specific-topics.html#cloudtrail-aws-service-specific-topics-integrations)
-+ [Configuring Amazon SNS Notifications for CloudTrail](http://docs.aws.amazon.com/awscloudtrail/latest/userguide/getting_notifications_top_level.html)
-+ [Receiving CloudTrail Log Files from Multiple Regions](http://docs.aws.amazon.com/awscloudtrail/latest/userguide/receive-cloudtrail-log-files-from-multiple-regions.html) and [Receiving CloudTrail Log Files from Multiple Accounts](http://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-receive-logs-from-multiple-accounts.html)
+For an ongoing record of events in your AWS account, including events for AWS DMS, create a trail\. A trail enables CloudTrail to deliver log files to an Amazon S3 bucket\. By default, when you create a trail in the console, the trail applies to all AWS Regions\. The trail logs events from all AWS Regions in the AWS partition and delivers the log files to the Amazon S3 bucket that you specify\. Additionally, you can configure other AWS services to further analyze and act upon the event data collected in CloudTrail logs\. For more information, see: 
++ [Overview for creating a trail](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-create-and-update-a-trail.html)
++ [CloudTrail supported services and integrations](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-aws-service-specific-topics.html#cloudtrail-aws-service-specific-topics-integrations)
++ [Configuring Amazon SNS notifications for CloudTrail](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/getting_notifications_top_level.html)
++ [Receiving CloudTrail log files from multiple AWS Regions](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/receive-cloudtrail-log-files-from-multiple-regions.html) and [Receiving CloudTrail log files from multiple accounts](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-receive-logs-from-multiple-accounts.html)
 
-All AWS DMS actions are logged by CloudTrail and are documented in the [AWS Database Migration Service API Reference](http://docs.aws.amazon.com/dms/latest/APIReference/)\. For example, calls to the `CreateReplicationInstance`, `TestConnection` and `StartReplicationTask` actions generate entries in the CloudTrail log files\. 
+All AWS DMS actions are logged by CloudTrail and are documented in the [AWS Database Migration Service API Reference](https://docs.aws.amazon.com/dms/latest/APIReference/)\. For example, calls to the `CreateReplicationInstance`, `TestConnection` and `StartReplicationTask` actions generate entries in the CloudTrail log files\. 
 
 Every event or log entry contains information about who generated the request\. The identity information helps you determine the following: 
 + Whether the request was made with root or IAM user credentials\.
 + Whether the request was made with temporary security credentials for a role or federated user\.
 + Whether the request was made by another AWS service\.
 
-For more information, see the [CloudTrail userIdentity Element](http://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-event-reference-user-identity.html)\.
+For more information, see the [CloudTrail userIdentity element](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-event-reference-user-identity.html)\.
 
-### Understanding AWS DMS Log File Entries<a name="understanding-service-name-entries"></a>
+### Understanding AWS DMS log file entries<a name="understanding-service-name-entries"></a>
 
 A trail is a configuration that enables delivery of events as log files to an Amazon S3 bucket that you specify\. CloudTrail log files contain one or more log entries\. An event represents a single request from any source and includes information about the requested action, the date and time of the action, request parameters, and so on\. CloudTrail log files are not an ordered stack trace of the public API calls, so they do not appear in any specific order\. 
 

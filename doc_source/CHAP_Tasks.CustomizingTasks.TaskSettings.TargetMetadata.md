@@ -1,14 +1,19 @@
-# Target Metadata Task Settings<a name="CHAP_Tasks.CustomizingTasks.TaskSettings.TargetMetadata"></a>
+# Target metadata task settings<a name="CHAP_Tasks.CustomizingTasks.TaskSettings.TargetMetadata"></a>
 
 Target metadata settings include the following:
 + `TargetSchema` – The target table schema name\. If this metadata option is empty, the schema from the source table is used\. AWS DMS automatically adds the owner prefix for the target database to all tables if no source schema is defined\. This option should be left empty for MySQL\-type target endpoints\. 
-+ `LOB settings` – Settings that determine how large objects \(LOBs\) are managed\. If you set `SupportLobs=true`, you must set one of the following to `true`: 
++ LOB settings – Settings that determine how large objects \(LOBs\) are managed\. If you set `SupportLobs=true`, you must set one of the following to `true`: 
   + `FullLobMode` – If you set this option to `true`, then you must enter a value for the `LobChunkSize` option\. Enter the size, in kilobytes, of the LOB chunks to use when replicating the data to the target\. The `FullLobMode` option works best for very large LOB sizes but tends to cause slower loading\.
+  + `InlineLobMaxSize` – This value determines which LOBs AWS DMS transfers inline during a full load\. Transferring small LOBs is more efficient than looking them up from a source table\. During a full load, AWS DMS checks all LOBs and performs an inline transfer for the LOBs that are smaller than `InlineLobMaxSize`\. AWS DMS transfers all LOBs larger than the `InlineLobMaxSize` in `FullLobMode`\. The default value for `InlineLobMaxSize` is 0 and the range is 1 kilobyte–2 gigabyte\. Set a value for `InlineLobMaxSize` only if you know that most of the LOBs are smaller than the value specified in `InlineLobMaxSize`\.
   + `LimitedSizeLobMode` – If you set this option to `true`, then you must enter a value for the `LobMaxSize` option\. Enter the maximum size, in kilobytes, for an individual LOB\.
-+ `LoadMaxFileSize` – An option for PostgreSQL and MySQL target endpoints that defines the maximum size on disk of stored, unloaded data, such as CSV files\. This option overrides the connection attribute\. You can provide values from 0, which indicates that this option doesn't override the connection attribute, to 100,000 KB\.
+
+  For more information about the criteria for using these task LOB settings, see [Setting LOB support for source databases in an AWS DMS task](CHAP_Tasks.LOBSupport.md)\. You can also control the management of LOBs for individual tables\. For more information, see [Table and collection settings rules and operations](CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Tablesettings.md)\.
++ `LoadMaxFileSize` – An option for CSV\-based target endpoints like MySQL, PostgreSQL, and Amazon Redshift that support use of comma\-separated value \(\.csv\) files for loading data\. `LoadMaxFileSize` defines the maximum size on disk of stored, unloaded data, such as \.csv files\. This option overrides the target endpoint connection attribute, `maxFileSize`\. You can provide values from 0, which indicates that this option doesn't override the connection attribute, to 100,000 KB\.
 + `BatchApplyEnabled` – Determines if each transaction is applied individually or if changes are committed in batches\. The default value is `false`\.
 
-  The `BatchApplyEnabled` parameter is used in conjunction with the `BatchApplyPreserveTransaction` parameter\. If `BatchApplyEnabled` is set to `true`, then the `BatchApplyPreserveTransaction` parameter determines the transactional integrity\. 
+  When `BatchApplyEnabled` is set to `true`, AWS DMS generates an error message if a target table has a unique constraint\.
+
+  You can use the `BatchApplyEnabled` parameter with the `BatchApplyPreserveTransaction` parameter\. If `BatchApplyEnabled` is set to `true`, then the `BatchApplyPreserveTransaction` parameter determines the transactional integrity\. 
 
   If `BatchApplyPreserveTransaction` is set to `true`, then transactional integrity is preserved and a batch is guaranteed to contain all the changes within a transaction from the source\.
 
@@ -16,6 +21,12 @@ Target metadata settings include the following:
 
   The `BatchApplyPreserveTransaction` parameter applies only to Oracle target endpoints, and is only relevant when the `BatchApplyEnabled` parameter is set to `true`\.
 
-  When LOB columns are included in the replication, `BatchApplyEnabled`can only be used in **Limited\-size LOB mode**\.
-+ `ParallelLoadThreads` – Specifies the number of threads AWS DMS uses to load each table into the target database\. The maximum value for a MySQL target is 16; the maximum value for a DynamoDB target is 32\. The maximum limit can be increased upon request\.
-+ `ParallelLoadBufferSize` – Specifies the maximum number of records to store in the buffer used by the parallel load threads to load data to the target\. The default value is 50\. Maximum value is 1000\. This field is currently only valid when DynamoDB is the target\. This parameter should be used in conjunction with `ParallelLoadThreads` and is valid only when ParallelLoadThreads > 1\.
+  When LOB columns are included in the replication, you can use `BatchApplyEnabled` only in limited LOB mode\.
+
+  For more information about using these settings for a change data capture \(CDC\) load, see [Change processing tuning settings](CHAP_Tasks.CustomizingTasks.TaskSettings.ChangeProcessingTuning.md)\.
++ `ParallelLoadThreads` – Specifies the number of threads that AWS DMS uses to load each table into the target database\. This parameter has maximum values for non\-RDBMS targets\. The maximum value for a DynamoDB target is 200\. The maximum value for an Amazon Kinesis Data Streams, Apache Kafka, or Amazon Elasticsearch Service target is 32\. You can ask to have this maximum limit increased\. For information on the settings for parallel load of individual tables, see [Table and collection settings rules and operations](CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Tablesettings.md)\.
++ `ParallelLoadBufferSize` – Specifies the maximum number of records to store in the buffer that the parallel load threads use to load data to the target\. The default value is 50\. The maximum value is 1,000\. This setting is currently only valid when DynamoDB, Kinesis, Apache Kafka, or Elasticsearch is the target\. Use this parameter with `ParallelLoadThreads`\. `ParallelLoadBufferSize` is valid only when there is more than one thread\. For information on the settings for parallel load of individual tables, see [Table and collection settings rules and operations](CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Tablesettings.md)\.
++ `ParallelLoadQueuesPerThread` – Specifies the number of queues that each concurrent thread accesses to take data records out of queues and generate a batch load for the target\. The default is 1\. This setting is currently only valid when Kinesis or Apache Kafka is the target\.
++ `ParallelApplyThreads` – Specifies the number of concurrent threads that AWS DMS uses during a CDC load to push data records to a Kinesis, Apache Kafka, or Elasticsearch target endpoint\. The default is zero \(0\)\.
++ `ParallelApplyBufferSize` – Specifies the maximum number of records to store in each buffer queue for concurrent threads to push to a Kinesis, Apache Kafka, or Elasticsearch target endpoint during a CDC load\. The default value is 50\. Use this option when `ParallelApplyThreads` specifies more than one thread\. 
++ `ParallelApplyQueuesPerThread` – Specifies the number of queues that each thread accesses to take data records out of queues and generate a batch load for a Kinesis, Apache Kafka, or Elasticsearch endpoint during CDC\. The default value is 1\.
