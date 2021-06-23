@@ -4,7 +4,8 @@ You use the transformation actions to specify any transformations you want to ap
 
 **Note**  
 AWS DMS doesn't support more than one transformation rule per schema level or per table level\. However, AWS DMS does support more than one transformation rule per column level\.  
-Performing multiple rule actions on columns that include converting to lowercase can prevent some transformations from happening correctly\. For example, using the `convert-lowercase` and `change-data-type` rule actions together might not succeed\. Instead, use the `convert-lowercase` rule action separately\. 
+Performing multiple rule actions on columns that include converting to lowercase can prevent some transformations from happening correctly\. For example, using the `convert-lowercase` and `change-data-type` rule actions together might not succeed\. Instead, use the `convert-lowercase` rule action separately\.   
+Column names in transformation rules are case\-sensitive\. For example, you must provide column names for an Oracle database in upper case\.
 
 For table\-mapping rules that use the transformation rule type, you can apply the following values\. 
 
@@ -518,7 +519,7 @@ For a source column named `emp_no`, the transformation rule in the example follo
 	]
 }
 ```
-Here, the statement following populates a `BI_emp_no` column in the corresponding row with 1\.  
+Here, the following statement populates a `BI_emp_no` column in the corresponding row with 1\.  
 
 ```
 UPDATE employees SET emp_no = 3 WHERE emp_no = 1;

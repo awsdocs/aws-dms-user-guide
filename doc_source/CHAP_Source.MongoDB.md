@@ -7,7 +7,9 @@ If you are new to MongoDB, be aware of the following important MongoDB database 
 + A *collection* in MongoDB is a group of documents, and is roughly equivalent to a relational database table\.
 + Internally, a MongoDB document is stored as a binary JSON \(BSON\) file in a compressed format that includes a type for each field in the document\. Each document has a unique ID\.
 
-AWS DMS supports two migration modes when using MongoDB as a source\. You specify the migration mode using the **Metadata mode** parameter using the AWS Management Console or the extra connection attribute `nestingLevel` when you create the MongoDB endpoint\. The choice of migration mode affects the resulting format of the target data as explained following\. 
+AWS DMS supports two migration modes when using MongoDB as a source, *Document mode* or *Table mode*\. You specify which migration mode to use when you create the MongoDB endpoint or by setting the **Metadata mode** parameter from the AWS DMS console\. Optionally, you can create a second column named `_id` that acts as the primary key by selecting the check mark button for **\_id as a separate column** in the endpoint configuration panel\. 
+
+Your choice of migration mode affects the resulting format of the target data, as explained following\. 
 
 **Document mode**  
 In document mode, the MongoDB document is migrated as is, meaning that the document data is consolidated into a single column named `_doc` in a target table\. Document mode is the default setting when you use MongoDB as a source endpoint\.  
@@ -56,7 +58,7 @@ db.createUser(
 )
 ```
 
-The following code creates a user with minimal privileges on the database to be migrated, and on a system database called local\.
+For a MongoDB 3\.x source, the following code creates a user with minimal privileges on the database to be migrated\.
 
 ```
 use database_to_migrate
@@ -65,6 +67,39 @@ db.createUser(
     user: "dms-user",
     pwd: "password",
     roles: [ { role: "read", db: "local" }, "read"] 
+})
+```
+
+For a MongoDB 4\.x source, the following code creates a user with minimal privileges\.
+
+```
+{ resource: { db: "", collection: "" }, actions: [ "find", "changeStream" ] }
+```
+
+For example, create the following role in the "admin" database\.
+
+```
+use admin
+db.createRole(
+{
+role: "changestreamrole",
+privileges: [
+{ resource: { db: "", collection: "" }, actions: [ "find","changeStream" ] }
+],
+roles: []
+}
+)
+```
+
+And once the role is created, create a user in the database to be migrated\.
+
+```
+> use test
+> db.createUser( 
+{ 
+user: "dms-user12345",
+pwd: "password",
+roles: [ { role: "changestreamrole", db: "admin" }, "read"] 
 })
 ```
 
@@ -117,7 +152,7 @@ If an authentication method isn't specified, AWS DMS uses the default method for
 
 To improve performance of a migration task, MongoDB source endpoints support the range segmentation option of the parallel full load feature\. In other words, using table mapping JSON settings for parallel full load, you can migrate a segmented collection using threads in parallel\. For more information, see [Table and collection settings rules and operations](CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Tablesettings.md)\.
 
-The example following shows a MongoDB collection that has seven items, and `_id` as the primary key\.
+The following example shows a MongoDB collection that has seven items, and `_id` as the primary key\.
 
 ![\[MongoDB collection with seven items.\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-docdb-collection.png)
 
@@ -152,9 +187,8 @@ To split the collection into three segments and migrate in parallel, you can add
      ]
    "boundaries": [
       [
-          "5f805c97873173399a278d79", 
-// First segment will select documents with _id less-than-or-equal-to 5eae7331a282eff90bf8b060 and num less-than-or-equal-to 2
-          "2"
+          "5f805c97873173399a278d79",
+// First segment will select documents with _id less-than-or-equal-to 5f805c97873173399a278d79 and num less-than-or-equal-to 2"2"
       ],
       [
           "5f805cc5873173399a278d7c", 
@@ -217,25 +251,28 @@ The following are limitations when using MongoDB as a source for AWS DMS:
   Internally, these columns are referenced with the prefixed names\. If you use transformation rules in AWS DMS that reference these columns, you must specify the prefixed column\. For example, you specify `${oid__id}` and not `${_id}`, or `${array__addresses}` and not `${_addresses}`\. 
 +  Collection names and key names can't include the dollar symbol \($\)\. 
 + Table mode and document mode have the limitations discussed preceding\.
++ Source filters are not supported for MongoDB\.
 
-## Extra connection attributes when using MongoDB as a source for AWS DMS<a name="CHAP_Source.MongoDB.Configuration"></a>
+## Endpoint configuration settings when using MongoDB as a source for AWS DMS<a name="CHAP_Source.MongoDB.Configuration"></a>
 
-When you set up your MongoDB source endpoint, you can specify extra connection attributes\. Extra connection attributes are specified by key\-value pairs\. If you have multiple connection attribute settings, separate them from each other by semicolons with no additional white space \(for example, `oneSetting;thenAnother`\)\.
+When you set up your MongoDB source endpoint, you can specify multiple endpoint configuration settings using the AWS DMS console\. 
 
-The following table describes the extra connection attributes available when using MongoDB databases as an AWS DMS source\.
+The following table describes the configuration settings available when using MongoDB databases as an AWS DMS source\. 
 
 
-| Attribute name | Valid values | Default value and description | 
+| Settings \(attribute\) | Valid values | Default value and description | 
 | --- | --- | --- | 
-|   `authType`   |  `"no"` `"password"`  |  `"password"` – When `"no"` is specified, user name and password parameters aren't used and can be empty\.   | 
-|   `authMechanism`   |  `"default"` `"mongodb_cr"` `"scram_sha_1"`  |  `"default"` is `"scram_sha_1"`\. This setting isn't used when `authType` is set to `"no"`\.  | 
-|   `nestingLevel`   |  `"none"` `"one"`  |  `"none"` – Specify `"none"` to use document mode\. Specify `"one"` to use table mode\.  | 
-|   `extractDocID`   |  `"true"` `"false"`  |  `"false"` – Use this attribute when `nestingLevel` is set to `"none"`\.  If your target endpoint is DocumentDB set `extractDocID=true`\.  | 
-|   `docsToInvestigate`   |  A positive integer greater than `0`\.  |  `1000` – Use this attribute when `nestingLevel` is set to `"one"`\.   | 
-|   `authSource`   |  A valid MongoDB database name\.  |  `"admin"` – This attribute isn't used when `authType` is set to `"no"`\.  | 
+|  **Authentication mode**  |  `"none"` `"password"`  |  `"password"` prompts for a user name and password\. When `"none"` is specified, user name and password parameters aren't used\.  | 
+|  **Authentication source**  |  A valid MongoDB database name\.  |  Default Value is `"admin"`\. The name of the MongoDB database that you want to use to validate your credentials for authentication\.  | 
+|  **Authentication mechanism**  |  `"default"` `"mongodb_cr"` `"scram_sha_1"`  |  `"default"` is `"scram_sha_1"`\. This setting isn't used when `authType` is set to `"no"`\.  | 
+|  **Metadata mode**  |  Document and Table  |  Choses **Document mode** or **Table mode**\.   | 
+|  **Number of documents to scan**\(`docsToInvestigate`\)  |  A positive integer greater than `0`\.  |  Use this option in table mode only to define the target table defination\.  | 
+|  **\_id as a separate column**  |  Check mark box  |  Optional check mark box—creates a second column named `_id` that acts as the primary key  | 
+
+If you choose **Document** as **Metadata mode**, different options are available\.
 
 **Note**  
-If the target endpoint is DocumentDB, run the migration in **Document mode**, and set the extra connection attribute `extractDocID=true`\. To set the extra connection attribute `extractDocID=true`, modify your source endpoint and check the box **\_id as separate column**\. 
+If the target endpoint is DocumentDB, run the migration in **Document mode**, modify your source endpoint and check the box **\_id as separate column**\.
 
 ## Source data types for MongoDB<a name="CHAP_Source.MongoDB.DataTypes"></a>
 

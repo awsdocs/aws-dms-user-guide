@@ -82,7 +82,7 @@ Other configuration\-related issues can include the following:
 +  **Source endpoint is outside the VPC used by the replication instance \(using an internet gateway\)** – The VPC security group must include routing rules that send traffic that isn't for the VPC to the internet gateway\. In this configuration, the connection to the endpoint appears to come from the public IP address on the replication instance\. 
 +  **Source endpoint is outside the VPC used by the replication instance \(using a NAT gateway\)** – You can configure a network address translation \(NAT\) gateway using a single elastic IP address bound to a single elastic network interface\. This NAT gateway receives a NAT identifier \(nat\-\#\#\#\#\#\)\. 
 
-  In some cases, the VPC includes a default route to that NAT gateway instead of the internet gateway\. In such cases, the replication instance instead appears to contact the database endpoint using the public IP address of the internet gateway\. Here, the ingress to the database endpoint outside the VPC needs to allow ingress from the NAT address instead of the replication instance's public IP address\. 
+  In some cases, the VPC includes a default route to that NAT gateway instead of the internet gateway\. In such cases, the replication instance instead appears to contact the database endpoint using the public IP address of the NAT gateway\. Here, the ingress to the database endpoint outside the VPC needs to allow ingress from the NAT address instead of the replication instance's public IP address\. 
 
 For information about using your own on\-premises name server, see [ Using your own on\-premises name server ](CHAP_BestPractices.md#CHAP_BestPractices.Rte53DNSResolver)\. 
 
@@ -130,7 +130,7 @@ Running a full load and CDC task can create duplicate records on target tables t
 
 ## Source endpoints fall in the reserved IP range<a name="CHAP_Troubleshooting.General.ReservedIP"></a>
 
-If an AWS DMS source database uses an IP address within the reserved IP range of 192\.168\.0\.0/24, the source endpoint connection test fails\. The steps following provide a possible workaround:
+If an AWS DMS source database uses an IP address within the reserved IP range of 192\.168\.0\.0/24, the source endpoint connection test fails\. The following steps provide a possible workaround:
 
 1. Find one Amazon EC2 instance that isn't in the reserved range that can communicate to the source database at 192\.168\.0\.0/24\.
 
@@ -499,7 +499,7 @@ captureDDLs=N
 
 ### Selecting the schema where database objects for capturing DDL are created<a name="CHAP_Troubleshooting.PostgreSQL.SchemaDDL"></a>
 
-You can control what schema the database objects related to capturing DDL are created in\. Add the following **Extra Connection Attribute** statement\. The **Extra Connection Attribute** parameter is available in the **Advanced** tab of the target endpoint\.
+You can control what schema the database objects related to capturing DDL are created in\. Add the following **Extra Connection Attribute** statement\. The **Extra Connection Attribute** parameter is available in the **Advanced** tab of the source endpoint\.
 
 ```
 ddlArtifactsSchema=xyzddlschema                

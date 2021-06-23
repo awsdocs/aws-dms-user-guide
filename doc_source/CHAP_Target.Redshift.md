@@ -101,6 +101,11 @@ When using an Amazon Redshift database as a target, AWS DMS doesn't support the 
 +  AWS DMS cannot migrate or replicate changes to a schema with a name that begins with underscore \(\_\)\. If you have schemas that have a name that begins with an underscore, use mapping transformations to rename the schema on the target\. 
 +  Amazon Redshift doesn't support VARCHARs larger than 64 KB\. LOBs from traditional databases can't be stored in Amazon Redshift\.
 +  Applying a DELETE statement to a table with a multi\-column primary key is not supported when any of the primary key column names use a reserved word\. Go [here](https://docs.aws.amazon.com/redshift/latest/dg/r_pg_keywords.html) to see a list of Amazon Redshift reserved words\.
++ You may experience performance issues if your source system performs UPDATE operations on the primary key of a source table\. These performance issues occur when applying changes to the target\. This is because UPDATE \(and DELETE\) operations depend on the primary key value to identify the target row\. If you update the primary key of a source table, your task log will contain messages like the following:
+
+  ```
+  Update on table 1 changes PK to a PK that was previously updated in the same bulk update.
+  ```
 
 ## Configuring an Amazon Redshift database as a target for AWS Database Migration Service<a name="CHAP_Target.Redshift.Configuration"></a>
 
@@ -201,7 +206,7 @@ When you create this key, you can only create a symmetric key, because all AWS s
 
 1. For **This account**, choose the available users you want to perform cryptographic operations on Amazon Redshift targets\. Also choose the role that you previously created in **Roles** to enable access to encrypt Amazon Redshift target objects, for example `DMS-Redshift-endpoint-access-role`\)\.
 
-1. If you want to add other accounts not listed to have this same access, for **Other AWS accounts**, choose **Add another AWS account**, then choose **Next**\. The **Review and edit key policy** page opens, showing the JSON for the key policy that you can review and edit by typing into the existing JSON\. Here, you can see where the key policy references the role and users \(for example, `Admin` and `User1`\) that you chose in the previous step\. You can also see the different key actions permitted for the different principals \(users and roles\), as shown in the example following\.
+1. If you want to add other accounts not listed to have this same access, for **Other AWS accounts**, choose **Add another AWS account**, then choose **Next**\. The **Review and edit key policy** page opens, showing the JSON for the key policy that you can review and edit by typing into the existing JSON\. Here, you can see where the key policy references the role and users \(for example, `Admin` and `User1`\) that you chose in the previous step\. You can also see the different key actions permitted for the different principals \(users and roles\), as shown in the following example\.
 
    ```
    {
@@ -366,7 +371,7 @@ You can improve the performance of change data capture \(CDC\) for Amazon Redshi
 
 To promote CDC performance, you can use the following `ParallelApply*` task settings:
 + `ParallelApplyThreads` – Specifies the number of concurrent threads that AWS DMS uses during a CDC load to push data records to a Amazon Redshift target endpoint\. The default value is zero \(0\) and the maximum value is 32\.
-+ `ParallelApplyBufferSize` – Specifies the maximum data record requests while using parallel apply threads with Redshift target\. The default value is 50 and the maximum value is 1,000\. We recommend to use this option when ParallelApplyThreads > 1 
++ `ParallelApplyBufferSize` – Specifies the maximum data record requests while using parallel apply threads with Redshift target\. The default value is 100 and the maximum value is 1,000\. We recommend to use this option when ParallelApplyThreads > 1 \(greater than one\)\. 
 
   To obtain the most benefit for Redshift as a target, we recommend that the value of `ParallelApplyBufferSize` be at least two times \(double or more\) the number of `ParallelApplyThreads`\.
 

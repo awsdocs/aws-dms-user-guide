@@ -120,7 +120,7 @@ To enable client authentication and encryption using SSL authentication to conne
    aws acm-pca get-certificate --certificate-authority-arn Private_CA_ARN --certificate-arn Certificate_ARN
    ```
 
-   That command returns information similar to the example following:
+   That command returns information similar to the following example:
 
    ```
    {"Certificate": "123", "CertificateChain": "456"}
@@ -178,7 +178,7 @@ You can use SSL authentication to secure a connection to a self\-managed Kafka c
 
 **To prepare a private key and signed certificate for a self\-managed Kafka cluster**
 
-1. Generate a key pair as shown in example following\.
+1. Generate a key pair as shown in the following example\.
 
    ```
    keytool -genkey -keystore kafka.server.keystore.jks -validity 300 -storepass your-keystore-password 
@@ -199,7 +199,7 @@ You can use SSL authentication to secure a connection to a self\-managed Kafka c
    openssl req -new -x509 -keyout ca-key -out ca-cert -days validate-days                            
    ```
 
-1. Import `ca-cert` into the server truststore and keystore\. If you don't have a truststore, use the command following to create the truststore and import `ca-cert `into it\. 
+1. Import `ca-cert` into the server truststore and keystore\. If you don't have a truststore, use the following command to create the truststore and import `ca-cert `into it\. 
 
    ```
    keytool -keystore kafka.server.truststore.jks -alias CARoot -import -file ca-cert
@@ -232,7 +232,7 @@ You can use SSL authentication to secure a connection to a self\-managed Kafka c
    -destkeypass your-key-password
    ```
 
-1. Use the command following to export `keystore.p12` into `.pem` format\.
+1. Use the following command to export `keystore.p12` into `.pem` format\.
 
    ```
    Openssl pkcs12 -in keystore.p12 -out encrypted-private-server-key.pem –nocerts
@@ -257,7 +257,7 @@ The Simple Authentication and Security Layer \(SASL\) method uses a user name an
 
 To use SASL, you first create a secure user name and password when you set up your Amazon MSK cluster\. For a description how to set up a secure user name and password for an Amazon MSK cluster, see [Setting up SASL/SCRAM authentication for an Amazon MSK cluster](https://docs.aws.amazon.com/msk/latest/developerguide/msk-password.html#msk-password-tutorial) in the *Amazon Managed Streaming for Apache Kafka Developer Guide*\.
 
-Then, when you create your Kafka target endpoint, set the security protocol endpoint setting \(`SecurityProtocol`\) using the `sasl-ssl` option\. You also set `SaslUsername` and `SaslPassword` options\. Make sure these are consistent with the secure user name and password that you created when you first set up your Amazon MSK cluster, as shown in JSON example following\.
+Then, when you create your Kafka target endpoint, set the security protocol endpoint setting \(`SecurityProtocol`\) using the `sasl-ssl` option\. You also set `SaslUsername` and `SaslPassword` options\. Make sure these are consistent with the secure user name and password that you created when you first set up your Amazon MSK cluster, as shown in the following JSON example\.
 
 ```
                    
@@ -383,7 +383,8 @@ The following limitations apply when using Apache Kafka as a target:
 + Make sure to configure both your AWS DMS replication instance and your Kafka cluster in the same virtual private cloud \(VPC\) based on Amazon VPC and in the same security group\. The Kafka cluster can either be an Amazon MSK instance or your own Kafka instance running on Amazon EC2\. For more information, see [Setting up a network for a replication instance](CHAP_ReplicationInstance.VPC.md)\.
 **Note**  
 To specify a security group for Amazon MSK, on the **Create cluster** page, choose **Advanced settings**, select **Customize settings**, and select the security group or accept the default if it is the same as for your replication instance\.
-+ Specify a Kafka configuration file for your cluster with properties that allow AWS DMS to automatically create new topics\. Include the setting, `auto.create.topics.enable = true`\. If you are using Amazon MSK, you can specify the default configuration when you create your Kafka cluster, then change the `auto.create.topics.enable` setting to `true`\. For more information about the default configuration settings, see [The default Amazon MSK configuration](https://docs.aws.amazon.com/msk/latest/developerguide/msk-default-configuration.html) in the *Amazon Managed Streaming for Apache Kafka Developer Guide*\. If you need to modify an existing Kafka cluster created using Amazon MSK, run the AWS CLI command `aws kafka create-configuration` to update your Kafka configuration, as in the example following:
++ Full LOB mode is not supported\.
++ Specify a Kafka configuration file for your cluster with properties that allow AWS DMS to automatically create new topics\. Include the setting, `auto.create.topics.enable = true`\. If you are using Amazon MSK, you can specify the default configuration when you create your Kafka cluster, then change the `auto.create.topics.enable` setting to `true`\. For more information about the default configuration settings, see [The default Amazon MSK configuration](https://docs.aws.amazon.com/msk/latest/developerguide/msk-default-configuration.html) in the *Amazon Managed Streaming for Apache Kafka Developer Guide*\. If you need to modify an existing Kafka cluster created using Amazon MSK, run the AWS CLI command `aws kafka create-configuration` to update your Kafka configuration, as in the following example:
 
   ```
   14:38:41 $ aws kafka create-configuration --name "kafka-configuration" --kafka-versions "2.2.1" --server-properties file://~/kafka_configuration
@@ -405,6 +406,7 @@ To specify a security group for Amazon MSK, on the **Create cluster** page, choo
 + AWS DMS supports the following two forms for partition keys:
   + `SchemaName.TableName`: A combination of the schema and table name\.
   + `${AttributeName}`: The value of one of the fields in the JSON, or the primary key of the table in the source database\.
++ `BatchApply` is not supported for a Kafka endpoint\. Using Batch Apply \(for example, the `BatchApplyEnabled` target metadata task setting\) for a Kafka target might result in loss of data\.
 
 ## Using object mapping to migrate data to a Kafka topic<a name="CHAP_Target.Kafka.ObjectMapping"></a>
 

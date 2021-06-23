@@ -6,6 +6,7 @@ You can start the migration task when connections to all endpoints are successfu
   + The staging Amazon S3 bucket
   + The Edge device
 + AWS DMS Task connections to these:
+  + The source database
   + The staging Amazon S3 bucket
   + The target database on AWS
 

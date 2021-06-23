@@ -40,13 +40,13 @@ Run the script after connecting to your database environment using the command l
 
 **To run this script and upload the results to your support case**
 
-1. Connect to your database using the `mysql` command following\.
+1. Connect to your database using the following `mysql` command\.
 
    ```
    mysql -h hostname -P port -u username database-name
    ```
 
-1. Run the script using mysql `source` command following\.
+1. Run the script using the following mysql `source` command\.
 
    ```
    mysql> source awsdms_support_collector_MySQL_compatible_DB.sql

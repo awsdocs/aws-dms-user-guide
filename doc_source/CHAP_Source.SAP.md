@@ -44,7 +44,7 @@ The following limitations apply when using an SAP ASE database as a source for A
   go
   ```
 + The `reorg rebuild` index command isn't supported\.
-+ Clusters aren't supported\.
++ AWS DMS does not support clusters or using MSA \(Multi\-Site Availability\)/Warm Standby as a source\.
 
 ## Permissions required for using SAP ASE as a source for AWS DMS<a name="CHAP_Source.SAP.Security"></a>
 
@@ -70,7 +70,7 @@ After the truncation point is removed, you can't resume the AWS DMS task\. The l
 
 You can use extra connection attributes to configure an SAP ASE source\. You specify these settings when you create the source endpoint\. You must separate multiple extra connection attribute settings from each other by semicolons and no additional white space\.
 
-The table following shows the extra connection attributes available when using SAP ASE as a source for AWS DMS\.
+The following table shows the extra connection attributes available when using SAP ASE as a source for AWS DMS\.
 
 [\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.SAP.html)
 

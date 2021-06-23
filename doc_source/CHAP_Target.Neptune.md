@@ -61,7 +61,7 @@ After you have these resources, setting up and starting a migration to a Neptune
 
 To create or modify a target endpoint, you can use the console or the `CreateEndpoint` or `ModifyEndpoint` API operations\. 
 
-For a Neptune target in the AWS DMS console, specify **Endpoint\-specific settings** on the **Create endpoint** or **Modify endpoint** console page\. For `CreateEndpoint` and `ModifyEndpoint`, specify request parameters for the `NeptuneSettings` option\. The example following shows how to do this using the CLI\. 
+For a Neptune target in the AWS DMS console, specify **Endpoint\-specific settings** on the **Create endpoint** or **Modify endpoint** console page\. For `CreateEndpoint` and `ModifyEndpoint`, specify request parameters for the `NeptuneSettings` option\. The following example shows how to do this using the CLI\. 
 
 ```
 dms create-endpoint --endpoint-identifier my-neptune-target-endpoint
@@ -91,7 +91,7 @@ The `--neptune-settings` option request parameters follow:
 
 ## Creating an IAM service role for accessing Amazon Neptune as a target<a name="CHAP_Target.Neptune.ServiceRole"></a>
 
-To access Neptune as a target, create a service role using IAM\. Depending on your Neptune endpoint configuration, attach to this role some or all of the IAM policy and trust documents described following\. When you create the Neptune endpoint, you provide the ARN of this service role\. Doing so enables AWS DMS and Amazon Neptune to assume permissions to access both Neptune and its associated Amazon S3 bucket\.
+To access Neptune as a target, create a service role using IAM\. Depending on your Neptune endpoint configuration, attach to this role some or all of the following IAM policy and trust documents\. When you create the Neptune endpoint, you provide the ARN of this service role\. Doing so enables AWS DMS and Amazon Neptune to assume permissions to access both Neptune and its associated Amazon S3 bucket\.
 
 If you set the `IAMAuthEnabled` parameter in `NeptuneSettings` to `true` in your Neptune endpoint configuration, attach an IAM policy like the following to your service role\. If you set `IAMAuthEnabled` to `false`, you can ignore this policy\.
 
@@ -195,7 +195,7 @@ Using the API, specify these options using the `TaskData` request parameter of t
 
 ### Graph\-mapping rules for generating property\-graph data using Gremlin<a name="CHAP_Target.Neptune.GraphMapping.Gremlin"></a>
 
-Using Gremlin to generate the property\-graph data, specify a JSON object with a mapping rule for each graph entity to be generated from the source data\. The format of this JSON is defined specifically for bulk loading Amazon Neptune\. The template following shows what each rule in this object looks like\.
+Using Gremlin to generate the property\-graph data, specify a JSON object with a mapping rule for each graph entity to be generated from the source data\. The format of this JSON is defined specifically for bulk loading Amazon Neptune\. The following template shows what each rule in this object looks like\.
 
 ```
 {
@@ -402,15 +402,15 @@ For more information on the RDF data types for loading Neptune and their mapping
 
 The following limitations apply when using Neptune as a target:
 + AWS DMS currently supports full load tasks only for migration to a Neptune target\. Change data capture \(CDC\) migration to a Neptune target isn't supported\.
-+ Make sure that your target Neptune database is manually cleared of all data before starting the migration task, as in the examples following\.
++ Make sure that your target Neptune database is manually cleared of all data before starting the migration task, as in the following examples\.
 
-  To drop all data \(vertices and edges\) within the graph, run the Gremlin command following\.
+  To drop all data \(vertices and edges\) within the graph, run the following Gremlin command\.
 
   ```
   gremlin> g.V().drop().iterate()
   ```
 
-  To drop vertices that have the label `'customer'`, run the Gremlin command following\.
+  To drop vertices that have the label `'customer'`, run the following Gremlin command\.
 
   ```
   gremlin> g.V().hasLabel('customer').drop()
@@ -418,7 +418,7 @@ The following limitations apply when using Neptune as a target:
 **Note**  
 It can take some time to drop a large dataset\. You might want to iterate `drop()` with a limit, for example, `limit(1000)`\.
 
-  To drop edges that have the label `'rated'`, run the Gremlin command following\.
+  To drop edges that have the label `'rated'`, run the following Gremlin command\.
 
   ```
   gremlin> g.E().hasLabel('rated').drop()
@@ -429,7 +429,7 @@ It can take some time to drop a large dataset\. You might want to iterate `drop(
 
   During migration, AWS DMS scans each source table and uses graph mapping to convert the source data into a Neptune graph\. The converted data is first stored in the S3 bucket folder specified for the target endpoint\. If the source is scanned and this intermediate S3 data is generated successfully, `DescribeTableStatistics` assumes that the data was successfully loaded into the Neptune target database\. But this isn't always true\. To verify that the data was loaded correctly for a given table, compare `count()` return values at both ends of the migration for that table\. 
 
-  In the example following, AWS DMS has loaded a `customer` table from the source database, which is assigned the label `'customer'` in the target Neptune database graph\. You can make sure that this label is written to the target database\. To do this, compare the number of `customer` rows available from the source database with the number of `'customer'` labeled rows loaded in the Neptune target database after the task completes\.
+  In the following example, AWS DMS has loaded a `customer` table from the source database, which is assigned the label `'customer'` in the target Neptune database graph\. You can make sure that this label is written to the target database\. To do this, compare the number of `customer` rows available from the source database with the number of `'customer'` labeled rows loaded in the Neptune target database after the task completes\.
 
   To get the number of customer rows available from the source database using SQL, run the following\.
 

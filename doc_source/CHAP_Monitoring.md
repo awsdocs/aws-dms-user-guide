@@ -103,7 +103,7 @@ Monitor these two metrics for the following conditions:
 
 If you see either of these two conditions, they indicate that you should consider moving to a larger replication instance\. You should also consider reducing the number and type of tasks running on the replication instance\. Full Load tasks require more memory than tasks that just replicate changes\.
 
-To estimate the actual memory requirements for a migration task, AWS DMS roughly uses the methods following\.
+To estimate the actual memory requirements for a migration task, AWS DMS roughly uses the following methods\.
 
 **Full LOB mode \(using single row\+update, commit rate\)**  
 `Memory: (# of lob columns in a table) x (Number of table in parallel, default is 8) x (lob chunk size) x (Commit rate during full load) = 2 * 8 *64(k) * 10000k`  
@@ -127,7 +127,7 @@ The percentage of CPU maximally allocated for the task \(0 means no limit\)\.
 Units: Percent
 
 **CPUUtilization**  
- The amount of CPU used\.  
+The percentage of allocated vCPU \(virtual CPU\) currently in use on the instance\.  
  Units: Percent 
 
 **DiskQueueDepth**  
@@ -232,7 +232,7 @@ The gap, in seconds, between the first event timestamp waiting to commit on the 
 + Network issues reside between replication instance and target
 
 **CPUUtilization**  
-The percentage of CPU being used by a task\. Units: Percent
+The percentage of CPU being used by a task across multiple cores\. The semantics of task CPUUtilization is slightly different from replication CPUUtilizaiton\. If 1 vCPU is fully used, it indicates 100%, but if multiple vCPUs are in use, the value could be above 100%\. Units: Percent
 
 **SwapUsage**  
 The amount of swap used by the task\. Units: Bytes

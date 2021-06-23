@@ -36,10 +36,10 @@ The following table shows the parameters for specifying source filtering in a `f
 |  `filter-operator`  |  A parameter with one of the following values: [\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_Tasks.CustomizingTasks.Filters.html)  | 
 |  `value` or `start-value` and `end-value` or no values  |  Zero or more value parameters associated with `filter-operator`: [\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_Tasks.CustomizingTasks.Filters.html)  | 
 
-The examples following show some common ways to use source filters\.
+The following examples show some common ways to use source filters\.
 
 **Example Single filter**  
-The filter following replicates all employees where `empid >= 100` to the target database\.  
+The following filter replicates all employees where `empid >= 100` to the target database\.  
 
 ```
 {
@@ -65,7 +65,7 @@ The filter following replicates all employees where `empid >= 100` to the target
 ```
 
 **Example Multiple filter operators**  
-The filter following applies multiple filter operators to a single column of data\. The filter replicates all employees where `(empid <= 10)` OR `(empid is between 50 and 75)` OR `(empid >= 100)` to the target database\.   
+The following filter applies multiple filter operators to a single column of data\. The filter replicates all employees where `(empid <= 10)` OR `(empid is between 50 and 75)` OR `(empid >= 100)` to the target database\.   
 
 ```
 {
@@ -98,7 +98,7 @@ The filter following applies multiple filter operators to a single column of dat
 ```
 
 **Example Multiple filters**  
-The filters following apply multiple filters to two columns in a table\. The filter replicates all employees where `(empid <= 100)` AND `(dept = tech)` to the target database\.   
+The following filters apply multiple filters to two columns in a table\. The filter replicates all employees where `(empid <= 100)` AND `(dept = tech)` to the target database\.   
 
 ```
 {
@@ -131,7 +131,7 @@ The filters following apply multiple filters to two columns in a table\. The fil
 ```
 
 **Example Filtering NULL values**  
-The filter following shows how to filter on empty values\. It replicates all employees where `dept = NULL` to the target database\.  
+The following filter shows how to filter on empty values\. It replicates all employees where `dept = NULL` to the target database\.  
 
 ```
 {
@@ -156,7 +156,7 @@ The filter following shows how to filter on empty values\. It replicates all emp
 ```
 
 **Example Filtering using NOT operators**  
-Some of the operators can be used in the negative form\. The filter following replicates all employees where `(empid is < 50) OR (empid is > 75)` to the target database\.  
+Some of the operators can be used in the negative form\. The following filter replicates all employees where `(empid is < 50) OR (empid is > 75)` to the target database\.  
 
 ```
 {
@@ -183,7 +183,7 @@ Some of the operators can be used in the negative form\. The filter following re
 ```
 
 **Example Multiple filters using NOT operators**  
-You can use only one negative filter condition within a single filter \(OR operation\)\. However, you can use multiple filters \(`AND` operation\) with the a negative filter condition\. The filter following replicates all employees where `(empid != 50) AND (dept is not NULL)` to the target database\.  
+You can use only one negative filter condition within a single filter \(OR operation\)\. However, you can use multiple filters \(`AND` operation\) with the a negative filter condition\. The following filter replicates all employees where `(empid != 50) AND (dept is not NULL)` to the target database\.  
 
 ```
 {
@@ -218,7 +218,7 @@ You can use only one negative filter condition within a single filter \(OR opera
 
 When selecting data to import, you can specify a date or time as part of your filter criteria\. AWS DMS uses the date format YYYY\-MM\-DD and the time format YYYY\-MM\-DD HH:MM:SS for filtering\. The AWS DMS comparison functions follow the SQLite conventions\. For more information about SQLite data types and date comparisons, see [Datatypes in SQLite version 3](https://sqlite.org/datatype3.html) in the SQLite documentation\.
 
-The filter following shows how to filter on a date\. It replicates all employees where `empstartdate >= January 1, 2002` to the target database\.
+The following filter shows how to filter on a date\. It replicates all employees where `empstartdate >= January 1, 2002` to the target database\.
 
 **Example Single date filter**  
 

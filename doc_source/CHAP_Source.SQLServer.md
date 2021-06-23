@@ -107,7 +107,7 @@ The following limitations apply when accessing the backup transaction logs at fi
 
 ## Permissions for full load only tasks<a name="CHAP_Source.SQLServer.Permissions"></a>
 
-The permissions following are required to perform full load only tasks\.
+The following permissions are required to perform full load only tasks\.
 
 ```
                 USE db_name;
@@ -366,7 +366,7 @@ Amazon RDS doesn't grant sysadmin privileges for setting replication artifacts t
 **Note**  
 With some versions of SQL Server, if the value of pollinginterval is set to more than 3599 seconds, the value resets to the default five seconds\. When this happens, T\-Log entries are purged before AWS DMS can read them\. To determine which SQL Server versions are impacted by this known issue, see [Microsoft's documentation](https://support.microsoft.com/en-us/topic/kb4459220-fix-incorrect-results-occur-when-you-convert-pollinginterval-parameter-from-seconds-to-hours-in-sys-sp-cdc-scan-in-sql-server-dac8aefe-b60b-7745-f987-582dda2cfa78)\.
 
-   If you are using Amazon RDS with Multi\-AZ, make sure that also you set secondary following to have the right values in case of failover\.
+   If you are using Amazon RDS with Multi\-AZ, make sure that also you set your secondary to have the right values in case of failover\.
 
    ```
    exec rdsadmin..rds_set_configuration 'cdc_capture_pollinginterval' , 86399
@@ -437,6 +437,7 @@ The following table shows the extra connection attributes that you can use with 
 | `readBackupOnly` | Use of this attribute requires **sysadmin** privileges\. When this attribute is set to `Y`, during ongoing replication AWS DMS reads changes only from transaction log backups and doesn't read from the active transaction log file\. Setting this parameter to `Y` enables you to control active transaction log file growth during full load and ongoing replication tasks\. However, it can add some source latency to ongoing replication\.  Valid values: `N` or `Y`\. The default is `N`\.  Example: `readBackupOnly=Y;` **Note:** This parameter doesn't work on Amazon RDS SQL Server source instances because of the way RDS performs backups\.  | 
 | `use3rdPartyBackupDevice` | When this attribute is set to `Y`, AWS DMS processes third\-party transaction log backups if they are created in native format\. | 
 | `MultiSubnetFailover=Yes` | This is an ODBC driver attribute that helps DMS to connect to the new Primary in case of an Availability group failover\. When this attribute is enabled, AWS DMS attempts to connect to all IP addresses associated with the Availability Group listener when the connection is broken or the listener IP address is broken\. | 
+| `fatalOnSimpleModel` | When set to `true`, this parameter generates a fatal error when SQL Server database recovery model is set to `simple`\. This parameter is supported on DMS version 3\.4 and higher\. Default value: `false` Valid values: `true` or `false` Example: `fatalOnSimpleModel=true;`  | 
 
 ## Source data types for SQL Server<a name="CHAP_Source.SQLServer.DataTypes"></a>
 

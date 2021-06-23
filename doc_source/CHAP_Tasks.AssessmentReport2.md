@@ -20,7 +20,7 @@ The data type assessment report is a single JSON file that includes a summary th
 
 There are two levels of unsupported data types\. Data types that appear on the report as not supported can't be migrated\. Data types that appear on the report as partially supported might be converted to another data type, but not migrate as you expect\.
 
-The example following shows a sample data type assessment report that you might view\.
+The following example shows a sample data type assessment report that you might view\.
 
 ```
 {

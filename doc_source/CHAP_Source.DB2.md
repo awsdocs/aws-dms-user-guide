@@ -42,6 +42,7 @@ When using ongoing replication \(CDC\), the following limitations apply:
 + When the audit table option is enabled, the first timestamp record in the audit table is NULL\.
 + When the change table option is enabled, the first timestamp record in the table is zero \(1970\-01\-01 00:00:00\.000000\)\.
 + For Db2 LUW versions 10\.5 and higher, variable\-length string columns with data that is stored out\-of\-row are ignored\. This limitation only applies to tables created with extended row size\.
++ For on\-going replication, AWS DMS doesn't support migrating data loaded at the page level by the DB2 LOAD utility\. Instead, use the IMPORT utility which uses SQL inserts\. For more information, see [ differences between the import and load utilities]( https://www.ibm.com/docs/en/db2/11.1?topic=utilities-differences-between-import-load-utility)\. 
 
 ## Extra connection attributes when using Db2 LUW as a source for AWS DMS<a name="CHAP_Source.DB2.ConnectionAttrib"></a>
 

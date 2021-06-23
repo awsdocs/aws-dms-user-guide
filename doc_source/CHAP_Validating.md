@@ -52,19 +52,36 @@ For more information about these settings, see [ Data validation task settings](
 
 ## Using JSON editor to modify validation rules<a name="CHAP_Validating.JSONEditor"></a>
 
-To add a validation rule to a task using the JSON editor from the AWS DMS Console Dashboard, do the following:
+To add a validation rule to a task using the JSON editor from the AWS DMS Console, do the following:
 
 1. Select **Database migration tasks**\.
 
 1. Select your task from the list of migration tasks\.
 
-1. From the** Actions** drop down menu, select **Stop**\.
+1. If your task is running, select **Stop** from the **Actions** drop down menu\.
 
-1. Once the task has stopped, from the **Actions** drop down menu, select **Modify**\.
+1. Once the task has stopped, to modify your task, select **Modify** from the **Actions** drop down menu\. 
 
-1. Choose the **Mapping rules** tab\.
+1. In the **Table mappings** section, select **JSON editor** and add your validation rule to your table mappings\.
 
-1. Select **Mapping rules \(JSON\)** and add your validation rule in your table mappings\.
+For example, you can add the following validation rule to run a replace function on the source\. In this case, if the validation rule encounters a null byte, it validates it as a space\.
+
+```
+{
+	"rule-type": "validation",
+	"rule-id": "1",
+	"rule-name": "1",
+	"rule-target": "column",
+	"object-locator": {
+		"schema-name": "Test-Schema",
+		"table-name": "Test-Table",
+		"column-name": "Test-Column"
+	},
+	"rule-action": "override-validation-function",
+	"source-function": "REPLACE(${column-name}, chr(0), chr(32))",
+	"target-function": "${column-name}"
+}
+```
 
 ## Replication task statistics<a name="CHAP_Validating.TaskStatistics"></a>
 

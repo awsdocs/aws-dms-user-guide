@@ -4,7 +4,7 @@ A premigration assessment run specifies one or more individual assessments to ru
 
 ## Specifying individual assessments<a name="CHAP_Tasks.AssessmentReport1.Individual"></a>
 
-The table following provides a brief overview of the individual assessments that are applicable to a given migration task based on its configuration\. You can choose from among the individual assessments to include in a new assessment run that are applicable to your task configuration\.
+The following table provides a brief overview of the individual assessments that are applicable to a given migration task based on its configuration\. You can choose from among the individual assessments to include in a new assessment run that are applicable to your task configuration\.
 
 
 | Assessment name \(console and API\) | Description | Source must be relational | Target must be relational | Target must be Amazon ES | Target must be DynamoDB | Migration type must perform CDC | Applicable AWS DMS engine versions | 

@@ -11,7 +11,7 @@ AWS Database Migration Service uses built\-in data types to migrate data from a 
 |  BYTE  |  A binary data value\.  | 
 |  DATE  |  A date value: year, month, day\.  | 
 |  TIME  |  A time value: hour, minutes, seconds\.  | 
-|  DATETIME  |  A timestamp value: year, month, day, hour, minute, second, fractional seconds\. The fractional seconds have a maximum scale of 9 digits\.  | 
+|  DATETIME  |  A timestamp value: year, month, day, hour, minute, second, fractional seconds\. The fractional seconds have a maximum scale of 9 digits\. The following format is supported: YYYY:MM:DD HH:MM:SS\.F\(9\)\.  | 
 |  INT1  |  A one\-byte, signed integer\.  | 
 |  INT2  |  A two\-byte, signed integer\.  | 
 |  INT4  |  A four\-byte, signed integer\.  | 

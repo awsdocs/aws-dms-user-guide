@@ -4,7 +4,7 @@ You can migrate data from an Amazon S3 bucket using AWS DMS\. To do this, provid
 
 The source data files must be present in the Amazon S3 bucket before the full load starts\. You specify the bucket name using the `bucketName` parameter\. 
 
-The source data files must be in comma\-separated value \(\.csv\) format\. Name them using the naming convention shown following\. In this convention, *`schemaName`* is the source schema and *`tableName`* is the name of a table within that schema\.
+The source data files must be in comma\-separated value \(\.csv\) format\. Name them using the following naming convention\. In this convention, *`schemaName`* is the source schema and *`tableName`* is the name of a table within that schema\.
 
 ```
 /schemaName/tableName/LOAD001.csv

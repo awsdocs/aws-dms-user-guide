@@ -94,7 +94,7 @@ By default, a newly created Amazon DocumentDB cluster accepts secure connections
 
 You can retrieve the public key for Amazon DocumentDB by downloading the file `rds-combined-ca-bundle.pem` from an AWS\-hosted Amazon S3 bucket\. For more information on downloading this file, see [Encrypting connections using TLS](https://docs.aws.amazon.com/documentdb/latest/developerguide/security.encryption.ssl.html) in the *Amazon DocumentDB Developer Guide\.* 
 
-After you download the `rds-combined-ca-bundle.pem` file, you can import the public key that it contains into AWS DMS\. The steps following describe how to do so\.
+After you download the `rds-combined-ca-bundle.pem` file, you can import the public key that it contains into AWS DMS\. The following steps describe how to do so\.
 
 **To import your public key using the AWS DMS console**
 
@@ -110,7 +110,7 @@ After you download the `rds-combined-ca-bundle.pem` file, you can import the pub
 
 1. Choose **Add new CA certificate**\.
 
-The AWS CLI example following uses the AWS DMS `import-certificate` command to import the public key `rds-combined-ca-bundle.pem` file\.
+The AWS CLI following example uses the AWS DMS `import-certificate` command to import the public key `rds-combined-ca-bundle.pem` file\.
 
 ```
 aws dms import-certificate \
@@ -142,10 +142,10 @@ You can create an Amazon DocumentDB source endpoint using either the console or 
 
 1. For **Database name**, enter the name of the database to be migrated\.
 
-Use the procedure following with the CLI\.
+Use the following procedure with the CLI\.
 
 **To configure an Amazon DocumentDB source endpoint using the AWS CLI**
-+ Run the AWS DMS `create-endpoint` command shown following to configure an Amazon DocumentDB source endpoint, replacing placeholders with your own values\.
++ Run the following AWS DMS `create-endpoint` command to configure an Amazon DocumentDB source endpoint, replacing placeholders with your own values\.
 
   ```
   aws dms create-endpoint \
@@ -163,7 +163,7 @@ Use the procedure following with the CLI\.
 
 To improve performance of a migration task, DocumentDB source endpoints support the range segmentation option of the parallel full load feature\. In other words, using table mapping JSON settings for parallel full load, you can migrate a segmented collection using threads in parallel\. For more information, see [Table and collection settings rules and operations](CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Tablesettings.md)\.
 
-The example following shows a DocumentDB collection that has seven items, and `_id` as the primary key\.
+The following example shows a DocumentDB collection that has seven items, and `_id` as the primary key\.
 
 ![\[Amazon DocumentDB collection with seven items.\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-docdb-collection.png)
 

@@ -4,20 +4,24 @@ To use AWS Database Migration Service \(AWS DMS\) most effectively, see this sec
 
 **Topics**
 + [Migration planning for AWS Database Migration Service](#CHAP_SettingUp.MigrationPlanning)
++ [Converting schema](#CHAP_BestPractices.SchemaConversion)
++ [Reviewing the AWS DMS public documentation](#CHAP_BestPractices.RevAWSDocs)
++ [Running a proof of concept](#CHAP_BestPractices.RunPOC)
 + [Improving the performance of an AWS DMS migration](#CHAP_BestPractices.Performance)
++ [Using your own on\-premises name server](#CHAP_BestPractices.Rte53DNSResolver)
++ [Migrating large binary objects \(LOBs\)](#CHAP_BestPractices.LOBS)
++ [Improving performance when migrating large tables using row filtering](#CHAP_BestPractices.LargeTables)
++ [Ongoing replication](#CHAP_BestPractices.OnGoingReplication)
 + [Reducing the load on your source database](#CHAP_BestPractices.ReducingLoad)
 + [Reducing the bottlenecks on your target database](#CHAP_BestPractices.ReducingBottlenecks)
-+ [Using the task log to troubleshoot migration issues](#CHAP_BestPractices.TaskLog)
 + [Using data validation during migration](#CHAP_BestPractices.DataValidation)
-+ [Converting schema](#CHAP_BestPractices.SchemaConversion)
 + [Monitoring your AWS DMS tasks using metrics](#CHAP_BestPractices.Metrics)
 + [Events and notifications](#CHAP_BestPractices.Events)
-+ [Migrating large binary objects \(LOBs\)](#CHAP_BestPractices.LOBS)
-+ [Ongoing replication](#CHAP_BestPractices.OnGoingReplication)
-+ [Improving performance when migrating large tables using row filtering](#CHAP_BestPractices.LargeTables)
-+ [Using your own on\-premises name server](#CHAP_BestPractices.Rte53DNSResolver)
++ [Using the task log to troubleshoot migration issues](#CHAP_BestPractices.TaskLog)
 + [Changing the user and schema for an Oracle target](#CHAP_BestPractices.ChangeOracleSchema)
 + [Changing table and index tablespaces for an Oracle target](#CHAP_BestPractices.ChangeOracleTablespace)
++ [Upgrading a replication instance version](#CHAP_BestPractices.RIUpgrade)
++ [Understanding your migration cost](#CHAP_BestPractices.Cost)
 
 ## Migration planning for AWS Database Migration Service<a name="CHAP_SettingUp.MigrationPlanning"></a>
 
@@ -26,18 +30,46 @@ When planning a database migration using AWS Database Migration Service, conside
 + **Source and target endpoints** – Make sure that you know what information and tables in the source database need to be migrated to the target database\. AWS DMS supports basic schema migration, including the creation of tables and primary keys\. However, AWS DMS doesn't automatically create secondary indexes, foreign keys, user accounts, and so on, in the target database\. Depending on your source and target database engine, you might need to set up supplemental logging or modify other settings for a source or target database\. For more information, see [Sources for data migration](CHAP_Source.md) and [Targets for data migration](CHAP_Target.md)\.
 + **Schema and code migration** – AWS DMS doesn't perform schema or code conversion\. You can use tools such as Oracle SQL Developer, MySQL Workbench, and pgAdmin III to convert your schema\. To convert an existing schema to a different database engine, you can use the AWS Schema Conversion Tool \(AWS SCT\)\. It can create a target schema and can generate and create an entire schema: tables, indexes, views, and so on\. You can also use the tool to convert PL/SQL or TSQL to PgSQL and other formats\. For more information on the AWS SCT, see the [AWS SCT User Guide](https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_Welcome.html)\.
 + **Unsupported data types** – Make sure that you can convert source data types into the equivalent data types for the target database\. For more information on supported data types, see the source or target section for your data store\. 
++ **Diagnostic support script results** – When you plan your migration, we recommend that you run diagnostic support scripts\. With the results from these scripts, you can find advance information about potential migration failures\.
+
+  If a support script is available for your database, download it using the link in the corresponding script topic in the following section\. After verifying and reviewing the script, you can run it according to the procedure described in the script topic in your local environment\. When the script run is complete, you can review the results\. We recommend running these scripts as a first step of any troubleshooting effort\. The results can be useful while working with an AWS Support team\. For more information, see [Working with diagnostic support scripts in AWS DMS](CHAP_SupportScripts.md)\.
++ **Premigration assessments** – A *premigration assessment* evaluates specified components of a database migration task to help identify any problems that might prevent a migration task from running as expected\. By using this assessment, you can identify potential problems before you run a new or modified task\. For more information on working with premigration assessments, see [Enabling and working with premigration assessments for a task](CHAP_Tasks.AssessmentReport.md)\.
+
+## Converting schema<a name="CHAP_BestPractices.SchemaConversion"></a>
+
+AWS DMS doesn't perform schema or code conversion\. If you want to convert an existing schema to a different database engine, you can use AWS SCT\. AWS SCT converts your source objects, table, indexes, views, triggers, and other system objects into the target data definition language \(DDL\) format\. You can also use AWS SCT to convert most of your application code, like PL/SQL or TSQL, to the equivalent target language\. 
+
+You can get AWS SCT as a free download from AWS\. For more information on AWS SCT, see the [AWS SCT User Guide](https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_SchemaConversionTool.Installing.html)\.
+
+If your source and target endpoints are on the same database engine, you can use tools such as Oracle SQL Developer, MySQL Workbench, or PgAdmin4 to move your schema\.
+
+## Reviewing the AWS DMS public documentation<a name="CHAP_BestPractices.RevAWSDocs"></a>
+
+We highly recommended that you go through the AWS DMS public documentation pages for your source and target endpoints before your first migration\. This documentation can help you to identify the prerequisites for the migration and understand the current limitations before you begin\. For more information, see [Working with AWS DMS endpoints](CHAP_Endpoints.md)\.
+
+During migration, the public documentation can help you to troubleshoot any issues with AWS DMS\. Troubleshooting pages in the documentation can help you to resolve common issues using both AWS DMS and selected endpoint databases\. For more information, see [Troubleshooting migration tasks in AWS Database Migration Service](CHAP_Troubleshooting.md)\.
+
+## Running a proof of concept<a name="CHAP_BestPractices.RunPOC"></a>
+
+To help discover issues with your environment in early phases of your database migration, we recommend that you run a small test migration\. Doing this can also help you to set a more realistic migration time line\. In addition, you might need to run a full\-scale test migration to measure whether AWS DMS can handle the throughput of your database over your network\. During this time, we recommend to benchmark and optimize your initial full load and ongoing replication\. Doing this can help you to understand your network latency and gauge overall performance\.
+
+At this point, you also have an opportunity to understand your data profile and how large your database is, including the following:
++ How many tables are large, medium, and small in size\.
++ How AWS DMS handles data type and character\-set conversions\.
++ How many tables having large object \(LOB\) columns\.
++ How long it takes to run a test migration\.
 
 ## Improving the performance of an AWS DMS migration<a name="CHAP_BestPractices.Performance"></a>
 
 A number of factors affect the performance of your AWS DMS migration:
-+ Resource availability on the source
-+ The available network throughput
-+ The resource capacity of the replication server
-+ The ability of the target to ingest changes
-+ The type and distribution of source data
-+ The number of objects to be migrated
++ Resource availability on the source\.
++ The available network throughput\.
++ The resource capacity of the replication server\.
++ The ability of the target to ingest changes\.
++ The type and distribution of source data\.
++ The number of objects to be migrated\.
 
-You can improve performance by using some or all of the best practices mentioned following\. Whether you can use one of these practices depends on your specific use case\. You can find limitations following as appropriate\. 
+You can improve performance by using some or all of the best practices mentioned following\. Whether you can use one of these practices depends on your specific use case\. You can find some limitations following: 
 
 **Provisioning a proper replication server**  
 AWS DMS is a managed service that runs on an Amazon EC2 instance\. This service connects to the source database, reads the source data, formats the data for consumption by the target database, and loads the data into the target database\.   
@@ -71,7 +103,7 @@ To change this number using the AWS CLI, change the `MaxFullLoadSubTasks` parame
 
 **Using parallel full load**  
 You can use a parallel load from Oracle, Microsoft SQL Server, MySQL, Sybase, and IBM Db2 LUW sources based on partitions and subpartitions\. Doing this can improve overall full load duration\. In addition, while running an AWS DMS migration task, you can accelerate the migration of large or partitioned tables\. To do this, split the table into segments and load the segments in parallel in the same migration task\.  
-To use a parallel load, create a table mapping rule of type `table-settings` with the `parallel-load` option\. Within the `table-settings` rule, specify the selection criteria for the table or tables that you want to load in parallel\. To specify the selection criteria, set the `type` element for `parallel-load` to one of the settings following:  
+To use a parallel load, create a table mapping rule of type `table-settings` with the `parallel-load` option\. Within the `table-settings` rule, specify the selection criteria for the table or tables that you want to load in parallel\. To specify the selection criteria, set the `type` element for `parallel-load` to one of the following settings:  
 + `partitions-auto`
 + `subpartitions-auto`
 + `partitions-list`
@@ -95,73 +127,53 @@ You can use multiple tasks to create separate streams of replication\. By doing 
 ** Optimizing change processing **  
  By default, AWS DMS processes changes in a transactional mode, which preserves transactional integrity\. If you can afford temporary lapses in transactional integrity, you can use the batch optimized apply option instead\. This option efficiently groups transactions and applies them in batches for efficiency purposes\. Using the batch optimized apply option almost always violates referential integrity constraints\. So we recommend that you turn these constraints off during the migration process and turn them on again as part of the cutover process\. 
 
-## Reducing the load on your source database<a name="CHAP_BestPractices.ReducingLoad"></a>
+## Using your own on\-premises name server<a name="CHAP_BestPractices.Rte53DNSResolver"></a>
 
-AWS DMS uses some resources on your source database\. During a full load task, AWS DMS performs a full table scan of the source table for each table processed in parallel\. Also, each task that you create as part of a migration queries the source for changes as part of the CDC process\. For AWS DMS to perform CDC for some sources, such as Oracle, you might need to increase the amount of data written to your database's change log\. 
+Usually, an AWS DMS replication instance uses the Domain Name System \(DNS\) resolver in an Amazon EC2 instance to resolve domain endpoints\. However, you can use your own on\-premises name server to resolve certain endpoints if you use the Amazon Route 53 Resolver\. With this tool, you can query between on\-premises and AWS using inbound and outbound endpoints, forwarding rules, and a private connection\. The benefits of using an on\-premises name server include improved security and ease of use behind a firewall\.
 
-If you find that you're overburdening your source database, reduce the number of tasks or tables for each task for your migration\. Each task gets source changes independently, so consolidating tasks can decrease the change capture workload\.
+If you have inbound endpoints, you can use DNS queries that originate on\-premises to resolve AWS\-hosted domains\. To configure the endpoints, assign IP addresses in each subnet that you want to provide a resolver\. To establish connectivity between your on\-premises DNS infrastructure and AWS, use AWS Direct Connect or a virtual private network \(VPN\)\.
 
-## Reducing the bottlenecks on your target database<a name="CHAP_BestPractices.ReducingBottlenecks"></a>
+Outbound endpoints connect to your on\-premises name server\. The name server only grants access to IP addresses included in an allow list and set in an outbound endpoint\. The IP address of your name server is the target IP address\. When you choose a security group for an outbound endpoint, choose the same security group used by the replication instance\. 
 
-During the migration, try to remove any processes that compete for write resources on your target database:
-+ Turn off unnecessary triggers\.
-+ Turn off secondary indexes during initial load and turn them back on later during ongoing replication\.
-+ With RDS databases, it's a good idea to turn off backups and Multi\-AZ until the cutover\.
-+ While migrating to non\-RDS systems, it's a good idea turn off any logging on the target until the cutover\.
+To forward select domains to the name server, use forwarding rules\. An outbound endpoint can handle multiple forwarding rules\. The scope of the forwarding rule is your virtual private cloud \(VPC\)\. By using a forwarding rule associated with a VPC, you can provision a logically isolated section of the AWS Cloud\. From this logically isolated section, you can launch AWS resources in a virtual network\.
 
-## Using the task log to troubleshoot migration issues<a name="CHAP_BestPractices.TaskLog"></a>
+You can configure domains hosted within your on\-premises DNS infrastructure as conditional forwarding rules that set up outbound DNS queries\. When a query is made to one of those domains, rules trigger an attempt to forward DNS requests to servers that were configured with the rules\. Again, a private connection over AWS Direct Connect or VPN is required\. 
 
-In some cases, AWS DMS can encounter issues for which warnings or error messages appear only in the task log\. In particular, data truncation issues or row rejections due to foreign key violations are only written in the task log\. Therefore, be sure to review the task log when migrating a database\. To view the task log, configure Amazon CloudWatch as part of task creation\.
+The following diagram shows the Route 53 Resolver architecture\.
 
-For more information, see [Monitoring replication tasks using Amazon CloudWatch](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Monitoring.html#CHAP_Monitoring.CloudWatch)\.
+![\[Route 53 Resolver Architecture\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-resolver-howitworks.png)
 
-## Using data validation during migration<a name="CHAP_BestPractices.DataValidation"></a>
+For more information about Route 53 DNS Resolver, see [Getting started with Route 53 Resolver](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-getting-started.html) in the *Amazon Route 53 Developer Guide*\.
 
-We highly recommend that you use data validation to ensure that your data was migrated accurately from the source to the target\. If you turn on data validation for a task, AWS DMS begins comparing the source and target data immediately after a full load is performed for a table\.
+### Using Amazon Route 53 Resolver with AWS DMS<a name="CHAP_BestPractices.Rte53DNSResolver.Set-up"></a>
 
-Data validation works with the following databases wherever AWS DMS supports them as source and target endpoints:
-+ Oracle
-+ PostgreSQL
-+ MySQL
-+ MariaDB
-+ Microsoft SQL Server
-+ Amazon Aurora MySQL\-Compatible Edition
-+ Amazon Aurora PostgreSQL\-Compatible Edition
-+ IBM Db2 LUW
+You can create an on\-premises name server for AWS DMS to resolve endpoints using [Amazon Route 53 Resolver](https://aws.amazon.com/route53/)\. 
 
-For more information, see [AWS DMS data validation](CHAP_Validating.md)\.
+**To create an on\-premises name server for AWS DMS based on Route 53**
 
-## Converting schema<a name="CHAP_BestPractices.SchemaConversion"></a>
+1. Sign in to the AWS Management Console and open the Route 53 console at [https://console\.aws\.amazon\.com/route53/](https://console.aws.amazon.com/route53/)\.
 
-AWS DMS doesn't perform schema or code conversion\. If you want to convert an existing schema to a different database engine, you can use AWS SCT\. AWS SCT converts your source objects, table, indexes, views, triggers, and other system objects into the target data definition language \(DDL\) format\. You can also use AWS SCT to convert most of your application code, like PL/SQL or TSQL, to the equivalent target language\. 
+1. On the Route 53 console, choose the AWS Region where you want to configure your Route 53 Resolver\. The Route 53 Resolver is specific to a Region\.
 
-You can get AWS SCT as a free download from AWS\. For more information on AWS SCT, see the [ AWS Schema Conversion Tool User Guide](https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_SchemaConversionTool.Installing.html)\.
+1. Choose the query direction—inbound, outbound, or both\.
 
-If your source and target endpoints are on the same database engine, you can use tools such as Oracle SQL Developer, MySQL Workbench, or PgAdmin4 to move your schema\.
+1. Provide your inbound query configuration:
 
-## Monitoring your AWS DMS tasks using metrics<a name="CHAP_BestPractices.Metrics"></a>
+   1. Enter an endpoint name and choose a VPC\. 
 
-You have several options for monitoring metrics for your tasks using the AWS DMS console:
+   1. Assign one or more subnets from within the VPC \(for example, choose two for availability\)\. 
 
-Host metrics  
-You can find host metrics on the **CloudWatch metrics** tab for each particular replication instance\. Here, you can monitor whether your replication instance is sized appropriately\.
+   1. Assign specific IP addresses to use as endpoints, or have Route 53 Resolver assign them automatically\.
 
-Replication task metrics  
-Metrics for replication tasks, including incoming and committed changes, and latency between the replication host and source/target databases can be found on the **CloudWatch metrics** tab for each particular task\.
+1. Create a rule for your on\-premises domain so that workloads inside the VPC can route DNS queries to your DNS infrastructure\.
 
-Table metrics  
-You can find individual table metrics on the **Table statistics** tab for each individual task\. These metrics include these numbers:  
-+ Rows loaded during the full load\.
-+ Inserts, updates, and deletes since the task started\.
-+ DDL operations since the task started\.
+1. Enter one or more IP addresses for your on\-premises DNS servers\.
 
-For more information on metrics monitoring, see [Monitoring AWS DMS tasks](CHAP_Monitoring.md)\.
+1. Submit your rule\. 
 
-## Events and notifications<a name="CHAP_BestPractices.Events"></a>
+When everything is created, your VPC is associated with your inbound and outbound rules and can start routing traffic\. 
 
-AWS DMS uses Amazon SNS to provide notifications when an AWS DMS event occurs, for example the creation or deletion of a replication instance\. You can work with these notifications in any form supported by Amazon SNS for an AWS Region\. These can include email messages, text messages, or calls to an HTTP endpoint\.
-
-For more information, see [Working with events and notifications in AWS Database Migration Service](CHAP_Events.md)\.
+For more information about Route 53 Resolver, see [Getting started with Route 53 Resolver](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-getting-started.html) in the *Amazon Route 53 Developer Guide*\.
 
 ## Migrating large binary objects \(LOBs\)<a name="CHAP_BestPractices.LOBS"></a>
 
@@ -202,7 +214,7 @@ For endpoints that have full LOB support, you can also set a size limit for LOB 
 
 ### Improved LOB performance<a name="CHAP_BestPractices.LOBS.Performance"></a>
 
-With AWS DMS engine versions 3\.1\.x, you can improve the loading of LOB data in several ways\. While migrating LOB data, you can specify the different LOB optimization settings following\.
+With AWS DMS engine versions 3\.1\.x, you can improve the loading of LOB data in several ways\. While migrating LOB data, you can specify the following different LOB optimization settings\.
 
 #### Per table LOB settings<a name="CHAP_BestPractices.LOBS.Performance.PerTable"></a>
 
@@ -234,30 +246,30 @@ Next, create a migration task and modify the LOB handling for your table using t
 
 ```
 {
-	"rules": [{
-			"rule-type": "selection",
-			"rule-id": "1",
-			"rule-name": "1",
-			"object-locator": {
-				"schema-name": "HR",
-				"table-name": "TEST_CLOB"
-			},
-			"rule-action": "include"
-		    },
-		    {
-			"rule-type": "table-settings",
-			"rule-id": "2",
-			"rule-name": "2",
-			"object-locator": {
-				"schema-name": "HR",
-				"table-name": "TEST_CLOB"
-			},
-			"lob-settings": {
-				"mode": "limited",
-				"bulk-max-size": 16
-			}
-		    }
-	         ]
+  "rules": [
+    {
+      "rule-type": "selection",
+      "rule-id": "1",
+      "rule-name": "1",
+      "object-locator": {
+      "schema-name": "HR",
+      "table-name": "TEST_CLOB"
+    },
+    "rule-action": "include"
+    },
+    {
+      "rule-type": "table-settings",
+      "rule-id": "2",
+      "rule-name": "2",
+      "object-locator": {
+      "schema-name": "HR",
+      "table-name": "TEST_CLOB"
+    },
+    "lob-settings": {
+      "mode": "limited",
+      "bulk-max-size": 16
+    }
+  ]
 }
 ```
 
@@ -282,7 +294,7 @@ When you use inline LOB mode, the AWS DMS task checks all of the LOB sizes to de
 
 You configure this option using an attribute in task settings, `InlineLobMaxSize`, which is only available when `FullLobMode` is set to `true`\. The default value for `InlineLobMaxSize` is 0\. The range is 1 KB–2 GB\.
 
-For example, you might use the AWS DMS task settings following\. Here, setting `InlineLobMaxSize` to a value of 5 results in all LOBs larger than 5,000 being transferred inline\.
+For example, you might use the following AWS DMS task settings\. Here, setting `InlineLobMaxSize` to a value of 5 results in all LOBs smaller than or equal to 5,000 being transferred inline\.
 
 ```
 {
@@ -303,14 +315,6 @@ For example, you might use the AWS DMS task settings following\. Here, setting `
 }
 ```
 
-## Ongoing replication<a name="CHAP_BestPractices.OnGoingReplication"></a>
-
-AWS DMS provides ongoing replication of data, keeping the source and target databases in sync\. It replicates only a limited amount of data definition language \(DDL\) statements\. AWS DMS doesn't propagate items such as indexes, users, privileges, stored procedures, and other database changes not directly related to table data\. 
-
-If you plan to use ongoing replication, set the **Multi\-AZ** option when you create your replication instance\. By choosing **Multi\-AZ**, you get high availability and failover support for the replication instance\. However, this option can have an impact on performance and can slow down replication while applying changes to the target system\.
-
-Before you upgrade your source or target databases, we recommend that you stop any AWS DMS tasks that are running on these databases\. Resume the tasks after your upgrades are complete\.
-
 ## Improving performance when migrating large tables using row filtering<a name="CHAP_BestPractices.LargeTables"></a>
 
 To improve the performance when migrating a large table, you can break the migration into more than one task\. To break the migration into multiple tasks using row filtering, use a key or a partition key\. For example, if you have an integer primary key ID from 1 to 8,000,000, you can create eight tasks using row filtering to migrate 1 million records each\.
@@ -319,53 +323,77 @@ To apply row filtering in the console, open the console, choose **Tasks**, and c
 
 Or if you have a large partitioned table that is partitioned by date, you can migrate data based on date\. For example, suppose that you have a table partitioned by month, and only the current month's data is updated\. In this case, you can create a full load task for each static monthly partition and create a full load plus CDC task for the currently updated partition\.
 
-## Using your own on\-premises name server<a name="CHAP_BestPractices.Rte53DNSResolver"></a>
+## Ongoing replication<a name="CHAP_BestPractices.OnGoingReplication"></a>
 
-Usually, an AWS DMS replication instance uses the Domain Name System \(DNS\) resolver in an Amazon EC2 instance to resolve domain endpoints\. However, you can use your own on\-premises name server to resolve certain endpoints if you use the Amazon Route 53 Resolver\. With this tool, you can query between on\-premises and AWS using inbound and outbound endpoints, forwarding rules, and a private connection\. The benefits of using an on\-premises name server include improved security and ease of use behind a firewall\.
+AWS DMS provides ongoing replication of data, keeping the source and target databases in sync\. It replicates only a limited amount of data definition language \(DDL\) statements\. AWS DMS doesn't propagate items such as indexes, users, privileges, stored procedures, and other database changes not directly related to table data\. 
 
-If you have inbound endpoints, you can use DNS queries that originate on\-premises to resolve AWS hosted domains\. To configure the endpoints, assign IP addresses in each subnet that you want to provide a resolver\. To establish connectivity between your on\-premises DNS infrastructure and AWS, use AWS Direct Connect or a virtual private network \(VPN\)\.
+If you plan to use ongoing replication, set the **Multi\-AZ** option when you create your replication instance\. By choosing **Multi\-AZ**, you get high availability and failover support for the replication instance\. However, this option can have an impact on performance and can slow down replication while applying changes to the target system\.
 
-Outbound endpoints connect to your on\-premises name server\. The name server only grants access to IP addresses included in an allow list and set in an outbound endpoint\. The IP address of your name server is the target IP address\. When you choose a security group for an outbound endpoint, choose the same security group used by the replication instance\. 
+Before you upgrade your source or target databases, we recommend that you stop any AWS DMS tasks that are running on these databases\. Resume the tasks after your upgrades are complete\.
 
-To forward select domains to the name server, use forwarding rules\. An outbound endpoint can handle multiple forwarding rules\. The scope of the forwarding rule is your virtual private cloud \(VPC\)\. By using a forwarding rule associated with a VPC, you can provision a logically isolated section of the AWS Cloud\. From this logically isolated section, you can launch AWS resources in a virtual network\.
+During ongoing replication, it's critical to identify the network bandwidth between your source database system and your AWS DMS replication instance\. Make sure that the network doesn’t cause any bottlenecks during ongoing replication\.
 
-You can configure domains hosted within your on\-premises DNS infrastructure as conditional forwarding rules that set up outbound DNS queries\. When a query is made to one of those domains, rules trigger an attempt to forward DNS requests to servers that were configured with the rules\. Again, a private connection over AWS Direct Connect or VPN is required\. 
+It's also important to identify the rate of change and archive log generation per hour on your source database system\. Doing this can help you to understand the throughput that you might get during ongoing replication\.
 
-The following diagram shows the Route 53 Resolver architecture\.
+## Reducing the load on your source database<a name="CHAP_BestPractices.ReducingLoad"></a>
 
-![\[Route 53 Resolver Architecture\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-resolver-howitworks.png)
+AWS DMS uses some resources on your source database\. During a full load task, AWS DMS performs a full table scan of the source table for each table processed in parallel\. Also, each task that you create as part of a migration queries the source for changes as part of the CDC process\. For AWS DMS to perform CDC for some sources, such as Oracle, you might need to increase the amount of data written to your database's change log\. 
 
-For more information about AWS Route\-53 DNS Resolver, see [Getting started with Route 53 Resolver](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-getting-started.html) in the *Amazon Route 53 Developer Guide*\.
+If you find that you're overburdening your source database, reduce the number of tasks or tables for each task for your migration\. Each task gets source changes independently, so consolidating tasks can decrease the change capture workload\.
 
-### Using Amazon Route 53 Resolver with AWS DMS<a name="CHAP_BestPractices.Rte53DNSResolver.Set-up"></a>
+## Reducing the bottlenecks on your target database<a name="CHAP_BestPractices.ReducingBottlenecks"></a>
 
-You can create an on\-premises name server for AWS DMS to resolve endpoints using [Amazon Route 53 Resolver](https://aws.amazon.com/route53/)\. 
+During the migration, try to remove any processes that compete for write resources on your target database:
++ Turn off unnecessary triggers\.
++ Turn off secondary indexes during initial load and turn them back on later during ongoing replication\.
++ With Amazon RDS databases, it's a good idea to turn off backups and Multi\-AZ until the cutover\.
++ While migrating to non\-RDS systems, it's a good idea turn off any logging on the target until the cutover\.
 
-**To create an on\-premises name server for DMS based on Route 53**
+## Using data validation during migration<a name="CHAP_BestPractices.DataValidation"></a>
 
-1. Sign in to the AWS Management Console and open the Route 53 console at [https://console\.aws\.amazon\.com/route53/](https://console.aws.amazon.com/route53/)\.
+To ensure that your data was migrated accurately from the source to the target, we highly recommend that you use data validation\. If you turn on data validation for a task, AWS DMS begins comparing the source and target data immediately after a full load is performed for a table\.
 
-1. On the Route 53 console, choose the AWS Region where you want to configure your Route 53 Resolver\. The Route 53 Resolver is specific to a Region\.
+Data validation works with the following databases wherever AWS DMS supports them as source and target endpoints:
++ Oracle
++ PostgreSQL
++ MySQL
++ MariaDB
++ Microsoft SQL Server
++ Amazon Aurora MySQL\-Compatible Edition
++ Amazon Aurora PostgreSQL\-Compatible Edition
++ IBM Db2 LUW
 
-1. Choose the query direction—inbound, outbound, or both\.
+For more information, see [AWS DMS data validation](CHAP_Validating.md)\.
 
-1. Provide your inbound query configuration:
+## Monitoring your AWS DMS tasks using metrics<a name="CHAP_BestPractices.Metrics"></a>
 
-   1. Enter an endpoint name and choose a VPC\. 
+You have several options for monitoring metrics for your tasks using the AWS DMS console:
 
-   1. Assign one or more subnets from within the VPC \(for example, choose two for availability\)\. 
+Host metrics  
+You can find host metrics on the **CloudWatch metrics** tab for each particular replication instance\. Here, you can monitor whether your replication instance is sized appropriately\.
 
-   1. Assign specific IP addresses to use as endpoints, or have Route 53 Resolver assign them automatically\.
+Replication task metrics  
+Metrics for replication tasks, including incoming and committed changes, and latency between the replication host and source/target databases can be found on the **CloudWatch metrics** tab for each particular task\.
 
-1. Create a rule for your on\-premises domain so that workloads inside the VPC can route DNS queries to your DNS infrastructure\.
+Table metrics  
+You can find individual table metrics on the **Table statistics** tab for each individual task\. These metrics include these numbers:  
++ Rows loaded during the full load\.
++ Inserts, updates, and deletes since the task started\.
++ DDL operations since the task started\.
 
-1. Enter one or more IP addresses for your on\-premises DNS servers\.
+For more information on metrics monitoring, see [Monitoring AWS DMS tasks](CHAP_Monitoring.md)\.
 
-1. Submit your rule\. 
+## Events and notifications<a name="CHAP_BestPractices.Events"></a>
 
-When everything is created, your VPC is associated with your inbound and outbound rules and can start routing traffic\. 
+AWS DMS uses Amazon SNS to provide notifications when an AWS DMS event occurs, for example the creation or deletion of a replication instance\. You can work with these notifications in any form supported by Amazon SNS for an AWS Region\. These can include email messages, text messages, or calls to an HTTP endpoint\.
 
-For more information about Route 53 Resolver, see [Getting started with Route 53 Resolver](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-getting-started.html) in the *Amazon Route 53 Developer Guide*\.
+For more information, see [Working with events and notifications in AWS Database Migration Service](CHAP_Events.md)\.
+
+## Using the task log to troubleshoot migration issues<a name="CHAP_BestPractices.TaskLog"></a>
+
+In some cases, AWS DMS can encounter issues for which warnings or error messages appear only in the task log\. In particular, data truncation issues or row rejections due to foreign key violations are only written in the task log\. Therefore, be sure to review the task log when migrating a database\. To view the task log, configure Amazon CloudWatch as part of task creation\.
+
+For more information, see [Monitoring replication tasks using Amazon CloudWatch](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Monitoring.html#CHAP_Monitoring.CloudWatch)\.
 
 ## Changing the user and schema for an Oracle target<a name="CHAP_BestPractices.ChangeOracleSchema"></a>
 
@@ -392,8 +420,6 @@ To override this behavior, provide a schema transformation\. For example, to mig
 For more information about transformations, see [ Specifying table selection and transformations rules using JSON](CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.md)\.
 
 ## Changing table and index tablespaces for an Oracle target<a name="CHAP_BestPractices.ChangeOracleTablespace"></a>
-
-
 
 When using Oracle as a target, AWS DMS migrates all tables and indexes to the default tablespace in the target\. For example, suppose that your source is a database engine other than Oracle\. All of the target tables and indexes are migrated to the same default tablespace\.
 
@@ -431,3 +457,17 @@ To override this behavior, provide corresponding tablespace transformations\. Fo
 For more information about transformations, see [ Specifying table selection and transformations rules using JSON](CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.md)\.
 
 When Oracle is both source and target, you can preserve existing table or index tablespace assignments by setting the Oracle source extra connection attribute `enableHomogenousTablespace=true`\. For more information, see [Extra connection attributes when using Oracle as a source for AWS DMS](CHAP_Source.Oracle.md#CHAP_Source.Oracle.ConnectionAttrib)\.
+
+## Upgrading a replication instance version<a name="CHAP_BestPractices.RIUpgrade"></a>
+
+AWS periodically releases new versions of the AWS DMS replication engine software, with new features and performance improvements\. Each version of the replication engine software has its own version number\. It’s critical to test the existing version of your AWS DMS replication instance running a production work load before you upgrade your replication instance to a later version\. For more information on available version upgrades, see [AWS DMS release notes](CHAP_ReleaseNotes.md)\.
+
+## Understanding your migration cost<a name="CHAP_BestPractices.Cost"></a>
+
+AWS Database Migration Service helps you migrate databases to AWS easily and securely at a low cost\. You only pay for your replication instances and any additional log storage\. Each database migration instance includes storage sufficient for swap space, replication logs, and data cache for most replications and inbound data transfer is free\.
+
+You might need more resources during initial load or during peak load time\. You can closely monitor replication instance resource utilization using cloud watch metrics\. You can then scale up and scale down replication instance size based on usage\.
+
+For more information on estimating your migration costs, see:
++ [AWS Database Migration Service pricing](http://aws.amazon.com/dms/pricing/)
++ [AWS Pricing Calculator](https://calculator.aws/#/)

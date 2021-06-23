@@ -17,7 +17,7 @@ The number and types of available individual assessments can increase over time\
 
 ## Storing premigration assessment runs in an S3 Bucket<a name="CHAP_Tasks.AssessmentReport.IAM"></a>
 
-The Identity and Access Management \(IAM\) policy following allows DMS to store preassessment results in the S3 bucket that you create\.
+The following Identity and Access Management \(IAM\) policy allows DMS to store preassessment results in the S3 bucket that you create\.
 
 **To access an S3 bucket for a premigration assessment**
 

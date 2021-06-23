@@ -58,7 +58,7 @@ This script collects information about your SQL Server database configuration\. 
 
 **To run the script for an on\-premises SQL Server database**
 
-1. Run the script using the sqlcmd command line following\.
+1. Run the script using the following sqlcmd command line\.
 
    ```
    sqlcmd -Uon-prem-user -Ppassword -SDMS-SQL17AG-N1 -y 0 

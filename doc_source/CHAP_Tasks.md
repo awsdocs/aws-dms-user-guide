@@ -7,7 +7,7 @@ When creating a migration task, you need to know several things:
 + You can specify many task settings to tailor your migration task\. You can set these by using the AWS Management Console, AWS Command Line Interface \(AWS CLI\), or AWS DMS API\. These settings include specifying how migration errors are handled, error logging, and control table information\. 
 + After you create a task, you can run it immediately\. The target tables with the necessary metadata definitions are automatically created and loaded, and you can specify ongoing replication\.
 + By default, AWS DMS starts your task as soon as you create it\. However, in some situations, you might want to postpone the start of the task\. For example, when using the AWS CLI, you might have a process that creates a task and a different process that starts the task based on some triggering event\. As needed, you can postpone your task's start\. 
-+ You can monitor, stop, or restart tasks using the console, AWS CLI, or AWS DMS API\.
++ You can monitor, stop, or restart tasks using the console, AWS CLI, or AWS DMS API\. For information about stopping a task using the AWS DMS API, see [StopReplicationTask](https://docs.aws.amazon.com/dms/latest/APIReference/API_StopReplicationTask.html) in the [AWS DMS API Reference](https://docs.aws.amazon.com/dms/latest/APIReference/)\.
 
 The following are actions that you can do when working with an AWS DMS task\.
 

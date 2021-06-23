@@ -20,7 +20,7 @@ The following settings apply only when the target metadata parameter `BatchApply
 + `CommitTimeout` – Sets the maximum time in seconds for AWS DMS to collect transactions in batches before declaring a timeout\. The default value is 1\.
 
 The following setting applies when the target metadata parameter `BatchApplyEnabled` is set to either `true` or `false`\.
-+ `HandleSourceTableAltered` – Set this option to `true` to alter the target table when the source table is altered\.
++ `HandleSourceTableAltered` – Set this option to `true` to alter the target table when the source table is altered\. The default value is `true`\.
 
 The following setting applies only when `BatchApplyEnabled` is set to `false`\.
 + `LoopbackPreventionSettings` – These settings provide loopback prevention for each ongoing replication task in any pair of tasks involved in bidirectional replication\. *Loopback prevention* prevents identical changes from being applied in both directions of the bidirectional replication, which can corrupt data\. For more information about bidirectional replication, see [Performing bidirectional replication](CHAP_Task.CDC.md#CHAP_Task.CDC.Bidirectional)\.
@@ -31,3 +31,5 @@ The following settings apply to change processing tuning regardless of the chang
 + `MemoryLimitTotal` – Sets the maximum size \(in MB\) that all transactions can occupy in memory before being written to disk\. The default value is 1024\.
 + `MemoryKeepTime` – Sets the maximum time in seconds that each transaction can stay in memory before being written to disk\. The duration is calculated from the time that AWS DMS started capturing the transaction\. The default value is 60\. 
 + `StatementCacheSize` – Sets the maximum number of prepared statements to store on the server for later execution when applying changes to the target\. The default value is 50\. The maximum value is 200\. 
+
+To control the frequency of writes to an Amazon S3 target during a data replication task, you can configure the `cdcMaxBatchInterval` and `cdcMinFileSize` extra connection attributes\. This can result in better performance when analyzing the data without any additional overhead operations\. For more information, see [Extra connection attributes when using Amazon S3 as a target for AWS DMS](CHAP_Target.S3.md#CHAP_Target.S3.Configuring)\.

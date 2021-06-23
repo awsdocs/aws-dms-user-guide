@@ -1,7 +1,7 @@
 # AWS Database Migration Service User Guide
 
 -----
-*****Copyright &copy;  Amazon Web Services, Inc. and/or its affiliates. All rights reserved.*****
+*****Copyright &copy; Amazon Web Services, Inc. and/or its affiliates. All rights reserved.*****
 
 -----
 Amazon's trademarks and trade dress may not be used in 
@@ -24,10 +24,10 @@ Amazon's trademarks and trade dress may not be used in
    + [Using AWS DMS with other AWS services](CHAP_Introduction.AWS.md)
 + [Getting started with AWS Database Migration Service](CHAP_GettingStarted.md)
    + [Setting up for AWS Database Migration Service](CHAP_GettingStarted.SettingUp.md)
-   + [Prerequisites](CHAP_GettingStarted.Prerequisites.md)
-   + [Use AWS SCT to Migrate the Source Schema to the Target Database](CHAP_GettingStarted.SCT.md)
-   + [Set up Replication](CHAP_GettingStarted.Replication.md)
-   + [Additional resources](CHAP_GettingStarted.References.md)
+   + [Prerequisites for AWS Database Migration Service](CHAP_GettingStarted.Prerequisites.md)
+   + [Migrating your source schema to your target database using AWS SCT](CHAP_GettingStarted.SCT.md)
+   + [Setting up replication for AWS Database Migration Service](CHAP_GettingStarted.Replication.md)
+   + [Additional resources for working with AWS Database Migration Service](CHAP_GettingStarted.References.md)
 + [Best practices for AWS Database Migration Service](CHAP_BestPractices.md)
 + [Working with an AWS DMS replication instance](CHAP_ReplicationInstance.md)
    + [Choosing the right AWS DMS replication instance for your migration](CHAP_ReplicationInstance.Types.md)

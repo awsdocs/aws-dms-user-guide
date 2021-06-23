@@ -17,7 +17,7 @@ Before running the script, you can detect any errors that might have been introd
    SQL_SERVER  971a6f2c46aec8d083d2b3b6549b1e9990af3a15fe4b922e319f4fdd358debe7
    ```
 
-1. Run the SHA256 validation command for your operating system in the directory that contains the support file\. For example, on the macOS operating system you can run the command following on an Oracle support script described later in this topic\.
+1. Run the SHA256 validation command for your operating system in the directory that contains the support file\. For example, on the macOS operating system you can run the following command on an Oracle support script described later in this topic\.
 
    ```
    shasum -a 256 awsdms_support_collector_oracle.sql

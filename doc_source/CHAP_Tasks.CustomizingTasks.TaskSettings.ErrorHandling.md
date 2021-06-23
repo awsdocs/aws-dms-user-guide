@@ -11,7 +11,7 @@ You can set the error handling behavior of your replication task during change d
   + `LOG_ERROR` – The task continues and the error is written to the task log\.
   + `SUSPEND_TABLE` – The task continues but data from the table with the error record is moved into an error state and the data isn't replicated\.
   + `STOP_TASK` – The task stops and manual intervention is required\.
-+ `DataErrorEscalationPolicy` – Determines the action AWS DMS takes when the maximum number of errors \(set in the `DataErrorsEscalationCount` parameter\) is reached\. The default is `SUSPEND_TABLE`\.
++ `DataErrorEscalationPolicy` – Determines the action AWS DMS takes when the maximum number of errors \(set in the `DataErrorEscalationCount` parameter\) is reached\. The default is `SUSPEND_TABLE`\.
   + `SUSPEND_TABLE` – The task continues but data from the table with the error record is moved into an error state and the data isn't replicated\.
   + `STOP_TASK` – The task stops and manual intervention is required\.
 + `DataErrorEscalationCount` – Sets the maximum number of errors that can occur to the data for a specific record\. When this number is reached, the data for the table that contains the error record is handled according to the policy set in the `DataErrorEscalationPolicy`\. The default is 0\. 
@@ -42,7 +42,7 @@ You can set the error handling behavior of your replication task during change d
   + `SUSPEND_TABLE` – The task continues but data from the table with the error record is moved into an error state and the data isn't replicated\.
   + `STOP_TASK` – The task stops and manual intervention is required\.
   + `UPDATE_RECORD` – If the target record is missing, the missing target record is inserted into the target table\. Selecting this option requires full supplemental logging to be enabled for all the source table columns when Oracle is the source database\.
-+ `ApplyErrorEscalationPolicy` – Determines what action AWS DMS takes when the maximum number of errors \(set using the `ApplyErrorsEscalationCount` parameter\) is reached\.
++ `ApplyErrorEscalationPolicy` – Determines what action AWS DMS takes when the maximum number of errors \(set using the `ApplyErrorEscalationCount` parameter\) is reached\.
   + `LOG_ERROR` – The task continues and the error is written to the task log\.
   + `SUSPEND_TABLE` – The task continues but data from the table with the error record is moved into an error state and the data isn't replicated\.
   + `STOP_TASK` – The task stops and manual intervention is required\.

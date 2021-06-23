@@ -1,6 +1,6 @@
 # Using a PostgreSQL database as a target for AWS Database Migration Service<a name="CHAP_Target.PostgreSQL"></a>
 
-You can migrate data to PostgreSQL databases using AWS DMS, either from another PostgreSQL database or from one of the other supported databases\. AWS DMS supports a PostgreSQL version 9\.4 and later \(for versions 9\.x\), 10\.x, 11\.x, and 12\.x database as a target for these types of databases:
+You can migrate data to PostgreSQL databases using AWS DMS, either from another PostgreSQL database or from one of the other supported databases\. AWS DMS supports a PostgreSQL version 9\.4 and later \(for versions 9\.x\), 10\.x, 11\.x, 12\.x, and 13\.x \(for PREVIEW use only\) database as a target for these types of databases:
 + On\-premises databases
 + Databases on an EC2 instance
 + Databases on an Amazon RDS DB instance
@@ -39,6 +39,7 @@ For additional details on working with a PostgreSQL database as a target for AWS
 The following limitations apply when using a PostgreSQL database as a target for AWS DMS:
 + The JSON data type is converted to the Native CLOB data type\.
 + In an Oracle to PostgreSQL migration, if a column in Oracle contains a NULL character \(hex value U\+0000\), AWS DMS converts the NULL character to a space \(hex value U\+0020\)\. This is due to a PostgreSQL limitation\.
++ AWS DMS doesn't support replication to a table with a unique index created with coalesce function\.
 
 ## Security requirements when using a PostgreSQL database as a target for AWS Database Migration Service<a name="CHAP_Target.PostgreSQL.Security"></a>
 
@@ -79,7 +80,7 @@ For additional information about AWS DMS data types, see [Data types for AWS Dat
 
 |  AWS DMS data type  |  PostgreSQL data type  | 
 | --- | --- | 
-|  BOOL  |  BOOL  | 
+|  BOOLEAN  |  BOOLEAN  | 
 |  BYTES  |  BYTEA  | 
 |  DATE  |  DATE  | 
 |  TIME  |  TIME  | 

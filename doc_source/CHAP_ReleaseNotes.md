@@ -9,7 +9,7 @@ You can upgrade any version of AWS Database Migration Service to any later versi
 
 ## AWS Database Migration Service 3\.4\.4 release notes<a name="CHAP_ReleaseNotes.DMS344"></a>
 
-The table following shows the new features and enhancements introduced in AWS DMS version 3\.4\.4\. 
+The following table shows the new features and enhancements introduced in AWS DMS version 3\.4\.4\. 
 
 
 | New feature or enhancement | Description | 
@@ -43,13 +43,12 @@ The issues resolved in AWS DMS 3\.4\.4 include the following:
 + Fixed an issue where AWS DMS tasks crash when there are nullable columns in composite keys using MySQL as a source\.
 + Fixed an issue where AWS DMS fails to validate both `UNIQUEIDENTIFIER` columns from SQL Server source endpoints and UUID columns from PostgreSQL target endpoints\.
 + Fixed an issue where a CDC task does not use an updated source table definition after it is modified\.
-+ Added a new transformation rule\-action, include\-column, to include only the columns specified using object\-locator\.
 + Improved AWS DMS fail over to treat task failures caused by an invalid user name or password as recoverable errors\.
 + Fixed an issue where AWS DMS tasks fail because of missing LSNs when using RDS for SQL Server as a source\.
 
 ## AWS Database Migration Service 3\.4\.3 release notes<a name="CHAP_ReleaseNotes.DMS343"></a>
 
-The table following shows the new features and enhancements introduced in AWS DMS version 3\.4\.3\. 
+The following table shows the new features and enhancements introduced in AWS DMS version 3\.4\.3\. 
 
 
 | New feature or enhancement | Description | 
@@ -85,11 +84,11 @@ The issues resolved in AWS DMS 3\.4\.3 include the following:
 + Fixed an issue where AWS DMS tasks reported fatal error when no tables were included in the table mapping rules\.
 + Fixed an issue where schemas and tables created before restarting AWS DMS tasks did not replicate to the target when using MySQL as a source\.
 + Fixed an issue where wildcard escape \[\_\] cannot escape wildcard “\_” in exclude rule when using MySQL as a source\.
-+ Fixed an issue where column of data type UNSIGHED BIGINT did not replicate correctly when using MySQL as a source\.
++ Fixed an issue where column of data type UNSIGNED BIGINT did not replicate correctly when using MySQL as a source\.
 
 ## AWS Database Migration Service 3\.4\.2 release notes<a name="CHAP_ReleaseNotes.DMS342"></a>
 
-The table following shows the new features and enhancements introduced in AWS DMS version 3\.4\.2\. 
+The following table shows the new features and enhancements introduced in AWS DMS version 3\.4\.2\. 
 
 
 | New feature or enhancement | Description | 
@@ -117,7 +116,7 @@ The issues resolved in AWS DMS 3\.4\.2 include the following:
 
 ## AWS Database Migration Service 3\.4\.1 Beta release notes<a name="CHAP_ReleaseNotes.DMS341"></a>
 
-The table following shows the new features and enhancements introduced in AWS DMS version 3\.4\.1 Beta\. 
+The following table shows the new features and enhancements introduced in AWS DMS version 3\.4\.1 Beta\. 
 
 
 | New feature or enhancement | Description | 
@@ -140,7 +139,7 @@ The issues resolved in AWS DMS 3\.4\.1 Beta include the following:
 
 ## AWS Database Migration Service 3\.4\.0 Beta release notes<a name="CHAP_ReleaseNotes.DMS340"></a>
 
-The table following shows the new features and enhancements introduced in AWS DMS version 3\.4\.0
+The following table shows the new features and enhancements introduced in AWS DMS version 3\.4\.0
 
 
 | New feature or enhancement | Description | 
@@ -182,7 +181,7 @@ The issues resolved in AWS DMS 3\.3\.4 include the following:
 
 ## AWS Database Migration Service 3\.3\.3 release notes<a name="CHAP_ReleaseNotes.DMS333"></a>
 
-The table following shows the new features and enhancements introduced in AWS DMS version 3\.3\.3\.
+The following table shows the new features and enhancements introduced in AWS DMS version 3\.3\.3\.
 
 
 | New feature or enhancement | Description | 
@@ -209,7 +208,7 @@ The issues resolved in AWS DMS 3\.3\.3 include the following:
 
 ## AWS Database Migration Service \(AWS DMS\) 3\.3\.2 release notes<a name="CHAP_ReleaseNotes.DMS332"></a>
 
-The table following shows the features and bug fixes for version 3\.3\.2 of AWS Database Migration Service \(AWS DMS\)\.
+The following table shows the features and bug fixes for version 3\.3\.2 of AWS Database Migration Service \(AWS DMS\)\.
 
 
 | New feature or enhancement | Description | 

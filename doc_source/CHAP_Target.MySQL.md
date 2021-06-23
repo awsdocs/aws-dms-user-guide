@@ -4,7 +4,7 @@ You can migrate data to any MySQL\-compatible database using AWS DMS, from any o
 
 You can use SSL to encrypt connections between your MySQL\-compatible endpoint and the replication instance\. For more information on using SSL with a MySQL\-compatible endpoint, see [Using SSL with AWS Database Migration Service](CHAP_Security.md#CHAP_Security.SSL)\. 
 
-AWS DMS supports versions 5\.5, 5\.6, 5\.7, and 8\.0 of MySQL and Aurora MySQL\. In addition, AWS DMS supports MariaDB versions 10\.0\.24 to 10\.0\.28, 10\.1, 10\.2, 10\.3 and 10\.4\.
+AWS DMS supports versions 5\.5, 5\.6, 5\.7, and 8\.0 of MySQL and Aurora MySQL\. In addition, AWS DMS supports MariaDB versions 10\.0\.24 to 10\.0\.28, 10\.1, 10\.2, 10\.3, 10\.4, and 10\.5\.
 
 **Note**  
 Support for MySQL 8\.0 as a target is available in AWS DMS versions 3\.3\.1 and later\.

@@ -219,7 +219,7 @@ For actions that don't support resource\-level permissions, such as listing oper
 
 
 
-AWS DMS works with the resources following:
+AWS DMS works with the following resources:
 + Certificates
 + Endpoints
 + Event subscriptions
@@ -371,7 +371,7 @@ Identity\-based policies are very powerful\. They determine whether someone can 
 
 #### Using the AWS DMS console<a name="security_iam_id-based-policy-examples-console"></a>
 
-The policy following gives you access to AWS DMS, including the AWS DMS console, and also specifies permissions for certain actions needed from other Amazon services such as Amazon EC2\.
+The following policy gives you access to AWS DMS, including the AWS DMS console, and also specifies permissions for certain actions needed from other Amazon services such as Amazon EC2\.
 
 ```
 {
@@ -581,7 +581,7 @@ This example shows how you might create a policy that allows IAM users to view t
 
 AWS DMS uses Amazon S3 buckets as intermediate storage for database migration\. Typically, AWS DMS manages default S3 buckets for this purpose\. However, in certain cases, especially when you use the AWS CLI or the AWS DMS API, AWS DMS enables you to specify your own S3 bucket instead\. For example, you can specify your own S3 bucket for migrating data to an Amazon Redshift target endpoint\. In this case, you need to create a role with permissions based on the AWS\-managed `AmazonDMSRedshiftS3Role` policy\.
 
-The example following shows a version of the `AmazonDMSRedshiftS3Role` policy\. It allows AWS DMS to grant an IAM user in your AWS account access to one of your Amazon S3 buckets\. It also allows the user to add, update, and delete objects\.
+The following example shows a version of the `AmazonDMSRedshiftS3Role` policy\. It allows AWS DMS to grant an IAM user in your AWS account access to one of your Amazon S3 buckets\. It also allows the user to add, update, and delete objects\.
 
 In addition to granting the `s3:PutObject`, `s3:GetObject`, and `s3:DeleteObject` permissions to the user, the policy also grants the `s3:ListAllMyBuckets`, `s3:GetBucketLocation`, and `s3:ListBucket` permissions\. These are the additional permissions required by the console\. Other permissions allow AWS DMS to manage the bucket life cycle\. Also, the `s3:GetObjectAcl` action is required to be able to copy objects\.
 
@@ -649,7 +649,7 @@ AWS DMS allows you to create custom AWS KMS encryption keys to encrypt supported
 
 #### A policy for a custom AWS KMS encryption key to encrypt Amazon Redshift target data<a name="security_iam_resource-based-policy-examples-custom-rs-key-policy"></a>
 
-The example following shows the JSON for the key policy created for an AWS KMS encryption key that you create to encrypt Amazon Redshift target data\.
+The following example shows the JSON for the key policy created for an AWS KMS encryption key that you create to encrypt Amazon Redshift target data\.
 
 ```
 {
@@ -738,7 +738,7 @@ Here, you can see where the key policy references the role for accessing Amazon 
 
 #### A policy for a custom AWS KMS encryption key to encrypt Amazon S3 target data<a name="security_iam_resource-based-policy-examples-custom-s3-key-policy"></a>
 
-The example following shows the JSON for the key policy created for an AWS KMS encryption key that you create to encrypt Amazon S3 target data\.
+The following example shows the JSON for the key policy created for an AWS KMS encryption key that you create to encrypt Amazon S3 target data\.
 
 ```
 {
@@ -862,6 +862,61 @@ You can also use a single secret access role to provide AWS DMS access to both t
 
 After you have created and specified the required secret and secret access\-role endpoint settings for your endpoints, update the permissions on the user accounts that will run the `CreateEndpoint` or `ModifyEndpoint` API request with these secret details\. Ensure that these account permissions include the `IAM:GetRole` permission on the secret access role and the `SecretsManager:DescribeSecret` permission on the secret\. AWS DMS requires these permissions to validate both the access role and its secret\.
 
+**To provide and verify required user permissions**
+
+1. Sign in to the AWS Management Console and open the AWS Identity and Access Management console at [https://console.aws.amazon.com/iam/](https://console.aws.amazon.com/iam/)\.
+
+1. Choose **Users**, then select the **User ID** used for making `CreateEndpoint` and `ModifyEndpoint` API calls\.
+
+1. From the **Permissions **tab, choose **\{\} JSON**\.
+
+1. Make sure the user has the permissions shown following\.
+
+   ```
+   {
+   	"Statement": [{
+   			"Effect": "Allow",
+   			"Action": [
+   				"iam:GetRole",
+   				"iam:PassRole"
+   			],
+   			"Resource": "SECRET_ACCESS_ROLE_ARN"
+   		},
+   		{
+   			"Effect": "Allow",
+   			"Action": "secretsmanager:DescribeSecret",
+   			"Resource": "SECRET_ARN"
+   		}
+   	]
+   }
+   ```
+
+1. If the user doesn't have those permission, add the permissions\.
+
+1. If you're using an IAM Role for making DMS API calls, repeat the steps above for the respective role\.
+
+1. Open a terminal and use the AWS CLI to validate that permissions are given correctly by assuming the Role or User used above\.
+
+   1. Validate user’s permission on the SecretAccessRole using the IAM `get-role` command\.
+
+      ```
+      aws iam get-role --role-name ROLE_NAME
+      ```
+
+      Replace *ROLE\_NAME* with the name of `SecretsManagerAccessRole`\.
+
+      If the command returns an error message, make sure the permissions were given correctly\.
+
+   1. Validate user’s permission on the secret using the Secrets Manager `describe-secret` command\.
+
+      ```
+      aws secretsmanager describe-secret --secret-id SECRET_NAME OR SECRET_ARN --region=REGION_NAME
+      ```
+
+      User can be the friendly name, partial ARN or the full ARN\. For more information, see [describe\-secret](https://docs.aws.amazon.com/cli/latest/reference/secretsmanager/describe-secret.html)\.
+
+      If the command returns an error message, make sure the permissions were given correctly\.
+
 #### Using the AWS Management Console to create a secret and secret access role<a name="security_iam_secretsmanager.console"></a>
 
 You can use the AWS Management Console to create a secret for endpoint authentication and to create the policy and role to allow AWS DMS to access the secret on your behalf\.
@@ -877,7 +932,7 @@ You can use the AWS Management Console to create a secret for endpoint authentic
 This is the only place that you need to enter clear text credentials to connect to your endpoint database from this point forward\.
 
 1. In the **Plaintext** field: 
-   + For a secret whose identity you assign to `SecretsManagerSecretId`, enter the JSON structure following\.
+   + For a secret whose identity you assign to `SecretsManagerSecretId`, enter the following JSON structure\.
 
      ```
      {
@@ -890,7 +945,7 @@ This is the only place that you need to enter clear text credentials to connect 
 **Note**  
 This is the minimum list of JSON members required to authenticate the endpoint database\. You can add any additional JSON endpoint settings as JSON members in all lower case that you want\. However, AWS DMS ignores any additional JSON members for endpoint authentication\.
 
-     Here, `db_username` is the name of the user accessing the database, `db_user_password` is the password of the database user, `db_port_number` is the port number to access the database, and `db_server_name` is the database server name \(address\) on the web, as in the example following\.
+     Here, `db_username` is the name of the user accessing the database, `db_user_password` is the password of the database user, `db_port_number` is the port number to access the database, and `db_server_name` is the database server name \(address\) on the web, as in the following example\.
 
      ```
      {
@@ -900,7 +955,7 @@ This is the minimum list of JSON members required to authenticate the endpoint d
        "host": "oracle101.abcdefghij.us-east-1.rds.amazonaws.com"
      }
      ```
-   + For a secret whose identity you assign to `SecretsManagerOracleAsmSecretId`, enter the JSON structure following\.
+   + For a secret whose identity you assign to `SecretsManagerOracleAsmSecretId`, enter the following JSON structure\.
 
      ```
      {
@@ -912,7 +967,7 @@ This is the minimum list of JSON members required to authenticate the endpoint d
 **Note**  
 This is the minimum list of JSON members required to authenticate Oracle ASM for an Oracle endpoint\. It is also the complete list that you can specify based on the available Oracle ASM endpoint settings\.
 
-     Here, `asm_username` is the name of the user accessing Oracle ASM, `asm_user_password` is the password of the Oracle ASM user, and `asm_server_name` is the Oracle ASM server name \(address\) on the web, including the port, as in the example following\.
+     Here, `asm_username` is the name of the user accessing Oracle ASM, `asm_user_password` is the password of the Oracle ASM user, and `asm_server_name` is the Oracle ASM server name \(address\) on the web, including the port, as in the following example\.
 
      ```
      { 
@@ -926,7 +981,7 @@ This is the minimum list of JSON members required to authenticate Oracle ASM for
 
 1. Specify a name to reference this secret and an optional description\. This is the friendly name that you use as the value for `SecretsManagerSecretId` or `SecretsManagerOracleAsmSecretId`\.
 
-1. If you want to enable automatic rotation in the secret, you need to select or create an AWS Lambda function with permission to rotate the credentials for the secret as described\. However, before setting automatic rotation to use your Lambda function, ensure that the configuration settings for the function add the four characters following to the value of the `EXCLUDE_CHARACTERS` environment variable\.
+1. If you want to enable automatic rotation in the secret, you need to select or create an AWS Lambda function with permission to rotate the credentials for the secret as described\. However, before setting automatic rotation to use your Lambda function, ensure that the configuration settings for the function add the following four characters to the value of the `EXCLUDE_CHARACTERS` environment variable\.
 
    ```
    ;.:+
@@ -944,7 +999,7 @@ Depending on your database engine configuration, your database might not fetch t
 
 1. Choose **Policies**, then choose **Create policy**\.
 
-1. Choose **JSON** and enter the policy following to enable access to and decryption of your secret\.
+1. Choose **JSON** and enter the following policy to enable access to and decryption of your secret\.
 
    ```
    {
@@ -967,7 +1022,7 @@ Depending on your database engine configuration, your database might not fetch t
    }
    ```
 
-   Here, `secret_arn` is the ARN of your secret, which you can get from either `SecretsManagerSecretId` or `SecretsManagerOracleAsmSecretId` as appropriate, and `kms_key_arn` is the ARN of the AWS KMS key that you are using to encrypt your secret, as in the example following\.
+   Here, `secret_arn` is the ARN of your secret, which you can get from either `SecretsManagerSecretId` or `SecretsManagerOracleAsmSecretId` as appropriate, and `kms_key_arn` is the ARN of the AWS KMS key that you are using to encrypt your secret, as in the following example\.
 
    ```
    {
@@ -1001,7 +1056,7 @@ If you want your policy to provide access to both secrets, simply specify an add
 
 1. Choose **DMS** from the list of services as the trusted service, then choose **Next: Permissions**\.
 
-1. Look up and attach the policy you created in step 4, then proceed through adding any tags and review your role\. At this point, edit the trust relationships for the role to use your AWS DMS regional service principal as the trusted entity\. This principal has the format following\.
+1. Look up and attach the policy you created in step 4, then proceed through adding any tags and review your role\. At this point, edit the trust relationships for the role to use your AWS DMS regional service principal as the trusted entity\. This principal has the following format\.
 
    ```
    dms.region-name.amazonaws.com
@@ -1023,7 +1078,7 @@ If you want your policy to provide access to both secrets, simply specify an add
 
 1. For the replication instance security group egress rules, allow all traffic for destination `0.0.0.0/0`\.
 
-1. Set the endpoint extra connection attribute, `secretsManagerEndpointOverride=secretsManager endpoint DNS` to provide the secret manager VPC endpoint DNS, as shown in the example following\.
+1. Set the endpoint extra connection attribute, `secretsManagerEndpointOverride=secretsManager endpoint DNS` to provide the secret manager VPC endpoint DNS, as shown in the following example\.
 
    ```
    secretsManagerEndpointOverride=vpce-1234a5678b9012c-12345678.secretsmanager.eu-west-1.vpce.amazonaws.com
@@ -1096,7 +1151,7 @@ To learn more, consult the following:
 
 ## Compliance validation for AWS Database Migration Service<a name="dms-compliance"></a>
 
-Third\-party auditors assess the security and compliance of AWS Database Migration Service as part of multiple AWS compliance programs\. These include the programs following:
+Third\-party auditors assess the security and compliance of AWS Database Migration Service as part of multiple AWS compliance programs\. These include the following programs:
 +  SOC
 + PCI
 + ISO
@@ -1151,7 +1206,7 @@ To confine your communications with AWS DMS within a single VPC, you can create 
 
 1. From the navigation pane, choose **Endpoints**\. This opens the **Create endpoints** page, where you can create the interface endpoint from a VPC to AWS DMS\.
 
-1. Choose **AWS services**, then search for and choose a value for **Service Name**, in this case AWS DMS in the form following\.
+1. Choose **AWS services**, then search for and choose a value for **Service Name**, in this case AWS DMS in the following form\.
 
    ```
    com.amazonaws.region.dms
@@ -1211,7 +1266,7 @@ For more information on creating and using VPC interface endpoints \(including e
 
 You use certain IAM permissions and IAM roles to use AWS DMS\. If you are signed in as an IAM user and want to use AWS DMS, your account administrator must attach the policy discussed in this section to the IAM user, group, or role that you use to run AWS DMS\. For more information about IAM permissions, see the [IAM User Guide](https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction_access-management.html)\. 
 
-The policy following gives you access to AWS DMS, and also permissions for certain actions needed from other Amazon services such as AWS KMS, IAM, Amazon EC2, and Amazon CloudWatch\. CloudWatch monitors your AWS DMS migration in real time and collects and tracks metrics that indicate the progress of your migration\. You can use CloudWatch Logs to debug problems with a task\. 
+The following policy gives you access to AWS DMS, and also permissions for certain actions needed from other Amazon services such as AWS KMS, IAM, Amazon EC2, and Amazon CloudWatch\. CloudWatch monitors your AWS DMS migration in real time and collects and tracks metrics that indicate the progress of your migration\. You can use CloudWatch Logs to debug problems with a task\. 
 
 **Note**  
 You can further restrict access to AWS DMS resources using tagging\. For more information about restricting access to AWS DMS resources using tagging, see [Fine\-grained access control using resource names and tags](#CHAP_Security.FineGrainedAccess)\.
@@ -1287,7 +1342,7 @@ You can further restrict access to AWS DMS resources using tagging\. For more in
 }
 ```
 
-The breakdown of these permissions following might help you better understand why each one is necessary\.
+The breakdown of these following permissions might help you better understand why each one is necessary\.
 
 The following section is required to allow the user to call AWS DMS API operations\.
 
@@ -1466,7 +1521,7 @@ The following procedures create the `dms-vpc-role`, `dms-cloudwatch-logs-role`, 
 
 **To create the dms\-vpc\-role IAM role for use with the AWS CLI or AWS DMS API**
 
-1.  Create a JSON file with the IAM policy following\. Name the JSON file `dmsAssumeRolePolicyDocument.json`\. 
+1.  Create a JSON file with the following IAM policy\. Name the JSON file `dmsAssumeRolePolicyDocument.json`\. 
 
    ```
    {
@@ -1497,7 +1552,7 @@ The following procedures create the `dms-vpc-role`, `dms-cloudwatch-logs-role`, 
 
 **To create the dms\-cloudwatch\-logs\-role IAM role for use with the AWS CLI or AWS DMS API**
 
-1.  Create a JSON file with the IAM policy following\. Name the JSON file `dmsAssumeRolePolicyDocument2.json`\. 
+1.  Create a JSON file with the following IAM policy\. Name the JSON file `dmsAssumeRolePolicyDocument2.json`\. 
 
    ```
    {
@@ -1530,7 +1585,7 @@ If you use Amazon Redshift as your target database, you must create the IAM role
 
 **To create the dms\-access\-for\-endpoint IAM role for use with Amazon Redshift as a target database**
 
-1. Create a JSON file with the IAM policy following\. Name the JSON file `dmsAssumeRolePolicyDocument3.json`\. 
+1. Create a JSON file with the following IAM policy\. Name the JSON file `dmsAssumeRolePolicyDocument3.json`\. 
 
    ```
     {
@@ -1969,13 +2024,13 @@ If you don't specify an AWS KMS key identifier, then AWS DMS uses your default e
 
 To manage the AWS KMS keys used for encrypting your AWS DMS resources, use the AWS Key Management Service\. AWS KMS combines secure, highly available hardware and software to provide a key management system scaled for the cloud\. Using AWS KMS, you can create encryption keys and define the policies that control how these keys can be used\.
 
-**You can find AWS KMS in the AWS Management Console following**
+**You can find AWS KMS in the AWS Management Console**
 
 1. Sign in to the AWS Management Console and open the AWS Key Management Service \(AWS KMS\) console at [https://console\.aws\.amazon\.com/kms](https://console.aws.amazon.com/kms)\.
 
 1. To change the AWS Region, use the Region selector in the upper\-right corner of the page\.
 
-1. Choose one of the options following to work with AWS KMS keys:
+1. Choose one of the following options to work with AWS KMS keys:
    + To view the keys in your account that AWS creates and manages for you, in the navigation pane, choose **AWS managed keys**\.
    + To view the keys in your account that you create and manage, in the navigation pane choose **Customer managed keys**\.
 

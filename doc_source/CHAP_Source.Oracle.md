@@ -27,7 +27,7 @@ Follow these steps to configure an Oracle database as an AWS DMS source endpoint
 **Note**  
 For more information on full\-load tasks, CDC\-only tasks, and full\-load and CDC tasks, see [Creating a task](CHAP_Tasks.Creating.md)
 
-For additional details on working with Oracle source databases and AWS DMS, see the sections following\. 
+For additional details on working with Oracle source databases and AWS DMS, see the following sections\. 
 
 **Topics**
 + [Using Oracle LogMiner or AWS DMS Binary Reader for CDC](#CHAP_Source.Oracle.CDC)
@@ -44,7 +44,7 @@ For additional details on working with Oracle source databases and AWS DMS, see 
 
 ## Using Oracle LogMiner or AWS DMS Binary Reader for CDC<a name="CHAP_Source.Oracle.CDC"></a>
 
-In AWS DMS, there are two methods for reading the redo logs when doing change data capture \(CDC\) for Oracle as a source: Oracle LogMiner and AWS DMS Binary Reader\. LogMiner is an Oracle API to read the online redo logs and archived redo log files\. Binary Reader is an AWS DMS method that reads and parses the raw redo log files directly\. These methods have the features following\.
+In AWS DMS, there are two methods for reading the redo logs when doing change data capture \(CDC\) for Oracle as a source: Oracle LogMiner and AWS DMS Binary Reader\. LogMiner is an Oracle API to read the online redo logs and archived redo log files\. Binary Reader is an AWS DMS method that reads and parses the raw redo log files directly\. These methods have the following features\.
 
 
 | Feature | LogMiner | Binary Reader | 
@@ -68,7 +68,7 @@ The main advantages of using LogMiner with AWS DMS include the following:
 + LogMiner supports table clusters for use by AWS DMS\. Binary Reader doesn't\.
 
 The main advantages of using Binary Reader with AWS DMS include the following:
-+ For migrations with a high volume of changes, LogMiner might have some I/O or CPU impact on the computer hosting the Oracle source database\. Binary Reader has less chance of having I/O or CPU impact because the archive logs are copied to the replication instance and mined there\.
++ For migrations with a high volume of changes, LogMiner might have some I/O or CPU impact on the computer hosting the Oracle source database\. Binary Reader has less chance of having I/O or CPU impact because logs are mined directly rather than making multiple database queries\.
 + For migrations with a high volume of changes, CDC performance is usually much better when using Binary Reader compared with using Oracle LogMiner\.
 + Binary Reader supports CDC for LOBs in Oracle version 12c\. LogMiner doesn't\.
 
@@ -108,7 +108,7 @@ Set the source endpoint `Password` request parameter to both the Oracle user pas
 oracle_user_password,asm_user_password
 ```
 
-Where the Oracle source uses ASM, you can work with high\-performance options in Binary Reader for transaction processing at scale\. These options include extra connection attributes to specify the number of parallel threads \(`parallelASMReadThreads`\) and the number of read\-ahead buffers \(`readAheadBlocks`\)\. Setting these attributes together can significantly improve the performance of the CDC task\. The settings shown following provide good results for most ASM configurations\.
+Where the Oracle source uses ASM, you can work with high\-performance options in Binary Reader for transaction processing at scale\. These options include extra connection attributes to specify the number of parallel threads \(`parallelASMReadThreads`\) and the number of read\-ahead buffers \(`readAheadBlocks`\)\. Setting these attributes together can significantly improve the performance of the CDC task\. The following settings provide good results for most ASM configurations\.
 
 ```
 useLogMinerReader=N;useBfile=Y;asm_user=asm_username;asm_server=RAC_server_ip_address:port_number/+ASM;
@@ -127,7 +127,7 @@ For more information on configuring CDC for an AWS\-managed Oracle database as a
 
 ## Workflows for configuring a self\-managed or AWS\-managed Oracle source database for AWS DMS<a name="CHAP_Source.Oracle.Workflows"></a>
 
-To configure a self\-managed source database instance, use the workflow steps following, depending on how you perform CDC\.  
+To configure a self\-managed source database instance, use the following workflow steps , depending on how you perform CDC\.  
 
 
 | For this workflow step | If you perform CDC using LogMiner, do this | If you perform CDC using Binary Reader, do this | 
@@ -139,7 +139,7 @@ To configure a self\-managed source database instance, use the workflow steps fo
 | If you haven't already done so, configure the task to use LogMiner or Binary Reader for CDC\. | See [Using Oracle LogMiner or AWS DMS Binary Reader for CDC](#CHAP_Source.Oracle.CDC)\. | See [Using Oracle LogMiner or AWS DMS Binary Reader for CDC](#CHAP_Source.Oracle.CDC)\. | 
 | Configure Oracle Standby as a source for CDC\. | AWS DMS doesn't support Oracle Standby as a source\. | See [Using a self\-managed Oracle Standby as a source with Binary Reader for CDC in AWS DMS](#CHAP_Source.Oracle.Self-Managed.BinaryStandby)\. | 
 
-Use the workflow steps following to configure an AWS\-managed Oracle source database instance\.
+Use the following workflow steps to configure an AWS\-managed Oracle source database instance\.
 
 
 | For this workflow step | If you perform CDC using LogMiner, do this | If you perform CDC using Binary Reader, do this | 
@@ -156,7 +156,7 @@ A *self\-managed database* is a database that you configure and control, either 
 
 ### User account privileges required on a self\-managed Oracle source for AWS DMS<a name="CHAP_Source.Oracle.Self-Managed.Privileges"></a>
 
-To use an Oracle database as a source in AWS DMS, grant the privileges following to the Oracle user specified in the Oracle endpoint connection settings\.
+To use an Oracle database as a source in AWS DMS, grant the following privileges to the Oracle user specified in the Oracle endpoint connection settings\.
 
 **Note**  
 When granting privileges, use the actual name of objects, not the synonym for each object\. For example, use `V_$OBJECT` including the underscore, not `V$OBJECT` without the underscore\.
@@ -194,7 +194,7 @@ GRANT SELECT ON DBA_OBJECTS TO db_user; -– Required if the Oracle version is e
 GRANT SELECT ON SYS.ENC$ TO db_user; -– Required if transparent data encryption (TDE) is enabled. For more information on using Oracle TDE with AWS DMS, see .
 ```
 
-Grant the additional privilege following for each replicated table when you are using a specific table list\.
+Grant the additional following privilege for each replicated table when you are using a specific table list\.
 
 ```
 GRANT SELECT on any-replicated-table to db_user;
@@ -219,7 +219,7 @@ Here, `name`, `value`, and `description` are columns somewhere in the database t
 
 #### Making sure that ARCHIVELOG mode is on<a name="CHAP_Source.Oracle.Self-Managed.Configuration.ArchiveLogMode"></a>
 
-You can run Oracle in two different modes: the `ARCHIVELOG` mode and the `NOARCHIVELOG` mode\. To run a CDC task, run the database in `ARCHIVELOG` mode\. If the database is not set to `ARCHIVELOG` mode, run the command following to set it\.
+You can run Oracle in two different modes: the `ARCHIVELOG` mode and the `NOARCHIVELOG` mode\. To run a CDC task, run the database in `ARCHIVELOG` mode\. If the database is not set to `ARCHIVELOG` mode, run the following command to set it\.
 
 ```
 ALTER database ARCHIVELOG;
@@ -229,7 +229,7 @@ ALTER database ARCHIVELOG;
 
 To capture ongoing changes, AWS DMS requires that you enable minimal supplemental logging on your Oracle source database\. In addition, you need to enable supplemental logging on each replicated table in the database\.
 
-By default, AWS DMS adds `PRIMARY KEY` supplemental logging on all replicated tables\. To allow AWS DMS to add `PRIMARY KEY` supplemental logging, grant the privilege following for each replicated table\.
+By default, AWS DMS adds `PRIMARY KEY` supplemental logging on all replicated tables\. To allow AWS DMS to add `PRIMARY KEY` supplemental logging, grant the following privilege for each replicated table\.
 
 ```
 ALTER on any-replicated-table;
@@ -239,7 +239,7 @@ You can disable the default `PRIMARY KEY` supplemental logging added by AWS DMS 
 
 **To manually set up supplemental logging**
 
-1. Run the query following to verify if supplemental logging is already enabled for the database\.
+1. Run the following query to verify if supplemental logging is already enabled for the database\.
 
    ```
    SELECT supplemental_log_data_min FROM v$database;
@@ -247,7 +247,7 @@ You can disable the default `PRIMARY KEY` supplemental logging added by AWS DMS 
 
    If the result returned is `YES` or `IMPLICIT`, supplemental logging is enabled for the database\.
 
-   If not, enable supplemental logging for the database by running the command following\.
+   If not, enable supplemental logging for the database by running the following command\.
 
    ```
    ALTER DATABASE ADD SUPPLEMENTAL LOG DATA;
@@ -302,7 +302,7 @@ Consider the following:
 
 ### Account privileges required when using Oracle LogMiner to access the redo logs<a name="CHAP_Source.Oracle.Self-Managed.LogMinerPrivileges"></a>
 
-To access the redo logs using the Oracle LogMiner, grant the privileges following to the Oracle user specified in the Oracle endpoint connection settings\.
+To access the redo logs using the Oracle LogMiner, grant the following privileges to the Oracle user specified in the Oracle endpoint connection settings\.
 
 ```
 GRANT EXECUTE on DBMS_LOGMNR to db_user
@@ -313,7 +313,7 @@ GRANT LOGMINING to db_user; -– Required only if the Oracle version is 12c or l
 
 ### Account privileges required when using AWS DMS Binary Reader to access the redo logs<a name="CHAP_Source.Oracle.Self-Managed.BinaryReaderPrivileges"></a>
 
-To access the redo logs using the AWS DMS Binary Reader, grant the privileges following to the Oracle user specified in the Oracle endpoint connection settings\.
+To access the redo logs using the AWS DMS Binary Reader, grant the following privileges to the Oracle user specified in the Oracle endpoint connection settings\.
 
 ```
 SELECT on v_$transportable_platform -– Grant this privilege if the redo logs are stored in Oracle Automatic Storage Management (ASM) and AWS DMS accesses them from ASM.
@@ -335,14 +335,14 @@ In some cases, you might use Oracle Managed Files \(OMF\) for storing the logs\.
 
 ### Additional account privileges required when using Binary Reader with Oracle ASM<a name="CHAP_Source.Oracle.Self-Managed.ASMBinaryPrivileges"></a>
 
-To access the redo logs in Automatic Storage Management \(ASM\) using Binary Reader, grant the privileges following to the Oracle user specified in the Oracle endpoint connection settings\.
+To access the redo logs in Automatic Storage Management \(ASM\) using Binary Reader, grant the following privileges to the Oracle user specified in the Oracle endpoint connection settings\.
 
 ```
 SELECT ON v_$transportable_platform
 SYSASM -– To access the ASM account with Oracle 11g Release 2 (version 11.2.0.2) and later, grant the Oracle endpoint user the SYSASM privilege. For older supported Oracle versions, it's typically sufficient to grant the Oracle endpoint user the SYSDBA privilege.
 ```
 
-You can validate ASM account access by opening a command prompt and invoking one of the statements following, depending on your Oracle version as specified preceding\.
+You can validate ASM account access by opening a command prompt and invoking one of the following statements, depending on your Oracle version as specified preceding\.
 
 If you need the `SYSDBA` privilege, use the following\.
 
@@ -372,7 +372,7 @@ To configure an Oracle Standby instance as a source when using Binary Reader for
    GRANT SELECT ON v_$standby_log TO db_user;
    ```
 
-1. Create a source endpoint for the Oracle Standby by using the AWS Management Console or AWS CLI\. When creating the endpoint, specify the extra connection attributes following\.
+1. Create a source endpoint for the Oracle Standby by using the AWS Management Console or AWS CLI\. When creating the endpoint, specify the following extra connection attributes\.
 
    ```
    useLogminerReader=N;useBfile=Y
@@ -387,7 +387,7 @@ An AWS\-managed database is a database that is on an Amazon service such as Amaz
 
 ### User account privileges required on an AWS\-managed Oracle source for AWS DMS<a name="CHAP_Source.Oracle.Amazon-Managed.Privileges"></a>
 
-Grant the privileges following to the Oracle user account specified in the Oracle source endpoint definition\.
+Grant the following privileges to the Oracle user account specified in the Oracle source endpoint definition\.
 
 **Important**  
 For all parameter values such as `db_user` and `any-replicated-table`, Oracle assumes the value is all uppercase unless you specify the value with a case\-sensitive identifier\. For example, suppose that you create a `db_user` value without using quotation marks, as in `CREATE USER myuser` or `CREATE USER MYUSER`\. In this case, Oracle identifies and stores the value as all uppercase \(`MYUSER`\)\. If you use quotation marks, as in `CREATE USER "MyUser"` or `CREATE USER 'MyUser'`, Oracle identifies and stores the case\-sensitive value that you specify \(`MyUser`\)\.
@@ -447,7 +447,7 @@ For more information on using Oracle TDE with AWS DMS, see [Supported encryption
 
 ### Configuring an AWS\-managed Oracle source for AWS DMS<a name="CHAP_Source.Oracle.Amazon-Managed.Configuration"></a>
 
-Before using an AWS\-managed Oracle database as a source for AWS DMS, perform the tasks following for the Oracle database:
+Before using an AWS\-managed Oracle database as a source for AWS DMS, perform the following tasks for the Oracle database:
 + Enable automatic backups\.
 + Set up supplemental logging\.
 + Set up archiving\. Archiving the redo logs for your Amazon RDS for Oracle DB instance allows AWS DMS to retrieve the log information using Oracle LogMiner or Binary Reader\. 
@@ -464,7 +464,7 @@ Each of the preceding steps is described in more detail following\.
 
 1. Run the `rdsadmin.rdsadmin_util.set_configuration` command to set up archiving\.
 
-   For example, to retain the archived redo logs for 24 hours, run the command following\.
+   For example, to retain the archived redo logs for 24 hours, run the following command\.
 
    ```
    exec rdsadmin.rdsadmin_util.set_configuration('archivelog retention hours',24);
@@ -474,13 +474,13 @@ Each of the preceding steps is described in more detail following\.
 
 **To set up supplemental logging**
 
-1. Run the command following to enable supplemental logging at the database level\.
+1. Run the following command to enable supplemental logging at the database level\.
 
    ```
    exec rdsadmin.rdsadmin_util.alter_supplemental_logging('ADD');
    ```
 
-1. Run the command following to enable primary key supplemental logging\.
+1. Run the following command to enable primary key supplemental logging\.
 
    ```
    exec rdsadmin.rdsadmin_util.alter_supplemental_logging('ADD','PRIMARY KEY');
@@ -512,21 +512,21 @@ Binary Reader support is available in the following versions of Amazon RDS for O
 
 **To configure CDC using Binary Reader**
 
-1. Log in to your Amazon RDS for Oracle source database as the master user and run the stored procedures following to create the server\-level directories\.
+1. Log in to your Amazon RDS for Oracle source database as the master user and run the following stored procedures to create the server\-level directories\.
 
    ```
    exec rdsadmin.rdsadmin_master_util.create_archivelog_dir;
    exec rdsadmin.rdsadmin_master_util.create_onlinelog_dir;
    ```
 
-1. Grant the privileges following to the Oracle user account that is used to access the Oracle source endpoint\.
+1. Grant the following privileges to the Oracle user account that is used to access the Oracle source endpoint\.
 
    ```
    GRANT READ ON DIRECTORY ONLINELOG_DIR TO db_user;
    GRANT READ ON DIRECTORY ARCHIVELOG_DIR TO db_user;
    ```
 
-1. Set the extra connection attributes following on the Amazon RDS Oracle source endpoint:
+1. Set the following extra connection attributes on the Amazon RDS Oracle source endpoint:
    + For RDS Oracle versions 11\.2 and 12\.1, set the following\.
 
      ```
@@ -546,7 +546,7 @@ For more information configuring a CDC task, see [Configuration for CDC on an Or
 
 ### Using an Amazon RDS Oracle Standby \(read replica\) as a source with Binary Reader for CDC in AWS DMS<a name="CHAP_Source.Oracle.Amazon-Managed.StandBy"></a>
 
-Verify the prerequisites following for using Amazon RDS for Oracle Standby as a source when using Binary Reader for CDC in AWS DMS:
+Verify the following prerequisites for using Amazon RDS for Oracle Standby as a source when using Binary Reader for CDC in AWS DMS:
 + Use the Oracle master user to set up Binary Reader\.
 + Make sure that AWS DMS currently supports using only Oracle Active Data Guard Standby\.
 
@@ -556,7 +556,7 @@ After you do so, use the following procedure to use RDS for Oracle Standby as a 
 
 1. Sign in to RDS for Oracle primary replica as the master user\.
 
-1. Run the stored procedures following as documented in the Amazon RDS User Guide to create the server level directories\.
+1. Run the following stored procedures as documented in the Amazon RDS User Guide to create the server level directories\.
 
    ```
    exec rdsadmin.rdsadmin_master_util.create_archivelog_dir;
@@ -587,7 +587,7 @@ After you do so, use the following procedure to use RDS for Oracle Standby as a 
 
 1. Run an `ALL_DIRECTORIES` query on the Oracle Standby to confirm that the changes were applied\.
 
-1. Create a source endpoint for the Oracle Standby by using the AWS DMS Management Console or AWS Command Line Interface \(AWS CLI\)\. While creating the endpoint, specify the extra connection attributes following\.
+1. Create a source endpoint for the Oracle Standby by using the AWS DMS Management Console or AWS Command Line Interface \(AWS CLI\)\. While creating the endpoint, specify the following extra connection attributes\.
 
    ```
    useLogminerReader=N;useBfile=Y;archivedLogDestId=1;additionalArchivedLogDestId=2
@@ -606,7 +606,7 @@ The following limitations apply when using an Oracle database as a source for AW
 + AWS DMS doesn't support the multi\-tenant container root database \(CDB$ROOT\)\. It does support a PDB using the Binary Reader\.
 + AWS DMS doesn't support deferred constraints\.
 + AWS DMS supports the `rename table table-name to new-table-name` syntax for all supported Oracle versions 11 and later\. This syntax isn't supported for any Oracle version 10 source databases\.
-+ AWS DMS doesn't replicate data changes that result from partition or subpartition operations \(`ADD`, `DROP`, `EXCHANGE`, and `TRUNCATE`\)\. Such updates might cause the errors following during replication:
++ AWS DMS doesn't replicate data changes that result from partition or subpartition operations \(`ADD`, `DROP`, `EXCHANGE`, and `TRUNCATE`\)\. Such updates might cause the following errors during replication:
   + For `ADD` operations, updates and deletes on the added data might raise a "0 rows affected" warning\.
   + For `DROP` and `TRUNCATE` operations, new inserts might raise "duplicates" errors\.
   + `EXCHANGE` operations might raise both a "0 rows affected" warning and "duplicates" errors\.
@@ -617,7 +617,7 @@ The following limitations apply when using an Oracle database as a source for AW
 + AWS DMS maps empty BLOB and CLOB columns to `NULL` on the target\.
 + When capturing changes with Oracle 11 LogMiner, an update on a CLOB column with a string length greater than 1982 is lost, and the target is not updated\.
 + During change data capture \(CDC\), AWS DMS doesn't support batch updates to numeric columns defined as a primary key\.
-+ AWS DMS doesn't support certain `UPDATE` commands\. The example following is an unsupported `UPDATE` command\.
++ AWS DMS doesn't support certain `UPDATE` commands\. The following example is an unsupported `UPDATE` command\.
 
   ```
   UPDATE TEST_TABLE SET KEY=KEY+1;
@@ -947,7 +947,7 @@ As of version 3\.x, AWS DMS supports Oracle TDE when using Binary Reader, on bot
 
 **To identify and specify encryption key and password for TDE encryption**
 
-1. Run the query following to find the Oracle encryption wallet on the Oracle database host\.
+1. Run the following query to find the Oracle encryption wallet on the Oracle database host\.
 
    ```
    SQL> SELECT WRL_PARAMETER FROM V$ENCRYPTION_WALLET;
@@ -961,7 +961,7 @@ As of version 3\.x, AWS DMS supports Oracle TDE when using Binary Reader, on bot
 
 1. Get the master key ID using one of the following encryption options, depending on which one returns this value\.
 
-   1. For table or column\-level encryption, run the queries following\.
+   1. For table or column\-level encryption, run the following queries\.
 
       ```
       SQL> SELECT OBJECT_ID FROM ALL_OBJECTS 
@@ -981,7 +981,7 @@ As of version 3\.x, AWS DMS supports Oracle TDE when using Binary Reader, on bot
 **Note**  
 The trailing string `'A'` characters \(`AAA...`\) is not part of the value\.
 
-   1. For tablespace\-level encryption, run the queries following\.
+   1. For tablespace\-level encryption, run the following queries\.
 
       ```
       SQL> SELECT TABLESPACE_NAME, ENCRYPTED FROM dba_tablespaces;
@@ -1041,13 +1041,13 @@ The trailing string `'A'` characters \(`AAA...`\) is not part of the value\.
    securityDbEncryptionName=ORACLE.SECURITY.DB.ENCRYPTION.AWGDC9glSk8Xv+3bVveiVSgAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
    ```
 
-1. Provide the associated TDE password for this key on the console as part of the Oracle source's **Password** value\. Use the order following to format the comma\-separated password values, ended by the TDE password value\.
+1. Provide the associated TDE password for this key on the console as part of the Oracle source's **Password** value\. Use the following order to format the comma\-separated password values, ended by the TDE password value\.
 
    ```
    Oracle_db_password,ASM_Password,AEMAASAASGYs0phWHfNt9J5mEMkkegGFiD4LLfQszDojgDzbfoYDEACv0x3pJC+UGD/PdtE2jLIcBQcAeHgJChQGLA==
    ```
 
-   Specify the password values in this order regardless of your Oracle database configuration\. For example, if you're using TDE but your Oracle database isn't using ASM, specify password values in the comma\-separated order following\.
+   Specify the password values in this order regardless of your Oracle database configuration\. For example, if you're using TDE but your Oracle database isn't using ASM, specify password values in the following comma\-separated order\.
 
    ```
    Oracle_db_password,,AEMAASAASGYs0phWHfNt9J5mEMkkegGFiD4LLfQszDojgDzbfoYDEACv0x3pJC+UGD/PdtE2jLIcBQcAeHgJChQGLA==
@@ -1066,14 +1066,14 @@ In the following table, you can find which compression methods AWS DMS supports 
 | --- | --- | --- | --- | --- | 
 | Oracle 10 | No | N/A | N/A | No | 
 | Oracle 11 or newer – Oracle LogMiner | Yes | Yes | Yes  | Yes – Any compression method supported by Oracle LogMiner\. | 
-| Oracle 11 or newer – Binary Reader | Yes | Yes | Yes – For more information, see the note following\. | Yes | 
+| Oracle 11 or newer – Binary Reader | Yes | Yes | Yes – For more information, see the following note \. | Yes | 
 
 **Note**  
 When the Oracle source endpoint is configured to use Binary Reader, the Query Low level of the HCC compression method is supported for full\-load tasks only\.
 
 ## Replicating nested tables using Oracle as a source for AWS DMS<a name="CHAP_Source.Oracle.NestedTables"></a>
 
-As of version 3\.3\.1, AWS DMS supports the replication of Oracle tables containing columns that are nested tables or defined types\. To enable this functionality, add the extra connection attribute setting following to the Oracle source endpoint\.
+As of version 3\.3\.1, AWS DMS supports the replication of Oracle tables containing columns that are nested tables or defined types\. To enable this functionality, add the following extra connection attribute setting to the Oracle source endpoint\.
 
 ```
 allowSelectNestedTables=true;
@@ -1134,7 +1134,7 @@ To flatten the parent table, run a join between the parent and child tables, as 
 
 ## Extra connection attributes when using Oracle as a source for AWS DMS<a name="CHAP_Source.Oracle.ConnectionAttrib"></a>
 
-You can use extra connection attributes to configure your Oracle source\. You specify these settings when you create the source endpoint\. If you have multiple connection attribute settings, separate them from each other by semicolons with no additional white space \(for example, `oneSetting;thenAnother`\)\.
+You can use extra connection attributes to configure your Oracle source\. You specify these settings when you create the source endpoint\. If you have multiple connection attribute settings, separate them from each other by semicolons with no additional white space \(for example, `oneSetting=oneValue;thenAnother=anotherValue`\)\.
 
 The following table shows the extra connection attributes that you can use to configure an Oracle database as a source for AWS DMS\.
 
@@ -1154,9 +1154,9 @@ The following table shows the extra connection attributes that you can use to co
 | usePathPrefix | Set this string attribute to the required value in order to use the Binary Reader to capture change data for an Amazon RDS for Oracle as the source\. This value specifies the path prefix used to replace the default Oracle root to access the redo logs\. For more information, see [ Configuring a CDC task to use Binary Reader with an RDS for Oracle source for AWS DMS](#CHAP_Source.Oracle.Amazon-Managed.CDC)\.Default value: none Valid value: /rdsdbdata/log/Example: `useLogminerReader=N;useBfile=Y;accessAlternateDirectly=false; useAlternateFolderForOnline=true;oraclePathPrefix=/rdsdbdata/db/ORCL_A/; usePathPrefix=/rdsdbdata/log/;` | 
 | replacePathPrefix | Set this attribute to true in order to use the Binary Reader to capture change data for an Amazon RDS for Oracle as the source\. This setting tells DMS instance to replace the default Oracle root with the specified usePathPrefix setting to access the redo logs\. For more information, see [ Configuring a CDC task to use Binary Reader with an RDS for Oracle source for AWS DMS](#CHAP_Source.Oracle.Amazon-Managed.CDC)\.Default value: false Valid values: true/falseExample: `useLogminerReader=N;useBfile=Y;accessAlternateDirectly=false; useAlternateFolderForOnline=true;oraclePathPrefix=/rdsdbdata/db/ORCL_A/; usePathPrefix=/rdsdbdata/log/;replacePathPrefix=true;` | 
 |  `retryInterval`  |  Specifies the number of seconds that the system waits before resending a query\.  Default value: 5  Valid values: Numbers starting from 1  Example: `retryInterval=6;`  | 
-|  `archivedLogDestId`  |  Specifies the destination of the archived redo logs\. The value should be the same as the DEST\_ID number in the v$archived\_log table\. When you work with multiple log destinations \(DEST\_ID\), we recommend that you specify an archived redo logs location identifier\. Doing this improves performance by ensuring that the correct logs are accessed from the outset\.  Default value: 0 Valid values: Number  Example: `archivedLogDestId=1;`  | 
+|  `archivedLogDestId`  |  Specifies the destination of the archived redo logs\. The value should be the same as the DEST\_ID number in the v$archived\_log table\. When you work with multiple log destinations \(DEST\_ID\), we recommend that you specify an archived redo logs location identifier\. Doing this improves performance by ensuring that the correct logs are accessed from the outset\.  Default value: 1 Valid values: Number  Example: `archivedLogDestId=1;`  | 
 |  `archivedLogsOnly`  |  When this field is set to Y, AWS DMS only accesses the archived redo logs\. If the archived redo logs are stored on Oracle ASM only, the AWS DMS user account needs to be granted ASM privileges\.  Default value: N  Valid values: Y/N  Example: `archivedLogsOnly=Y;`  | 
-|  `numberDataTypeScale`  |  Specifies the number scale\. You can select a scale up to 38, or you can select FLOAT\. By default, the NUMBER data type is converted to precision 38, scale 10\.  Default value: 10  Valid values: \-1 to 38 \(\-1 for FLOAT\)  Example: `numberDataTypeScale=12 `  | 
+|  `numberDataTypeScale`  |  Specifies the number scale\. You can select a scale up to 38, or you can select \-1 for FLOAT, or \-2 for VARCHAR\. By default, the NUMBER data type is converted to precision 38, scale 10\. Default value: 10  Valid values: \-2 to 38 \(\-2 for VARCHAR, \-1 for FLOAT\) Example: `numberDataTypeScale=12`  Select a precision\-scale combination, \-1 \(FLOAT\) or \-2 \(VARCHAR\)\. DMS supports any precision\-scale combination supported by Oracle\. If precision is 39 or above, select \-2 \(VARCHAR\)\. The numberDataTypeScale setting for the Oracle database is used for the NUMBER data type only \(without the explicit precision and scale definition\)\.    | 
 | afterConnectScript |  Specifies a script to run immediately after AWS DMS connects to the endpoint\.  Valid values: A SQL statement set off by a semicolon\. Not all SQL statements are supported\. Example: `afterConnectScript=ALTER SESSION SET CURRENT_SCHEMA = system; `  | 
 |  `failTasksOnLobTruncation`  |  When set to `true`, this attribute causes a task to fail if the actual size of an LOB column is greater than the specified `LobMaxSize`\. If a task is set to limited LOB mode and this option is set to `true`, the task fails instead of truncating the LOB data\. Default value: false  Valid values: Boolean  Example: `failTasksOnLobTruncation=true;`  | 
 |  `readTableSpaceName`  |  When set to `true`, this attribute supports tablespace replication\. Default value: false  Valid values: Boolean  Example: `readTableSpaceName=true;`  | 
@@ -1180,8 +1180,8 @@ For additional information about AWS DMS data types, see [Data types for AWS Dat
 |  BINARY\_DOUBLE  |  REAL8  | 
 |  BINARY  |  BYTES  | 
 |  FLOAT \(P\)  |  If precision is less than or equal to 24, use REAL4\. If precision is greater than 24, use REAL8\.  | 
-|  NUMBER \(P,S\)  |  When scale is less than 0, use REAL8  | 
-|  NUMBER according to the "Expose number as" property in the Oracle source database settings\.  |  When scale is 0: [\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.Oracle.html) In all other cases, use REAL8\. | 
+|  NUMBER \(P,S\)  |  When scale is greater than 0, use REAL8  | 
+|  NUMBER according to the `numberDataTypeScale` extra connection attribute\.  |  When scale is 0: [\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.Oracle.html) In all other cases, use REAL8\. | 
 |  DATE  |  DATETIME  | 
 |  INTERVAL\_YEAR TO MONTH  |  STRING \(with interval year\_to\_month indication\)  | 
 |  INTERVAL\_DAY TO SECOND  |  STRING \(with interval day\_to\_second indication\)  | 

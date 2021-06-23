@@ -18,9 +18,9 @@ Support for MariaDB as a target is available in all AWS DMS versions where MySQL
 **Note**  
 PostgreSQL versions 12\.x are supported as a target in AWS DMS versions 3\.3\.3 and later\.
 PostgreSQL versions 11\.x are supported as a target in AWS DMS versions 3\.3\.1 and later\. You can use PostgreSQL version 9\.4 and later \(for versions 9\.x\) and 10\.x as a source in any DMS version\.
-+ SAP Adaptive Server Enterprise \(ASE\) versions 15, 15\.5, 15\.7, 16 and later \.
++ SAP Adaptive Server Enterprise \(ASE\) versions 15, 15\.5, 15\.7, 16 and later\.
 
-**Amazon RDS instance databases, Amazon Redshift, Amazon DynamoDB, Amazon S3, Amazon Elasticsearch Service, Amazon Kinesis Data Streams, Amazon DocumentDB, Amazon Neptune, and Apache kafka**
+**Amazon RDS instance databases, Amazon Redshift, Amazon DynamoDB, Amazon S3, Amazon Elasticsearch Service, Amazon Kinesis Data Streams, Amazon DocumentDB, Amazon Neptune, and Apache Kafka**
 + Oracle versions 11g \(versions 11\.2\.0\.3\.v1 and later\), 12c, 18c, and 19c for the Enterprise, Standard, Standard One, and Standard Two editions\.
 **Note**  
 Support for Oracle version 19c as a target is available in AWS DMS versions 3\.3\.2 and later\.  
@@ -34,7 +34,7 @@ Support for Microsoft SQL Server version 2019 as a target is available in AWS DM
 Support for MariaDB as a target is available in all AWS DMS versions where MySQL is supported\.
 + PostgreSQL version 9\.4 and later \(for versions 9\.x\), 10\.x, 11\.x, and 12\.x\.
 **Note**  
-PostgreSQL versions 12\.x are supported as a target in AWS DMS versions 3\.3\.3 and later\.
+PostgreSQL versions 12\.x are supported as a target in AWS DMS versions 3\.3\.3 and later\.  
 PostgreSQL versions 11\.x are supported as a target in AWS DMS versions 3\.3\.1 and later\. You can use PostgreSQL version 9\.4 and later \(for versions 9\.x\) and 10\.x as a source in any DMS version\.
 + Amazon Aurora MySQL\-Compatible Edition
 + Amazon Aurora PostgreSQL\-Compatible Edition
@@ -46,6 +46,6 @@ PostgreSQL versions 11\.x are supported as a target in AWS DMS versions 3\.3\.1 
 + Amazon Kinesis Data Streams
 + Amazon DocumentDB \(with MongoDB compatibility\)
 + Amazon Neptune
-+ Apache Kafka – [Amazon Managed Streaming for Apache Kafka \(Amazon MSK\)](http://aws.amazon.com/msk/) and [self\-managed Apache kafka](https://kafka.apache.org/)
++ Apache Kafka – [Amazon Managed Streaming for Apache Kafka \(Amazon MSK\)](http://aws.amazon.com/msk/) and [self\-managed Apache Kafka](https://kafka.apache.org/)
 
 For information about working with a specific target, see [Working with AWS DMS endpoints](CHAP_Endpoints.md)\.

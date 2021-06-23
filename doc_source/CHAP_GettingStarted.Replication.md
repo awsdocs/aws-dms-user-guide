@@ -1,10 +1,12 @@
-# Set up Replication<a name="CHAP_GettingStarted.Replication"></a>
+# Setting up replication for AWS Database Migration Service<a name="CHAP_GettingStarted.Replication"></a>
 
 In this topic, you set up replication between the source and target databases\.
 
 ## Step 1: Create a replication instance using the AWS DMS console<a name="CHAP_GettingStarted.Replication.ReplicationInstance"></a>
 
-To start work with AWS DMS, create a replication instance\. A *replication instance* performs the actual data migration between source and target endpoints\. Your instance needs enough storage and processing power to perform the tasks that migrate data from your source database to your target database\. How large this replication instance should be depends on the amount of data to migrate and the tasks your instance needs to do\. For more information about replication instances, see [Working with an AWS DMS replication instance](CHAP_ReplicationInstance.md)\.
+To start work with AWS DMS, create a replication instance\. 
+
+A *replication instance* performs the actual data migration between source and target endpoints\. Your instance needs enough storage and processing power to perform the tasks that migrate data from your source database to your target database\. How large this replication instance should be depends on the amount of data to migrate and the tasks your instance needs to do\. For more information about replication instances, see [Working with an AWS DMS replication instance](CHAP_ReplicationInstance.md)\.
 
 ![\[Create replication instance\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-create-replication-30.png)
 
@@ -12,7 +14,7 @@ To start work with AWS DMS, create a replication instance\. A *replication insta
 
 1. Sign in to the AWS Management Console and open the AWS DMS console at [https://console\.aws\.amazon\.com/dms/v2/](https://console.aws.amazon.com/dms/v2/)\.
 
-1. In the navigation pane, choose **Replication instances**, and then choose **Create replication instance**\.
+1. On the navigation pane, choose **Replication instances**, and then choose **Create replication instance**\.
 
 1. On the **Create replication instance** page, specify your replication instance configuration:
 
@@ -28,7 +30,7 @@ To start work with AWS DMS, create a replication instance\. A *replication insta
 
    1. For **Allocated storage \(GiB\)**, accept the default of 50 GiB\.
 
-      In DMS, storage is mostly used by log files and cached transactions\. For cache transactions, storage is used only when the cached transactions need to be written to disk\. Thus, AWS DMS doesn't use a significant amount of storage\.
+      In AWS DMS, storage is mostly used by log files and cached transactions\. For cache transactions, storage is used only when the cached transactions need to be written to disk\. Thus, AWS DMS doesn't use a significant amount of storage\.
 
    1. For **VPC**, choose **DMSVPC**\.
 
@@ -38,7 +40,7 @@ To start work with AWS DMS, create a replication instance\. A *replication insta
 
    1. For **Availability zone**, choose **us\-west\-2a**\.
 
-   1. For **VPC security group\(s\)**, choose the Default security group if it isn't already chosen\.
+   1. For **VPC security group\(s\)**, choose the **Default** security group if it isn't already chosen\.
 
    1. For **KMS master key**, leave **\(Default\) aws/dms** chosen\.
 
@@ -58,7 +60,7 @@ While your replication instance is being created, you can specify the source and
 
 1. On the console, choose **Endpoints** from the navigation pane and then choose **Create Endpoint**\.
 
-1. On the **Create endpoint** page, choose the **Source** endpoint type\. Check the **Select RDS DB instance** checkbox\. Choose the **dms\-mysql** instance\.
+1. On the **Create endpoint** page, choose the **Source** endpoint type\. Select the **Select RDS DB instance** box, and choose the **dms\-mysql** instance\.
 
 1. In the **Endpoint configuration** section, enter **dms\-mysql\-source** for **Endpoint identifier**\.
 
@@ -95,7 +97,7 @@ In this step, you create a task to migrate data between the databases you create
 1. In the console navigation pane, choose **Database migration tasks**, and then choose **Create task**\. The **Create database migration task** page opens\. 
 
 1. In the **Task configuration** section, specify the following task options: 
-   + **Task identifier**: Enter **dms\-task**
+   + **Task identifier**: Enter **dms\-task**\.
    + **Replication instance**: Choose your replication instance \(**dms\-instance\-vpc\-*<vpc id>***\)\. 
    + **Source database endpoint**: Choose **dms\-mysql\-source**\.
    + **Target database endpoint**: Choose **dms\-postgresql\-target**\.
@@ -113,33 +115,39 @@ In this step, you create a task to migrate data between the databases you create
 
 1. Choose **Create task**\.
 
-AWS DMS then creates the migration task and starts it\. The initial database replication takes about 10 minutes\. Be sure to do the next step in the tutorial before AWS DMS finishes migrating the data\.
+AWS DMS then creates the migration task and starts it\. The initial database replication takes about 10 minutes\. Make sure to do the next step in the tutorial before AWS DMS finishes migrating the data\.
 
-## Step 4: Test Replication<a name="CHAP_GettingStarted.Replication.Monitoring"></a>
+## Step 4: Test replication<a name="CHAP_GettingStarted.Replication.Monitoring"></a>
 
 In this section, you insert data into the source database during and after initial replication, and query the target database for the inserted data\.
 
-1. After your Database Migration Task shows a status of **Running, ** but before the initial database replication you started in the previous step finishes, connect to the Amazon EC2 client, and start the MySQL client with the following command\. Provide your MySQL database endpoint\.
+**To test replication**
+
+1. Make sure that your database migration task shows a status of **Running** but your initial database replication, started in the previous step, isn't complete\.
+
+1. Connect to your Amazon EC2 client, and start the MySQL client with the following command\. Provide your MySQL database endpoint\.
 
    ```
    mysql -h dms-mysql.abcdefg12345.us-west-2.rds.amazonaws.com -P 3306 -u admin -pchangeit dms_sample
    ```
 
-1. Run the following command to insert a record into the source database:
+1. Run the following command to insert a record into the source database\.
 
    ```
    MySQL [dms_sample]> insert person (full_name, last_name, first_name) VALUES ('Test User1', 'User1', 'Test');
    Query OK, 1 row affected (0.00 sec)
    ```
 
-1. Exit the MySQL client:
+1. Exit the MySQL client\.
 
    ```
    MySQL [dms_sample]> exit
    Bye
    ```
 
-1. Before replication completes, query the target database for the new record\. From the Amazon EC2 instance, connect to the target database using the following command, providing your target database endpoint:
+1. Before replication completes, query the target database for the new record\. 
+
+   From the Amazon EC2 instance, connect to the target database using the following command, providing your target database endpoint\.
 
    ```
    psql \
@@ -161,9 +169,9 @@ In this section, you insert data into the source database during and after initi
    (0 rows)
    ```
 
-1. While your migration task is running, you can monitor the progress of your database migration while it happens\.
+1. While your migration task is running, you can monitor the progress of your database migration as it happens:
    + In the DMS console navigation pane, choose **Database migration tasks**\.
-   + Choose the **dms\-task**\.
+   + Choose **dms\-task**\.
    + Choose **Table statistics**\.
 
    For more information about monitoring, see [Monitoring AWS DMS tasks](CHAP_Monitoring.md)\.
@@ -178,7 +186,7 @@ In this section, you insert data into the source database during and after initi
    (1 row)
    ```
 
-1. Exit the psql client:
+1. Exit the psql client\.
 
    ```
    dms_sample=> quit
@@ -186,7 +194,7 @@ In this section, you insert data into the source database during and after initi
 
 1. Repeat step 1 to connect to the source database again\.
 
-1. Insert another record into the `person` table: 
+1. Insert another record into the `person` table\.
 
    ```
    MySQL [dms_sample]> insert person (full_name, last_name, first_name) VALUES ('Test User2', 'User2', 'Test');
@@ -195,7 +203,7 @@ In this section, you insert data into the source database during and after initi
 
 1. Repeat steps 3 and 4 to disconnect from the source database and connect to the target database\.
 
-1. Query the target database for the replicated data again:
+1. Query the target database for the replicated data again\.
 
    ```
    dms_sample=> select * from dms_sample.person where first_name = 'Test';
@@ -208,11 +216,11 @@ In this section, you insert data into the source database during and after initi
 
 ## Step 5: Clean up AWS DMS resources<a name="CHAP_GettingStarted.Replication.Deleting"></a>
 
-After you complete the Getting Started exercise, you can delete the resources you created\. You can use the AWS console to remove them\. Make sure to delete the migration tasks before deleting the replication instance and endpoints\.
+After you complete the getting started tutorial, you can delete the resources you created\. You can use the AWS console to remove them\. Make sure to delete the migration tasks before deleting the replication instance and endpoints\.
 
 **To delete a migration task using the console**
 
-1. In the AWS DMS console navigation pane, choose **Database migration tasks**\.
+1. On the AWS DMS console navigation pane, choose **Database migration tasks**\.
 
 1. Choose **dms\-task**\.
 
@@ -220,7 +228,7 @@ After you complete the Getting Started exercise, you can delete the resources yo
 
 **To delete a replication instance using the console**
 
-1. In the AWS DMS console navigation pane, choose **Replication instances**\.
+1. On the AWS DMS console navigation pane, choose **Replication instances**\.
 
 1. Choose **DMS\-instance**\.
 
@@ -230,18 +238,18 @@ AWS DMS deletes the replication instance and removes it from the **Replication i
 
 **To remove endpoints using the console**
 
-1. In the AWS DMS console navigation pane, choose **Endpoints**\.
+1. On the AWS DMS console navigation pane, choose **Endpoints**\.
 
 1. Choose **dms\-mysql\-source**\.
 
 1. Choose **Actions**, **Delete**\.
 
-After you delete your AWS DMS resources, be sure to delete the following resources as well\. For assistance with deleting resources in other services, see that service's documentation\.
-+ Your RDS databases
-+ Your RDS database parameter groups
-+ Your RDS subnet groups
-+ Any CloudWatch logs that were created along with your databases and replication instance
-+ Security groups that were created for your Amazon VPC and Amazon EC2 client\. Note that you must remove the inbound rule from the **Default** to the **launch\-wizard\-1** security groups before you can delete them\.
-+ Your Amazon EC2 client
-+ Your Amazon VPC
-+ Your Amazon EC2 key pair for your Amazon EC2 client
+After you delete your AWS DMS resources, make sure also to delete the following resources\. For help with deleting resources in other services, see each service's documentation\.
++ Your RDS databases\.
++ Your RDS database parameter groups\.
++ Your RDS subnet groups\.
++ Any Amazon CloudWatch logs that were created along with your databases and replication instance\.
++ Security groups that were created for your Amazon VPC and Amazon EC2 client\. Make sure to remove the inbound rule from **Default** for the **launch\-wizard\-1** security groups, which is necessary for you to be able delete them\.
++ Your Amazon EC2 client\.
++ Your Amazon VPC\.
++ Your Amazon EC2 key pair for your Amazon EC2 client\.

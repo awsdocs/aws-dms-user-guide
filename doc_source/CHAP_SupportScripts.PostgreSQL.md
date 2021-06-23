@@ -2,13 +2,13 @@
 
 Following, you can find the diagnostic support scripts available to analyze any PostgreSQL RDBMS \(on\-premises, Amazon RDS, or Aurora PostgreSQL\) in your AWS DMS migration configuration\. These scripts work with either a source or target endpoint\. The scripts are all written to run in the psql command\-line utility\. 
 
-Before running these scripts, ensure that the user account that you use has the necessary permissions following to access any PostgreSQL RDBMS:
+Before running these scripts, ensure that the user account that you use has the following necessary permissions to access any PostgreSQL RDBMS:
 + PostgreSQL 10\.x or later – A user account with execute permission on the `pg_catalog.pg_ls_waldir` function\.
 + PostgreSQL 9\.x or earlier – A user account with default permissions\.
 
 We recommend using an existing account with the appropriate permissions to run these scripts\.
 
-If you need to create a new user account or grant permissions to an existing account to run these scripts, you can execute the SQL commands following for any PostgreSQL RDBMS based on the PostgreSQL version\.
+If you need to create a new user account or grant permissions to an existing account to run these scripts, you can execute the following SQL commands for any PostgreSQL RDBMS based on the PostgreSQL version\.
 
 **To grant account permissions to run these scripts for a PostgreSQL 10\.x or later database**
 + Do one of the following:
@@ -50,21 +50,21 @@ This script collects information about your PostgreSQL database configuration\. 
 **Note**  
 You can run this script with psql client version 10 or later\.
 
-You can use the procedures following to run this script either from your database environment or from the command line\. In either case, you can then upload your file to AWS Support later\.
+You can use the following procedures to run this script either from your database environment or from the command line\. In either case, you can then upload your file to AWS Support later\.
 
 **To run this script and upload the results to your support case**
 
 1. Do one of the following:
-   + Run the script from your database environment using the psql command line following\.
+   + Run the script from your database environment using the following psql command line\.
 
      ```
      dbname=# \i awsdms_support_collector_postgres.sql
      ```
 
-     At the prompt following, enter the name of only one of the schemas that you want to migrate\.
+     At the following prompt, enter the name of only one of the schemas that you want to migrate\.
 
-     At the prompt following, enter the name of the user \(`script_user`\) that you have defined to connect to the database\.
-   + Run the script directly from directly from the command line following\. This option avoids any prompts prior to script execution\.
+     At the following prompt, enter the name of the user \(`script_user`\) that you have defined to connect to the database\.
+   + Run the following script directly from the command line\. This option avoids any prompts prior to script execution\.
 
      ```
      psql -h database-hostname -p port -U script_user -d database-name -f awsdms_support_collector_postgres.sql

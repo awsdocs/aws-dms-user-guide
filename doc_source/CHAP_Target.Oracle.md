@@ -92,7 +92,7 @@ To use an Oracle target in an AWS Database Migration Service task, grant the fol
 + ALTER ANY SEQUENCE
 + DROP ANY SEQUENCE 
 
-For the requirements specified following, grant these additional privileges:
+For the following requirements, grant these additional privileges:
 + To use a specific table list, grant SELECT on any replicated table and also ALTER on any replicated table\.
 + To allow a user to create a table in a default tablespace, grant the privilege GRANT UNLIMITED TABLESPACE\.
 + For logon, grant the privilege CREATE SESSION\.

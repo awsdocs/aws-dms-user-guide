@@ -1,10 +1,10 @@
 # Using a PostgreSQL database as an AWS DMS source<a name="CHAP_Source.PostgreSQL"></a>
 
-You can migrate data from one or many PostgreSQL databases using AWS DMS\. With a PostgreSQL database as a source, you can migrate data to either another PostgreSQL database or one of the other supported databases\. AWS DMS supports a PostgreSQL version 9\.4 and later \(for versions 9\.x\), 10\.x, 11\.x, and 12\.x database as a source for these types of databases: 
+You can migrate data from one or many PostgreSQL databases using AWS DMS\. With a PostgreSQL database as a source, you can migrate data to either another PostgreSQL database or one of the other supported databases\. AWS DMS supports a PostgreSQL version 9\.4 and later \(for versions 9\.x\), 10\.x, 11\.x, 12\.x, and 13\.x \(for PREVIEW use only\) database as a source for these types of databases: 
 + On\-premises databases
 + Databases on an Amazon EC2 instance
 + Databases on an Amazon RDS DB instance
-+ Databases on an Amazon Aurora DB instance with PostgreSQL compatibility
++ Databases on an DB instance based on Amazon Aurora PostgreSQL\-Compatible Edition
 
 
 
@@ -13,6 +13,7 @@ You can migrate data from one or many PostgreSQL databases using AWS DMS\. With 
 | --- | --- | 
 |  9\.x, 10\.x, 11\.x  |  Use any available AWS DMS version\.  | 
 |  12\.x  |  Use AWS DMS version 3\.3\.3 and above\.  | 
+|  13\.x \(Preview\)  |  Use AWS DMS version 3\.4\.3 and above\. AWS DMS supports PostgreSQL 13\.x as a source endpoint for PREVIEW use only\. Use DMS version 3\.4\.3 and higher to prototype and test data migration from a PostgreSQL 13\.x endpoint\. We don't recommend use of PostgreSQL 13\.x as a target endpoint in production environments\.  | 
 
 You can use Secure Socket Layers \(SSL\) to encrypt connections between your PostgreSQL endpoint and the replication instance\. For more information on using SSL with a PostgreSQL endpoint, see [Using SSL with AWS Database Migration Service](CHAP_Security.md#CHAP_Security.SSL)\.
 
@@ -102,7 +103,7 @@ Some AWS DMS transactions are idle for some time before the DMS engine uses them
 
 ### Enabling CDC with an AWS\-managed PostgreSQL DB instance with AWS DMS<a name="CHAP_Source.PostgreSQL.RDSPostgreSQL.CDC"></a>
 
-AWS DMS supports CDC on Amazon RDS PostgreSQL databases when the DB instance is configured to use logical replication\. The table following summarizes the logical replication compatibility of each AWS\-managed PostgreSQL version\. 
+AWS DMS supports CDC on Amazon RDS PostgreSQL databases when the DB instance is configured to use logical replication\. The following table summarizes the logical replication compatibility of each AWS\-managed PostgreSQL version\. 
 
 You can't use RDS PostgreSQL read replicas for CDC \(ongoing replication\)\.
 
@@ -118,13 +119,13 @@ You can't use RDS PostgreSQL read replicas for CDC \(ongoing replication\)\.
 
    If you use an account other than the master user account, make sure to create several objects from the master account for the account that you use\. For more information, see [Migrating an Amazon RDS for PostgreSQL database without using the master user account](#CHAP_Source.PostgreSQL.RDSPostgreSQL.NonMasterUser)\.
 
-1. Set the `rds.logical_replication` parameter in your DB parameter group to 1\. This static parameter requires a reboot of the DB instance to take effect\. As part of applying this parameter, AWS DMS sets the `wal_level`, `max_wal_senders`, `max_replication_slots`, and `max_connections` parameters\. These parameter changes can increase write ahead log \(WAL\) generation, so only set `rds.logical_replication` when you use logical replication slots\.
+1. Set the `rds.logical_replication` parameter in your DB CLUSTER parameter group to 1\. This static parameter requires a reboot of the DB instance to take effect\. As part of applying this parameter, AWS DMS sets the `wal_level`, `max_wal_senders`, `max_replication_slots`, and `max_connections` parameters\. These parameter changes can increase write ahead log \(WAL\) generation, so only set `rds.logical_replication` when you use logical replication slots\.
 
 1. Set the `wal_sender_timeout` parameter to 0, as a best practice\. Setting this parameter to 0 prevents PostgreSQL from terminating replication connections that are inactive longer than the specified timeout\. When AWS DMS migrates data, replication connections need to be able to last longer than the specified timeout\.
 
 ### Migrating an Amazon RDS for PostgreSQL database without using the master user account<a name="CHAP_Source.PostgreSQL.RDSPostgreSQL.NonMasterUser"></a>
 
-IIn some cases, you might not use the master user account for the Amazon RDS PostgreSQL DB instance that you are using as a source\. In these cases, you create several objects to capture data definition language \(DDL\) events\. You create these objects in the account other than the master account and then create a trigger in the master user account\.
+In some cases, you might not use the master user account for the Amazon RDS PostgreSQL DB instance that you are using as a source\. In these cases, you create several objects to capture data definition language \(DDL\) events\. You create these objects in the account other than the master account and then create a trigger in the master user account\.
 
 **Note**  
 If you set the `captureDDLs` extra connection attribute to *N* on the source endpoint, you don't have to create the following table and trigger on the source database\.
@@ -137,7 +138,7 @@ Use the following procedure to create these objects\.
 
 1. Log in to the PostgreSQL DB instance using the user account other than the master account, here the `NoPriv` account\.
 
-1. Create the table `awsdms_ddl_audit` by running the following command, replacing `objects_schema` in the code following with the name of the schema to use\.
+1. Create the table `awsdms_ddl_audit` by running the following command, replacing `objects_schema` in the following code with the name of the schema to use\.
 
    ```
    create table objects_schema.awsdms_ddl_audit
@@ -188,6 +189,16 @@ Use the following procedure to create these objects\.
 
 When you have completed the procedure preceding, you can create the AWS DMS source endpoint using the `NoPriv` account\.
 
+**Note**  
+These events are triggered by `CREATE TABLE`, `ALTER TABLE`, and `DROP TABLE` statements\.
+
+Make sure that all users and roles that access these events have the necessary DDL permissions\. For example:
+
+```
+grant all on public.awsdms_ddl_audit to public;
+grant all on public.awsdms_ddl_audit_c_key_seq to public;
+```
+
 ## Enabling change data capture \(CDC\) using logical replication<a name="CHAP_Source.PostgreSQL.Security"></a>
 
 You can use PostgreSQL's native logical replication feature to enable change data capture \(CDC\) during database migration for PostgreSQL sources\. You can use this feature with a self\-managed PostgreSQL and also an Amazon RDS for PostgreSQL DB instance\. This approach reduces downtime and help ensure that the target database is in sync with the source PostgreSQL database\.
@@ -201,7 +212,7 @@ For logical decoding, DMS uses either test\_decoding or pglogical plugin\. If th
 
 ### Configuring the pglogical plugin<a name="CHAP_Source.PostgreSQL.Security.Pglogical"></a>
 
-Implemented as a PostgreSQL extension, the pglogical plugin is a logical replication system and model for selective data replication\. The table following identifies source PostgreSQL database versions that support the pglogical plugin\.
+Implemented as a PostgreSQL extension, the pglogical plugin is a logical replication system and model for selective data replication\. The following table identifies source PostgreSQL database versions that support the pglogical plugin\.
 
 
 |  PostgreSQL source   |  Supports pglogical  | 
@@ -217,7 +228,7 @@ Before configuring pglogical for use with AWS DMS, first enable logical replicat
 + For information about enabling logical replication for CDC on *self\-managed* PostgreSQL source databases, see [Enabling CDC using a self\-managed PostgreSQL database as a AWS DMS source](#CHAP_Source.PostgreSQL.Prerequisites.CDC)
 + For information about enabling logical replication for CDC on *AWS\-managed* PostgreSQL source databases, see [Enabling CDC with an AWS\-managed PostgreSQL DB instance with AWS DMS](#CHAP_Source.PostgreSQL.RDSPostgreSQL.CDC)\.
 
-After logical replication is enabled on your PostgreSQL source database, use the steps following to configure pglogical for use with DMS\.
+After logical replication is enabled on your PostgreSQL source database, use the following steps to configure pglogical for use with DMS\.
 
 **To use the pglogical plugin for logical replication on a PostgreSQL source database with AWS DMS**
 
@@ -225,13 +236,13 @@ After logical replication is enabled on your PostgreSQL source database, use the
 
    1. Set the correct parameter:
       + For self\-managed PostgreSQL databases, set the database parameter `shared_preload_libraries= 'pglogical'`\.
-      + For Amazon RDS PostgreSQL and Amazon Aurora PostgreSQL\-Compatible Edition databases, set the parameter `shared_preload_libraries` to `pglogical` in the same RDS parameter group\.
+      + For Amazon RDS for PostgreSQL and Amazon Aurora PostgreSQL\-Compatible Edition databases, set the parameter `shared_preload_libraries` to `pglogical` in the same RDS parameter group\.
 
    1. Restart your PostgreSQL source database\.
 
    1. On the PostgreSQL database, run the command, `create extension pglogical;`
 
-1. Run the command following to verify that pglogical installed successfully:
+1. Run the following command to verify that pglogical installed successfully:
 
    `select * FROM pg_catalog.pg_extension`
 
@@ -286,7 +297,7 @@ The following procedure walks through this approach in more detail\.
    slotName=abc1d2efghijk_34567890_z0yx98w7_6v54_32ut_1srq_1a2b34c5d67ef;
    ```
 
-1. Create a new CDC\-only task using the AWS CLI or AWS DMS API\. For example, using the CLI you might run the `create-replication-task` command following\. 
+1. Create a new CDC\-only task using the AWS CLI or AWS DMS API\. For example, using the CLI you might run the following `create-replication-task` command\. 
 
    AWS DMS doesn't currently support creating a CDC task with a native start point using the console\.
 
@@ -359,7 +370,7 @@ The following table shows source PostgreSQL data types and whether they can be m
 | VARCHAR\(n\) | X |  |  |  | 
 | TEXT | X |  |  |  | 
 | BYTEA | X |  |  |  | 
-| TIMESTAMP | X |  |  |  | 
+| TIMESTAMP | X |  |  | Positive and negative infinity values are truncated to '9999\-12\-31 23:59:59' and '4713\-01\-01 00:00:00 BC' respectively\. | 
 | TIMESTAMP\(Z\) |  | X |  |  | 
 | DATE | X |  |  |  | 
 | TIME | X |  |  |  | 
@@ -476,7 +487,8 @@ The following limitations apply when using PostgreSQL as a source for AWS DMS:
   + If the parent table in the source database has the same primary key value as its child tables, a "duplicate key" error is generated\.
 + To replicate partitioned tables from a PostgreSQL source to a PostgreSQL target, first manually create the parent and child tables on the target\. Then define a separate task to replicate to those tables\. In such a case, set the task configuration to **Truncate before loading**\.
 + The PostgreSQL `NUMERIC` data type isn't fixed in size\. When transferring data that is a `NUMERIC` data type but without precision and scale, DMS uses `NUMERIC(28,6)` \(a precision of 28 and scale of 6\) by default\. As an example, the value 0\.611111104488373 from the source is converted to 0\.611111 on the PostgreSQL target\.
-+ CDC is not supported for Aurora PostgreSQL Serverless as a SOURCE\.
++ CDC isn't supported for Aurora PostgreSQL Serverless as a source\.
++ AWS DMS doesn't support replication of a table with a unique index created with a coalesce function\.
 
 ## Source data types for PostgreSQL<a name="CHAP_Source-PostgreSQL-DataTypes"></a>
 
@@ -505,9 +517,9 @@ For additional information about AWS DMS data types, see [Data types for AWS Dat
 |  VARCHAR\(N\)  |  WSTRING \(n\)  | 
 |  TEXT  |  NCLOB  | 
 |  BYTEA  |  BLOB  | 
-|  TIMESTAMP  |  TIMESTAMP  | 
-|  TIMESTAMP \(z\)  |  TIMESTAMP  | 
-|  TIMESTAMP WITH TIME ZONE  |  TIMESTAMP  | 
+|  TIMESTAMP  |  DATETIME  | 
+|  TIMESTAMP \(z\)  |  DATETIME  | 
+|  TIMESTAMP WITH TIME ZONE  |  DATETIME  | 
 |  DATE  |  DATE  | 
 |  TIME  |  TIME  | 
 |  TIME \(z\)  |  TIME  | 

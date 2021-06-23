@@ -16,7 +16,7 @@ When you're using an Edge device, the data migration process has the following s
 
 1. AWS DMS takes the files and migrates the data to the target data store\. If you are using change data capture \(CDC\), those updates are written to the Amazon S3 bucket and then applied to the target data store\.
 
-In this sections following, you can learn about using an Edge device to migrate relational databases with AWS SCT and AWS DMS\. You can also use an Edge device and AWS SCT to migrate on\-premises data warehouses to the AWS Cloud\. For more information about data warehouse migrations, see [Migrating data from an on\-premises data warehouse to Amazon Redshift ](https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/agents.dw.html) in the *AWS Schema Conversion Tool User Guide*\.
+In the following sections, you can learn about using an Edge device to migrate relational databases with AWS SCT and AWS DMS\. You can also use an Edge device and AWS SCT to migrate on\-premises data warehouses to the AWS Cloud\. For more information about data warehouse migrations, see [Migrating data from an on\-premises data warehouse to Amazon Redshift ](https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/agents.dw.html) in the *AWS Schema Conversion Tool User Guide*\.
 
 **Topics**
 + [Overview of migrating large data stores using AWS DMS and AWS Snowball Edge](CHAP_LargeDBs.Process.md)

@@ -108,8 +108,8 @@ To use CDC, make sure to enable binary logging\. To enable binary logging, the f
 | Parameter | Value | 
 | --- | --- | 
 | `server-id` | Set this parameter to a value of 1 or greater\. | 
-| `log_bin` | Set the path to the binary log file, such as `log_bin=E:\MySql_Logs\BinLog`\. Don't include the file extension\. | 
-| `binlog_format` | Set this parameter to `ROW`\. | 
+| `log-bin` | Set the path to the binary log file, such as `log-bin=E:\MySql_Logs\BinLog`\. Don't include the file extension\. | 
+| `binlog_format` | Set this parameter to `ROW`\. We recommend this setting during replication because in certain cases when `binlog_format` is set to `STATEMENT`, it can cause inconsistency when replicating data to the target\. The database engine also writes similar inconsistent data to the target when `binlog_format` is set to `MIXED`, because the database engine automatically switches to `STATEMENT`\-based logging which can result in writing inconsistent data on the target database\. | 
 | `expire_logs_days` | Set this parameter to a value of 1 or greater\. To prevent overuse of disk space, we recommend that you don't use the default value of 0\. | 
 | `binlog_checksum` | Set this parameter to `NONE`\. | 
 | `binlog_row_image` | Set this parameter to `FULL`\. | 
@@ -152,7 +152,8 @@ When using a MySQL database as a source, consider the following:
 + For CDC, `CREATE TABLE`, `ADD COLUMN`, and `DROP COLUMN` changing the column data type, and `renaming a column` are supported\. However, `DROP TABLE`, `RENAME TABLE`, and updates made to other attributes, such as column default value, column nullability, character set and so on, are not supported\.
 +  For partitioned tables on the source, when you set **Target table preparation mode** to **Drop tables on target**, AWS DMS creates a simple table without any partitions on the MySQL target\. To migrate partitioned tables to a partitioned table on the target, precreate the partitioned tables on the target MySQL database\.
 +  Using an `ALTER TABLE table_name ADD COLUMN column_name` statement to add columns to the beginning \(FIRST\) or the middle of a table \(AFTER\) isn't supported\. Columns are always added to the end of the table\.
-+ CDC isn't supported when a table name contains uppercase and lowercase characters, and the source engine is hosted on an operating system with case\-insensitive file names\. An example is Windows or OS X using HFS\+\.
++ CDC isn't supported when a table name contains uppercase and lowercase characters, and the source engine is hosted on an operating system with case\-insensitive file names\. An example is Microsoft Windows or OS X using HFS\+\.
++ You can use Aurora MySQLCompatible Edition Serverless for full load, but you can't use it for CDC\. This is because you can't enable the prerequisites for MySQL\. For more information, see [ Parameter groups and Aurora Serverless v1](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless.how-it-works.html#aurora-serverless.parameter-groups)\. 
 +  The AUTO\_INCREMENT attribute on a column isn't migrated to a target database column\.
 +  Capturing changes when the binary logs aren't stored on standard block storage isn't supported\. For example, CDC doesn't work when the binary logs are stored on Amazon S3\.
 +  AWS DMS creates target tables with the InnoDB storage engine by default\. If you need to use a storage engine other than InnoDB, you must manually create the table and migrate to it using [do nothing](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_GettingStarted.html) mode\.
@@ -162,10 +163,12 @@ When using a MySQL database as a source, consider the following:
 + In some cases, the task is configured to not replicate LOBs \("SupportLobs" is false in task settings or **Don't include LOB columns** is chosen in the task console\)\. In these cases, AWS DMS doesn't migrate any MEDIUMBLOB, LONGBLOB, MEDIUMTEXT, and LONGTEXT columns to the target\.
 
   BLOB, TINYBLOB, TEXT, and TINYTEXT columns aren't affected and are migrated to the target\.
-+ Temporal data tables or system\-versioned tables are not supported on MariaDB source and target databases\.
++ Temporal data tables or system—versioned tables are not supported on MariaDB source and target databases\.
 + If migrating between two Amazon RDS Aurora MySQL clusters, the RDS Aurora MySQL source endpoint must be a read/write instance, not a read replica instance\. 
 + AWS DMS currently doesn't support compressed transaction log payloads introduced in MySQL 8\.0\.20\.
 + AWS DMS currently doesn't support views migration for MariaDB\.
++ AWS DMS doesn't support DDL changes for partitioned tables for MySQL\.
++ AWS DMS doesn't currently support XA transactions\.
 
 ## Extra connection attributes when using MySQL as a source for AWS DMS<a name="CHAP_Source.MySQL.ConnectionAttrib"></a>
 
@@ -211,7 +214,7 @@ For additional information about AWS DMS data types, see [Data types for AWS Dat
 |  VARBINARY \(4000\)  |  BYTES \(4000\)  | 
 |  VARBINARY \(2000\)  |  BYTES \(2000\)  | 
 |  CHAR  |  WSTRING  | 
-|  TEXT  |  WSTRING \(65535\)  | 
+|  TEXT  |  WSTRING  | 
 |  JSON  |  NCLOB  | 
 |  LONGTEXT  |  NCLOB  | 
 |  MEDIUMTEXT  |  NCLOB  | 

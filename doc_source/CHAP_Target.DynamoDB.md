@@ -432,7 +432,7 @@ Another way to use column mapping is to use DynamoDB format as your document typ
 }
 ```
 
-As an alternative to `dynamodb-map`, you can use `dynamodb-list` as the attribute\-sub\-type for attribute mapping, as shown in the example following\.
+As an alternative to `dynamodb-map`, you can use `dynamodb-list` as the attribute\-sub\-type for attribute mapping, as shown in the following example\.
 
 ```
                     {

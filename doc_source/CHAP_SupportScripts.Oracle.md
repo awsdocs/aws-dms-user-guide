@@ -96,7 +96,7 @@ This script collects information about your Oracle database configuration\. Reme
 
 **To run the script and upload the results to your support case**
 
-1. Run the script from your database environment using the SQL\*Plus command line following\.
+1. Run the script from your database environment using the following SQL\*Plus command line\.
 
    ```
    SQL> @awsdms_support_collector_oracle.sql
@@ -104,11 +104,11 @@ This script collects information about your Oracle database configuration\. Reme
 
    The script displays a brief description and a prompt to either continue or abort the run\. Press \[Enter\] to continue\.
 
-1. At the prompt following, enter the name of only one of the schemas that you want to migrate\.
+1. At the following prompt, enter the name of only one of the schemas that you want to migrate\.
 
-1. At the prompt following, enter the name of the user \(*script\_user*\) that you have defined to connect to the database\.
+1. At the following prompt, enter the name of the user \(*script\_user*\) that you have defined to connect to the database\.
 
-1. At the prompt following, enter the number of days of data you want to examine, or accept the default\. The script then collects the specified data from your database\.
+1. At the following prompt, enter the number of days of data you want to examine, or accept the default\. The script then collects the specified data from your database\.
 
    After the script completes, it displays the name of the output HTML file, for example `dms_support_oracle-2020-06-22-13-20-39-ORCL.html`\. The script saves this file in your working directory\.
 
