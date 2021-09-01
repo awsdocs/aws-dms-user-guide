@@ -573,14 +573,14 @@ aws dms create-endpoint --endpoint-identifier s3-target-endpoint --engine-name s
 --s3-settings '{"ServiceAccessRoleArn": "your-service-access-ARN", "DataFormat": "parquet"}'
 ```
 
-Here, the `DataFormat` parameter is set to `parquet` to enable the format with all the S3 defaults\. These defaults include a dictionary encoding \(`"EncodingType: "rle-dictionary"`\) that uses a combination of bit\-packing and run\-length encoding to more efficiently store repeating values\.
+Here, the `DataFormat` parameter is set to `parquet` to enable the format with all the S3 defaults\. These defaults include a dictionary encoding \(`"EncodingType": "rle-dictionary"`\) that uses a combination of bit\-packing and run\-length encoding to more efficiently store repeating values\.
 
 You can add additional settings for options other than the defaults as in the following example\.
 
 ```
 aws dms create-endpoint --endpoint-identifier s3-target-endpoint --engine-name s3 --endpoint-type target
 --s3-settings '{"ServiceAccessRoleArn": "your-service-access-ARN", "BucketFolder": "your-bucket-folder",
-"BucketName": "your-bucket-name", "CompressionType": "GZIP", "DataFormat": "parquet", "EncodingType: "plain-dictionary", "dictPageSizeLimit": 3,072,000,
+"BucketName": "your-bucket-name", "CompressionType": "GZIP", "DataFormat": "parquet", "EncodingType": "plain-dictionary", "dictPageSizeLimit": 3,072,000,
 "EnableStatistics": false }'
 ```
 
