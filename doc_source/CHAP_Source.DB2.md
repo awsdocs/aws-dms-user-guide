@@ -15,7 +15,8 @@ The following prerequisites are required before you can use an Db2 LUW database 
 
 To enable ongoing replication, also called change data capture \(CDC\), do the following:
 + Set the database to be recoverable, which AWS DMS requires to capture changes\. A database is recoverable if either or both of the database configuration parameters LOGARCHMETH1 and LOGARCHMETH2 are set to ON\.
-+ Grant the user account the following permissions:
++ Ensure that the DB2 transaction logs are available, with a sufficient retention period to be processed by AWS DMS\. 
++ DB2 requires SYSADM or DBADM authorization to extract transaction log records\. Grant the user account the following permissions:
 
   SYSADM or DBADM
 
@@ -41,8 +42,8 @@ When using ongoing replication \(CDC\), the following limitations apply:
 + When the task setting **Include LOB columns in replication** isn't enabled, any table that has LOB columns is suspended during ongoing replication\.
 + When the audit table option is enabled, the first timestamp record in the audit table is NULL\.
 + When the change table option is enabled, the first timestamp record in the table is zero \(1970\-01\-01 00:00:00\.000000\)\.
-+ For Db2 LUW versions 10\.5 and higher, variable\-length string columns with data that is stored out\-of\-row are ignored\. This limitation only applies to tables created with extended row size\.
-+ For on\-going replication, AWS DMS doesn't support migrating data loaded at the page level by the DB2 LOAD utility\. Instead, use the IMPORT utility which uses SQL inserts\. For more information, see [ differences between the import and load utilities]( https://www.ibm.com/docs/en/db2/11.1?topic=utilities-differences-between-import-load-utility)\. 
++ For Db2 LUW versions 10\.5 and higher, variable\-length string columns with data that is stored out\-of\-row are ignored\. This limitation only applies to tables created with extended row size for columns with data types like VARCHAR and VARGRAPHIC\. To work around this limitation, move the table to a table space with a higher page size\. For more information, see [What can I do if I want to change the pagesize of DB2 tablespaces]( https://www.ibm.com/support/pages/what-can-i-do-if-i-want-change-pagesize-db2-tablespaces )\.
++ For ongoing replication, DMS doesn't support migrating data loaded at the page level by the DB2 LOAD utility\. Instead, use the IMPORT utility which uses SQL inserts\. For more information, see [ differences between the import and load utilities]( https://www.ibm.com/docs/en/db2/11.1?topic=utilities-differences-between-import-load-utility)\. 
 
 ## Extra connection attributes when using Db2 LUW as a source for AWS DMS<a name="CHAP_Source.DB2.ConnectionAttrib"></a>
 

@@ -1,10 +1,11 @@
 # Using MongoDB as a source for AWS DMS<a name="CHAP_Source.MongoDB"></a>
 
-AWS DMS supports MongoDB versions 3\.x and 4\.0 as a database source\.
+AWS DMS supports MongoDB versions 3\.x and 4\.0 as a database source\. Starting with AWS DMS 3\.4\.5, AWS DMS supports MongoDB versions 4\.2 and 4\.4\. Starting with Mongo DB version 4\.2, AWS DMS 3\.4\.5 and later supports distributed transactions\. For more information on MongoDB distributed transactions, see [Transactions](https://docs.mongodb.com/manual/core/transactions/) in MongoDB\.
 
 If you are new to MongoDB, be aware of the following important MongoDB database concepts: 
 + A record in MongoDB is a *document*, which is a data structure composed of field and value pairs\. The value of a field can include other documents, arrays, and arrays of documents\. A document is roughly equivalent to a row in a relational database table\.
 + A *collection* in MongoDB is a group of documents, and is roughly equivalent to a relational database table\.
++ A *database* in MongoDB is a set of collections, and is roughly equivalent to a schema in a relational database\.
 + Internally, a MongoDB document is stored as a binary JSON \(BSON\) file in a compressed format that includes a type for each field in the document\. Each document has a unique ID\.
 
 AWS DMS supports two migration modes when using MongoDB as a source, *Document mode* or *Table mode*\. You specify which migration mode to use when you create the MongoDB endpoint or by setting the **Metadata mode** parameter from the AWS DMS console\. Optionally, you can create a second column named `_id` that acts as the primary key by selecting the check mark button for **\_id as a separate column** in the endpoint configuration panel\. 
@@ -143,64 +144,129 @@ If you plan to perform a document mode migration, select option `_id as a separa
 AWS DMS supports two authentication methods for MongoDB\. The two authentication methods are used to encrypt the password, so they are only used when the `authType` parameter is set to *PASSWORD*\.
 
 The MongoDB authentication methods are as follows:
-+ **MONGODB\-CR** – for backword compatibility
-+ **SCRAM\-SHA\-1** – the default when using MongoDB version 3\.x and 4\.0
++ **MONGODB\-CR** – For backward compatibility
++ **SCRAM\-SHA\-1** – The default when using MongoDB version 3\.x and 4\.0
 
 If an authentication method isn't specified, AWS DMS uses the default method for the version of the MongoDB source\.
 
 ## Segmenting MongoDB collections and migrating in parallel<a name="CHAP_Source.MongoDB.ParallelLoad"></a>
 
-To improve performance of a migration task, MongoDB source endpoints support the range segmentation option of the parallel full load feature\. In other words, using table mapping JSON settings for parallel full load, you can migrate a segmented collection using threads in parallel\. For more information, see [Table and collection settings rules and operations](CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Tablesettings.md)\.
+To improve performance of a migration task, MongoDB source endpoints support two options for parallel full load in table mapping\. 
 
-The following example shows a MongoDB collection that has seven items, and `_id` as the primary key\.
+In other words, you can migrate a collection in parallel by using either autosegmentation or range segmentation with table mapping for a parallel full load in JSON settings\. With autosegmentation, you can specify the criteria for AWS DMS to automatically segment your source for migration in each thread\. With range segmentation, you can tell AWS DMS the specific range of each segment for DMS to migrate in each thread\. For more information on these settings, see [Table and collection settings rules and operations](CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Tablesettings.md)\.
 
-![\[MongoDB collection with seven items.\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-docdb-collection.png)
+### Migrating a MongoDB database in parallel using autosegmentation ranges<a name="CHAP_Source.MongoDB.ParallelLoad.AutoPartitioned"></a>
 
-To split the collection into three segments and migrate in parallel, you can add table mapping rules to your migration task as shown in the following JSON example\.
+You can migrate your documents in parallel by specifying the criteria for AWS DMS to automatically partition \(segment\) your data for each thread\. In particular, you specify the number of documents to migrate per thread\. Using this approach, AWS DMS attempts to optimize segment boundaries for maximum performance per thread\.
+
+You can specify the segmentation criteria using the table\-settings options following in table mapping\.
+
+
+|  Table\-settings option  |  Description  | 
+| --- | --- | 
+|  `"type"`  |  \(Required\) Set to `"partitions-auto"` for MongoDB as a source\.  | 
+|  `"number-of-partitions"`  |  \(Optional\) Total number of partitions \(segments\) used for migration\. The default is 16\.  | 
+|  `"collection-count-from-metadata"`  |  \(Optional\) If this option is set to `true`, AWS DMS uses an estimated collection count for determining the number of partitions\. If this option is set to `false`, AWS DMS uses the actual collection count\. The default is `true`\.  | 
+|  `"max-records-skip-per-page"`  |  \(Optional\) The number of records to skip at once when determining the boundaries for each partition\. AWS DMS uses a paginated skip approach to determine the minimum boundary for a partition\. The default is 10,000\.  Setting a relatively large value can result in curser timeouts and task failures\. Setting a relatively low value results in more operations per page and a slower full load\.   | 
+|  `"batch-size"`  |  \(Optional\) Limits the number of documents returned in one batch\. Each batch requires a round trip to the server\. If the batch size is zero \(0\), the cursor uses the server\-defined maximum batch size\. The default is 0\.  | 
+
+The example following shows a table mapping for autosegmentation\.
 
 ```
 {
-"rules": [
- {
-   "rule-type": "selection",
-   "rule-id": "1",
-   "rule-name": "1",
-   "object-locator": {
-     "schema-name": "testdatabase",
-     "table-name": "testtable"
-    },
- "rule-action": "include"
- },
- {
-   "rule-type": "table-settings",
-   "rule-id": "2",
-   "rule-name": "2",
-   "object-locator": {
-     "schema-name": "testdatabase",
-     "table-name": "testtable"
-    },
-   "parallel-load": {
-     "type": "ranges",
-     "columns": [
-        "_id",
-        "num"
-     ]
-   "boundaries": [
-      [
-          "5f805c97873173399a278d79",
-// First segment will select documents with _id less-than-or-equal-to 5f805c97873173399a278d79 and num less-than-or-equal-to 2"2"
-      ],
-      [
-          "5f805cc5873173399a278d7c", 
-// Second segment will select documents with _id > 5f805c97873173399a278d79 and _id less-than-or-equal-to 5f805cc5873173399a278d7c
-          "5" // and num > 2 and num less-than-or-equal-to 5
-       ]                                   
-// Third segment is implied and selects documents with _id > 5f805cc5873173399a278d7c
-     ]
-   }
- }
-]
+    "rules": [
+        {
+            "rule-type": "selection",
+            "rule-id": "1",
+            "rule-name": "1",
+            "object-locator": {
+                "schema-name": "admin",
+                "table-name": "departments"
+            },
+            "rule-action": "include",
+            "filters": []
+        },
+        {
+            "rule-type": "table-settings",
+            "rule-id": "2",
+            "rule-name": "2",
+            "object-locator": {
+                "schema-name": "admin",
+                "table-name": "departments"
+            },
+            "parallel-load": {
+                "type": "partitions-auto",
+                "number-of-partitions": 5,
+                "collection-count-from-metadata": "true",
+                "max-records-skip-per-page": 1000000,
+                "batch-size": 50000
+            }
+        }
+    ]
 }
+```
+
+Autosegmentation has the limitation following\. The migration for each segment fetches the collection count and the minimum `_id` for the collection separately\. It then uses a paginated skip to calculate the minimum boundary for that segment\. 
+
+Therefore, ensure that the minimum `_id` value for each collection remains constant until all the segment boundaries in the collection are calculated\. If you change the minimum `_id` value for a collection during its segment boundary calculation, it can cause data loss or duplicate row errors\.
+
+### Migrating a MongoDB database in parallel using range segmentation<a name="CHAP_Source.MongoDB.ParallelLoad.Ranges"></a>
+
+You can migrate your documents in parallel by specifying the ranges for each segment in a thread\. Using this approach, you tell AWS DMS the specific documents to migrate in each thread according to your choice of document ranges per thread\.
+
+The image following shows a MongoDB collection that has seven items, and `_id` as the primary key\.
+
+![\[MongoDB collection with seven items.\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-docdb-collection.png)
+
+To split the collection into three specific segments for AWS DMS to migrate in parallel, you can add table mapping rules to your migration task\. This approach is shown in the following JSON example\.
+
+```
+{ // Task table mappings:
+  "rules": [
+    {
+      "rule-type": "selection",
+      "rule-id": "1",
+      "rule-name": "1",
+      "object-locator": {
+        "schema-name": "testdatabase",
+        "table-name": "testtable"
+      },
+      "rule-action": "include"
+    }, // "selection" :"rule-type"
+    {
+      "rule-type": "table-settings",
+      "rule-id": "2",
+      "rule-name": "2",
+      "object-locator": {
+        "schema-name": "testdatabase",
+        "table-name": "testtable"
+      },
+      "parallel-load": {
+        "type": "ranges",
+        "columns": [
+           "_id",
+           "num"
+        ],
+        "boundaries": [
+          // First segment selects documents with _id less-than-or-equal-to 5f805c97873173399a278d79
+          // and num less-than-or-equal-to 2.
+          [
+             "5f805c97873173399a278d79",
+             "2"
+          ],
+          // Second segment selects documents with _id > 5f805c97873173399a278d79 and
+          // _id less-than-or-equal-to 5f805cc5873173399a278d7c and
+          // num > 2 and num less-than-or-equal-to 5.
+          [
+             "5f805cc5873173399a278d7c",
+             "5"
+          ]                                   
+          // Third segment is implied and selects documents with _id > 5f805cc5873173399a278d7c.
+        ] // :"boundaries"
+      } // :"parallel-load"
+    } // "table-settings" :"rule-type"
+  ] // :"rules"
+} // :Task table mappings
 ```
 
 That table mapping definition splits the source collection into three segments and migrates in parallel\. The following are the segmentation boundaries\.
@@ -211,7 +277,7 @@ Data with _id > "5f805c97873173399a278d79" and num > 2 and _id  less-than-or-equ
 Data with _id > "5f805cc5873173399a278d7c" and num > 5 (2 records)
 ```
 
-After the migration task is complete, you can verify from the task logs that the tables loaded in parallel, as shown in the following example\. You can also verify the MongoDB find\(\) clause used to unload each segment from the source table\.
+After the migration task is complete, you can verify from the task logs that the tables loaded in parallel, as shown in the following example\. You can also verify the MongoDB `find` clause used to unload each segment from the source table\.
 
 ```
 [TASK_MANAGER    ] I:  Start loading segment #1 of 3 of table 'testdatabase'.'testtable' (Id = 1) by subtask 1. Start load timestamp 0005B191D638FE86  (replicationtask_util.c:752)
@@ -235,12 +301,52 @@ After the migration task is complete, you can verify from the task logs that the
 [TASK_MANAGER    ] I: Load finished for segment #1 of table 'testdatabase'.'testtable' (Id = 1) by subtask 1. 2 records transferred.
 ```
 
-Currently, AWS DMS supports the following MongoDB data types as a partition key column:
+Currently, AWS DMS supports the following MongoDB data types as a segment key column:
 + Double
 + String
 + ObjectId
 + 32 bit integer
 + 64 bit integer
+
+## Migrating multiple databases when using MongoDB as a source for AWS DMS<a name="CHAP_Source.MongoDB.Multidatabase"></a>
+
+AWS DMS versions 3\.4\.5 and later support migrating multiple databases in a single task for all supported MongoDB versions\. If you want to migrate multiple databases, take these steps:
+
+1. When you create the MongoDB source endpoint, do one of the following:
+   + On the DMS console's **Create endpoint** page, make sure that **Database name** is empty under **Endpoint configuration**\.
+   + Using the AWS CLI `CreateEndpoint` command, assign an empty string value to the `DatabaseName` parameter in `MongoDBSettings`\.
+
+1. For each database that you want to migrate from a MongoDB source, specify the database name as a schema name in the table mapping for the task\. You can do this using either the guided input in the console or directly in JSON\. For more information on the guided input, see [Specifying table selection and transformations rules from the console](CHAP_Tasks.CustomizingTasks.TableMapping.Console.md)\. For more information on the JSON, see [Selection rules and actions](CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Selections.md)\.
+
+For example, you might specify the JSON following to migrate three MongoDB databases\.
+
+**Example Migrate all tables in a schema**  
+The JSON following migrates all tables from the `Customers`, `Orders`, and `Suppliers` databases in your source endpoint to your target endpoint\.  
+
+```
+{
+    "rules": [
+        {
+            "rule-type": "selection",
+            "rule-id": "1",
+            "rule-name": "1",
+            "object-locator": {
+                "schema-name": "Customers",
+                "table-name": "%"
+            },
+            "object-locator": {
+                "schema-name": "Orders",
+                "table-name": "%"
+            },
+            "object-locator": {
+                "schema-name": "Inventory",
+                "table-name": "%"
+            },
+            "rule-action": "include"
+        }
+    ]
+}
+```
 
 ## Limitations when using MongoDB as a source for AWS DMS<a name="CHAP_Source.MongoDB.Limitations"></a>
 
@@ -248,9 +354,10 @@ The following are limitations when using MongoDB as a source for AWS DMS:
 + When the `_id` option is set as a separate column, the ID string can't exceed 200 characters\.
 + Object ID and array type keys are converted to columns that are prefixed with `oid` and `array` in table mode\.
 
-  Internally, these columns are referenced with the prefixed names\. If you use transformation rules in AWS DMS that reference these columns, you must specify the prefixed column\. For example, you specify `${oid__id}` and not `${_id}`, or `${array__addresses}` and not `${_addresses}`\. 
+  Internally, these columns are referenced with the prefixed names\. If you use transformation rules in AWS DMS that reference these columns, make sure to specify the prefixed column\. For example, you specify `${oid__id}` and not `${_id}`, or `${array__addresses}` and not `${_addresses}`\. 
 +  Collection names and key names can't include the dollar symbol \($\)\. 
-+ Table mode and document mode have the limitations discussed preceding\.
++ Table mode and document mode have the limitations described preceding\.
++ Migrating in parallel using autosegmentation has the limitations described preceding\.
 + Source filters are not supported for MongoDB\.
 
 ## Endpoint configuration settings when using MongoDB as a source for AWS DMS<a name="CHAP_Source.MongoDB.Configuration"></a>
@@ -260,19 +367,18 @@ When you set up your MongoDB source endpoint, you can specify multiple endpoint 
 The following table describes the configuration settings available when using MongoDB databases as an AWS DMS source\. 
 
 
-| Settings \(attribute\) | Valid values | Default value and description | 
+| Setting \(attribute\) | Valid values | Default value and description | 
 | --- | --- | --- | 
-|  **Authentication mode**  |  `"none"` `"password"`  |  `"password"` prompts for a user name and password\. When `"none"` is specified, user name and password parameters aren't used\.  | 
-|  **Authentication source**  |  A valid MongoDB database name\.  |  Default Value is `"admin"`\. The name of the MongoDB database that you want to use to validate your credentials for authentication\.  | 
-|  **Authentication mechanism**  |  `"default"` `"mongodb_cr"` `"scram_sha_1"`  |  `"default"` is `"scram_sha_1"`\. This setting isn't used when `authType` is set to `"no"`\.  | 
-|  **Metadata mode**  |  Document and Table  |  Choses **Document mode** or **Table mode**\.   | 
-|  **Number of documents to scan**\(`docsToInvestigate`\)  |  A positive integer greater than `0`\.  |  Use this option in table mode only to define the target table defination\.  | 
-|  **\_id as a separate column**  |  Check mark box  |  Optional check mark box—creates a second column named `_id` that acts as the primary key  | 
+|  **Authentication mode**  |  `"none"` `"password"`  |  The value `"password"` prompts for a user name and password\. When `"none"` is specified, user name and password parameters aren't used\.  | 
+|  **Authentication source**  |  A valid MongoDB database name\.  |  The name of the MongoDB database that you want to use to validate your credentials for authentication\. The default value is `"admin"`\.   | 
+|  **Authentication mechanism**  |  `"default"` `"mongodb_cr"` `"scram_sha_1"`  |  The authentication mechanism\. The value` "default"` is `"scram_sha_1"`\. This setting isn't used when `authType` is set to `"no"`\.  | 
+|  **Metadata mode**  |  Document and table  |  Chooses document mode or table mode\.   | 
+|  **Number of documents to scan **\(**docsToInvestigate**\)  |  A positive integer greater than `0`\.  |  Use this option in table mode only to define the target table definition\.  | 
+|  **\_id as a separate column**  |  Check mark in box  |  Optional check mark box that creates a second column named `_id` that acts as the primary key\.  | 
 
-If you choose **Document** as **Metadata mode**, different options are available\.
+If you choose **Document** as **Metadata mode**, different options are available\. 
 
-**Note**  
-If the target endpoint is DocumentDB, run the migration in **Document mode**, modify your source endpoint and check the box **\_id as separate column**\.
+If the target endpoint is DocumentDB, make sure to run the migration in **Document mode** Also, modify your source endpoint and select the option **\_id as separate column**\.
 
 ## Source data types for MongoDB<a name="CHAP_Source.MongoDB.DataTypes"></a>
 

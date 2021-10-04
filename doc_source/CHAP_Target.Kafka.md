@@ -47,7 +47,7 @@ You can improve the performance of change data capture \(CDC\) for real\-time da
 
 To promote CDC performance, AWS DMS supports these task settings:
 + `ParallelApplyThreads` – Specifies the number of concurrent threads that AWS DMS uses during a CDC load to push data records to a Kafka target endpoint\. The default value is zero \(0\) and the maximum value is 32\.
-+ `ParallelApplyBufferSize` – Specifies the maximum number of records to store in each buffer queue for concurrent threads to push to a Kafka target endpoint during a CDC load\. The default value is 50 and the maximum value is 1,000\. Use this option when `ParallelApplyThreads` specifies more than one thread\. 
++ `ParallelApplyBufferSize` – Specifies the maximum number of records to store in each buffer queue for concurrent threads to push to a Kafka target endpoint during a CDC load\. The default value is 100 and the maximum value is 1,000\. Use this option when `ParallelApplyThreads` specifies more than one thread\. 
 + `ParallelApplyQueuesPerThread` – Specifies the number of queues that each thread accesses to take data records out of queues and generate a batch load for a Kafka endpoint during CDC\.
 
 When using `ParallelApply*` task settings, the `partition-key-type` default is the `primary-key` of the table, not `schema-name.table-name`\.
@@ -379,7 +379,6 @@ For information on using the `add-before-image-columns` rule action, see [ Trans
 ## Limitations when using Apache Kafka as a target for AWS Database Migration Service<a name="CHAP_Target.Kafka.Limitations"></a>
 
 The following limitations apply when using Apache Kafka as a target:
-+ AWS DMS supports a maximum message size of 1 MiB for a Kafka target\.
 + Make sure to configure both your AWS DMS replication instance and your Kafka cluster in the same virtual private cloud \(VPC\) based on Amazon VPC and in the same security group\. The Kafka cluster can either be an Amazon MSK instance or your own Kafka instance running on Amazon EC2\. For more information, see [Setting up a network for a replication instance](CHAP_ReplicationInstance.VPC.md)\.
 **Note**  
 To specify a security group for Amazon MSK, on the **Create cluster** page, choose **Advanced settings**, select **Customize settings**, and select the security group or accept the default if it is the same as for your replication instance\.

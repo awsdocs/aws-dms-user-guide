@@ -3,7 +3,7 @@
 You can migrate data from any MySQL\-compatible database \(MySQL, MariaDB, or Amazon Aurora MySQL\) using AWS Database Migration Service\. MySQL versions 5\.5, 5\.6, 5\.7, and 8\.0\. MariaDB versions 10\.0\.24 to 10\.0\.28, 10\.1, 10\.2, 10\.3, 10\.4, and 10\.5, and also Amazon Aurora MySQL, are supported for on\-premises\. 
 
 **Note**  
-Support for MySQL 8\.0 as a source is available in AWS DMS versions 3\.4\.0 and later, except when the transaction payload is compressed\.
+Support for MySQL 8\.0 as a source is available in AWS DMS versions 3\.4\.0 and later, except when the transaction payload is compressed\. AWS DMS doesn't currently support CDC replication using MySQL 8\.0 as a source when binary log encryption is turned on\. 
 
 You can use SSL to encrypt connections between your MySQL\-compatible endpoint and the replication instance\. For more information on using SSL with a MySQL\-compatible endpoint, see [Using SSL with AWS Database Migration Service](CHAP_Security.md#CHAP_Security.SSL)\.
 
@@ -131,9 +131,15 @@ You can use the following AWS\-managed MySQL\-compatible databases as sources fo
 + MariaDB Community Edition
 + Amazon Aurora MySQL\-Compatible Edition
 
-When using an AWS\-managed MySQL\-compatible database as a source for AWS DMS, make sure that you have the following prerequisites:
-+ Enable automatic backups\. For more information on setting up automatic backups, see [Working with automated backups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.html) in the *Amazon RDS User Guide*\.
-+ If you plan to use CDC, enable binary logging\. For more information on setting up binary logging for an Amazon RDS MySQL database, see [Working with automated backups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.html) in the *Amazon RDS User Guide*\.
+When using an AWS\-managed MySQL\-compatible database as a source for AWS DMS, make sure that you have the following prerequisites for CDC:
++ To enable binary logs for for MySQL Amazon RDS and Maria DB Amazon RDS, enable automatic backups at the instance level\. To enable binary logs for an Aurora MySQL cluster, change the variable `binlog_format` in the parameter group\.
+
+  For more information about setting up automatic backups, see [Working with automated backups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.html) in the *Amazon RDS User Guide*\.
+
+  For more information about setting up binary logging for an Amazon RDS for MySQL database, see [ Setting the binary logging format](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_LogAccess.MySQL.BinaryFormat.html) in the *Amazon RDS User Guide*\. 
+
+  For more information about setting up binary logging for an Aurora MySQL cluster, see [ How do I turn on binary logging for my Amazon Aurora MySQL cluster?](https://aws.amazon.com/premiumsupport/knowledge-center/enable-binary-logging-aurora/)\. 
++ If you plan to use CDC, turn on binary logging\. For more information on setting up binary logging for an Amazon RDS for MySQL database, see [Setting the binary logging format](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_LogAccess.MySQL.BinaryFormat.html) in the *Amazon RDS User Guide*\.
 + Ensure that the binary logs are available to AWS DMS\. Because AWS\-managed MySQL\-compatible databases purge the binary logs as soon as possible, you should increase the length of time that the logs remain available\. For example, to increase log retention to 24 hours, run the following command\. 
 
   ```
@@ -142,6 +148,7 @@ When using an AWS\-managed MySQL\-compatible database as a source for AWS DMS, m
 + Set the `binlog_format` parameter to `"ROW"`\.
 **Note**  
 For MariaDB, if the `binlog_format` parameter is switched to `ROW` for replication purposes, subsequent binary logs are still created in `MIXED` format\. This can prevent DMS from performing change data capture\. So, when switching the `binlog_format` parameter for MariaDB, perform a reboot or start then stop your replication task\.
++ Set the `binlog_row_image` parameter to `"Full"`\. 
 + Set the `binlog_checksum` parameter to `"NONE"`\. For more information about setting parameters in Amazon RDS MySQL, see [Working with automated backups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.html) in the *Amazon RDS User Guide*\.
 + If you are using an Amazon RDS MySQL or Amazon RDS MariaDB read replica as a source, enable backups on the read replica\.
 
@@ -157,14 +164,14 @@ When using a MySQL database as a source, consider the following:
 +  The AUTO\_INCREMENT attribute on a column isn't migrated to a target database column\.
 +  Capturing changes when the binary logs aren't stored on standard block storage isn't supported\. For example, CDC doesn't work when the binary logs are stored on Amazon S3\.
 +  AWS DMS creates target tables with the InnoDB storage engine by default\. If you need to use a storage engine other than InnoDB, you must manually create the table and migrate to it using [do nothing](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_GettingStarted.html) mode\.
-+ You can't use Aurora MySQL read replicas as a source for AWS DMS unless your DMS migration task mode is **Migrate existing data**—full load only\.
++ You can't use Aurora MySQL replicas as a source for AWS DMS unless your DMS migration task mode is **Migrate existing data**—full load only\.
 +  If the MySQL\-compatible source is stopped during full load, the AWS DMS task doesn't stop with an error\. The task ends successfully, but the target might be out of sync with the source\. If this happens, either restart the task or reload the affected tables\.
 +  Indexes created on a portion of a column value aren't migrated\. For example, the index CREATE INDEX first\_ten\_chars ON customer \(name\(10\)\) isn't created on the target\.
 + In some cases, the task is configured to not replicate LOBs \("SupportLobs" is false in task settings or **Don't include LOB columns** is chosen in the task console\)\. In these cases, AWS DMS doesn't migrate any MEDIUMBLOB, LONGBLOB, MEDIUMTEXT, and LONGTEXT columns to the target\.
 
   BLOB, TINYBLOB, TEXT, and TINYTEXT columns aren't affected and are migrated to the target\.
 + Temporal data tables or system—versioned tables are not supported on MariaDB source and target databases\.
-+ If migrating between two Amazon RDS Aurora MySQL clusters, the RDS Aurora MySQL source endpoint must be a read/write instance, not a read replica instance\. 
++ If migrating between two Amazon RDS Aurora MySQL clusters, the RDS Aurora MySQL source endpoint must be a read/write instance, not a replica instance\. 
 + AWS DMS currently doesn't support compressed transaction log payloads introduced in MySQL 8\.0\.20\.
 + AWS DMS currently doesn't support views migration for MariaDB\.
 + AWS DMS doesn't support DDL changes for partitioned tables for MySQL\.
@@ -231,5 +238,4 @@ For additional information about AWS DMS data types, see [Data types for AWS Dat
 |  SET  |  WSTRING \(*length*\) Here, *length* is the total length of all values in the SET, including commas\.  | 
 
 **Note**  
-In some cases, you might specify the DATETIME and TIMESTAMP data types with a "zero" value \(that is, 0000\-00\-00\)\. If so, make sure that the target database in the replication task supports "zero" values for the DATETIME and TIMESTAMP data types\. Otherwise, these values are recorded as null on the target\.  
-AWS DMS supports the JSON data type in versions 3\.3\.1 and later\.
+In some cases, you might specify the DATETIME and TIMESTAMP data types with a "zero" value \(that is, 0000\-00\-00\)\. If so, make sure that the target database in the replication task supports "zero" values for the DATETIME and TIMESTAMP data types\. Otherwise, these values are recorded as null on the target\.

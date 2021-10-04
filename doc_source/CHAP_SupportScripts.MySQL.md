@@ -2,6 +2,8 @@
 
 Following, you can find the diagnostic support scripts available to analyze an on\-premises or Amazon RDS for MySQL\-compatible database in your AWS DMS migration configuration\. These scripts work with either a source or target endpoint\. The scripts are all written to run on the MySQL SQL command line\. 
 
+For information about installing the MySQL client, see [ Installing MySQL Shell](https://dev.mysql.com/doc/mysql-shell/8.0/en/mysql-shell-install.html) in the MySQL documentation\. For information about using the MySQL client, see [ Using MySQL Shell Commands](https://dev.mysql.com/doc/mysql-shell/8.0/en/mysql-shell-configuring.html) in the MySQL documentation\.
+
 Before running a script, ensure that the user account that you use has the necessary permissions to access your MySQL\-compatible database\. Use the following procedure to create a user account and provide the minimum permissions needed to run this script\.
 
 **To set up a user account with the minimum permissions to run these scripts**

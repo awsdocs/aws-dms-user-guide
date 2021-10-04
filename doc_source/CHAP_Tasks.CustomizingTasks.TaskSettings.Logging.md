@@ -1,8 +1,8 @@
 # Logging task settings<a name="CHAP_Tasks.CustomizingTasks.TaskSettings.Logging"></a>
 
-Logging uses Amazon CloudWatch to log information during the migration process\. Using logging task settings, you can specify which component activities are logged and what amount of information is written to the log\. Logging task settings are written to a JSON file\. 
+Logging uses Amazon CloudWatch to log information during the migration process\. Using logging task settings, you can specify which component activities are logged and what amount of information is written to the log\. Logging task settings are written to a JSON file\. For information about how to use a task configuration file to set task settings, see [Task settings example](CHAP_Tasks.CustomizingTasks.TaskSettings.md#CHAP_Tasks.CustomizingTasks.TaskSettings.Example)\. 
 
-You can enable CloudWatch logging in several ways\. You can select the `EnableLogging` option on the AWS Management Console when you create a migration task\. Or, you can set the `EnableLogging` option to `true` when creating a task using the AWS DMS API\. You can also specify `"EnableLogging": true` in the JSON of the logging section of task settings\.
+You can turn on CloudWatch logging in several ways\. You can select the `EnableLogging` option on the AWS Management Console when you create a migration task\. Or, you can set the `EnableLogging` option to `true` when creating a task using the AWS DMS API\. You can also specify `"EnableLogging": true` in the JSON of the logging section of task settings\.
 
 CloudWatch integrates with AWS Identity and Access Management \(IAM\), and you can specify which CloudWatch actions a user in your AWS account can perform\. For more information about working with IAM in CloudWatch, see [Identity and access management for amazon CloudWatch](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/auth-and-access-control-cw.html) and [Logging Amazon CloudWatch API calls](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/logging_cw_api_calls.html) in the *Amazon CloudWatch User Guide\.*
 

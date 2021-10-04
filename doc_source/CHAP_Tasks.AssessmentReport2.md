@@ -123,7 +123,7 @@ dms-customerId-customerDNS
 ```
 
 **Note**  
-By default, you can create up to 100 Amazon S3 buckets in each of your AWS accounts\. Since AWS DMS creates a bucket in your account, make sure it does not exceed your bucket limit\. Otherwise, the data type assessment will fail\.
+By default, you can create up to 100 Amazon S3 buckets in each of your AWS accounts\. Because AWS DMS creates a bucket in your account, make sure that it doesn't exceed your bucket limit\. Otherwise, the data type assessment fails\.
 
 All data type assessment reports for a given migration task are stored in a bucket folder named with the task identifier\. Each report's file name is the date of the data type assessment in the format yyyy\-mm\-dd\-hh\-mm\. You can view and compare previous data type assessment reports from the Amazon S3 Management Console\.
 

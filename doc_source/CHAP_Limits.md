@@ -32,8 +32,6 @@ For more information on the API request throttling quota and refresh rate, see [
 
 The 30,000\-GB quota for storage applies to all your AWS DMS replication instances in a given AWS Region\. This storage is used to cache changes if a target can't keep up with a source, and for storing log information\.
 
-The total amount of storage for all your replication instances in a given AWS Region is 30,000 GB\.
-
 ## Understanding API request throttling<a name="CHAP_Limits.Throttling"></a>
 
 AWS DMS supports a varying, but maximum API request quota of 100 API calls per second\. In other words, your API requests are throttled when they exceed this rate\. Also, you can be limited to fewer API calls per second, depending on how long it takes AWS DMS to refresh your quota before you make another API request\. This quota applies both when you make API calls directly and when they are made on your behalf as part of using the AWS DMS Management Console\.

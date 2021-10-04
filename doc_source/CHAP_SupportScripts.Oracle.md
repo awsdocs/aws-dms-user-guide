@@ -41,6 +41,7 @@ GRANT SELECT on GV$ASM_DISK_STAT to script_user;
 GRANT SELECT on GV$SESSION to script_user;
 GRANT SELECT on GV$SQL to script_user;
 GRANT SELECT on DBA_ENCRYPTED_COLUMNS to script_user;
+GRANT SELECT on DBA_PDBS to script_user;
 
 GRANT EXECUTE on dbms_utility to script_user;
 ```
@@ -78,7 +79,7 @@ exec rdsadmin.rdsadmin_util.grant_sys_object('GV_$ASM_DISK_STAT','script_user','
 exec rdsadmin.rdsadmin_util.grant_sys_object('GV_$SESSION','script_user','SELECT');
 exec rdsadmin.rdsadmin_util.grant_sys_object('GV_$SQL','script_user','SELECT');
 exec rdsadmin.rdsadmin_util.grant_sys_object('DBA_ENCRYPTED_COLUMNS','script_user','SELECT');
-
+exec rdsadmin.rdsadmin_util.grant_sys_object('DBA_PDBS','script_user','SELECT');
 
 exec rdsadmin.rdsadmin_util.grant_sys_object('DBMS_UTILITY','script_user','EXECUTE');
 ```

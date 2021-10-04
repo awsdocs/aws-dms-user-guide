@@ -1,6 +1,6 @@
 # Creating tasks for ongoing replication using AWS DMS<a name="CHAP_Task.CDC"></a>
 
-You can create an AWS DMS task that captures ongoing changes to the source data store\. You can do this capture while you are migrating your data\. You can also create a task that captures ongoing changes after you complete your initial \(full\-load\) migration to a supported target data store\. This process is called ongoing replication or change data capture \(CDC\)\. AWS DMS uses this process when replicating ongoing changes from a source data store\. This process works by collecting changes to the database logs using the database engine's native API\. 
+You can create an AWS DMS task that captures ongoing changes from the source data store\. You can do this capture while you are migrating your data\. You can also create a task that captures ongoing changes after you complete your initial \(full\-load\) migration to a supported target data store\. This process is called ongoing replication or change data capture \(CDC\)\. AWS DMS uses this process when replicating ongoing changes from a source data store\. This process works by collecting changes to the database logs using the database engine's native API\. 
 
 **Note**  
 You can migrate views using full\-load tasks only\. If your task is either a CDC\-only task or a full\-load task that starts CDC after it completes, the migration includes only tables from the source\. Using a full\-load\-only task, you can migrate views or a combination of tables and views\. For more information, see [ Specifying table selection and transformations rules using JSON](CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.md)\.
@@ -32,7 +32,7 @@ PostgreSQL as a source doesn't support a custom CDC start time\. This is because
 
 ### Determining a CDC native start point<a name="CHAP_Task.CDC.StartPoint.Native"></a>
 
-A *CDC native start point* is a point in the database engine's log that defines a time where you can begin CDC\. As an example, suppose that a bulk data dump has been applied to the target starting from a point in time\. In this case, you can look up the native start point for the ongoing replication\-only task from a point before the dump was taken\.
+A *CDC native start point* is a point in the database engine's log that defines a time where you can begin CDC\. As an example, suppose that a bulk data dump has already been applied to the target\. You can look up the native start point for the ongoing replication\-only task\. To avoid any data inconsistencies, carefully choose the start point for the replication\-only task\. DMS captures transactions that started after the chosen CDC start point\.
 
 Following are examples of how you can find the CDC native start point from supported source engines:
 
@@ -91,11 +91,14 @@ mysql> show master status;
 
  An ongoing replication task migrates changes, and AWS DMS caches checkpoint information specific to AWS DMS from time to time\. The checkpoint that AWS DMS creates contains information so the replication engine knows the recovery point for the change stream\. You can use the checkpoint to go back in the timeline of changes and recover a failed migration task\. You can also use a checkpoint to start another ongoing replication task for another target at any given point in time\.
 
-You can get the checkpoint information in one of the following two ways: 
-+ Run the API operation `DescribeReplicationTasks` and view the results\. You can filter the information by task and search for the checkpoint\. You can retrieve the latest checkpoint when the task is in stopped or failed state\. 
+You can get the checkpoint information in one of the following three ways: 
++ Run the API operation `DescribeReplicationTasks` and view the results\. You can filter the information by task and search for the checkpoint\. You can retrieve the latest checkpoint when the task is in stopped or failed state\. This information is lost if the task is deleted\.
 + View the metadata table named `awsdms_txn_state` on the target instance\. You can query the table to get checkpoint information\. To create the metadata table, set the `TaskRecoveryTableEnabled` parameter to `Yes` when you create a task\. This setting causes AWS DMS to continuously write checkpoint information to the target metadata table\. This information is lost if a task is deleted\.
 
   For example, the following is a sample checkpoint in the metadata table: `checkpoint:V1#34#00000132/0F000E48#0#0#*#0#121`
++ From the navigation pane, choose** Database migration tasks**, and choose your parent task from the list that appears on the Database migration tasks page\. Your parent task page opens, showing the overview details\. Find the checkpoint value under Change data capture \(CDC\), Change data capture \(CDC\) start position, and Change data capture \(CDC\) recovery checkpoint\. The checkpoint value appears similar to the following:
+
+  `checkpoint:V1#1#000004AF/B00000D0#0#0#*#0#0`
 
 ### Stopping a task at a commit or server time point<a name="CHAP_Task.CDC.StopPoint"></a>
 
@@ -116,7 +119,7 @@ AWS DMS bidirectional replication isn't intended as a full multi\-master solutio
 
 Use bidirectional replication for situations where data on different nodes is operationally segregated\. In other words, suppose that you have a data element changed by an application operating on node A, and that node A performs bidirectional replication with node B\. That data element on node A is never changed by any application operating on node B\.
 
-AWS DMS versions 3\.3\.1 and higher support bidirectional replication on these database engines: 
+AWS DMS supports bidirectional replication on these database engines: 
 + Oracle 
 + SQL Server 
 + MySQL 

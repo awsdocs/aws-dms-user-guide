@@ -21,8 +21,6 @@ When AWS DMS sets DynamoDB parameter values for a migration task, the default Re
 The Write Capacity Units \(WCU\) parameter value is also set, but its value depends on several other settings:  
 The default value for the WCU parameter is 200\.
 If the `ParallelLoadThreads` task setting is set greater than 1 \(the default is 0\), then the WCU parameter is set to 200 times the `ParallelLoadThreads` value\.
-In the US East \(N\. Virginia\) Region \(us\-east\-1\), the largest possible WCU parameter value is 40,000\. If the AWS Region is us\-east\-1 and the WCU parameter value is greater than 40,000, the WCU parameter value is set to 40,000\.
-In AWS Regions other than us\-east\-1, the largest possible WCU parameter value is 10,000\. For any AWS Region other than us\-east\-1, if the WCU parameter value is set greater than 10,000 the WCU parameter value is set to 10,000\.
 Standard AWS DMS usage fees apply to resources you use\.
 
 ## Migrating from a relational database to a DynamoDB table<a name="CHAP_Target.DynamoDB.RDBMS2DynamoDB"></a>
@@ -435,12 +433,30 @@ Another way to use column mapping is to use DynamoDB format as your document typ
 As an alternative to `dynamodb-map`, you can use `dynamodb-list` as the attribute\-sub\-type for attribute mapping, as shown in the following example\.
 
 ```
-                    {
-                    	"target-attribute-name": "ContactDetails",
-                    	"attribute-type": "document",
-                    	"attribute-sub-type": "dynamodb-list",
-                    	"value": ["${FirstName}", "${HomeAddress}", "${HomePhone}", "${WorkAddress}", "${WorkPhone}"]
-                    }
+{
+"target-attribute-name": "ContactDetailsList",
+"attribute-type": "document",
+"attribute-sub-type": "dynamodb-list",
+"value": {
+    "L": [
+            {
+                "N": "${FirstName}"
+            },
+            {   
+                "N": "${HomeAddress}"
+            },
+            {   
+                "N": "${HomePhone}"
+            },
+            {
+                "N": "${WorkAddress}"
+            },
+            {
+                "N": "${WorkPhone}"
+            }
+        ]   
+    }
+}
 ```
 
 ### Example 1: Using attribute mapping with object mapping<a name="CHAP_Target.DynamoDB.ColumnMappingExample1"></a>

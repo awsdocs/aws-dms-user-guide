@@ -6,9 +6,6 @@ You can use SSL to encrypt connections between your MySQL\-compatible endpoint a
 
 AWS DMS supports versions 5\.5, 5\.6, 5\.7, and 8\.0 of MySQL and Aurora MySQL\. In addition, AWS DMS supports MariaDB versions 10\.0\.24 to 10\.0\.28, 10\.1, 10\.2, 10\.3, 10\.4, and 10\.5\.
 
-**Note**  
-Support for MySQL 8\.0 as a target is available in AWS DMS versions 3\.3\.1 and later\.
-
 You can use the following MySQL\-compatible databases as targets for AWS DMS:
 + MySQL Community Edition
 + MySQL Standard Edition
@@ -55,7 +52,7 @@ When using a MySQL database as a target, AWS DMS doesn't support the following:
 + The data definition language \(DDL\) statements TRUNCATE PARTITION, DROP TABLE, and RENAME TABLE\.
 + Using an `ALTER TABLE table_name ADD COLUMN column_name` statement to add columns to the beginning or the middle of a table\.
 + When only the LOB column in a source table is updated, AWS DMS doesn't update the corresponding target column\. The target LOB is only updated if at least one other column is updated in the same transaction\.
-+ When loading data to a MySQL\-compatible target in a full load task, AWS DMS doesn't report duplicate key errors in the task log\.
++ When loading data to a MySQL\-compatible target in a full load task, AWS DMS doesn't report duplicate key errors in the task log\. This is because of the way that MySQL handles CSV load data\.
 + When you update a column's value to its existing value, MySQL\-compatible databases return a `0 rows affected` warning\. Although this behavior isn't technically an error, it is different from how the situation is handled by other database engines\. For example, Oracle performs an update of one row\. For MySQL\-compatible databases, AWS DMS generates an entry in the awsdms\_apply\_exceptions control table and logs the following warning\.
 
   ```
@@ -63,6 +60,7 @@ When using a MySQL database as a target, AWS DMS doesn't support the following:
   the target database. See awsdms_apply_exceptions table for details.
   ```
 + Aurora Serverless is available as a target for Amazon Aurora version 1, compatible with MySQL version 5\.6\. Aurora Serverless is available as a target for Amazon Aurora version 2, compatible with MySQL version 5\.7\. \(Select Aurora MySQL version 2\.07\.1 to be able to use Aurora Serverless with MySQL 5\.7 compatibility\.\) For more information about Aurora Serverless, see [Using Amazon Aurora Serverless](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless.html) in the *Amazon Aurora User Guide*\.
++ Using an Aurora Reader endpoint\. You can't use an Aurora for MySQL reader endpoint because the `read_only` parameter can't be changed\. You can use a Amazon RDS for MySQL reader endpoint if the `read_only` parameter is set to 0\.
 
 ## Extra connection attributes when using a MySQL\-compatible database as a target for AWS DMS<a name="CHAP_Target.MySQL.ConnectionAttrib"></a>
 

@@ -21,17 +21,17 @@ To help increase the speed of the transfer, AWS DMS supports a multithreaded ful
 If you don't change `ParallelLoadThreads` from its default \(0\), AWS DMS transfers a single record at a time\. This approach puts undue load on your Amazon ES cluster\. Make sure that you set this option to 1 or more\.
 + `ParallelLoadBufferSize` – Use this option to specify the maximum number of records to store in the buffer that the parallel load threads use to load data to the Amazon ES target\. The default value is 50\. The maximum value is 1,000\. Use this setting with `ParallelLoadThreads`\. `ParallelLoadBufferSize` is valid only when there is more than one thread\.
 
-For more information on how DMS loads an Amazon ES cluster using multithreading, see the AWS blog post [Scale Amazon Elasticsearch Service for AWS Database Migration Service migrations](http://aws.amazon.com/blogs/database/scale-amazon-elasticsearch-service-for-aws-database-migration-service-migrations/)\. 
+For more information on how DMS loads an Amazon ES cluster using multithreading, see the AWS blog post [Scale Amazon Elasticsearch Service Service for AWS Database Migration Service migrations](http://aws.amazon.com/blogs/database/scale-amazon-elasticsearch-service-for-aws-database-migration-service-migrations/)\. 
 
 **Multithreaded CDC load task settings**
 
-You can improve the performance of change data capture \(CDC\) for an Amazon ES target cluster using task settings to modify the behavior of the `PutRecords` API call\. To do this, you can specify the number of concurrent threads, queues per thread, and the number of records to store in a buffer using `ParallelApply*` task settings\. For example, suppose you want to perform a CDC load and apply 128 threads in parallel\. You also want to access 64 queues per thread, with 50 records stored per buffer\. 
+You can improve the performance of change data capture \(CDC\) for an Amazon ES target cluster using task settings to modify the behavior of the `PutRecords` API call\. To do this, you can specify the number of concurrent threads, queues per thread, and the number of records to store in a buffer using `ParallelApply*` task settings\. For example, suppose you want to perform a CDC load and apply 32 threads in parallel\. You also want to access 64 queues per thread, with 50 records stored per buffer\. 
 **Note**  
 Support for the use of `ParallelApply*` task settings during CDC to Amazon Elasticsearch Service target endpoints is available in AWS DMS versions 3\.4\.0 and later\.
 
 To promote CDC performance, AWS DMS supports these task settings:
 + `ParallelApplyThreads` – Specifies the number of concurrent threads that AWS DMS uses during a CDC load to push data records to a Amazon ES target endpoint\. The default value is zero \(0\) and the maximum value is 32\.
-+ `ParallelApplyBufferSize` – Specifies the maximum number of records to store in each buffer queue for concurrent threads to push to a Amazon ES target endpoint during a CDC load\. The default value is 50 and the maximum value is 1,000\. Use this option when `ParallelApplyThreads` specifies more than one thread\. 
++ `ParallelApplyBufferSize` – Specifies the maximum number of records to store in each buffer queue for concurrent threads to push to a Amazon ES target endpoint during a CDC load\. The default value is 100 and the maximum value is 1,000\. Use this option when `ParallelApplyThreads` specifies more than one thread\. 
 + `ParallelApplyQueuesPerThread` – Specifies the number of queues that each thread accesses to take data records out of queues and generate a batch load for a Amazon ES endpoint during CDC\.
 
 When using `ParallelApply*` task settings, the `partition-key-type` default is the `primary-key` of the table, not `schema-name.table-name`\.

@@ -1,6 +1,6 @@
 # Using a PostgreSQL database as a target for AWS Database Migration Service<a name="CHAP_Target.PostgreSQL"></a>
 
-You can migrate data to PostgreSQL databases using AWS DMS, either from another PostgreSQL database or from one of the other supported databases\. AWS DMS supports a PostgreSQL version 9\.4 and later \(for versions 9\.x\), 10\.x, 11\.x, 12\.x, and 13\.x \(for PREVIEW use only\) database as a target for these types of databases:
+You can migrate data to PostgreSQL databases using AWS DMS, either from another PostgreSQL database or from one of the other supported databases\. AWS DMS supports a PostgreSQL version 9\.4 and later \(for versions 9\.x\), 10\.x, 11\.x, 12\.x, and 13\.x database as a target for these types of databases:
 + On\-premises databases
 + Databases on an EC2 instance
 + Databases on an Amazon RDS DB instance

@@ -6,9 +6,6 @@ For on\-premises and Amazon EC2 instance databases, AWS DMS supports as a target
 
 For Amazon RDS instance databases, AWS DMS supports as a target SQL Server versions 2008R2, 2012, 2014, 2016, 2017, and 2019\. The Enterprise, Standard, Workgroup, Developer, and Web editions are supported by AWS DMS\.
 
-**Note**  
-Support for Microsoft SQL Server version 2019 as a target is available in AWS DMS versions 3\.3\.2 and later\.
-
 For additional details on working with AWS DMS and SQL Server target databases, see the following\.
 
 ## Limitations on using SQL Server as a target for AWS Database Migration Service<a name="CHAP_Target.SQLServer.Limitations"></a>
@@ -18,7 +15,7 @@ The following limitations apply when using a SQL Server database as a target for
 + When replicating tables with SQL Server spatial data types \(GEOMETRY and GEOGRAPHY\), AWS DMS replaces any spatial reference identifier \(SRID\) that you might have inserted with the default SRID\. The default SRID is 0 for GEOMETRY and 4326 for GEOGRAPHY\.
 + Temporal tables are not supported\. Migrating temporal tables may work with a replication\-only task in transactional apply mode if those tables are manually created on the target\.
 + Currently, `boolean` data types in a PostgreSQL source are migrated to a SQLServer target as the `bit` data type with inconsistent values\. As a workaround, precreate the table with a `VARCHAR(1)` data type for the column \(or let AWS DMS create the table\)\. Then have downstream processing treat an "F" as False and a "T" as True\.
-+ DMS doesn't support bring your own license \(BYOL\) for Microsoft SQL Server\. For more information, see [Amazon Web Services and Microsoft, Frequently Asked Questions](https://aws.amazon.com/windows/faq/)\.
++ AWS DMS doesn't support change processing to set column nullability \(using the `ALTER COLUMN [SET|DROP] NOT NULL` clause with `ALTER TABLE` statements\)\.
 
 ## Security requirements when using SQL Server as a target for AWS Database Migration Service<a name="CHAP_Target.SQLServer.Security"></a>
 

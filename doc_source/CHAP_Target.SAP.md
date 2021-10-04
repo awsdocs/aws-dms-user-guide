@@ -10,6 +10,12 @@ Before you begin to work with a SAP ASE database as a target for AWS DMS, make s
 + Provide SAP ASE account access to the AWS DMS user\. This user must have read/write privileges in the SAP ASE database\.
 + In some cases, you might replicate to SAP ASE version 15\.7 installed on an Amazon EC2 instance on Microsoft Windows that is configured with non\-Latin characters \(for example, Chinese\)\. In such cases, AWS DMS requires SAP ASE 15\.7 SP121 to be installed on the target SAP ASE machine\.
 
+## Limitations when using a SAP ASE database as a target for AWS DMS<a name="CHAP_Target.SAP.Limitations"></a>
+
+The following limitations apply when using an SAP ASE database as a target for AWS DMS:
++ AWS DMS doesn't support tables that include fields with the following data types\. Replicated columns with these data types show as null\. 
+  + User\-defined type \(UDT\)
+
 ## Extra connection attributes when using SAP ASE as a target for AWS DMS<a name="CHAP_Target.SAP.ConnectionAttrib"></a>
 
 You can use extra connection attributes to configure your SAP ASE target\. You specify these settings when you create the target endpoint\. If you have multiple connection attribute settings, separate them from each other by semicolons with no additional white space\. 
@@ -48,6 +54,3 @@ For additional information about AWS DMS data types, see [Data types for AWS Dat
 | BLOB | IMAGE | 
 | CLOB | UNITEXT | 
 | NCLOB | TEXT | 
-
-AWS DMS does not support tables that include fields with the following data types\. Replicated columns with these data types show as null\. 
-+ User\-defined type \(UDT\)

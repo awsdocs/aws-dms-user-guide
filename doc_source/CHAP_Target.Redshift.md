@@ -28,7 +28,7 @@ For additional details on working with Amazon Redshift as a target for AWS DMS, 
 + [Creating and using AWS KMS keys to encrypt Amazon Redshift target data](#CHAP_Target.Redshift.KMSKeys)
 + [Endpoint settings when using Amazon Redshift as a target for AWS DMS](#CHAP_Target.Redshift.EndpointSettings)
 + [Extra connection attributes when using Amazon Redshift as a target for AWS DMS](#CHAP_Target.Redshift.ConnectionAttrib)
-+ [Multithreaded CDC load task settings for Amazon Redshift](#CHAP_Target.Redshift.ParallelApply)
++ [Multithreaded task settings for Amazon Redshift](#CHAP_Target.Redshift.ParallelApply)
 + [Target data types for Amazon Redshift](#CHAP_Target.Redshift.DataTypes)
 
 ## Prerequisites for using an Amazon Redshift database as a target for AWS Database Migration Service<a name="CHAP_Target.Redshift.Prerequisites"></a>
@@ -106,6 +106,7 @@ When using an Amazon Redshift database as a target, AWS DMS doesn't support the 
   ```
   Update on table 1 changes PK to a PK that was previously updated in the same bulk update.
   ```
++ DMS doesn't support custom DNS names when configuring an endpoint for a Redshift cluster, and you need to use the Amazon provided DNS name\. Since the Amazon Redshift cluster must be in the same AWS account and Region as the replication instance, validation fails if you use a custom DNS endpoint\.
 
 ## Configuring an Amazon Redshift database as a target for AWS Database Migration Service<a name="CHAP_Target.Redshift.Configuration"></a>
 
@@ -152,7 +153,7 @@ You can encrypt your target data pushed to Amazon S3 before it is copied to Amaz
 
 To encrypt Amazon Redshift target data using a KMS key, you need an AWS Identity and Access Management \(IAM\) role that has permissions to access Amazon Redshift data\. This IAM role is then accessed in a policy \(a key policy\) attached to the encryption key that you create\. You can do this in your IAM console by creating the following:
 + An IAM role with an AWS\-managed policy\.
-+ A KMS encryption key with a key policy that references this role\.
++ A KMS key with a key policy that references this role\.
 
 The following procedures describe how to do this\.
 
@@ -178,7 +179,7 @@ The following procedures describe how to do this\.
 
 You have now created the new role to access Amazon Redshift resources for encryption with a specified name, for example `DMS-Redshift-endpoint-access-role`\.
 
-**To create an AWS KMS encryption key with a key policy that references your IAM role**
+**To create a KMS key with a key policy that references your IAM role**
 **Note**  
 For more information about how AWS DMS works with AWS KMS encryption keys, see [Setting an encryption key and specifying AWS KMS permissions](CHAP_Security.md#CHAP_Security.EncryptionKey)\.
 
@@ -294,7 +295,7 @@ When you create this key, you can only create a symmetric key, because all AWS s
      ]
    ```
 
-1. Choose **Finish**\. The **Encryption keys** page opens with a message indicating that your master encryption key has been created\.
+1. Choose **Finish**\. The **Encryption keys** page opens with a message indicating that your AWS KMS key has been created\.
 
 You have now created a new KMS key with a specified alias \(for example, `DMS-Redshift-endpoint-encryption-key`\)\. This key enables AWS DMS to encrypt Amazon Redshift target data\.
 
@@ -308,7 +309,7 @@ You can use Amazon Redshift target endpoint settings to configure the following:
 + A custom AWS KMS data encryption key\. You can then use this key to encrypt your data pushed to Amazon S3 before it is copied to Amazon Redshift\.
 + A custom S3 bucket as intermediate storage for data migrated to Amazon Redshift\.
 
-### KMS Key settings for data encryption<a name="CHAP_Target.Redshift.EndpointSettings.KMSkeys"></a>
+### KMS key settings for data encryption<a name="CHAP_Target.Redshift.EndpointSettings.KMSkeys"></a>
 
 The following examples show configuring a custom KMS key to encrypt your data pushed to S3\. To start, you might make the following `create-endpoint` call using the AWS CLI\.
 
@@ -338,7 +339,7 @@ You can also use the CLI `modify-endpoint` command to change the value of the `E
 
 ### Amazon S3 bucket settings<a name="CHAP_Target.Redshift.EndpointSettings.S3Buckets"></a>
 
-When you migrate data to an Amazon Redshift target endpoint, AWS DMS uses a default Amazon S3 bucket as intermediate task storage before copying the migrated data to Amazon Redshift\. For example, the examples shown for creating an Amazon Redshift target endpoint with a KMS data encryption key use this default S3 bucket \(see [KMS Key settings for data encryption](#CHAP_Target.Redshift.EndpointSettings.KMSkeys)\)\. 
+When you migrate data to an Amazon Redshift target endpoint, AWS DMS uses a default Amazon S3 bucket as intermediate task storage before copying the migrated data to Amazon Redshift\. For example, the examples shown for creating an Amazon Redshift target endpoint with an AWS KMS data encryption key use this default S3 bucket \(see [KMS key settings for data encryption](#CHAP_Target.Redshift.EndpointSettings.KMSkeys)\)\. 
 
 You can instead specify a custom S3 bucket for this intermediate storage by including the following parameters in the value of your `--redshift-settings` option on the AWS CLI `create-endpoint` command:
 + `BucketName` – A string you specify as the name of the S3 bucket storage\.
@@ -365,9 +366,23 @@ The following table shows the extra connection attributes available when Amazon 
 
 [\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_Target.Redshift.html)
 
-## Multithreaded CDC load task settings for Amazon Redshift<a name="CHAP_Target.Redshift.ParallelApply"></a>
+## Multithreaded task settings for Amazon Redshift<a name="CHAP_Target.Redshift.ParallelApply"></a>
 
-You can improve the performance of change data capture \(CDC\) for Amazon Redshift target endpoints by using `ParallelApply*` task settings\. They enable you to specify the number of concurrent threads and the number of records to store in a buffer\.
+You can improve performance of full load and change data capture \(CDC\) tasks for an Amazon Redshift target endpoint by using multithreaded task settings\. They enable you to specify the number of concurrent threads and the number of records to store in a buffer\.
+
+### Multithreaded full load task settings for Amazon Redshift<a name="CHAP_Target.Redshift.ParallelApply.FullLoad"></a>
+
+To promote full load performance, you can use the following `ParallelLoad*` task settings:
++ `ParallelLoadThreads` – Specifies the number of concurrent threads that DMS uses during a full load to push data records to an Amazon Redshift target endpoint\. The default value is zero \(0\) and the maximum value is 32\.
+
+  You can use the `enableParallelBatchInMemoryCSVFiles` attribute set to `false` when using the `ParallelLoadThreads` task setting\. The attribute improves performance of larger multithreaded full load tasks by having DMS write to disk instead of memory\. The default value is `true`\.
++ `ParallelLoadBufferSize` – Specifies the maximum data record requests while using parallel load threads with Redshift target\. The default value is 100 and the maximum value is 1,000\. We recommend you use this option when ParallelLoadThreads > 1 \(greater than one\)\.
+
+**Note**  
+Support for the use of `ParallelLoad*` task settings during FULL LOAD to Amazon Redshift target endpoints is available in AWS DMS versions 3\.4\.5 and later\.  
+The `ReplaceInvalidChars` Redshift endpoint setting is not supported for use during change data capture \(CDC\) or during a parallel load enabled FULL LOAD migration task\. It is supported for FULL LOAD migration when parallel load isn’t enabled\. For more information see [RedshiftSettings](https://docs.aws.amazon.com/dms/latest/APIReference/API_RedshiftSettings.html) in the *AWS Database Migration Service API Reference*
+
+### Multithreaded CDC task settings for Amazon Redshift<a name="CHAP_Target.Redshift.ParallelApply.CDC"></a>
 
 To promote CDC performance, you can use the following `ParallelApply*` task settings:
 + `ParallelApplyThreads` – Specifies the number of concurrent threads that AWS DMS uses during a CDC load to push data records to a Amazon Redshift target endpoint\. The default value is zero \(0\) and the maximum value is 32\.

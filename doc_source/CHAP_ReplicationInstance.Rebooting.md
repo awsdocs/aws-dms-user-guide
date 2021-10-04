@@ -2,7 +2,7 @@
 
 You can reboot an AWS DMS replication instance to restart the replication engine\. A reboot results in a momentary outage for the replication instance, during which the instance status is set to **Rebooting**\. If the AWS DMS instance is configured for Multi\-AZ, the reboot can be conducted with a failover\. An AWS DMS event is created when the reboot is completed\.
 
-If your AWS DMS instance is a Multi\-AZ deployment, you can force a failover from one AWS Availability Zone to another when you reboot\. When you force a failover of your AWS DMS instance, AWS DMS automatically switches to a standby instance in another Availability Zone\. Rebooting with failover is beneficial when you want to simulate a failure of an AWS DMS instance for testing purposes\. 
+If your AWS DMS instance is a Multi\-AZ deployment, you can force a planned failover from one AWS Availability Zone to another when you reboot\. When you force a planned failover of your AWS DMS instance, AWS DMS closes out active connections on the current instance prior to automatically switching to a standby instance in another Availability Zone\. Rebooting with a planned failover helps you simulate a planned failover event of an AWS DMS instance, such as when scaling the replication instance class\.
 
 **Note**  
 After a reboot forces a failover from one Availability Zone to another, the Availability Zone change might not be reflected for several minutes\. This lag appears in the AWS Management Console, and in calls to the AWS CLI and AWS DMS API\.

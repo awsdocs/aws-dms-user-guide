@@ -12,5 +12,5 @@ The following procedure assumes that you have chosen the AWS DMS console wizard\
    The following table lists the unsupported characters in endpoint passwords for the listed database engines\. If you want to use commas \(,\) in your endpoint passwords, use the Secrets Manager support provided in AWS DMS to authenticate access to your AWS DMS instances\. For more information, see [Using secrets to access AWS Database Migration Service endpoints](CHAP_Security.md#security_iam_secretsmanager)\.    
 [\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_Endpoints.Creating.html)
 
-1. Choose the **Advanced** tab to set values for **Extra connection attributes** and **KMS master key** if you need them\. You can test the endpoint connection by choosing **Run test**\. The following table describes the settings\.    
+1. Choose the **Advanced** tab to set values for **Extra connection attributes** and **AWS KMS key ** if you need them\. You can test the endpoint connection by choosing **Run test**\. The following table describes the settings\.    
 [\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_Endpoints.Creating.html)

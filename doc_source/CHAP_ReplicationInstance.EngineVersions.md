@@ -21,7 +21,7 @@ You can upgrade an AWS DMS replication instance using the AWS Management Console
 1. For **Replication engine version**, choose the version number you want, and then choose **Modify**\.
 
 **Note**  
-Upgrading the replication instance takes several minutes\. When the instance is ready, its status changes to **available**\.
+We recommend that you stop all tasks before upgrading the Replication Instance\. Upgrading the replication instance takes several minutes\. When the instance is ready, its status changes to **available**\.
 
 ## Upgrading the engine version using the AWS CLI<a name="Upgrading.CLI"></a>
 
@@ -57,7 +57,7 @@ You can upgrade an AWS DMS replication instance using the AWS CLI, as follows\.
 
    Replace *arn* in the preceding with the actual replication instance ARN from the previous step\. 
 
-   Replace *n\.n\.n *with the engine version number that you want, for example: `2.2.1`
+   Replace *n\.n\.n *with the engine version number that you want, for example: `3.4.5`
 
 **Note**  
 Upgrading the replication instance takes several minutes\. You can view the replication instance status using the following command\.  

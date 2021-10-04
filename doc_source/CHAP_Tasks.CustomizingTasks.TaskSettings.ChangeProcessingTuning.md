@@ -1,6 +1,6 @@
 # Change processing tuning settings<a name="CHAP_Tasks.CustomizingTasks.TaskSettings.ChangeProcessingTuning"></a>
 
-The following settings determine how AWS DMS handles changes for target tables during change data capture \(CDC\)\. Several of these settings depend on the value of the target metadata parameter `BatchApplyEnabled`\. For more information on the `BatchApplyEnabled` parameter, see [Target metadata task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.TargetMetadata.md)\.
+The following settings determine how AWS DMS handles changes for target tables during change data capture \(CDC\)\. Several of these settings depend on the value of the target metadata parameter `BatchApplyEnabled`\. For more information on the `BatchApplyEnabled` parameter, see [Target metadata task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.TargetMetadata.md)\. For information about how to use a task configuration file to set task settings, see [Task settings example](CHAP_Tasks.CustomizingTasks.TaskSettings.md#CHAP_Tasks.CustomizingTasks.TaskSettings.Example)\.
 
 Change processing tuning settings include the following:
 

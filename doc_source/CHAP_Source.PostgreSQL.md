@@ -1,6 +1,6 @@
 # Using a PostgreSQL database as an AWS DMS source<a name="CHAP_Source.PostgreSQL"></a>
 
-You can migrate data from one or many PostgreSQL databases using AWS DMS\. With a PostgreSQL database as a source, you can migrate data to either another PostgreSQL database or one of the other supported databases\. AWS DMS supports a PostgreSQL version 9\.4 and later \(for versions 9\.x\), 10\.x, 11\.x, 12\.x, and 13\.x \(for PREVIEW use only\) database as a source for these types of databases: 
+You can migrate data from one or many PostgreSQL databases using AWS DMS\. With a PostgreSQL database as a source, you can migrate data to either another PostgreSQL database or one of the other supported databases\. AWS DMS supports a PostgreSQL version 9\.4 and later \(for versions 9\.x\), 10\.x, 11\.x, 12\.x, and 13\.x database as a source for these types of databases: 
 + On\-premises databases
 + Databases on an Amazon EC2 instance
 + Databases on an Amazon RDS DB instance
@@ -11,9 +11,8 @@ You can migrate data from one or many PostgreSQL databases using AWS DMS\. With 
 
 |  PostgreSQL source version  |  AWS DMS version to use  | 
 | --- | --- | 
-|  9\.x, 10\.x, 11\.x  |  Use any available AWS DMS version\.  | 
-|  12\.x  |  Use AWS DMS version 3\.3\.3 and above\.  | 
-|  13\.x \(Preview\)  |  Use AWS DMS version 3\.4\.3 and above\. AWS DMS supports PostgreSQL 13\.x as a source endpoint for PREVIEW use only\. Use DMS version 3\.4\.3 and higher to prototype and test data migration from a PostgreSQL 13\.x endpoint\. We don't recommend use of PostgreSQL 13\.x as a target endpoint in production environments\.  | 
+|  9\.x, 10\.x, 11\.x, 12\.x  |  Use any available AWS DMS version\.  | 
+|  13\.x  |  Use AWS DMS version 3\.4\.3 and above\.  | 
 
 You can use Secure Socket Layers \(SSL\) to encrypt connections between your PostgreSQL endpoint and the replication instance\. For more information on using SSL with a PostgreSQL endpoint, see [Using SSL with AWS Database Migration Service](CHAP_Security.md#CHAP_Security.SSL)\.
 
@@ -82,7 +81,7 @@ AWS DMS supports change data capture \(CDC\) using logical replication\. To enab
 
   The `wal_sender_timeout` parameter ends replication connections that are inactive longer than the specified number of milliseconds\. Although the default is 60 seconds, we recommend that you set this parameter to zero\. Doing this turns off the timeout mechanism\.
 
-Some parameters are static, and you can only set them at server start\. Any changes to their entries in the configuration file \(for a self\-managed database\) or DB parameter group \(for an RDS PostgreSQL database\) are ignored until the server is restarted\. For more information, see the [PostgreSQL documentation](https://www.postgresql.org/docs/current/intro-whatis.html)\.
+Some parameters are static, and you can only set them at server start\. Any changes to their entries in the configuration file \(for a self\-managed database\) or DB parameter group \(for an RDS for PostgreSQL database\) are ignored until the server is restarted\. For more information, see the [PostgreSQL documentation](https://www.postgresql.org/docs/current/intro-whatis.html)\.
 
 For more information about enabling CDC, see [Enabling change data capture \(CDC\) using logical replication](#CHAP_Source.PostgreSQL.Security)\.
 
@@ -201,7 +200,7 @@ grant all on public.awsdms_ddl_audit_c_key_seq to public;
 
 ## Enabling change data capture \(CDC\) using logical replication<a name="CHAP_Source.PostgreSQL.Security"></a>
 
-You can use PostgreSQL's native logical replication feature to enable change data capture \(CDC\) during database migration for PostgreSQL sources\. You can use this feature with a self\-managed PostgreSQL and also an Amazon RDS for PostgreSQL DB instance\. This approach reduces downtime and help ensure that the target database is in sync with the source PostgreSQL database\.
+You can use PostgreSQL's native logical replication feature to enable change data capture \(CDC\) during database migration for PostgreSQL sources\. You can use this feature with a self\-managed PostgreSQL and also an Amazon RDS for PostgreSQL SQL DB instance\. This approach reduces downtime and help ensure that the target database is in sync with the source PostgreSQL database\.
 
 AWS DMS supports CDC for PostgreSQL tables with primary keys\. If a table doesn't have a primary key, the write\-ahead logs \(WAL\) don't include a before image of the database row\. In this case, DMS can't update the table\. Here, you can use additional configuration settings and use table replica identity as a workaround\. However, this approach can generate extra logs\. We recommend that you use table replica identity as a workaround only after careful testing\. For more information, see [Additional configuration settings when using a PostgreSQL database as a DMS source](#CHAP_Source.PostgreSQL.Advanced)\.
 
@@ -236,7 +235,7 @@ After logical replication is enabled on your PostgreSQL source database, use the
 
    1. Set the correct parameter:
       + For self\-managed PostgreSQL databases, set the database parameter `shared_preload_libraries= 'pglogical'`\.
-      + For Amazon RDS for PostgreSQL and Amazon Aurora PostgreSQL\-Compatible Edition databases, set the parameter `shared_preload_libraries` to `pglogical` in the same RDS parameter group\.
+      + For PostgreSQL on Amazon RDS and Amazon Aurora PostgreSQL\-Compatible Edition databases, set the parameter `shared_preload_libraries` to `pglogical` in the same RDS parameter group\.
 
    1. Restart your PostgreSQL source database\.
 
@@ -266,7 +265,6 @@ After logical replication is enabled on your PostgreSQL source database, use the
    ```
    SELECT * FROM pg_create_logical_replication_slot('test_slot', 'pglogical');
                            
-   select pglogical.create_replication_set('itest_slot', true, false, false, true);
    select pglogical.create_replication_set('test_slot', false, true, true, false);
    ```
 
@@ -317,6 +315,58 @@ The following procedure walks through this approach in more detail\.
    + The `cdc-start-position` option is set to a start position value\. To find this start position, either query the `pg_replication_slots` view on your source database or view the console details for the parent task in step 1\. For more information, see [Determining a CDC native start point](CHAP_Task.CDC.md#CHAP_Task.CDC.StartPoint.Native)\.
 
    When this CDC task runs, AWS DMS raises an error if the specified logical replication slot doesn't exist\. It also raises an error if the task isn't created with a valid setting for `cdc-start-position`\.
+
+When using native CDC start points with the pglogical plugin and you want to use a new replication slot, complete the setup steps following before creating a CDC task\. 
+
+**To use a new replication slot not previously created as part of another DMS task**
+
+1. Create a replication slot\.
+
+   ```
+   SELECT * FROM pg_create_logical_replication_slot('replication_slot_name', 'pglogical');
+   ```
+
+1. Create a pglogical node\.
+
+   ```
+   SELECT pglogical.create_node(node_name := 'node_name', dsn := 'your_dsn_name');
+   ```
+
+1. Create replication sets\.
+
+   ```
+   select pglogical.create_replication_set('replication_slot_name', false, true, true, false);
+   select pglogical.create_replication_set('ireplication_slot_name', true, false, false, true);
+   ```
+
+1. Add a table to the replication set\.
+
+   ```
+   select pglogical.replication_set_add_table('replication_slot_name', 'schemaname.tablename', true);
+   select pglogical.replication_set_add_table('ireplication_slot_name', 'schemaname.tablename', true);
+   ```
+
+   As shown in the example following\.
+
+   ```
+   SELECT * FROM pg_create_logical_replication_slot('test_slot', 'pglogical');
+   
+   SELECT pglogical.create_node(node_name := 'test_node', dsn := 'your_dsn_name');
+   
+   select pglogical.create_replication_set('test_slot', false, true, true, false);
+   select pglogical.create_replication_set('itest_slot', true, false, false, true);
+   
+   select pglogical.replication_set_add_table('test_slot', 'schemaname.tablename', true);
+   select pglogical.replication_set_add_table('itest_slot', 'schemaname.tablename', true);
+   ```
+
+1. Set the extra connection attribute \(ECA\) following when you create your source endpoint\.
+
+   ```
+   PluginName=PGLOGICAL;slotName=slot_name;
+   ```
+
+You can now create a CDC only task with a PostgreSQL native start point using the new replication slot\.
 
 ## Migrating from PostgreSQL to PostgreSQL using AWS DMS<a name="CHAP_Source.PostgreSQL.Homogeneous"></a>
 
@@ -474,7 +524,7 @@ The following limitations apply when using PostgreSQL as a source for AWS DMS:
   $$;
   ```
 + Currently, `boolean` data types in a PostgreSQL source are migrated to a SQL Server target as `bit` data type with inconsistent values\. As a workaround, precreate the table with a `VARCHAR(1)` data type for the column \(or have AWS DMS create the table\)\. Then have downstream processing treat an "F" as False and a "T" as True\.
-+ AWS DMS doesn't support change processing of TRUNCATE operations\.
++ AWS DMS doesn't support change processing of TRUNCATE operations for PostgreSQL version 11\.x or lower\.
 + The OID LOB data type isn't migrated to the target\.
 + If your source is a PostgreSQL database that is on\-premises or on an Amazon EC2 instance, ensure that the test\_decoding output plugin is installed on your source endpoint\. You can find this plugin in the Postgres contrib package\. For more information about the test\-decoding plugin, see the [PostgreSQL documentation](https://www.postgresql.org/docs/10/static/test-decoding.html)\.
 + AWS DMS doesn't support change processing to set and unset column default values \(using the ALTER COLUMN SET DEFAULT clause on ALTER TABLE statements\)\.
@@ -556,5 +606,5 @@ For additional information about AWS DMS data types, see [Data types for AWS Dat
 
 PostgreSQL column sizes affect the conversion of PostgreSQL LOB data types to AWS DMS data types\. To work with this, take the following steps for the following AWS DMS data types:
 + BLOB – Set **Limit LOB size to** the **Maximum LOB size \(KB\)** value at task creation\.
-+ CLOB – Replication handles each character as a UTF8 character\. Therefore, find the length of the longest character text in the column, shown here as `max_num_chars_text` and use it to specify the value for **Limit LOB size to**\. If the data includes 4\-byte characters, multiply by 2 to specify the **Limit LOB size to** value, which is in bytes\. In this case, **Limit LOB size to** is equal to `max_num_chars_text` multiplied by 2\.
-+ NCLOB – Replication handles each character as a double\-byte character\. Therefore, find the length of the longest character text in the column \(`max_num_chars_text`\) and multiply by 2 to specify the value for **Limit LOB size to**\. In this case, **Limit LOB size to** is equal to `max_num_chars_text` multiplied by 2\. If the data includes 4\-byte characters, multiply by 2 again\. In this case, **Limit LOB size to** is equal to `max_num_chars_text` multiplied by 4\.
++ CLOB – Replication handles each character as a UTF8 character\. Therefore, find the length of the longest character text in the column, shown here as `max_num_chars_text`\. Use this length to specify the value for **Limit LOB size to**\. If the data includes 4\-byte characters, multiply by 2 to specify the **Limit LOB size to** value, which is in bytes\. In this case, **Limit LOB size to** is equal to `max_num_chars_text` multiplied by 2\.
++ NCLOB – Replication handles each character as a double\-byte character\. Therefore, find the length of the longest character text in the column \(`max_num_chars_text`\) and multiply by 2\. You do this to specify the value for **Limit LOB size to**\. In this case, **Limit LOB size to** is equal to `max_num_chars_text` multiplied by 2\. If the data includes 4\-byte characters, multiply by 2 again\. In this case, **Limit LOB size to** is equal to `max_num_chars_text` multiplied by 4\.

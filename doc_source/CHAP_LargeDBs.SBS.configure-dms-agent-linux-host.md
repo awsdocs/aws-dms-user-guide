@@ -8,3 +8,4 @@ Using Machine \#2 \(Connectivity\) from step 2, where the Edge client is already
 + [ASE SAP Sybase](CHAP_LargeDBs.SBS.configure-dms-agent-linux-host.sybase.md)
 + [MySQL](CHAP_LargeDBs.SBS.configure-dms-agent-linux-host.mysql.md)
 + [PostgreSQL](CHAP_LargeDBs.SBS.configure-dms-agent-linux-host.postgresql.md)
++ [DB2 LUW](CHAP_LargeDBs.SBS.configure-dms-agent-linux-host.db2.md)
