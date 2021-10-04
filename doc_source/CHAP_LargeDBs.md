@@ -24,3 +24,6 @@ In the following sections, you can learn about using an Edge device to migrate r
 + [Migration checklist](CHAP_LargeDBs.Process.checklist.md)
 + [Step\-by\-step procedures for migrating data using AWS DMS with AWS Snowball Edge](CHAP_LargeDBs.SBS.md)
 + [Limitations when working with AWS Snowball Edge and AWS DMS](CHAP_LargeDBs.Limitations.md)
+
+**Note**  
+You can't use an AWS Snowcone device to migrate data with AWS DMS\.

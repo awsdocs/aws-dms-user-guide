@@ -42,7 +42,7 @@ A *replication instance* performs the actual data migration between source and t
 
    1. For **VPC security group\(s\)**, choose the **Default** security group if it isn't already chosen\.
 
-   1. For **KMS master key**, leave **\(Default\) aws/dms** chosen\.
+   1. For **AWS KMS key**, leave **\(Default\) aws/dms** chosen\.
 
 1. Leave the settings on the **Maintenance** tab as they are\. The default is a 30\-minute window selected at random from an 8\-hour block of time for each AWS Region, occurring on a random day of the week\.
 

@@ -15,9 +15,12 @@ For additional details on working with SAP ASE databases and AWS DMS, see the fo
 ## Prerequisites for using an SAP ASE database as a source for AWS DMS<a name="CHAP_Source.SAP.Prerequisites"></a>
 
 For an SAP ASE database to be a source for AWS DMS, do the following:
-+ Enable SAP ASE replication for tables by using the `sp_setreptable` command\.
-+ Disable `RepAgent` on the SAP ASE database\.
++ Enable SAP ASE replication for tables by using the `sp_setreptable` command\. For more information, see [Sybase Infocenter Archive]( http://infocenter.sybase.com/help/index.jsp?topic=/com.sybase.dc32410_1501/html/refman/X37830.htm)\. 
++ Disable `RepAgent` on the SAP ASE database\. For more information, see [Stop and disable the RepAgent thread in the primary database](http://infocenter-archive.sybase.com/help/index.jsp?topic=/com.sybase.dc20096_1260/html/mra126ag/mra126ag65.htm)\. 
 + To replicate to SAP ASE version 15\.7 on an Windows EC2 instance configured for non\-Latin characters \(for example, Chinese\), install SAP ASE 15\.7 SP121 on the target computer\.
+
+**Note**  
+For ongoing change data capture \(CDC\) replication, DMS runs `dbcc logtransfer` and `dbcc log` to read data from the transaction log\.
 
 ## Limitations on using SAP ASE as a source for AWS DMS<a name="CHAP_Source.SAP.Limitations"></a>
 
@@ -45,6 +48,7 @@ The following limitations apply when using an SAP ASE database as a source for A
   ```
 + The `reorg rebuild` index command isn't supported\.
 + AWS DMS does not support clusters or using MSA \(Multi\-Site Availability\)/Warm Standby as a source\.
++ When `AR_H_TIMESTAMP` transformation header expression is used in mapping rules, the milliseconds won't be captured for an added column\.
 
 ## Permissions required for using SAP ASE as a source for AWS DMS<a name="CHAP_Source.SAP.Security"></a>
 

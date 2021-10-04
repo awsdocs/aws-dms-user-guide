@@ -44,9 +44,9 @@ You can enable encryption for data resources of supported AWS DMS target endpoin
 
 #### Encryption at rest<a name="CHAP_Security.DataProtection.DataEncryption.EncryptionAtRest"></a>
 
-AWS DMS supports encryption at rest by allowing you to specify the server\-side encryption mode that you want used to push your replicated data to Amazon S3 before it is copied to supported AWS DMS target endpoints\. You can specify this encryption mode by setting the `encryptionMode` extra connection attribute for the endpoint\. If this `encryptionMode` setting specifies KMS key encryption mode, you can also create custom KMS keys specifically to encrypt the target data for the following AWS DMS target endpoints:
-+ Amazon Redshift – For more information about setting `encryptionMode`, see [Extra connection attributes when using Amazon Redshift as a target for AWS DMS](CHAP_Target.Redshift.md#CHAP_Target.Redshift.ConnectionAttrib)\. For more information about creating a custom KMS encryption key, see [Creating and using AWS KMS keys to encrypt Amazon Redshift target data](CHAP_Target.Redshift.md#CHAP_Target.Redshift.KMSKeys)\.
-+ Amazon S3 – For more information about setting `encryptionMode`, see [Extra connection attributes when using Amazon S3 as a target for AWS DMS](CHAP_Target.S3.md#CHAP_Target.S3.Configuring)\. For more information about creating a custom KMS encryption key, see [Creating AWS KMS keys to encrypt Amazon S3 target objects](CHAP_Target.S3.md#CHAP_Target.S3.KMSKeys)\.
+AWS DMS supports encryption at rest by allowing you to specify the server\-side encryption mode that you want used to push your replicated data to Amazon S3 before it is copied to supported AWS DMS target endpoints\. You can specify this encryption mode by setting the `encryptionMode` extra connection attribute for the endpoint\. If this `encryptionMode` setting specifies KMS key encryption mode, you can also create custom AWS KMS keys specifically to encrypt the target data for the following AWS DMS target endpoints:
++ Amazon Redshift – For more information about setting `encryptionMode`, see [Extra connection attributes when using Amazon Redshift as a target for AWS DMS](CHAP_Target.Redshift.md#CHAP_Target.Redshift.ConnectionAttrib)\. For more information about creating a custom AWS KMS encryption key, see [Creating and using AWS KMS keys to encrypt Amazon Redshift target data](CHAP_Target.Redshift.md#CHAP_Target.Redshift.KMSKeys)\.
++ Amazon S3 – For more information about setting `encryptionMode`, see [Extra connection attributes when using Amazon S3 as a target for AWS DMS](CHAP_Target.S3.md#CHAP_Target.S3.Configuring)\. For more information about creating a custom AWS KMS encryption key, see [Creating AWS KMS keys to encrypt Amazon S3 target objects](CHAP_Target.S3.md#CHAP_Target.S3.KMSKeys)\.
 
 #### Encryption in transit<a name="CHAP_Security.DataProtection.DataEncryption.EncryptionInTransit"></a>
 
@@ -734,7 +734,7 @@ The following example shows the JSON for the key policy created for an AWS KMS e
 }
 ```
 
-Here, you can see where the key policy references the role for accessing Amazon Redshift target endpoint data that you created before creating the key\. In the example, that is `DMS-Redshift-endpoint-access-role`\. You can also see the different key actions permitted for the different principals \(users and roles\)\. For example, any user with `DMS-Redshift-endpoint-access-role` can encrypt, decrypt, and re\-encrypt the target data\. Such a user can also generate data keys for export to encrypt the data outside of AWS KMS\. They can also return detailed information about a customer master key \(CMK\), such as the key that you just created\. In addition, such a user can manage attachments to AWS resources, such as the target endpoint\.
+Here, you can see where the key policy references the role for accessing Amazon Redshift target endpoint data that you created before creating the key\. In the example, that is `DMS-Redshift-endpoint-access-role`\. You can also see the different key actions permitted for the different principals \(users and roles\)\. For example, any user with `DMS-Redshift-endpoint-access-role` can encrypt, decrypt, and re\-encrypt the target data\. Such a user can also generate data keys for export to encrypt the data outside of AWS KMS\. They can also return detailed information about a AWS KMS key, such as the key that you just created\. In addition, such a user can manage attachments to AWS resources, such as the target endpoint\.
 
 #### A policy for a custom AWS KMS encryption key to encrypt Amazon S3 target data<a name="security_iam_resource-based-policy-examples-custom-s3-key-policy"></a>
 
@@ -822,7 +822,7 @@ The following example shows the JSON for the key policy created for an AWS KMS e
   ]
 ```
 
-Here, you can see where the key policy references the role for accessing Amazon S3 target endpoint data that you created prior to creating the key\. In the example, that is `DMS-S3-endpoint-access-role`\. You can also see the different key actions permitted for the different principals \(users and roles\)\. For example, any user with `DMS-S3-endpoint-access-role` can encrypt, decrypt, and re\-encrypt the target data\. Such a user can also generate data keys for export to encrypt the data outside of AWS KMS\. They can also return detailed information about a customer master key \(CMK\), such as the key that you just created\. In addition, such a user can manage attachment to AWS resources, such as the target endpoint\.
+Here, you can see where the key policy references the role for accessing Amazon S3 target endpoint data that you created prior to creating the key\. In the example, that is `DMS-S3-endpoint-access-role`\. You can also see the different key actions permitted for the different principals \(users and roles\)\. For example, any user with `DMS-S3-endpoint-access-role` can encrypt, decrypt, and re\-encrypt the target data\. Such a user can also generate data keys for export to encrypt the data outside of AWS KMS\. They can also return detailed information about a AWS KMS key, such as the key that you just created\. In addition, such a user can manage attachment to AWS resources, such as the target endpoint\.
 
 ### Using secrets to access AWS Database Migration Service endpoints<a name="security_iam_secretsmanager"></a>
 
@@ -977,7 +977,7 @@ This is the minimum list of JSON members required to authenticate Oracle ASM for
      }
      ```
 
-1. Select an AWS KMS encryption key to encrypt the secret\. You can accept the default encryption key created for your service by AWS Secrets Manager or select a custom master key \(CMK\) that you create\.
+1. Select an AWS KMS encryption key to encrypt the secret\. You can accept the default encryption key created for your service by AWS Secrets Manager or select a AWS KMS key that you create\.
 
 1. Specify a name to reference this secret and an optional description\. This is the friendly name that you use as the value for `SecretsManagerSecretId` or `SecretsManagerOracleAsmSecretId`\.
 
@@ -1993,16 +1993,16 @@ dms:RemoveTagsFromResource on resource: arn:aws:dms:us-east-1:152683116:task:RB7
 
 ## Setting an encryption key and specifying AWS KMS permissions<a name="CHAP_Security.EncryptionKey"></a>
 
-AWS DMS encrypts the storage used by a replication instance and the endpoint connection information\. To encrypt the storage used by a replication instance, AWS DMS uses an AWS Key Management Service \(AWS KMS\) key that is unique to your AWS account\. You can view and manage this key with AWS KMS\. You can use the default AWS KMS key in your account \(`aws/dms`\) or you can create a custom AWS KMS key\. If you have an existing AWS KMS key, you can also use that key for encryption\.
+AWS DMS encrypts the storage used by a replication instance and the endpoint connection information\. To encrypt the storage used by a replication instance, AWS DMS uses an AWS Key Management Service \(AWS KMS\) key that is unique to your AWS account\. You can view and manage this key with AWS KMS\. You can use the default KMS key in your account \(`aws/dms`\) or you can create a custom KMS key\. If you have an existing KMS key, you can also use that key for encryption\.
 
 **Note**  
 Any custom or existing AWS KMS key that you use as an encryption key must be a symmetric key\. AWS DMS does not support the use of asymmetric encryption keys\. For more information on symmetric and asymmetric encryption keys, see [https://docs.aws.amazon.com/kms/latest/developerguide/symmetric-asymmetric.html](https://docs.aws.amazon.com/kms/latest/developerguide/symmetric-asymmetric.html) in the *AWS Key Management Service Developer Guide*\.
 
-The default AWS KMS key \(`aws/dms`\) is created when you first launch a replication instance, if you haven't selected a custom AWS KMS master key from the **Advanced** section of the **Create Replication Instance** page\. If you use the default AWS KMS key, the only permissions you need to grant to the IAM user account you are using for migration are `kms:ListAliases` and `kms:DescribeKey`\. For more information about using the default AWS KMS key, see [IAM permissions needed to use AWS DMS](#CHAP_Security.IAMPermissions)\. 
+The default KMS key \(`aws/dms`\) is created when you first launch a replication instance, if you haven't selected a custom KMS key from the **Advanced** section of the **Create Replication Instance** page\. If you use the default KMS key, the only permissions you need to grant to the IAM user account you are using for migration are `kms:ListAliases` and `kms:DescribeKey`\. For more information about using the default KMS key, see [IAM permissions needed to use AWS DMS](#CHAP_Security.IAMPermissions)\. 
 
-To use a custom AWS KMS key, assign permissions for the custom AWS KMS key using one of the following options:
-+ Add the IAM user account used for the migration as a key administrator or key user for the AWS KMS custom key\. Doing this ensures that necessary AWS KMS permissions are granted to the IAM user account\. This action is in addition to the IAM permissions that you grant to the IAM user account to use AWS DMS\. For more information about granting permissions to a key user, see [ Allows key users to use the CMK](https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default-allow-users) in the *AWS Key Management Service Developer Guide\.*
-+ If you don't want to add the IAM user account as a key administrator or key user for your custom AWS KMS key, then add the following additional permissions to the IAM permissions that you must grant to the IAM user account to use AWS DMS\. 
+To use a custom KMS key, assign permissions for the custom KMS key using one of the following options:
++ Add the IAM user account used for the migration as a key administrator or key user for the AWS KMS custom key\. Doing this ensures that necessary AWS KMS permissions are granted to the IAM user account\. This action is in addition to the IAM permissions that you grant to the IAM user account to use AWS DMS\. For more information about granting permissions to a key user, see [ Allows key users to use the KMS key](https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default-allow-users) in the *AWS Key Management Service Developer Guide\.*
++ If you don't want to add the IAM user account as a key administrator or key user for your custom KMS key, then add the following additional permissions to the IAM permissions that you must grant to the IAM user account to use AWS DMS\. 
 
   ```
   {
@@ -2018,9 +2018,9 @@ To use a custom AWS KMS key, assign permissions for the custom AWS KMS key using
           },
   ```
 
-AWS DMS also works with AWS KMS key aliases\. For more information about creating your own AWS KMS keys and giving users access to an AWS KMS key, see the *[KMS Developer Guide](https://docs.aws.amazon.com/kms/latest/developerguide/create-keys.html)*\. 
+AWS DMS also works with KMS key aliases\. For more information about creating your own AWS KMS keys and giving users access to a KMS key, see the *[AWS KMS Developer Guide](https://docs.aws.amazon.com/kms/latest/developerguide/create-keys.html)*\. 
 
-If you don't specify an AWS KMS key identifier, then AWS DMS uses your default encryption key\. AWS KMS creates the default encryption key for AWS DMS for your AWS account\. Your AWS account has a different default encryption key for each AWS Region\. 
+If you don't specify a KMS key identifier, then AWS DMS uses your default encryption key\. AWS KMS creates the default encryption key for AWS DMS for your AWS account\. Your AWS account has a different default encryption key for each AWS Region\. 
 
 To manage the AWS KMS keys used for encrypting your AWS DMS resources, use the AWS Key Management Service\. AWS KMS combines secure, highly available hardware and software to provide a key management system scaled for the cloud\. Using AWS KMS, you can create encryption keys and define the policies that control how these keys can be used\.
 
@@ -2040,7 +2040,7 @@ You can also create custom AWS KMS keys specifically to encrypt target data for 
 + Amazon Redshift – For more information, see [Creating and using AWS KMS keys to encrypt Amazon Redshift target data](CHAP_Target.Redshift.md#CHAP_Target.Redshift.KMSKeys)\.
 + Amazon S3 – For more information, see [Creating AWS KMS keys to encrypt Amazon S3 target objects](CHAP_Target.S3.md#CHAP_Target.S3.KMSKeys)\.
 
-After you have created your AWS DMS resources with an AWS KMS key, you can't change the encryption key for those resources\. Make sure to determine your encryption key requirements before you create your AWS DMS resources\. 
+After you have created your AWS DMS resources with a KMS key, you can't change the encryption key for those resources\. Make sure to determine your encryption key requirements before you create your AWS DMS resources\. 
 
 ## Network security for AWS Database Migration Service<a name="CHAP_Security.Network"></a>
 

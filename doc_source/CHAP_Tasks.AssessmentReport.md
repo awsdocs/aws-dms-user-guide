@@ -2,7 +2,7 @@
 
 A premigration assessment evaluates specified components of a database migration task to help identify any problems that might prevent a migration task from running as expected\. This assessment gives you a chance to identify issues before you run a new or modified task\. You can then fix problems before they occur while running the migration task itself\. This can avoid delays in completing a given database migration needed to repair data and your database environment\.
 
-AWS DMS provides access two different types of premigration assessments\. The first type of premigration assessment, a premigration assessment run, is a functional superset of the second type, a data type assessment\. They are described in the following topics:
+AWS DMS provides access to two different types of premigration assessments\. The first type of premigration assessment, a premigration assessment run, is a functional superset of the second type, a data type assessment\. They are described in the following topics:
 
 **Note**  
 If you do a premigration assessment run that includes the data type assessment, you don't need to do a data type assessment separately\.

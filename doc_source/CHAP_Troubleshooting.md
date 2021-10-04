@@ -20,6 +20,7 @@ If you have opened an AWS Support case, your support engineer might identify a p
 + [Tasks fail when a primary key is created on a LOB column](#CHAP_Troubleshooting.General.PKLOBColumn)
 + [Duplicate records occur on a target table without a primary key](#CHAP_Troubleshooting.General.DuplicateRecords)
 + [Source endpoints fall in the reserved IP range](#CHAP_Troubleshooting.General.ReservedIP)
++ [Timestamps are garbled in Amazon Athena queries](#CHAP_Troubleshooting.General.GarbledTimestamps)
 + [Troubleshooting issues with Oracle](#CHAP_Troubleshooting.Oracle)
 + [Troubleshooting issues with MySQL](#CHAP_Troubleshooting.MySQL)
 + [Troubleshooting issues with PostgreSQL](#CHAP_Troubleshooting.PostgreSQL)
@@ -52,7 +53,7 @@ For a task with only one table that has no estimated rows statistic, AWS DMS can
 
 Do the following if nothing was migrated after your task has completed\.
 + Check if the user that created the endpoint has read access to the table you intend to migrate\.
-+ Check if the object you want to migrate is a table\. If it is a view, update table mappings and specify the object\-locator as “view” or “all”\. For more information, see [ Specifying table selection and transformations rules from the console](CHAP_Tasks.CustomizingTasks.TableMapping.Console.md)\. 
++ Check if the object you want to migrate is a table\. If it is a view, update table mappings and specify the object\-locator as “view” or “all”\. For more information, see [Specifying table selection and transformations rules from the console](CHAP_Tasks.CustomizingTasks.TableMapping.Console.md)\. 
 
 ## Foreign keys and secondary indexes are missing<a name="CHAP_Troubleshooting.General.MissingSecondaryObjs"></a>
 
@@ -145,6 +146,10 @@ If an AWS DMS source database uses an IP address within the reserved IP range of
 
 Use the EC2 instance IP address and the database port given preceding for the AWS DMS endpoint\. Make sure that the endpoint has the security group that allows AWS DMS to talk to it at the database port\.
 
+## Timestamps are garbled in Amazon Athena queries<a name="CHAP_Troubleshooting.General.GarbledTimestamps"></a>
+
+If timestamps are garbled in Athena queries, use the AWS Management Console or the [ModifyEndpoint](dms/latest/APIReference/API_ModifyEndpoint.html) action to set the `parquetTimestampInMillisecond` value for your Amazon S3 endpoint to `true`\. For more information, see [S3Settings](https://docs.aws.amazon.com/dms/latest/APIReference/API_S3Settings.html)\.
+
 ## Troubleshooting issues with Oracle<a name="CHAP_Troubleshooting.Oracle"></a>
 
 Following, you can learn about troubleshooting issues specific to using AWS DMS with Oracle databases\.
@@ -159,6 +164,8 @@ Following, you can learn about troubleshooting issues specific to using AWS DMS 
 + [Error: ORA\-12899: Value too large for column *column\-name*](#CHAP_Troubleshooting.Oracle.ORA12899)
 + [NUMBER data type being misinterpreted](#CHAP_Troubleshooting.Oracle.Numbers)
 + [Records missing during full load](#CHAP_Troubleshooting.Oracle.RecordsMissing)
++ [Table Error](#CHAP_Troubleshooting.Oracle.TableError)
++ [Error: Cannot retrieve Oracle archived Redo log destination ids](#CHAP_Troubleshooting.Oracle.RedoLogError)
 
 ### Pulling data from views<a name="CHAP_Troubleshooting.Oracle.Views"></a>
 
@@ -249,11 +256,33 @@ The Oracle NUMBER data type is converted into various AWS DMS data types, depend
 
 ### Records missing during full load<a name="CHAP_Troubleshooting.Oracle.RecordsMissing"></a>
 
-When performing a full load, AWS DMS looks for open transactions at the database level and waits for the transaction to be committed\. For example, based on the task setting `TransactionConsistencyTimeout=600`, AWS DMS waits for 10 minutes even if the open transaction is on a table not included in table mapping\. But if the open transaction is on a table included in table mapping, and the transaction is not committed in time, missing records in the target table result\.
+When performing a full load, AWS DMS looks for open transactions at the database level and waits for the transaction to be committed\. For example, based on the task setting `TransactionConsistencyTimeout=600`, AWS DMS waits for 10 minutes even if the open transaction is on a table not included in table mapping\. But if the open transaction is on a table included in table mapping, and the transaction isn't committed in time, missing records in the target table result\.
 
 You can modify the `TransactionConsistencyTimeout` task setting and increase wait time if you know that open transactions will take longer to commit\.
 
 Also, note the default value of the `FailOnTransactionConsistencyBreached` task setting is `false`\. This means AWS DMS continues to apply other transactions but open transactions are missed\. If you want the task to fail when open transactions aren't closed in time, you can set `FailOnTransactionConsistencyBreached` to `true`\.
+
+### Table Error<a name="CHAP_Troubleshooting.Oracle.TableError"></a>
+
+`Table Error` appears in table statistics during replication if a `WHERE` clause doesn't reference a primary key column, and supplemental logging isn't used for all columns\. 
+
+To fix this issue, turn on supplemental logging for all columns of the referenced table\. For more information, see [Setting up supplemental logging](CHAP_Source.Oracle.md#CHAP_Source.Oracle.Self-Managed.Configuration.SupplementalLogging)\.
+
+### Error: Cannot retrieve Oracle archived Redo log destination ids<a name="CHAP_Troubleshooting.Oracle.RedoLogError"></a>
+
+This error occurs when your Oracle source doesn't have any archive logs generated or V$ARCHIVED\_LOG is empty\. You can resolve the error by switching logs manually\.
+
+For an Amazon RDS database, run the following procedure to switch log files\. The `switch_logfile` procedure doesn't have parameters\.
+
+```
+exec rdsadmin.rdsadmin_util.switch_logfile;
+```
+
+For a self\-managed Oracle source database, use the following command to force a log switch\.
+
+```
+ALTER SYSTEM SWITCH LOGFILE ;
+```
 
 ## Troubleshooting issues with MySQL<a name="CHAP_Troubleshooting.MySQL"></a>
 
@@ -301,7 +330,8 @@ To solve the issue where a task is being disconnected from a MySQL target, do th
   + `net_read_timeout` 
   + `net_write_timeout` 
   + `wait_timeout` 
-  + `interactive_timeout` 
+
+For information about setting MySQL system variables, see [Server System Variables](https://dev.mysql.com/doc/refman/8.0/en/server-system-variables.html) in the [MySQL documentation](https://dev.mysql.com/)\.
 
 ### Adding autocommit to a MySQL\-compatible endpoint<a name="CHAP_Troubleshooting.MySQL.Autocommit"></a>
 
@@ -349,7 +379,7 @@ You can disable foreign key checks on MySQL by adding the following to the **Ext
 
 ### Characters replaced with question mark<a name="CHAP_Troubleshooting.MySQL.CharacterReplacement"></a>
 
-The most common situation that causes this issue is when the source endpoint characters have been encoded by a character set that AWS DMS doesn't support\. For example, AWS DMS engine versions prior to version 3\.1\.1 didn't support the UTF8MB4 character set\.
+The most common situation that causes this issue is when the source endpoint characters have been encoded by a character set that AWS DMS doesn't support\. 
 
 ### "Bad event" log entries<a name="CHAP_Troubleshooting.MySQL.BadEvent"></a>
 
@@ -396,7 +426,7 @@ The following error occurs when an unsupported character set causes a field data
 A field data conversion failed. (mysql_endpoint_capture.c:2154)
 ```
 
-In AWS DMS engine versions prior to 3\.1\.1, this error often occurred because of tables or databases using UTF8MB4 encoding\. These engine versions didn't support the UTF8MB4 character set\. In addition, check your database's parameters related to connections\. The following command can be used to set these parameters\.
+Check your database's parameters related to connections\. The following command can be used to set these parameters\.
 
 ```
 SHOW VARIABLES LIKE '%char%';
@@ -521,7 +551,7 @@ So, avoid long running transactions when logical replication is enabled\. Instea
 
 ### Task using view as a source has no rows copied<a name="CHAP_Troubleshooting.PostgreSQL.ViewTask"></a>
 
-To migrate a view, set `table-type` to `all` or `view`\. For more information, see [ Specifying table selection and transformations rules from the console](CHAP_Tasks.CustomizingTasks.TableMapping.Console.md)\. 
+To migrate a view, set `table-type` to `all` or `view`\. For more information, see [Specifying table selection and transformations rules from the console](CHAP_Tasks.CustomizingTasks.TableMapping.Console.md)\. 
 
 Sources that support views include the following\.
 + Oracle
@@ -536,16 +566,11 @@ Sources that support views include the following\.
 Following, you can learn about troubleshooting issues specific to using AWS DMS with Microsoft SQL Server databases\.
 
 **Topics**
-+ [Special permissions for AWS DMS user account to use CDC](#CHAP_Troubleshooting.SQLServer.Permissions)
 + [Errors capturing changes for SQL server database](#CHAP_Troubleshooting.SQLServer.CDCErrors)
 + [Missing identity columns](#CHAP_Troubleshooting.SQLServer.IdentityColumns)
 + [Error: SQL Server doesn't support publications](#CHAP_Troubleshooting.SQLServer.Publications)
 + [Changes don't appear in your target](#CHAP_Troubleshooting.SQLServer.NoChanges)
 + [Non\-uniform table mapped across partitions](#CHAP_Troubleshooting.SQLServer.Nonuniform)
-
-### Special permissions for AWS DMS user account to use CDC<a name="CHAP_Troubleshooting.SQLServer.Permissions"></a>
-
-The user account used with AWS DMS requires the SQL Server SysAdmin role in order to operate correctly when using change data capture \(CDC\)\. 
 
 ### Errors capturing changes for SQL server database<a name="CHAP_Troubleshooting.SQLServer.CDCErrors"></a>
 

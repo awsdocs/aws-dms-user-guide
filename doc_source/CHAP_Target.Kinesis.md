@@ -15,9 +15,15 @@ The SSL Mode option on the DMS console or API doesn’t apply to some data strea
 
 **Kinesis Data Streams endpoint settings**
 
-When you use Kinesis Data Streams target endpoints, you can get transaction and control details using the `KinesisSettings` option in the AWS DMS API\. In the CLI, use the following request parameters of the `--kinesis-settings` option:
+When you use Kinesis Data Streams target endpoints, you can get transaction and control details using the `KinesisSettings` option in the AWS DMS API\. 
+
+You can set connection settings in the following ways:
++ In the AWS DMS console, using endpoint settings\.
++ In the CLI, using the `kinesis-settings` option of the [CreateEndpoint](https://docs.aws.amazon.com/dms/latest/APIReference/API_CreateEndpoint.html) command\.
+
+In the CLI, use the following request parameters of the `kinesis-settings` option:
 **Note**  
-Support for the `IncludeNullAndEmpty` endpoint setting is available in AWS DMS version 3\.4\.1 and higher\. But support for the other following endpoint settings for Kinesis Data Streams targets is available in AWS DMS versions 3\.3\.1 and higher\. 
+Support for the `IncludeNullAndEmpty` endpoint setting is available in AWS DMS version 3\.4\.1 and higher\. But support for the other following endpoint settings for Kinesis Data Streams targets is available in AWS DMS\.
 + `MessageFormat` – The output format for the records created on the endpoint\. The message format is `JSON` \(default\) or `JSON_UNFORMATTED` \(a single line with no tab\)\.
 + `IncludeControlDetails` – Shows detailed control information for table definition, column definition, and table and column changes in the Kinesis message output\. The default is `false`\.
 + `IncludeNullAndEmpty` – Include NULL and empty columns in the target\. The default is `false`\.
@@ -47,12 +53,10 @@ To help increase the speed of the transfer, AWS DMS supports a multithreaded ful
 **Multithreaded CDC load task settings**
 
 You can improve the performance of change data capture \(CDC\) for real\-time data streaming target endpoints like Kinesis using task settings to modify the behavior of the `PutRecords` API call\. To do this, you can specify the number of concurrent threads, queues per thread, and the number of records to store in a buffer using `ParallelApply*` task settings\. For example, suppose you want to perform a CDC load and apply 128 threads in parallel\. You also want to access 64 queues per thread, with 50 records stored per buffer\. 
-**Note**  
-Support for the use of `ParallelApply*` task settings during CDC to Kinesis Data Streams target endpoints is available in AWS DMS versions 3\.3\.1 and later\.
 
 To promote CDC performance, AWS DMS supports these task settings:
 + `ParallelApplyThreads` – Specifies the number of concurrent threads that AWS DMS uses during a CDC load to push data records to a Kinesis target endpoint\. The default value is zero \(0\) and the maximum value is 32\.
-+ `ParallelApplyBufferSize` – Specifies the maximum number of records to store in each buffer queue for concurrent threads to push to a Kinesis target endpoint during a CDC load\. The default value is 50 and the maximum value is 1,000\. Use this option when `ParallelApplyThreads` specifies more than one thread\. 
++ `ParallelApplyBufferSize` – Specifies the maximum number of records to store in each buffer queue for concurrent threads to push to a Kinesis target endpoint during a CDC load\. The default value is 100 and the maximum value is 1,000\. Use this option when `ParallelApplyThreads` specifies more than one thread\. 
 + `ParallelApplyQueuesPerThread` – Specifies the number of queues that each thread accesses to take data records out of queues and generate a batch load for a Kinesis endpoint during CDC\.
 
 When using `ParallelApply*` task settings, the `partition-key-type` default is the `primary-key` of the table, not `schema-name.table-name`\.
@@ -60,9 +64,6 @@ When using `ParallelApply*` task settings, the `partition-key-type` default is t
 ## Using a before image to view original values of CDC rows for a Kinesis data stream as a target<a name="CHAP_Target.Kinesis.BeforeImage"></a>
 
 When writing CDC updates to a data\-streaming target like Kinesis, you can view a source database row's original values before change by an update\. To make this possible, AWS DMS populates a *before image* of update events based on data supplied by the source database engine\. 
-
-**Note**  
-Support for the use of before image task settings during CDC to Amazon Kinesis Data Streams target endpoints is available in AWS DMS versions 3\.3\.1 and later\.
 
 Different source database engines provide different amounts of information for a before image: 
 + Oracle provides updates to columns only if they change\. 
@@ -82,7 +83,7 @@ To enable before imaging to add original values from the source database to the 
 ```
 
 **Note**  
-Apply `BeforeImageSettings` to full load plus CDC tasks \(which migrate existing data and replicate ongoing changes\), or to CDC only tasks \(which replicate data changes only\)\. Don't apply `BeforeImageSettings` to tasks that are full load only\.
+Only apply `BeforeImageSettings` to AWS DMS tasks that contain a CDC component, such as full load plus CDC tasks \(which migrate existing data and replicate ongoing changes\), or to CDC only tasks \(which replicate data changes only\)\. Don't apply `BeforeImageSettings` to tasks that are full load only\.
 
 For `BeforeImageSettings` options, the following applies:
 + Set the `EnableBeforeImage` option to `true` to enable before imaging\. The default is `false`\. 
@@ -497,9 +498,6 @@ The `partition-key` value for a control record that is for a specific table is `
 ### Message format for Kinesis Data Streams<a name="CHAP_Target.Kinesis.Messageformat"></a>
 
 The JSON output is simply a list of key\-value pairs\. A JSON\_UNFORMATTED message format is a single line JSON string with new line delimiter\.
-
-**Note**  
-Support for JSON\_UNFORMATTED Kinesis message format is available in AWS DMS versions 3\.3\.1 and later\.
 
 AWS DMS provides the following reserved fields to make it easier to consume the data from the Kinesis Data Streams: 
 

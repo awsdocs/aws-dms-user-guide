@@ -1,10 +1,10 @@
 # AWS DMS data validation<a name="CHAP_Validating"></a>
 
 **Topics**
-+ [Using JSON editor to modify validation rules](#CHAP_Validating.JSONEditor)
 + [Replication task statistics](#CHAP_Validating.TaskStatistics)
 + [Replication task statistics with Amazon CloudWatch](#CHAP_Validating.TaskStatistics.CloudWatch)
 + [Revalidating tables during a task](#CHAP_Validating.Revalidating)
++ [Using JSON editor to modify validation rules](#CHAP_Validating.JSONEditor)
 + [Troubleshooting](#CHAP_Validating.Troubleshooting)
 + [Limitations](#CHAP_Validating.Limitations)
 
@@ -14,8 +14,8 @@ During data validation, AWS DMS compares each row in the source with its corresp
 
 Data validation works with the following databases wherever AWS DMS supports them as source and target endpoints:
 + Oracle
-+ PostgreSQL\-compatible database \(PostgreSQL or Amazon Aurora PostgreSQL\)
-+ MySQL\-compatible database \(MySQL, MariaDB, or Amazon Aurora MySQL\)
++ PostgreSQL\-compatible database \(PostgreSQL, Aurora PostgreSQL, or Aurora Serverless for PostgreSQL\)
++ MySQL\-compatible database \(MySQL, MariaDB, Aurora MySQL, or Aurora Serverless for MySQL\)
 + Microsoft SQL Server
 + IBM Db2 LUW
 
@@ -23,65 +23,7 @@ For more information about the supported endpoints, see [Working with AWS DMS en
 
 Data validation requires additional time, beyond the amount required for the migration itself\. The extra time required depends on how much data was migrated\.
 
-Data validation settings include the following:
-+ `EnableValidation` – Enables or disables data validation\.
-+ `FailureMaxCount` – Specifies the maximum number of records that can fail validation before validation is suspended for the task\.
-+ `HandleCollationDiff` – For PostgreSQL and SQL Server databases, this setting accounts for column collation differences in endpoints when identifying source and target records to compare\.
-+ `RecordFailureDelayLimitInMinutes` – Specifies the delay before reporting any validation failure details\.
-+ `TableFailureMaxCount` – Specifies the maximum number of tables that can fail validation before validation is suspended for the task\.
-+ `ThreadCount` – Adjusts the number of execution threads that AWS DMS uses during validation\.
-+ `ValidationOnly` – Previews the validation for the task without performing any migration or replication of data\. To use this option, set the task migration type to **Replicate data changes only** in the AWS DMS console, or set the migration type to `cdc` in the AWS DMS API\. In addition, set the target table task setting, `TargetTablePrepMode`, to `DO_NOTHING`\.
-**Note**  
-The `ValidationOnly` setting is immutable\. That means it cannot be modified for a task after that task is created\.
-+ `PartitionSize` – Specifies the batch size of records to read for comparison from both source and target\. The default is 10,000\.
-+ `SkipLobColumns` – When this option is set to `true`, AWS DMS skips data validation for all LOB columns in the table's part of the task validation\. The default value is `false`\.
-+ `ValidationPartialLobSize` – Specifies if you want partial validation done for LOB columns instead of validating all of the data stored in the column\. The value is in KB units\. The default value is 0, which means AWS DMS validates all the LOB column data\.
-+ `ValidationQueryCdcDelaySeconds` – The amount of time the first validation query is delayed on both source and target for each CDC update\. This might help reduce resource contention when migration latency is high\. A validation only task automatically sets this option to 180 seconds\. The default is 0\.
-
-The following JSON example turns on validation, increases the number of threads to eight, and suspends validation if any table has a validation failure\.
-
-```
-ValidationSettings":   {
-       "EnableValidation":true,
-       "ThreadCount":8,
-       "TableFailureMaxCount":1
-}
-```
-
 For more information about these settings, see [ Data validation task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.DataValidation.md)\.
-
-## Using JSON editor to modify validation rules<a name="CHAP_Validating.JSONEditor"></a>
-
-To add a validation rule to a task using the JSON editor from the AWS DMS Console, do the following:
-
-1. Select **Database migration tasks**\.
-
-1. Select your task from the list of migration tasks\.
-
-1. If your task is running, select **Stop** from the **Actions** drop down menu\.
-
-1. Once the task has stopped, to modify your task, select **Modify** from the **Actions** drop down menu\. 
-
-1. In the **Table mappings** section, select **JSON editor** and add your validation rule to your table mappings\.
-
-For example, you can add the following validation rule to run a replace function on the source\. In this case, if the validation rule encounters a null byte, it validates it as a space\.
-
-```
-{
-	"rule-type": "validation",
-	"rule-id": "1",
-	"rule-name": "1",
-	"rule-target": "column",
-	"object-locator": {
-		"schema-name": "Test-Schema",
-		"table-name": "Test-Table",
-		"column-name": "Test-Column"
-	},
-	"rule-action": "override-validation-function",
-	"source-function": "REPLACE(${column-name}, chr(0), chr(32))",
-	"target-function": "${column-name}"
-}
-```
 
 ## Replication task statistics<a name="CHAP_Validating.TaskStatistics"></a>
 
@@ -99,8 +41,8 @@ When data validation is enabled, AWS DMS provides the following statistics at th
   + **Preparing table**—Preparing the table enabled in the migration task for validation\.
   + **Pending revalidation**—All rows in the table are pending validation after the table was updated\.
 + **ValidationPending**—The number of records that have been migrated to the target, but that haven't yet been validated\.
-+ **ValidationSuspended**—The number of records that AWS DMS can't compare\. For example, if a record at the source is constantly being updated, AWS DMS can't compare the source and the target\. For more information, see [Error handling task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.ErrorHandling.md) 
-+ **ValidationFailed**—The number of records that didn't pass the data validation phase\. For more information, see [Error handling task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.ErrorHandling.md)\.
++ **ValidationSuspended**—The number of records that AWS DMS can't compare\. For example, if a record at the source is constantly being updated, AWS DMS can't compare the source and the target\. 
++ **ValidationFailed**—The number of records that didn't pass the data validation phase\. 
 
 You can view the data validation information using the console, the AWS CLI, or the AWS DMS API\.
 + On the console, you can choose to validate a task when you create or modify the task\. To view the data validation report using the console, choose the task on the **Tasks** page and choose the **Table statistics** tab in the details section\.
@@ -196,9 +138,44 @@ While a task is running, you can request AWS DMS to perform data validation\.
 
 1. Choose **Revalidate**\.
 
+## Using JSON editor to modify validation rules<a name="CHAP_Validating.JSONEditor"></a>
+
+To add a validation rule to a task using the JSON editor from the AWS DMS Console, do the following:
+
+1. Select **Database migration tasks**\.
+
+1. Select your task from the list of migration tasks\.
+
+1. If your task is running, select **Stop** from the **Actions** drop down menu\.
+
+1. Once the task has stopped, to modify your task, select **Modify** from the **Actions** drop down menu\. 
+
+1. In the **Table mappings** section, select **JSON editor** and add your validation rule to your table mappings\.
+
+For example, you can add the following validation rule to run a replace function on the source\. In this case, if the validation rule encounters a null byte, it validates it as a space\.
+
+```
+{
+	"rule-type": "validation",
+	"rule-id": "1",
+	"rule-name": "1",
+	"rule-target": "column",
+	"object-locator": {
+		"schema-name": "Test-Schema",
+		"table-name": "Test-Table",
+		"column-name": "Test-Column"
+	},
+	"rule-action": "override-validation-function",
+	"source-function": "REPLACE(${column-name}, chr(0), chr(32))",
+	"target-function": "${column-name}"
+}
+```
+
 ## Troubleshooting<a name="CHAP_Validating.Troubleshooting"></a>
 
 During validation, AWS DMS creates a new table at the target endpoint: `awsdms_validation_failures_v1`\. If any record enters the *ValidationSuspended* or the *ValidationFailed* state, AWS DMS writes diagnostic information to `awsdms_validation_failures_v1`\. You can query this table to help troubleshoot validation errors\.
+
+For information about changing the default schema the table is created in on the target, see [Control table task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.ControlTable.md)\.
 
 Following is a description of the `awsdms_validation_failures_v1` table:
 
@@ -235,6 +212,7 @@ You can look at the `DETAILS` field to determine which columns don’t match\. S
 + Data validation requires that the table has a primary key or unique index\.
   + Primary key columns can't be of type `CLOB`, `BLOB`, or `BYTE`\.
   + For primary key columns of type `VARCHAR` or `CHAR`, the length must be less than 1024\.
+  + An Oracle key created with the `NOVALIDATE` clause is *not* considered a primary key or unique index\.
 + If the collation of the primary key column in the target PostgreSQL instance isn't set to "C", the sort order of the primary key is different compared to the sort order in Oracle\. If the sort order is different between PostgreSQL and Oracle, data validation fails to validate the records\.
 + Data validation generates additional queries against the source and target databases\. You must ensure that both databases have enough resources to handle this additional load\. 
 + Data validation isn't supported if a migration uses customized filtering or when consolidating several databases into one\.
@@ -244,6 +222,6 @@ You can look at the `DETAILS` field to determine which columns don’t match\. S
   grant execute on sys.dbms_crypto to dms_endpoint_user;
   ```
 + If the target database is modified outside of AWS DMS during validation, then discrepancies might not be reported accurately\. This result can occur if one of your applications writes data to the target table, while AWS DMS is performing validation on that same table\.
-+ If one or more rows are being continuously modified during the validation, then AWS DMS can't validate those rows\. However, you can validate those rows manually, after the task completes\.
++ If one or more rows are being continuously modified during validation, then AWS DMS can't validate those rows\.
 + If AWS DMS detects more than 10,000 failed or suspended records, it stops the validation\. Before you proceed further, resolve any underlying problems with the data\.
 + AWS DMS doesn’t support data validation of views\.

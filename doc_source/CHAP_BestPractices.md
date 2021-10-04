@@ -214,7 +214,7 @@ For endpoints that have full LOB support, you can also set a size limit for LOB 
 
 ### Improved LOB performance<a name="CHAP_BestPractices.LOBS.Performance"></a>
 
-With AWS DMS engine versions 3\.1\.x, you can improve the loading of LOB data in several ways\. While migrating LOB data, you can specify the following different LOB optimization settings\.
+While migrating LOB data, you can specify the following different LOB optimization settings\.
 
 #### Per table LOB settings<a name="CHAP_BestPractices.LOBS.Performance.PerTable"></a>
 
@@ -319,7 +319,7 @@ For example, you might use the following AWS DMS task settings\. Here, setting `
 
 To improve the performance when migrating a large table, you can break the migration into more than one task\. To break the migration into multiple tasks using row filtering, use a key or a partition key\. For example, if you have an integer primary key ID from 1 to 8,000,000, you can create eight tasks using row filtering to migrate 1 million records each\.
 
-To apply row filtering in the console, open the console, choose **Tasks**, and create a new task\. In the **Table mappings** section, add a value for **Selection Rule**\. You can then add a column filter with either a less than or equal to, greater than or equal to, equal to, or range condition \(between two values\)\. For more information about column filtering, see [ Specifying table selection and transformations rules from the console](CHAP_Tasks.CustomizingTasks.TableMapping.Console.md)\.
+To apply row filtering in the console, open the console, choose **Tasks**, and create a new task\. In the **Table mappings** section, add a value for **Selection Rule**\. You can then add a column filter with either a less than or equal to, greater than or equal to, equal to, or range condition \(between two values\)\. For more information about column filtering, see [Specifying table selection and transformations rules from the console](CHAP_Tasks.CustomizingTasks.TableMapping.Console.md)\.
 
 Or if you have a large partitioned table that is partitioned by date, you can migrate data based on date\. For example, suppose that you have a table partitioned by month, and only the current month's data is updated\. In this case, you can create a full load task for each static monthly partition and create a full load plus CDC task for the currently updated partition\.
 

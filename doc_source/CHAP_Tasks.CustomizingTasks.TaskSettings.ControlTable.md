@@ -1,8 +1,8 @@
 # Control table task settings<a name="CHAP_Tasks.CustomizingTasks.TaskSettings.ControlTable"></a>
 
-Control tables provide information about an AWS DMS task\. They also provide useful statistics that you can use to plan and manage both the current migration task and future tasks\. You can apply these task settings in a JSON file or by choosing **Advanced Settings** on the **Create task** page in the AWS DMS console\. The Apply Exceptions table \(`dmslogs.awsdms_apply_exceptions`\) is always created on database targets\.
+Control tables provide information about an AWS DMS task\. They also provide useful statistics that you can use to plan and manage both the current migration task and future tasks\. You can apply these task settings in a JSON file or by choosing **Advanced Settings** on the **Create task** page in the AWS DMS console\. The Apply Exceptions table \(`dmslogs.awsdms_apply_exceptions`\) is always created on database targets\. For information about how to use a task configuration file to set task settings, see [Task settings example](CHAP_Tasks.CustomizingTasks.TaskSettings.md#CHAP_Tasks.CustomizingTasks.TaskSettings.Example)\. 
 
-For Full load \+ CDC \(Migrate existing data and replicate ongoing changes\) and CDC only \(Replicate data changes only\) tasks, you can also create additional tables, including the following:
+For full load and CDC \(Migrate existing data and replicate ongoing changes\) and CDC only \(Replicate data changes only\) tasks, you can also create additional tables, including the following:
 + **Replication Status \(dmslogs\.awsdms\_status\)** – This table provides details about the current task\. These include task status, amount of memory consumed by the task, and the number of changes not yet applied to the target\. This table also gives the position in the source database where AWS DMS is currently reading\. Also, it indicates if the task is in the full load phase or change data capture \(CDC\)\.
 + **Suspended Tables \(dmslogs\.awsdms\_suspended\_tables\)** – This table provides a list of suspended tables as well as the reason they were suspended\.
 + **Replication History \(dmslogs\.awsdms\_history\)** – This table provides information about replication history\. This information includes the number and volume of records processed during the task, latency at the end of a CDC task, and other statistics\.
@@ -50,6 +50,8 @@ The Replication Status table \(`dmslogs.awsdms_status`\) contains the current st
 |  SOURCE\_TAIL \_POSITION  |  varchar  |  The position of the oldest start transaction that isn't committed\. This value is the newest position that you can revert to without losing any changes\.  | 
 |  SOURCE\_TAIL \_TIMESTAMP  |  timestamp  |  The timestamp of the oldest start transaction that isn't committed\. This value is the newest timestamp that you can revert to without losing any changes\.  | 
 |  SOURCE\_TIMESTAMP \_APPLIED  |  timestamp  |  The timestamp of the last transaction commit\. In a bulk apply process, this value is the timestamp for the commit of the last transaction in the batch\.  | 
+
+The Validation Failure table \(`awsdms_validation_failures_v1`\) contains all the data validation failures for a task\. For more information see, [Data Validation Troubleshooting](CHAP_Validating.md#CHAP_Validating.Troubleshooting)\.
 
 Additional control table settings include the following:
 + `HistoryTimeslotInMinutes` – Use this option to indicate the length of each time slot in the Replication History table\. The default is 5 minutes\.

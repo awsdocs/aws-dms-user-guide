@@ -10,7 +10,7 @@ When you sign up for Amazon Web Services \(AWS\), your AWS account is automatica
 
 With AWS DMS, you pay only for the resources you use\. The AWS DMS replication instance that you create will be live \(not running in a sandbox\)\. You incur the standard AWS DMS usage fees for the instance until you stop it\. For more information about AWS DMS usage rates, see the [AWS DMS product page](http://aws.amazon.com/dms)\. If you are a new AWS customer, you can get started with AWS DMS for free; for more information, see [AWS free usage tier](http://aws.amazon.com/free/)\.
 
-If you close your AWS account, all AWS DMS resources and configurations associated with your account are deleted after two days\. These resources include all replication instances, source and target endpoint configuration, replication tasks, and Secure Sockets Layer \(SSL\) certificates\. If after two days you decide to use AWS DMS again, you recreate the resources that you need\.
+If you close your AWS account, all AWS DMS resources and configurations associated with your account are deleted after two days\. These resources include all replication instances, source and target endpoint configuration, replication tasks, and Secure Sockets Layer \(SSL\) certificates\. If you decide to use AWS DMS again later than two days after closing your account, you recreate the resources that you need\.
 
 If you have an AWS account already, skip to the next task\.
 

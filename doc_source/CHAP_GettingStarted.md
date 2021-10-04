@@ -14,8 +14,8 @@ To perform a database migration, take the following steps:
 
 1. Create a replication instance to perform all the processes for the migration\. To do this and the following tasks, take the steps in [Replication](CHAP_GettingStarted.Replication.md)\.
 
-1. Specify source and target database endpoints\.
+1. Specify source and target database endpoints\. For information about creating endpoints, see [Creating source and target endpoints](CHAP_Endpoints.Creating.md)\.
 
-1. Create a task to define what tables and replication processes you want to use, and start replication\.
+1. Create a task to define what tables and replication processes you want to use, and start replication\. For information about creating database migration tasks, see [Creating a task](CHAP_Tasks.Creating.md)\.
 
 1. Verify that replication is working by running queries on the target database\.

@@ -4,10 +4,6 @@ You can migrate data to Oracle database targets using AWS DMS, either from anoth
 
 AWS DMS supports Oracle versions 10g, 11g, 12c, 18c, and 19c for on\-premises and EC2 instances for the Enterprise, Standard, Standard One, and Standard Two editions as targets\. AWS DMS supports Oracle versions 11g \(version 11\.2\.0\.3\.v1 and later\), 12c, 18c, and 19c for Amazon RDS instance databases for the Enterprise, Standard, Standard One, and Standard Two editions\.
 
-**Note**  
-Support for Oracle version 19c as a target is available in AWS DMS versions 3\.3\.2 and later\.  
-Support for Oracle version 18c as a target is available in AWS DMS versions 3\.3\.1 and later\.
-
 When you use Oracle as a target, we assume that the data is to be migrated into the schema or user that is used for the target connection\. If you want to migrate data to a different schema, use a schema transformation to do so\. For example, suppose that your target endpoint connects to the user `RDSMASTER` and you want to migrate from the user `PERFDATA1` to `PERFDATA2`\. In this case, create a transformation like the following\.
 
 ```
@@ -91,12 +87,14 @@ To use an Oracle target in an AWS Database Migration Service task, grant the fol
 + CREATE ANY SEQUENCE
 + ALTER ANY SEQUENCE
 + DROP ANY SEQUENCE 
++ DELETE ANY TABLE
 
 For the following requirements, grant these additional privileges:
 + To use a specific table list, grant SELECT on any replicated table and also ALTER on any replicated table\.
 + To allow a user to create a table in a default tablespace, grant the privilege GRANT UNLIMITED TABLESPACE\.
 + For logon, grant the privilege CREATE SESSION\.
-+ If you are using a direct path, grant the privilege LOCK ANY TABLE\.
++ If you are using a direct path \(which is the default for full load\), `GRANT LOCK ANY TABLE to dms_user;`\.
++ If schema is different when using “DROP and CREATE” table prep mode, `GRANT CREATE ANY INDEX to dms_user;`\.
 + For some full load scenarios, you might choose the "DROP and CREATE table" or "TRUNCATE before loading" option where a target table schema is different from the DMS user's\. In this case, grant DROP ANY TABLE\.
 + To store changes in change tables or an audit table where the target table schema is different from the DMS user's, grant CREATE ANY TABLE and CREATE ANY INDEX\.
 
@@ -153,6 +151,6 @@ A target Oracle database used with AWS DMS supports most Oracle data types\. The
 |  UINT8  |  NUMBER \(19\)  | 
 |  WSTRING  |  If length > 2000: NCLOB In all other cases: NVARCHAR2 \(length\)  | 
 |  BLOB  |  BLOB To use this data type with AWS DMS, you must enable the use of BLOBs for a specific task\. BLOB data types are supported only in tables that include a primary key  | 
-|  CLOB  |  CLOB To use this data type with AWS DMS, you must enable the use of CLOBs for a specific task\. During change data capture \(CDC\), CLOB data types are supported only in tables that include a primary key\. STRING Beginning with AWS DMS 3\.3\.3, an Oracle VARCHAR2 data type on the source with a declared size greater than 4000 bytes maps through the AWS DMS CLOB to a STRING on the Oracle target\.  | 
-|  NCLOB  |  NCLOB To use this data type with AWS DMS, you must enable the use of NCLOBs for a specific task\. During CDC, NCLOB data types are supported only in tables that include a primary key\. WSTRING Beginning with AWS DMS 3\.3\.3, an Oracle VARCHAR2 data type on the source with a declared size greater than 4000 bytes maps through the AWS DMS NCLOB to a WSTRING on the Oracle target\.   | 
+|  CLOB  |  CLOB To use this data type with AWS DMS, you must enable the use of CLOBs for a specific task\. During change data capture \(CDC\), CLOB data types are supported only in tables that include a primary key\. STRING An Oracle VARCHAR2 data type on the source with a declared size greater than 4000 bytes maps through the AWS DMS CLOB to a STRING on the Oracle target\.  | 
+|  NCLOB  |  NCLOB To use this data type with AWS DMS, you must enable the use of NCLOBs for a specific task\. During CDC, NCLOB data types are supported only in tables that include a primary key\. WSTRING An Oracle VARCHAR2 data type on the source with a declared size greater than 4000 bytes maps through the AWS DMS NCLOB to a WSTRING on the Oracle target\.   | 
 | XMLTYPE |  The XMLTYPE target data type is only relevant in Oracle\-to\-Oracle replication tasks\. When the source database is Oracle, the source data types are replicated as\-is to the Oracle target\. For example, an XMLTYPE data type on the source is created as an XMLTYPE data type on the target\.  | 

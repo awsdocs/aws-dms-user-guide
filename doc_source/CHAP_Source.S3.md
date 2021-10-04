@@ -141,10 +141,16 @@ CDC00003.csv
 **Note**  
 To replicate CDC files in the change data folder successfully upload them in a lexical \(sequential\) order\. For example, upload the file CDC00002\.csv before the file CDC00003\.csv\. Otherwise, CDC00002\.csv is skipped and isn't replicated if you load it after CDC00003\.csv\. But the file CDC00004\.csv replicates successfully if loaded after CDC00003\.csv\.
 
-To indicate where AWS DMS can find the files, you must specify the `cdcPath` parameter\. Continuing the previous example, if you set `cdcPath` to `changedata`, then AWS DMS reads the CDC files at the following path\.
+To indicate where AWS DMS can find the files, specify the `cdcPath` parameter\. Continuing the previous example, if you set `cdcPath` to `changedata`, then AWS DMS reads the CDC files at the following path\.
 
 ```
 s3://mybucket/changedata
+```
+
+If you set `cdcPath` to `changedata` and `bucketFolder` to `myFolder`, then AWS DMS reads the CDC files at the following path\.
+
+```
+s3://mybucket/myFolder/changedata
 ```
 
 The records in a CDC file are formatted as follows:
@@ -211,8 +217,8 @@ You can specify the following options as extra connection attributes\.
 | csvDelimiter |  The delimiter used to separate columns in the source files\. The default is a comma\. An example follows\. `csvDelimiter=,;`  | 
 | csvRowDelimiter |  The delimiter used to separate rows in the source files\. The default is a newline \(`\n`\)\. An example follows\. `csvRowDelimiter=\n;`  | 
 | externalTableDefinition |  A JSON object that describes how AWS DMS should interpret the data in the Amazon S3 bucket during the migration\. For more information, see [Defining external tables for Amazon S3 as a source for AWS DMS](#CHAP_Source.S3.ExternalTableDef)\. An example follows\. `externalTableDefinition=`*json\_object*`;`  | 
-| ignoreHeaderRows |  When this value is set to 1, AWS DMS ignores the first row header in a \.csv file\. A value of 1 enables the feature, a value of 0 disables the feature\. The default is 0\. `ignoreHeaderRows=1;`  | 
-| rfc4180 |  When this value is set to true or y, each leading double quotation mark has to be followed by an ending double quotation mark\. This formatting complies with RFC 4180\. When this value is set to false, string literals are copied to the target as is\. In this case, a delimiter \(row or column\) signals the end of the field\. Thus, you can't use a delimiter as part of the string, because it signals the end of the value\. The default is `true`\. Valid values: `true`, `false`, `y`, `n` Example: `rfc4180=false;`  | 
+| ignoreHeaderRows |  When this value is set to 1, AWS DMS ignores the first row header in a \.csv file\. A value of 1 enables the feature, a value of 0 disables the feature\. The default is 0\. Example: `ignoreHeaderRows=1;`  | 
+| rfc4180 |  When this value is set to `true` or `y`, each leading double quotation mark has to be followed by an ending double quotation mark\. This formatting complies with RFC 4180\. When this value is set to `false` or `n`, string literals are copied to the target as is\. In this case, a delimiter \(row or column\) signals the end of the field\. Thus, you can't use a delimiter as part of the string, because it signals the end of the value\. The default is `true`\. Valid values: `true`, `false`, `y`, `n` Example: `rfc4180=false;`  | 
 
 ## Source data types for Amazon S3<a name="CHAP_Source.S3.DataTypes"></a>
 

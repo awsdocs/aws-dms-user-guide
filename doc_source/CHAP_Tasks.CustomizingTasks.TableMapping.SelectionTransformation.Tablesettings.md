@@ -1,12 +1,13 @@
 # Table and collection settings rules and operations<a name="CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Tablesettings"></a>
 
-You use table settings to specify any settings that you want to apply to the selected table or view for a specified operation\. Table\-settings rules are optional\. 
+Use table settings to specify any settings that you want to apply to a selected table or view for a specified operation\. Table\-settings rules are optional, depending on your endpoint and migration requirements\. 
 
-**Note**  
-Instead of the concept of tables and views, MongoDB and DocumentDB databases store data records as documents that are gathered together in *collections*\. So then, when migrating from a MongoDB or DocumentDB source, consider the range segmentation type of parallel load settings for selected *collections* rather than tables and views\.
+Instead of using tables and views, MongoDB and Amazon DocumentDB databases store data records as documents that are gathered together in *collections*\. A single database for any MongoDB or Amazon DocumentDB endpoint is a specific set of collections identified by the database name\. 
+
+When migrating from a MongoDB or Amazon DocumentDB source, you work with parallel load settings slightly differently\. In this case, consider the autosegmentation or range segmentation type of parallel load settings for selected collections rather than tables and views\.
 
 **Topics**
-+ [Using parallel load for selected tables and views](#CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Tablesettings.ParallelLoad)
++ [Using parallel load for selected tables, views, and collections](#CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Tablesettings.ParallelLoad)
 + [Specifying LOB settings for a selected table or view](#CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Tablesettings.LOB)
 + [Table\-settings examples](#CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Tablesettings.Examples)
 
@@ -14,11 +15,11 @@ For table\-mapping rules that use the table\-settings rule type, you can apply t
 
 [\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Tablesettings.html)
 
-## Using parallel load for selected tables and views<a name="CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Tablesettings.ParallelLoad"></a>
+## Using parallel load for selected tables, views, and collections<a name="CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Tablesettings.ParallelLoad"></a>
 
-To speed up migration and make it more efficient, you can use parallel load for selected relational tables and views\. In other words, you can migrate a single segmented table or view using several threads in parallel\. To do this, AWS DMS splits a full\-load task into threads, with each table segment allocated to its own thread\. 
+To speed up migration and make it more efficient, you can use parallel load for selected relational tables, views, and collections\. In other words, you can migrate a single segmented table, view, or collection using several threads in parallel\. To do this, AWS DMS splits a full\-load task into threads, with each table segment allocated to its own thread\. 
 
-Using this parallel\-load process, you can first have multiple threads unload multiple tables and views in parallel from the source endpoint\. You can then have multiple threads migrate and load the same tables and views in parallel to the target endpoint\. For some database engines, you can segment the tables and views by existing partitions or subpartitions\. Otherwise, you can segment any table or view by ranges of column values that you specify\.
+Using this parallel\-load process, you can first have multiple threads unload multiple tables, views, and collections in parallel from the source endpoint\. You can then have multiple threads migrate and load the same tables, views, and collections in parallel to the target endpoint\. For some database engines, you can segment the tables and views by existing partitions or subpartitions\. For other database engines, you can have AWS DMS automatically segment collections according to specific parameters \(autosegmentation\)\. Otherwise, you can segment any table, view, or collection by ranges of column values that you specify\.
 
 Parallel load is supported for the following source endpoints:
 + Oracle
@@ -27,10 +28,10 @@ Parallel load is supported for the following source endpoints:
 + PostgreSQL
 + IBM Db2
 + SAP Adaptive Server Enterprise \(ASE\)
-+ MongoDB \(only supports range segmentation option of parallel full load\)
-+ Amazon DocumentDB \(only supports range segmentation option of parallel full load\)
++ MongoDB \(only supports the autosegmentation and range segmentation options of a parallel full load\)
++ Amazon DocumentDB \(only supports the autosegmentation and range segmentation options of a parallel full load\)
 
-For MongoDB and DocumentDB endpoints, AWS DMS supports the following data types for columns as partition keys of range segmentation\.
+For MongoDB and Amazon DocumentDB endpoints, AWS DMS supports the following data types for columns that are partition keys for the range segmentation option of a parallel full load\.
 + Double
 + String
 + ObjectId
@@ -43,29 +44,35 @@ Parallel load for use with table\-setting rules are supported for the following 
 + MySQL
 + PostgreSQL
 + SAP Adaptive Server Enterprise \(ASE\)
-+ Amazon DocumentDB \(only supports range segmentation option of parallel full load\)
++ Amazon Redshift
++ MongoDB \(only supports the autosegmentation and range segmentation options of a parallel full load\)
++ Amazon DocumentDB \(only supports the autosegmentation and range segmentation options of a parallel full load\)
 
-To specify the maximum number of tables and views to load in parallel, use the `MaxFullLoadSubTasks` task setting\. To specify the maximum number of threads per table or view for a parallel\-load task, use the `ParallelLoadThreads` task setting\. To specify the buffer size for a parallel load task, use the `ParallelLoadBufferSize` task setting\. The availability and settings of `ParallelLoadThreads`and `ParallelLoadBufferSize` depend on the target endpoint\.
+To specify the maximum number of tables, views, and collections to load in parallel, use the `MaxFullLoadSubTasks` task setting\. To specify the maximum number of threads per table, view, or collection for a parallel\-load task, use the `ParallelLoadThreads` task setting\. To specify the buffer size for a parallel load task, use the `ParallelLoadBufferSize` task setting\. The availability and settings of `ParallelLoadThreads`and `ParallelLoadBufferSize` depend on the target endpoint\.
 
 For more information about the `ParallelLoadThreads` and `ParallelLoadBufferSize` settings, see [Target metadata task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.TargetMetadata.md)\. For more information about the `MaxFullLoadSubTasks` setting, see [Full\-load task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.FullLoad.md)\. For information specific to target endpoints, see the related topics\.
 
-To use parallel load, create a table\-mapping rule of type `table-settings` with the `parallel-load` option\. Within the `table-settings` rule, you can specify the segmentation criteria for a single table or view that you want to load in parallel\. To do so, set the `type` parameter of the `parallel-load` option to one of several options\. How to do this depends on how you want to segment the table or view for parallel load:
-+ By partitions – Load all existing table or view partitions using the `partitions-auto` type\. Or load only selected partitions using the `partitions-list` type with a specified `partitions` array\.
-+ \(Oracle endpoints only\) By subpartitions – Load all existing table or view subpartitions using the `subpartitions-auto` type\. Or load only selected subpartitions using the `partitions-list` type with a specified `subpartitions` array\.
-+ By segments that you define – Load table or view segments that you define by using column\-value boundaries\. To do so, use the `ranges` type with specified `columns` and `boundaries` arrays\.
-**Note**  
-PostgreSQL, MongoDB, and DocumentDB as a source support only this type of parallel load\.
+To use parallel load, create a table\-mapping rule of type `table-settings` with the `parallel-load` option\. Within the `table-settings` rule, you can specify the segmentation criteria for a single table, view, or collection that you want to load in parallel\. To do so, set the `type` parameter of the `parallel-load` option to one of several options\. 
 
-To identify additional tables or views to load in parallel, specify additional `table-settings` objects with `parallel-load` options\. 
+How to do this depends on how you want to segment the table, view, or collection for parallel load:
++ By partitions \(or segments\) – Load all existing table or view partitions \(or segments\) using the `partitions-auto` type\. Or load only selected partitions using the `partitions-list` type with a specified partitions array\.
+
+  For MongoDB and Amazon DocumentDB endpoints only, load all or specified collections by segments that AWS DMS automatically calculates also using the `partitions-auto` type and additional optional `table-settings` parameters\.
++ \(Oracle endpoints only\) By subpartitions – Load all existing table or view subpartitions using the `subpartitions-auto` type\. Or load only selected subpartitions using the `partitions-list` type with a specified `subpartitions` array\.
++ By segments that you define – Load table, view, or collection segments that you define by using column\-value boundaries\. To do so, use the `ranges` type with specified `columns` and `boundaries` arrays\.
+**Note**  
+PostgreSQL endpoints support only this type of a parallel load\. MongoDB and Amazon DocumentDB as a source endpoints support both this range segmentation type and the autosegmentation type of a parallel full load \(`partitions-auto`\)\.
+
+To identify additional tables, views, or collections to load in parallel, specify additional `table-settings` objects with `parallel-load` options\. 
 
 In the following procedures, you can find out how to code JSON for each parallel\-load type, from the simplest to the most complex\.
 
-**To specify all table or view partitions, or all table or view subpartitions**
+**To specify all table, view, or collection partitions, or all table or view subpartitions**
 + Specify `parallel-load` with either the `partitions-auto` type or the `subpartitions-auto` type \(but not both\)\. 
 
-  Every table or view partition or subpartition is then automatically allocated to its own thread\.
-**Note**  
-Parallel load includes partitions or subpartitions only if they are already defined for the table or view\.
+  Every table, view, or collection partition \(or segment\) or subpartition is then automatically allocated to its own thread\.
+
+  For some endpoints, parallel load includes partitions or subpartitions only if they are already defined for the table or view\. For MongoDB and Amazon DocumentDB source endpoints, you can have AWS DMS automatically calculate the partitions \(or segments\) based on optional additional parameters\. These include `number-of-partitions`, `collection-count-from-metadata`, `max-records-skip-per-page`, and `batch-size`\.
 
 **To specify selected table or view partitions, subpartitions, or both**
 
@@ -74,8 +81,10 @@ Parallel load includes partitions or subpartitions only if they are already defi
 1. \(Optional\) Include partitions by specifying an array of partition names as the value of `partitions`\.
 
    Each specified partition is then allocated to its own thread\.
+**Important**  
+For Oracle endpoints, make sure partitions and subpartitions aren't overlapping when choosing them for parallel load\. If you use overlapping partitions and subpartitions to load data in parallel, it duplicates entries, or it fails due to a primary key duplicate violation\. 
 
-1. \(Optional, for Oracle endpoints only\) Include subpartitions by specifying an array of subpartition names as the value of `subpartitions`\.
+1. \(Optional\) , For Oracle endpoints only, include subpartitions by specifying an array of subpartition names as the value of `subpartitions`\.
 
    Each specified subpartition is then allocated to its own thread\.
 **Note**  
@@ -87,7 +96,7 @@ You can specify table or view segments as ranges of column values\. When you do 
 + You can't use columns to define segment boundaries with the following AWS DMS data types: DOUBLE, FLOAT, BLOB, CLOB, and NCLOB
 + Records with null values aren't replicated\.
 
-**To specify table or view segments as ranges of column values**
+**To specify table, view, or collection segments as ranges of column values**
 
 1. Specify `parallel-load` with the `ranges` type\.
 
@@ -98,14 +107,14 @@ You can specify table or view segments as ranges of column values\. When you do 
 1. Define the data ranges for all the table or view segments by specifying a boundary array as the value of `boundaries`\. A *boundary array* is an array of column\-value arrays\. To do so, take the following steps:
 
    1. Specify each element of a column\-value array as a value that corresponds to each column\. A *column\-value array* represents the upper boundary of each table or view segment that you want to define\. Specify each column in the same order that you specified that column in the `columns` array\.
-**Note**  
-Enter values for DATE columns in the format supported by the source\.
+
+      Enter values for DATE columns in the format supported by the source\.
 
    1. Specify each column\-value array as the upper boundary, in order, of each segment from the bottom to the next\-to\-top segment of the table or view\. If any rows exist above the top boundary that you specify, these rows complete the top segment of the table or view\. Thus, the number of range\-based segments is potentially one more than the number of segment boundaries in the boundary array\. Each such range\-based segment is allocated to its own thread\.
-**Note**  
-All of the non\-null data is replicated, even if you don't define data ranges for all of the columns in the table or view\.
 
-   For example, suppose you define three column\-value arrays for columns COL1, COL2, and COL3 as follows\.    
+      All of the non\-null data is replicated, even if you don't define data ranges for all of the columns in the table or view\.
+
+   For example, suppose that you define three column\-value arrays for columns COL1, COL2, and COL3 as follows\.    
 [\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Tablesettings.html)
 
    You have defined three segment boundaries for a possible total of four segments\.

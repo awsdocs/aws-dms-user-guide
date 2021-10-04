@@ -1,10 +1,11 @@
 # Specifying task settings for AWS Database Migration Service tasks<a name="CHAP_Tasks.CustomizingTasks.TaskSettings"></a>
 
-Each task has settings that you can configure according to the needs of your database migration\. You create these settings in a JSON file or, with some settings, you can specify the settings using the AWS DMS console\. 
+Each task has settings that you can configure according to the needs of your database migration\. You create these settings in a JSON file or, with some settings, you can specify the settings using the AWS DMS console\. For information about how to use a task configuration file to set task settings, see [Task settings example](#CHAP_Tasks.CustomizingTasks.TaskSettings.Example)\.
 
 There are several main types of task settings, as listed following\.
 
 **Topics**
++ [Task settings example](#CHAP_Tasks.CustomizingTasks.TaskSettings.Example)
 + [Target metadata task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.TargetMetadata.md)
 + [Full\-load task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.FullLoad.md)
 + [Logging task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.Logging.md)
@@ -14,8 +15,8 @@ There are several main types of task settings, as listed following\.
 + [Data validation task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.DataValidation.md)
 + [Task settings for change processing DDL handling](CHAP_Tasks.CustomizingTasks.TaskSettings.DDLHandling.md)
 + [Character substitution task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.CharacterSubstitution.md)
-+ [Before image task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.BeforeImage.md)
-+ [Error handling task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.ErrorHandling.md)
++ [Task settings for before images](CHAP_Tasks.CustomizingTasks.TaskSettings.BeforeImage.md)
++ [Error\-handling task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.ErrorHandling.md)
 + [Saving task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.Saving.md)
 
 
@@ -33,7 +34,26 @@ There are several main types of task settings, as listed following\.
 | Monitoring a task There are several ways to get information on the performance of a task and the tables used by the task\.  |  [Monitoring AWS DMS tasks](CHAP_Monitoring.md)  | 
 | Managing task logs You can view and delete task logs using the AWS DMS API or AWS CLI\.   |  [Viewing and managing AWS DMS task logs](CHAP_Monitoring.md#CHAP_Monitoring.ManagingLogs)  | 
 
-A task settings JSON file can look like the following\.
+## Task settings example<a name="CHAP_Tasks.CustomizingTasks.TaskSettings.Example"></a>
+
+You can use either the AWS Management Console or the AWS CLI to create a replication task\. If you use the AWS CLI, you set task settings by creating a JSON file and by providing the file as the [ ReplicationTaskSettings](https://docs.aws.amazon.com/dms/latest/APIReference/API_CreateReplicationTask.html#DMS-CreateReplicationTask-request-ReplicationTaskSettings) parameter of the [CreateReplicationTask](https://docs.aws.amazon.com/dms/latest/APIReference/API_CreateReplicationTask.html) operation\.
+
+The following example shows how to use the AWS CLI to call the `CreateReplicationTask` operation:
+
+```
+aws dms create-replication-task \
+--replication-task-identifier MyTask \
+--source-endpoint-arn arn:aws:dms:us-west-2:123456789012:endpoint:ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890ABC \
+--target-endpoint-arn arn:aws:dms:us-west-2:123456789012:endpoint:ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890ABC \
+--replication-instance-arn arn:aws:dms:us-west-2:123456789012:rep:ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890ABC \
+--migration-type cdc \
+--table-mappings file://tablemappings.json \
+--replication-task-settings file://settings.json
+```
+
+The preceding example uses a table mapping file called `tablemappings.json`\. For table mapping examples, see [Using table mapping to specify task settings](CHAP_Tasks.CustomizingTasks.TableMapping.md)\.
+
+A task settings JSON file can look like the following\. 
 
 ```
 {
@@ -50,7 +70,7 @@ A task settings JSON file can look like the following\.
     "ParallelLoadBufferSize":0,
     "ParallelLoadQueuesPerThread": 1,
     "ParallelApplyThreads": 0,
-    "ParallelApplyBufferSize": 50,
+    "ParallelApplyBufferSize": 100,
     "ParallelApplyQueuesPerThread": 1,    
     "BatchApplyEnabled": false,
     "TaskRecoveryTableEnabled": false

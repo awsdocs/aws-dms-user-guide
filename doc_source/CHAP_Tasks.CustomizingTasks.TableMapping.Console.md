@@ -22,7 +22,7 @@ The following procedure shows how to set up selection rules, based on a table ca
 1. Enter the task information, including **Task name**, **Replication instance**, **Source endpoint**, **Target endpoint**, and **Migration type**\. Choose **Guided** from the **Table mappings** section\.  
 ![\[Schema and table selection\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-Tasks-selecttransfrm0.png)
 
-1. In the **Table mapping** section, choose the schema name and table name\. You can use "%" as a wildcard value when specifying the table name\. Specify the action to be taken, to include or exclude data defined by the filter\.  
+1. In the **Table mapping** section, choose the schema name and table name\. You can use "%" as a wildcard value when specifying the schema name or the table name\. For information about other wildcards you can use, see [Wildcards](CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Wildcards.md)\. Specify the action to be taken, to include or exclude data defined by the filter\.  
 ![\[Schema and table selection\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-Tasks-selecttransfrm.png)
 
 1. Specify filter information using the **Add column filter** and the **Add condition **links\.

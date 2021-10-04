@@ -5,7 +5,50 @@ Following, you can find release notes for current and previous versions of AWS D
 AWS DMS uses a semantic versioning scheme to identify a service release\. A version consists of a three\-component number in the format of X\.Y\.Z where X represents an *epic* version, X\.Y represents a *major* version, and Z represents a *minor* version \(**Epic**\.**Major**\.**Minor**\)\.
 
 **Note**  
-You can upgrade any version of AWS Database Migration Service to any later version\. To stay current with the latest features, enhancements, and performance improvements, upgrade to AWS DMS version 3\.4\.4\.
+You can upgrade any version of AWS Database Migration Service to AWS DMS version 3\.4\.4\. The upgrade path to 3\.4\.5 is not available\. To upgrade to AWS DMS version 3\.4\.5, create a new replication instance and move your replication tasks to the new instance\. For information about moving tasks, see [Moving a task](CHAP_Tasks.Moving.md)\.  
+To stay current with the latest features, enhancements, and performance improvements, upgrade to AWS DMS version 3\.4\.5\.
+
+## AWS Database Migration Service 3\.4\.5 release notes<a name="CHAP_ReleaseNotes.DMS345"></a>
+
+The following table shows the new features and enhancements introduced in AWS Database Migration Service \(AWS DMS\) version 3\.4\.5\. 
+
+
+| New feature or enhancement | Description | 
+| --- | --- | 
+| Support for Redis as a target | AWS DMS now supports Redis as a target\. Using AWS DMS, you can now migrate live data from any AWS DMS supported source to a Redis data store, with minimal downtime\. For information about AWS DMS targets, see [Targets for data migration](CHAP_Target.md)\. | 
+| Support for MongoDB 4\.2 and 4\.4 as sources | AWS DMS now supports MongoDB 4\.2 and 4\.4 as sources\. Using AWS DMS, you can now migrate data from MongoDB 4\.2 and 4\.4 clusters to any AWS DMS supported target including Amazon DocumentDB \(with MongoDB compatibility\), with minimal downtime\. For information about AWS DMS sources, see [Sources for data migration](CHAP_Source.md)\.  | 
+| Support for multiple databases using MongoDB as a source | AWS DMS now supports migrating multiple databases in one task using MongoDB as a source\. Using AWS DMS, you can now group multiple databases of a MongoDB cluster, and migrate them using one database migration task\. You can migrate to any AWS DMS supported target, including Amazon DocumentDB \(with MongoDB compatibility\), with minimal downtime\.  | 
+| Support for automatic segmentation using MongoDB or Amazon DocumentDB \(with MongoDB compatibility\) as a source | AWS DMS now supports automatic segmentation using MongoDB or Amazon DocumentDB as a source\. Using AWS DMS, you can configure database migration tasks to segment the collection of a MongoDB or DocumentDB cluster automatically\. You can then migrate the segments in parallel to any AWS DMS supported target, including Amazon DocumentDB, with minimal downtime\.  | 
+| Amazon Redshift full load performance improvement | AWS DMS now supports using parallel threads when using Amazon Redshift as a target during full load\. By taking advantage of the multithreaded full load task settings, you can improve the performance of your initial migration from any AWS DMS supported source to Amazon Redshift\. For information about AWS DMS targets, see [Targets for data migration](CHAP_Target.md)\. | 
+
+The issues resolved in AWS DMS 3\.4\.5 include the following:
++ Fixed an issue where data could potentially be missing or duplicated after resuming, when using PostgreSQL as a source with high transaction concurrency\.
++ Fixed an issue where database migration tasks fail with error **Could not find relation id …** when using PostgreSQL as a source, with the pglogical plugin enabled\. 
++ Fixed an issue where `VARCHAR` columns are not replicated correctly when using PostgreSQL as a source and Oracle as a target\. 
++ Fixed an issue where delete operations are not properly captured when the primary key is not the first column in the table definition, when using PostgreSQL as a source\. 
++ Fixed an issue where database migration tasks miss LOB updates in a special metadata setting when using MySQL as a source\.
++ Fixed an issue where `TIMESTAMP` columns are treated as `DATETIME` in full LOB mode when using MySQL version 8 as a source\. 
++ Fixed an issue where database migration tasks fail when parsing `NULL DATETIME` records when using MySQL 5\.6\.4 and above as a source\.
++ Fixed an issue where database migration tasks get stuck after encountering a **Thread is exiting** error when using Amazon Redshift as a target with parallel apply\. 
++ Fixed an issue where data could potentially be lost, when database migration tasks disconnect with a Amazon Redshift target endpoint during batch\-apply CDC\. 
++ Improved the performance of full load by calling `ACCEPTINVCHARS` when using Amazon Redshift as a target\. 
++ Fixed an issue where duplicated records are replicated when reverting from one\-by\-one mode to parallel apply mode using Amazon Redshift as a target\.
++ Fixed an issue where database migration tasks do not switch Amazon S3 object ownership to bucket owner with `cannedAclForObjects=bucket_owner_full_control` when using Amazon S3 as a target\.
++ Improved AWS DMS by supporting multiple archive destinations with ECA `additionalArchivedLogDestId` when using Oracle as a source\.
++ Fixed an issue where database migration tasks fail with error `OCI_INVALID_HANDLE` while updating a LOB column in full LOB mode\. 
++ Fixed an issue where `NVARCHAR2` columns are not migrated properly during CDC when using Oracle as a source\.
++ Improved AWS DMS by enabling `SafeguardPolicy` when using RDS for SQL Server as a source\. 
++ Fixed an issue where database migration tasks report error on `rdsadmin` when using a non\-RDS SQL Server source\.
++ Fixed an issue where data validation fails with UUID as the primary key in a partition setting when using SQL Server as a source\. 
++ Fixed an issue where full load plus CDC tasks might fail if the required LSN cannot be found in the database log when using Db2 LUW as a source\.
++ Improved AWS DMS by supporting custom CDC timestamps when using MongoDB as a source\. 
++ Fixed an issue where database migration tasks get stuck when stopping, using MongoDB as a source, when the MongoDB driver errors on `endSessions`\. 
++ Fixed an issue where AWS DMS fails to update non\-primary fields when using DynamoDB as a target 
++ Fixed an issue where data validation reports false positive mismatches on `CLOB` and `NCLOB` columns\.
++ Fixed an issue where data validation fails on whitespace\-only records when using Oracle as a source\.
++ Fixed an issue where database migration tasks crash when truncating a partitioned table\.
++ Fixed an issue where database migration tasks fail when creating the `awsdms_apply_exceptions` control table\. 
++ Extended support of the `caching_sha2_password` authentication plugin when using MySQL version 8\.
 
 ## AWS Database Migration Service 3\.4\.4 release notes<a name="CHAP_ReleaseNotes.DMS344"></a>
 
@@ -57,7 +100,7 @@ The following table shows the new features and enhancements introduced in AWS DM
 | New MariaDB version | MariaDB version 10\.4 is now supported as both a source and target\. | 
 | Support for AWS Secrets Manager integration | You can store the database connection details \(user credentials\) for supported endpoints securely in AWS Secrets Manager\. You can then submit the corresponding secret instead of plain\-text credentials to AWS DMS when you create or modify an endpoint\. AWS DMS then connects to the endpoint databases using the secret\. For more information on creating secrets for AWS DMS endpoints, see [Using secrets to access AWS Database Migration Service endpoints](CHAP_Security.md#security_iam_secretsmanager)\. | 
 | Larger options for C5 and R5 replication instances | You can now create the following larger replication instance sizes: C5 sizes up to 96 vCPUs and 192 GiB of memory and R5 sizes up to 96 vCPUs and 768 GiB of memory\. | 
-| Amazon Redshift performance improvement | AWS DMS now supports parallel apply when using Redshift as a target to improve the performance of on\-going replication\. For more information, see [Multithreaded CDC load task settings for Amazon Redshift](CHAP_Target.Redshift.md#CHAP_Target.Redshift.ParallelApply)\. | 
+| Amazon Redshift performance improvement | AWS DMS now supports parallel apply when using Redshift as a target to improve the performance of on\-going replication\. For more information, see [Multithreaded task settings for Amazon Redshift](CHAP_Target.Redshift.md#CHAP_Target.Redshift.ParallelApply)\. | 
 
 The issues resolved in AWS DMS 3\.4\.3 include the following:
 + Fixed an issue where commit timestamp became “1970\-01\-01 00:00:00” for deferred events when using Db2 LUW as a source\.
@@ -205,31 +248,3 @@ The issues resolved in AWS DMS 3\.3\.3 include the following:
 + Fixed an issue with validation for Oracle targets with schema names' case\.
 + Fixed an issue with validation of IBM Db2 versions 9\.7 and 10\.
 + Fixed an issue for a task not stopping two times with `StopTaskCachedChangesApplied` and `StopTaskCachedChangesNotApplied` enabled\.
-
-## AWS Database Migration Service \(AWS DMS\) 3\.3\.2 release notes<a name="CHAP_ReleaseNotes.DMS332"></a>
-
-The following table shows the features and bug fixes for version 3\.3\.2 of AWS Database Migration Service \(AWS DMS\)\.
-
-
-| New feature or enhancement | Description | 
-| --- | --- | 
-| Neptune as a target |  Adds support to migrate data from an SQL relational database source to Amazon Neptune as a target\. In addition to any table mapping to select and transform the SQL source data, this AWS DMS version supports additional mechanisms to map the selected relational data to a graph\-mapping format used to load the target Neptune graph database\.  | 
-| Data transformations |  Adds support in table mapping for using expressions with selected rule actions of the transformation rule type\. For more information, see [Using transformation rule expressions to define column content](CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Expressions.md)\. This also includes support for adding the before image of updated or deleted columns in the JSON written to either Kinesis Data Streams or Apache Kafka as a target\. This includes a choice of all columns from the source, the primary key column, or columns without LOBs as a separate field\. For more information, see [Before image task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.BeforeImage.md)\.  | 
-| New Oracle version |  Oracle version 19c is now supported as a source and target\. Note that this support currently doesn't include the use of Oracle transparent data encryption \(TDE\) with Oracle version 19c as a source\.  | 
-| New SQL Server version |  SQL Server 2019 is now supported as a source and target\.  | 
-| Support for LOBs in Kafka as a target |  Replicating LOB data to a Kafka target is now supported\.  | 
-| Support for partial validation of LOBs |  Adds support for partial validation of LOBs for MySQL, Oracle, and PostgreSQL endpoints\.  | 
-
-The issues resolved are as follows:
-+ Multiple data validation related fixes:
-  + Disabled validation for Oracle long types\.
-  + Improved retry mechanisms based on driver error codes\.
-  + Fixed an issue where validation hangs indefinitely while fetching data from source and target\.
-  + Fixed an issue with PostgreSQL UUID type validation\.
-  + Fixed multiple stuck validation issues\.
-+ Fixed an issue where data loss occurs with S3 as a target when the replication task process crashes on the replication instance\.
-+ Fixed an issue where columns of timestamp data types do not migrate when using attribute mappings in Kinesis and Kafka\.
-+ Fixed an issue where replication tasks with Oracle or PostgreSQL as a source enter a "failed" state when you try to stop them\.
-+ Fixed an issue where batch apply does not work as expected for replications to Redshift when using composite primary keys\.
-+ Fixed an out of memory issue on the replication instance when using MariaDB as a source\.
-+ Fixed an issue where AWS DMS inserts random values in an S3 target instead of null values as expected\.

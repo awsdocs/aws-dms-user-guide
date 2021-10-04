@@ -4,12 +4,7 @@ You can use the following data stores as target endpoints for data migration usi
 
 **On\-premises and Amazon EC2 instance databases**
 + Oracle versions 10g, 11g, 12c, 18c, and 19c for the Enterprise, Standard, Standard One, and Standard Two editions\.
-**Note**  
-Support for Oracle version 19c as a target is available in AWS DMS versions 3\.3\.2 and later\.  
-Support for Oracle version 18c as a target is available in AWS DMS versions 3\.3\.1 and later\.
 + Microsoft SQL Server versions 2005, 2008, 2008R2, 2012, 2014, 2016, 2017, and 2019 for the Enterprise, Standard, Workgroup, and Developer editions\. The Web and Express editions are not supported\.
-**Note**  
-Support for Microsoft SQL Server version 2019 as a target is available in AWS DMS versions 3\.3\.2 and later\.
 + MySQL versions 5\.5, 5\.6, 5\.7, and 8\.0\.
 + MariaDB \(supported as a MySQL\-compatible data target\) versions 10\.0\.24 to 10\.0\.28, 10\.1, 10\.2, 10\.3 and 10\.4\.
 **Note**  
@@ -17,25 +12,19 @@ Support for MariaDB as a target is available in all AWS DMS versions where MySQL
 + PostgreSQL version 9\.4 and later \(for versions 9\.x\), 10\.x, 11\.x, and 12\.x\.
 **Note**  
 PostgreSQL versions 12\.x are supported as a target in AWS DMS versions 3\.3\.3 and later\.
-PostgreSQL versions 11\.x are supported as a target in AWS DMS versions 3\.3\.1 and later\. You can use PostgreSQL version 9\.4 and later \(for versions 9\.x\) and 10\.x as a source in any DMS version\.
 + SAP Adaptive Server Enterprise \(ASE\) versions 15, 15\.5, 15\.7, 16 and later\.
++ Redis versions 6\.x\.
 
-**Amazon RDS instance databases, Amazon Redshift, Amazon DynamoDB, Amazon S3, Amazon Elasticsearch Service, Amazon Kinesis Data Streams, Amazon DocumentDB, Amazon Neptune, and Apache Kafka**
+**Amazon RDS instance databases, Amazon Redshift, Amazon DynamoDB, Amazon S3, Amazon Elasticsearch Service, Amazon ElastiCache for Redis, Amazon Kinesis Data Streams, Amazon DocumentDB, Amazon Neptune, and Apache Kafka**
 + Oracle versions 11g \(versions 11\.2\.0\.3\.v1 and later\), 12c, 18c, and 19c for the Enterprise, Standard, Standard One, and Standard Two editions\.
-**Note**  
-Support for Oracle version 19c as a target is available in AWS DMS versions 3\.3\.2 and later\.  
-Support for Oracle version 18c as a target is available in AWS DMS versions 3\.3\.1 and later\.
-+ Microsoft SQL Server versions 2008R2, 2012, 2014, 2016, 2017, and 2019 for the Enterprise, Standard, Workgroup, and Developer editions\. The Web and Express editions are not supported\.
-**Note**  
-Support for Microsoft SQL Server version 2019 as a target is available in AWS DMS versions 3\.3\.2 and later\.
++ Microsoft SQL Server versions 2012, 2014, 2016, 2017, and 2019 for the Enterprise, Standard, Workgroup, and Developer editions\. The Web and Express editions are not supported\.
 + MySQL versions 5\.5, 5\.6, 5\.7, and 8\.0\.
 + MariaDB \(supported as a MySQL\-compatible data target\) versions 10\.0\.24 to 10\.0\.28, 10\.1, 10\.2,10\.3 and 10\.4\.
 **Note**  
 Support for MariaDB as a target is available in all AWS DMS versions where MySQL is supported\.
 + PostgreSQL version 9\.4 and later \(for versions 9\.x\), 10\.x, 11\.x, and 12\.x\.
 **Note**  
-PostgreSQL versions 12\.x are supported as a target in AWS DMS versions 3\.3\.3 and later\.  
-PostgreSQL versions 11\.x are supported as a target in AWS DMS versions 3\.3\.1 and later\. You can use PostgreSQL version 9\.4 and later \(for versions 9\.x\) and 10\.x as a source in any DMS version\.
+PostgreSQL versions 12\.x are supported as a target in AWS DMS versions 3\.3\.3 and later\.
 + Amazon Aurora MySQL\-Compatible Edition
 + Amazon Aurora PostgreSQL\-Compatible Edition
 + Amazon Aurora Serverless
@@ -43,6 +32,7 @@ PostgreSQL versions 11\.x are supported as a target in AWS DMS versions 3\.3\.1 
 + Amazon S3
 + Amazon DynamoDB
 + Amazon Elasticsearch Service
++ Amazon ElastiCache for Redis
 + Amazon Kinesis Data Streams
 + Amazon DocumentDB \(with MongoDB compatibility\)
 + Amazon Neptune

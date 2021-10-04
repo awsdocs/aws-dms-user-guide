@@ -24,3 +24,4 @@ Amazon Kinesis Data Streams
 + [Using an Amazon Elasticsearch Service cluster as a target for AWS Database Migration Service](CHAP_Target.Elasticsearch.md)
 + [Using Amazon DocumentDB as a target for AWS Database Migration Service](CHAP_Target.DocumentDB.md)
 + [Using Amazon Neptune as a target for AWS Database Migration Service](CHAP_Target.Neptune.md)
++ [Using Redis as a target for AWS Database Migration Service](CHAP_Target.Redis.md)

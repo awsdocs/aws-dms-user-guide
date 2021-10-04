@@ -1,6 +1,6 @@
 # Setting up a network for a replication instance<a name="CHAP_ReplicationInstance.VPC"></a>
 
-AWS DMS always creates the replication instance in a VPC based on Amazon VPC\. You specify the VPC where your replication instance is located\. You can use your default VPC for your account and AWS Region, or you can create a new VPC\. The VPC must have two subnets in at least one Availability Zone\.
+AWS DMS always creates the replication instance in a VPC based on Amazon VPC\. You specify the VPC where your replication instance is located\. You can use your default VPC for your account and AWS Region, or you can create a new VPC\. 
 
 Make sure that the elastic network interface allocated for your replication instance's VPC is associated with a security group\. Also, make sure this security group's rules let all traffic on all ports leave \(egress\) the VPC\. This approach allows communication from the replication instance to your source and target database endpoints, if correct egress rules are enabled on the endpoints\. We recommend that you use the default settings for the endpoints, which allows egress on all ports to all addresses\.
 
@@ -16,6 +16,8 @@ You can use several different network configurations with AWS Database Migration
 + [Configuration for a network to a VPC using AWS Direct Connect or a VPN](#CHAP_ReplicationInstance.VPC.Configurations.ScenarioDirect)
 + [Configuration for a network to a VPC using the internet](#CHAP_ReplicationInstance.VPC.Configurations.ScenarioInternet)
 + [Configuration with an RDS DB instance not in a VPC to a DB instance in a VPC using ClassicLink](#CHAP_ReplicationInstance.VPC.Configurations.ClassicLink)
+
+When practical, we recommend that you create a DMS replication instance in the same region as your target endpoint, and in the same VPC or subnet as your target endpoint\.
 
 ### Configuration with all database migration components in one VPC<a name="CHAP_ReplicationInstance.VPC.Configurations.ScenarioAllVPC"></a>
 
@@ -201,7 +203,7 @@ As part of the network to use for database migration, you need to specify what s
 
 You create a replication instance in a subnet that you choose, and you can manage what subnet a source or target endpoint uses by using the AWS DMS console\.
 
-You create a replication subnet group to define which subnets to use\. You must specify at least one subnet in two different Availability Zones\.
+You create a replication subnet group to define which subnets to use\. You must specify subnets in at least two Availability Zones\.
 
 **To create a replication subnet group**
 
