@@ -491,7 +491,7 @@ You can add additional configuration settings when migrating data from a Postgre
 + You can override connection string parameters\. Choose this option to do either of the following:
   + Specify internal AWS DMS parameters\. Such parameters are rarely required so aren't exposed in the user interface\.
   + Specify pass\-through \(passthru\) values for the specific database client\. AWS DMS includes pass\-through parameters in the connection sting passed to the database client\.
-+ By using the table\-level parameter `REPLICATE IDENTITY` in PostgreSQL versions 9\.4, you can control information written to write\-ahead logs \(WALs\)\. In particular, it does so for WALs that identify rows that are updated or deleted\. `REPLICATE IDENTITY FULL` records the old values of all columns in the row\. Use `REPLICATE IDENTITY FULL` carefully for each table as `FULL` generates an extra number of WALs that might not be necessary\.
++ By using the table\-level parameter `REPLICA IDENTITY` in PostgreSQL versions 9\.4, you can control information written to write\-ahead logs \(WALs\)\. In particular, it does so for WALs that identify rows that are updated or deleted\. `REPLICA IDENTITY FULL` records the old values of all columns in the row\. Use `REPLICA IDENTITY FULL` carefully for each table as `FULL` generates an extra number of WALs that might not be necessary\.
 
 ## Extra connection attributes when using PostgreSQL as a DMS source<a name="CHAP_Source.PostgreSQL.ConnectionAttrib"></a>
 
