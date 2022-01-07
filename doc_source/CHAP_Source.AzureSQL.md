@@ -1,8 +1,39 @@
-# Using Microsoft Azure SQL database as a source for AWS DMS<a name="CHAP_Source.AzureSQL"></a>
+# Using Azure SQL Database as a source for AWS SCT<a name="CHAP_Source.AzureSQL"></a>
 
-With AWS DMS, you can use Microsoft Azure SQL Database as a source in much the same way as you do SQL Server\. AWS DMS supports, as a source, the same list of database versions that are supported for SQL Server running on\-premises or on an Amazon EC2 instance\. 
+You can use AWS SCT to convert schemas, code objects, and application code from Azure SQL Database to the following targets: 
++ Amazon RDS for MySQL
++ Amazon Aurora MySQL\-Compatible Edition
++ Amazon RDS for PostgreSQL
++ Amazon Aurora PostgreSQL\-Compatible Edition
 
-For more information, see [Using a Microsoft SQL Server database as a source for AWS DMS](CHAP_Source.SQLServer.md)\.
+**Topics**
++ [Privileges for Azure SQL Database as a source](#CHAP_Source.AzureSQL.Permissions)
++ [Connecting to Azure SQL Database as a source](#CHAP_Source.AzureSQL.Connecting)
 
-**Note**  
-AWS DMS doesn't support change data capture operations \(CDC\) with Azure SQL Database\.
+## Privileges for Azure SQL Database as a source<a name="CHAP_Source.AzureSQL.Permissions"></a>
+
+The privileges required for Azure SQL Database as a source are listed following: 
++ VIEW DEFINITION 
++ VIEW DATABASE STATE 
+
+Repeat the grant for each database whose schema you are converting\. 
+
+## Connecting to Azure SQL Database as a source<a name="CHAP_Source.AzureSQL.Connecting"></a>
+
+Use the following procedure to connect to your Azure SQL Database source database with the AWS Schema Conversion Tool\. 
+
+**To connect to an Azure SQL Database source database**
+
+1. In the AWS Schema Conversion Tool, choose **Add source**\. 
+
+1. Choose **Azure SQL Database**, then choose **Next**\. 
+
+   The **Add source** dialog box appears\.
+
+1. Provide the Azure SQL Database source database connection information\. Use the instructions in the following table\.   
+****    
+[\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_Source.AzureSQL.html)
+
+1. Choose **Test Connection** to verify that AWS SCT can connect to your source database\. 
+
+1. Choose **Connect** to connect to your source database\.

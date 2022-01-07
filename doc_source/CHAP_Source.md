@@ -1,17 +1,27 @@
-# Sources for data migration<a name="CHAP_Source"></a>
+# Sources for AWS SCT<a name="CHAP_Source"></a>
 
-AWS Database Migration Service \(AWS DMS\) can use many of the most popular data engines as a source for data replication\. The database source can be a self\-managed engine running on an Amazon EC2 instance or an on\-premises database\. Or it can be a data source on an AWS service such as Amazon RDS or Amazon S3\.
+AWS Schema Conversion Tool \(AWS SCT\) can convert schemas from the following source databases and data warehouses to a target database or data warehouse\. For information about permissions, connections, and what AWS SCT can convert for use with the target database or data warehouse, see details in the topics listed following\.
 
-For a comprehensive list of valid sources, see [Sources for AWS DMS](CHAP_Introduction.Sources.md#CHAP_Introduction.Sources.title)\.
+**Encryption information**  
+[Encrypting Amazon RDS connections](CHAP_Source.Encrypt.RDS.md)
 
-**Topics**
-+ [Using an Oracle database as a source for AWS DMS](CHAP_Source.Oracle.md)
-+ [Using a Microsoft SQL Server database as a source for AWS DMS](CHAP_Source.SQLServer.md)
-+ [Using Microsoft Azure SQL database as a source for AWS DMS](CHAP_Source.AzureSQL.md)
-+ [Using a PostgreSQL database as an AWS DMS source](CHAP_Source.PostgreSQL.md)
-+ [Using a MySQL\-compatible database as a source for AWS DMS](CHAP_Source.MySQL.md)
-+ [Using an SAP ASE database as a source for AWS DMS](CHAP_Source.SAP.md)
-+ [Using MongoDB as a source for AWS DMS](CHAP_Source.MongoDB.md)
-+ [Using Amazon DocumentDB \(with MongoDB compatibility\) as a source for AWS DMS](CHAP_Source.DocumentDB.md)
-+ [Using Amazon S3 as a source for AWS DMS](CHAP_Source.S3.md)
-+ [Using IBM Db2 for Linux, Unix, and Windows database \(Db2 LUW\) as a source for AWS DMS](CHAP_Source.DB2.md)
+**Database sources**
++ [Using Apache Cassandra as a source](CHAP_Source.Cassandra.md)
++ [Using Azure SQL Database as a source](CHAP_Source.AzureSQL.md)
++ [Using IBM Db2 LUW as a source](CHAP_Source.DB2LUW.md)
++ [Using MySQL as a source](CHAP_Source.MySQL.md)
++ [Using Oracle Database as a source](CHAP_Source.Oracle.md)
++ [Using PostgreSQL as a source](CHAP_Source.PostgreSQL.md)
++ [Using SAP ASE \(Sybase ASE\) as a source](CHAP_Source.SAP.md)
++ [Using SQL Server as a source](CHAP_Source.SQLServer.md)
+
+**Data warehouse sources**
++ [Using Amazon Redshift as a source](CHAP_Source.Redshift.md)
++ [Using Azure Synapse Analytics as a source](CHAP_Source.AzureSynapse.md)
++ [Using Greenplum Database as a source](CHAP_Source.Greenplum.md)
++ [Using Netezza as a source](CHAP_Source.Netezza.md)
++ [Using Oracle Data Warehouse as a source](CHAP_Source.OracleDW.md)
++ [Using SQL Server Data Warehouse as a source](CHAP_Source.SQLServerDW.md)
++ [Using Snowflake as a source](CHAP_Source.Snowflake.md)
++ [Using Teradata as a source](CHAP_Source.Teradata.md)
++ [Using Vertica as a source](CHAP_Source.Vertica.md)
