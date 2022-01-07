@@ -11,6 +11,11 @@ You can monitor the progress of your task by checking the task status and by mon
 **Amazon CloudWatch alarms and logs**  
 Using Amazon CloudWatch alarms, you watch one or more task metrics over a time period that you specify\. If a metric exceeds a given threshold, a notification is sent to an Amazon SNS topic\. CloudWatch alarms do not invoke actions because they are in a particular state\. Rather the state must have changed and been maintained for a specified number of periods\. AWS DMS also uses CloudWatch to log task information during the migration process\. You can use the AWS CLI or the AWS DMS API to view information about the task logs\. For more information about using CloudWatch with AWS DMS, see [Monitoring replication tasks using Amazon CloudWatch](#CHAP_Monitoring.CloudWatch)\. For more information about monitoring AWS DMS metrics, see [AWS Database Migration Service metrics](#CHAP_Monitoring.Metrics)\. For more information about using AWS DMS task logs, see [Viewing and managing AWS DMS task logs](#CHAP_Monitoring.ManagingLogs)\.
 
+**Time Travel logs**  
+To log and debug replication tasks, you can use AWS DMS Time Travel\. In this approach, you use Amazon S3 to store logs and encrypt them using your encryption keys\. You can retrieve your S3 logs using date\-time filters, then view, download, and obfuscate logs as needed\. By doing this, you can "travel back in time" to investigate database activities\.  
+You can use Time Travel with DMS\-supported PostgreSQL source endpoints and DMS\-supported PostgreSQL and MySQL target endpoints\. You can turn on Time Travel only for full\-load and CDC tasks and for CDC only tasks\. To turn on Time Travel or to modify any existing Time Travel settings, ensure that your task is stopped\.  
+For more information about Time Travel logs, see [Time Travel task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.TimeTravel.md)\. For best practices for using Time Travel logs, see [Troubleshooting replication tasks with Time Travel](CHAP_BestPractices.md#CHAP_BestPractices.TimeTravel)\.
+
 **AWS CloudTrail logs**  
 AWS DMS is integrated with AWS CloudTrail, a service that provides a record of actions taken by a user, IAM role, or an AWS service in AWS DMS\. CloudTrail captures all API calls for AWS DMS as events, including calls from the AWS DMS console and from code calls to the AWS DMS API operations\. If you create a trail, you can enable continuous delivery of CloudTrail events to an Amazon S3 bucket, including events for AWS DMS\. If you don't configure a trail, you can still view the most recent events in the CloudTrail console in **Event history**\. Using the information collected by CloudTrail, you can determine the request that was made to AWS DMS, the IP address from which the request was made, who made the request, when it was made, and additional details\. For more information, see [Logging AWS DMS API calls with AWS CloudTrail](#logging-using-cloudtrail)\.
 
@@ -69,6 +74,8 @@ The AWS DMS console updates information regarding the state of your tables durin
 ## Monitoring replication tasks using Amazon CloudWatch<a name="CHAP_Monitoring.CloudWatch"></a>
 
 You can use Amazon CloudWatch alarms or events to more closely track your migration\. For more information about Amazon CloudWatch, see [What are Amazon CloudWatch, Amazon CloudWatch Events, and Amazon CloudWatch Logs?](https://docs.aws.amazon.com/AmazonCloudWatch/latest/DeveloperGuide/WhatIsCloudWatch.html) in the Amazon CloudWatch User Guide\. Note that there is a charge for using Amazon CloudWatch\.
+
+If your replication task doesn't create CloudWatch logs, see [AWS DMS does not create CloudWatch logs](CHAP_Troubleshooting.md#CHAP_Troubleshooting.General.CWL) in the troubleshooting guide\.
 
 The AWS DMS console shows basic CloudWatch statistics for each task, including the task status, percent complete, elapsed time, and table statistics, as shown following\. Select the replication task and then select the **Task monitoring** tab\.
 
@@ -203,6 +210,12 @@ Amount of rows accumulating in a memory and waiting to be committed from the sou
 
 **CDCChangesMemoryTarget**  
 Amount of rows accumulating in a memory and waiting to be committed to the target\. You can view this metric together with CDCChangesDiskTarget\.
+
+**CDCChangesDiskSource**  
+Amount of rows accumulating on disk and waiting to be committed from the source\. You can view this metric together with CDCChangesMemorySource\.
+
+**CDCChangesDiskTarget**  
+Amount of rows accumulating on disk and waiting to be committed to the target\. You can view this metric together with CDCChangesMemoryTarget\. 
 
 **CDCChangesDiskSource**  
 Amount of rows accumulating on disk and waiting to be committed from the source\. You can view this metric together with CDCChangesMemorySource\.

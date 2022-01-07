@@ -5,6 +5,7 @@
 + [Replication task statistics with Amazon CloudWatch](#CHAP_Validating.TaskStatistics.CloudWatch)
 + [Revalidating tables during a task](#CHAP_Validating.Revalidating)
 + [Using JSON editor to modify validation rules](#CHAP_Validating.JSONEditor)
++ [Validation only tasks](#CHAP_Validating.ValidationOnly)
 + [Troubleshooting](#CHAP_Validating.Troubleshooting)
 + [Limitations](#CHAP_Validating.Limitations)
 
@@ -25,6 +26,8 @@ Data validation requires additional time, beyond the amount required for the mig
 
 For more information about these settings, see [ Data validation task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.DataValidation.md)\.
 
+For an example of `ValidationSettings` task settings in a JSON file, see [Task settings example](CHAP_Tasks.CustomizingTasks.TaskSettings.md#CHAP_Tasks.CustomizingTasks.TaskSettings.Example)\.
+
 ## Replication task statistics<a name="CHAP_Validating.TaskStatistics"></a>
 
 When data validation is enabled, AWS DMS provides the following statistics at the table level:
@@ -44,9 +47,11 @@ When data validation is enabled, AWS DMS provides the following statistics at th
 + **ValidationSuspended**—The number of records that AWS DMS can't compare\. For example, if a record at the source is constantly being updated, AWS DMS can't compare the source and the target\. 
 + **ValidationFailed**—The number of records that didn't pass the data validation phase\. 
 
+For an example of `ValidationSettings` task settings in a JSON file, see [Task settings example](CHAP_Tasks.CustomizingTasks.TaskSettings.md#CHAP_Tasks.CustomizingTasks.TaskSettings.Example)\.
+
 You can view the data validation information using the console, the AWS CLI, or the AWS DMS API\.
 + On the console, you can choose to validate a task when you create or modify the task\. To view the data validation report using the console, choose the task on the **Tasks** page and choose the **Table statistics** tab in the details section\.
-+ Using the CLI, set the `EnableValidation` parameter to **true** when creating or modifying a task to begin data validation\. The following example creates a task and enables data validation\.
++ Using the CLI, set the `EnableValidation` parameter to `true` when creating or modifying a task to begin data validation\. The following example creates a task and enables data validation\.
 
   ```
   create-replication-task  
@@ -170,6 +175,40 @@ For example, you can add the following validation rule to run a replace function
 	"target-function": "${column-name}"
 }
 ```
+
+## Validation only tasks<a name="CHAP_Validating.ValidationOnly"></a>
+
+You can create validation only tasks to preview and validate data without performing any migration or data replication\. To create a validation only task, set the `EnableValidation` and `ValidationOnly` settings to `true`\. When enabling `ValidationOnly`, additional requirements apply\. For more information, see [ Data validation task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.DataValidation.md)\.
+
+For a full load only migration type, a validation only task completes much faster than its CDC equivalent when many failures are reported\. But changes to the source or target endpoint are reported as failures for full load mode, a possible disadvantage\.
+
+A CDC validation only task delays validation based on average latency, and retries failures multiple times before reporting them\. If the majority of data comparisons result in failures, a validation only task for CDC mode is very slow, a potential drawback\.
+
+### Full load validation only<a name="CHAP_Validating.ValidationOnly.FL"></a>
+
+Beginning with AWS DMS version 3\.4\.6 and later, a full load validation only task quickly compares all rows from the source and target tables in a single pass, immediately reports any failures, and then shuts down\. Validation never is suspended due to failures in this mode, it is optimized for speed\. But changes to the source or target endpoint are reported as failures\.
+
+**Note**  
+Beginning with AWS DMS version 3\.4\.6 and later, this validation behavior also applies to full load migration task with validation enabled\.
+
+### CDC validation only<a name="CHAP_Validating.ValidationOnly.CDC"></a>
+
+A CDC validation only task validates all existing rows between the source and target tables on a fresh start\. In addition, a CDC validation only task runs continuously, re\-validates ongoing replication changes, limits the number of failures reported each pass, and retries mismatched rows before failing them\. It is optimized to prevent false positives\.
+
+Validation for a table \(or the entire task\) is suspended if the` FailureMaxCount` or `TableFailureMaxCount` thresholds are breached\. This also applies for a CDC or Full Load\+CDC migration task with validation enabled\. And a CDC task with validation enabled delays re\-validation for each changed row based on average source and target latency\.
+
+But a CDC *validation only task* doesn't migrate data and has no latency\. It sets `ValidationQueryCdcDelaySeconds` to 180 by default\. And you can increase the amount to account for high latency environments and help prevent false positives\.
+
+### Validation only use cases<a name="CHAP_Validating.ValidationOnly.Cases"></a>
+
+Use cases for splitting the data validation portion of a migration or replication task into a separate *validation only task* includes, but is not limited to, the following:
++ *Control exactly when validation occurs* — Validation queries add an additional load to both source and target endpoints\. So, migrating or replicating data in one task first, then validating the results in another task can be beneficial\.
++ *Reduce load on the replication instance* — Splitting data validation to run on its own instance can be advantageous\.
++ *Quickly obtain how many rows don't match at a given moment in time *— For example, just before or during a maintenance window production cut–over to a target endpoint, you can create a Full Load validation only task to get an answer to your question\.
++ *When validation failures are expected for a migration task with a CDC component* — For example, if migrating Oracle `varchar2` to PostgreSQL `jsonb`, CDC validation keeps retrying these failed rows and limits the number of failures reported each time\. But, you can create a Full Load validation only task and obtain a quicker answer\.
++ *You've developed a data repair script/utility that reads the validation failure table* — \(See also, [Troubleshooting](#CHAP_Validating.Troubleshooting)\)\. A Full Load validation only task quickly reports failures for the data repair script to act upon\.
+
+For an example of `ValidationSettings` task settings in a JSON file, see [Task settings example](CHAP_Tasks.CustomizingTasks.TaskSettings.md#CHAP_Tasks.CustomizingTasks.TaskSettings.Example)\)\.
 
 ## Troubleshooting<a name="CHAP_Validating.Troubleshooting"></a>
 

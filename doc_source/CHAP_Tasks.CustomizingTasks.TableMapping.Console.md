@@ -15,14 +15,14 @@ The following procedure shows how to set up selection rules, based on a table ca
 
    If you are signed in as an IAM user, make sure that you have the appropriate permissions to access AWS DMS\. For more information about the permissions required, see [IAM permissions needed to use AWS DMS](CHAP_Security.md#CHAP_Security.IAMPermissions)\.
 
-1. On the **Dashboard** page, choose **Tasks**\.
+1. On the **Dashboard** page, choose **Database migration tasks**\.
 
 1. Choose **Create Task**\.
 
-1. Enter the task information, including **Task name**, **Replication instance**, **Source endpoint**, **Target endpoint**, and **Migration type**\. Choose **Guided** from the **Table mappings** section\.  
+1. In the **Task configuration** section, enter the task information, including **Task identifier**, **Replication instance**, **Source database endpoint**, **Target database endpoint**, and **Migration type**\.   
 ![\[Schema and table selection\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-Tasks-selecttransfrm0.png)
 
-1. In the **Table mapping** section, choose the schema name and table name\. You can use "%" as a wildcard value when specifying the schema name or the table name\. For information about other wildcards you can use, see [Wildcards](CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Wildcards.md)\. Specify the action to be taken, to include or exclude data defined by the filter\.  
+1. In the **Table mapping** section, enter the schema name and table name\. You can use "%" as a wildcard value when specifying the schema name or the table name\. For information about other wildcards you can use, see [Wildcards](CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Wildcards.md)\. Specify the action to be taken, to include or exclude data defined by the filter\.   
 ![\[Schema and table selection\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-Tasks-selecttransfrm.png)
 
 1. Specify filter information using the **Add column filter** and the **Add condition **links\.
@@ -34,7 +34,7 @@ The following procedure shows how to set up selection rules, based on a table ca
     The following example shows a filter for the **Customers** table that includes **AgencyIDs** between **01** and **85**\.  
 ![\[Schema and table selection\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-Tasks-filter.png)
 
-1. When you have created the selections you want, choose **Add selection rule**\.
+1. When you have created the selections you want, choose **Add new selection rule**\.
 
 1. After you have created at least one selection rule, you can add a transformation to the task\. Choose **add transformation rule**\.  
 ![\[transformation rule\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-Tasks-transform1.png)
@@ -44,8 +44,7 @@ The following procedure shows how to set up selection rules, based on a table ca
 
 1. Choose **Add transformation rule**\.
 
-1. \(Optional\) Add additional selection rules or transformations by choosing **add selection rule** or **add transformation rule**\. When you are finished, choose **Create task**\.  
-![\[transformation rule\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-Tasks-transform3.png)
+1. Choose **Create task**\.
 
 **Note**  
 AWS DMS doesn't support more than one transformation rule per schema level or per table level\. However, AWS DMS does support more than one transformation rule per column level\.

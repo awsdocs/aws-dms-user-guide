@@ -9,6 +9,7 @@ If you have opened an AWS Support case, your support engineer might identify a p
 + [Task status bar doesn't move](#CHAP_Troubleshooting.General.StatusBar)
 + [Task completes but nothing was migrated](#CHAP_Troubleshooting.General.NothingMigrated)
 + [Foreign keys and secondary indexes are missing](#CHAP_Troubleshooting.General.MissingSecondaryObjs)
++ [AWS DMS does not create CloudWatch logs](#CHAP_Troubleshooting.General.CWL)
 + [Issues occur with connecting to Amazon RDS](#CHAP_Troubleshooting.General.RDSConnection)
 + [Networking issues occur](#CHAP_Troubleshooting.General.Network)
 + [CDC is stuck after full load](#CHAP_Troubleshooting.General.CDCStuck)
@@ -27,6 +28,7 @@ If you have opened an AWS Support case, your support engineer might identify a p
 + [Troubleshooting issues with Microsoft SQL Server](#CHAP_Troubleshooting.SQLServer)
 + [Troubleshooting issues with Amazon Redshift](#CHAP_Troubleshooting.Redshift)
 + [Troubleshooting issues with Amazon Aurora MySQL](#CHAP_Troubleshooting.Aurora)
++ [Troubleshooting issues with SAP ASE](#CHAP_Troubleshooting.SAP)
 + [Working with diagnostic support scripts in AWS DMS](CHAP_SupportScripts.md)
 
 ## Migration tasks run slowly<a name="CHAP_Troubleshooting.General.SlowTask"></a>
@@ -35,7 +37,7 @@ Several issues can cause a migration task to run slowly, or cause subsequent tas
 
 The most common reason for a migration task running slowly is that there are inadequate resources allocated to the AWS DMS replication instance\. To make sure that your instance has enough resources for the tasks you are running on it, check your replication instance's use of CPU, memory, swap files, and IOPS\. For example, multiple tasks with Amazon Redshift as an endpoint are I/O intensive\. You can increase IOPS for your replication instance or split your tasks across multiple replication instances for a more efficient migration\.
 
-For more information about determining the size of your replication instance, see [Choosing the optimum size for a replication instance](CHAP_BestPractices.SizingReplicationInstance.md)\.
+For more information about determining the size of your replication instance, see [Choosing the best size for a replication instance](CHAP_BestPractices.SizingReplicationInstance.md)\.
 
 You can increase the speed of an initial migration load by doing the following:
 + If your target is an Amazon RDS DB instance, make sure that Multi\-AZ isn't enabled for the target DB instance\.
@@ -53,13 +55,37 @@ For a task with only one table that has no estimated rows statistic, AWS DMS can
 
 Do the following if nothing was migrated after your task has completed\.
 + Check if the user that created the endpoint has read access to the table you intend to migrate\.
-+ Check if the object you want to migrate is a table\. If it is a view, update table mappings and specify the object\-locator as “view” or “all”\. For more information, see [Specifying table selection and transformations rules from the console](CHAP_Tasks.CustomizingTasks.TableMapping.Console.md)\. 
++ Check if the object you want to migrate is a table\. If it is a view, update table mappings and specify the object\-locator as “view” or “all”\. For more information, see [ Specifying table selection and transformations rules from the console](CHAP_Tasks.CustomizingTasks.TableMapping.Console.md)\. 
 
 ## Foreign keys and secondary indexes are missing<a name="CHAP_Troubleshooting.General.MissingSecondaryObjs"></a>
 
  AWS DMS creates tables, primary keys, and in some cases unique indexes, but it doesn't create any other objects that aren't required to efficiently migrate the data from the source\. For example, it doesn't create secondary indexes, non\-primary key constraints, or data defaults\. 
 
 To migrate secondary objects from your database, use the database's native tools if you are migrating to the same database engine as your source database\. Use the AWS Schema Conversion Tool \(AWS SCT\) if you are migrating to a different database engine than that used by your source database to migrate secondary objects\.
+
+## AWS DMS does not create CloudWatch logs<a name="CHAP_Troubleshooting.General.CWL"></a>
+
+If your replication task doesn't create CloudWatch logs, make sure that your account has the `dms-cloudwatch-logs-role` role\. If this role is not present, do the following to create it: 
+
+1. Sign in to the AWS Management Console and open the IAM console at [https://console\.aws\.amazon\.com/iam/](https://console.aws.amazon.com/iam/)\.
+
+1. Choose the **Roles** tab\. Choose **Create role**\.
+
+1. In the **Select type of trusted entity** section, choose **AWS service**\. 
+
+1. In the **Choose a use case** section, choose **DMS**\.
+
+1. Choose **Next: Permissions**\.
+
+1. Enter **AmazonDMSCloudWatchLogsRole** in the search field, and check the box next to **AmazonDMSCloudWatchLogsRole**\. This grants AWS DMS permissions to access CloudWatch\.
+
+1. Choose **Next: Tags**\.
+
+1. Choose **Next: Review**\.
+
+1. Enter **dms\-cloudwatch\-logs\-role** for **Role name**\. This name is case sensitive\.
+
+1. Choose **Create role**\.
 
 ## Issues occur with connecting to Amazon RDS<a name="CHAP_Troubleshooting.General.RDSConnection"></a>
 
@@ -379,7 +405,7 @@ You can disable foreign key checks on MySQL by adding the following to the **Ext
 
 ### Characters replaced with question mark<a name="CHAP_Troubleshooting.MySQL.CharacterReplacement"></a>
 
-The most common situation that causes this issue is when the source endpoint characters have been encoded by a character set that AWS DMS doesn't support\. 
+The most common situation that causes this issue is when the source endpoint characters have been encoded by a character set that AWS DMS doesn't support\.
 
 ### "Bad event" log entries<a name="CHAP_Troubleshooting.MySQL.BadEvent"></a>
 
@@ -551,7 +577,7 @@ So, avoid long running transactions when logical replication is enabled\. Instea
 
 ### Task using view as a source has no rows copied<a name="CHAP_Troubleshooting.PostgreSQL.ViewTask"></a>
 
-To migrate a view, set `table-type` to `all` or `view`\. For more information, see [Specifying table selection and transformations rules from the console](CHAP_Tasks.CustomizingTasks.TableMapping.Console.md)\. 
+To migrate a view, set `table-type` to `all` or `view`\. For more information, see [ Specifying table selection and transformations rules from the console](CHAP_Tasks.CustomizingTasks.TableMapping.Console.md)\. 
 
 Sources that support views include the following\.
 + Oracle
@@ -682,3 +708,13 @@ enclosed by '"' lines terminated by '\n'( `SANDBOX_SRC_FILE_ID`,`SANDBOX_ID`,
 `RECORD_VER`,`REF_GUID`,`PLATFORM_GENERATED`,`ANALYSIS_TYPE`,`SANITIZED`,`DYN_TYPE`,
 `CRAWL_STATUS`,`ORIG_EXEC_UNIT_VER_ID` ) ; (provider_syntax_manager.c:2561)
 ```
+
+## Troubleshooting issues with SAP ASE<a name="CHAP_Troubleshooting.SAP"></a>
+
+Following, you can learn about troubleshooting issues specific to using AWS DMS with SAP ASE databases\.
+
+### Error: LOB columns have NULL values when source has a composite unique index with NULL values<a name="CHAP_Troubleshooting.SAP"></a>
+
+When using SAP ASE as a source with tables configured with a composite unique index that allows NULL values, LOB values might not migrate during ongoing replication\. This behavior is usually the result of ANSI\_NULL set to 1 by default on the DMS replication instance client\.
+
+To ensure that LOB fields migrate correctly, include the Extra Connection Attribute \(ECA\) `'AnsiNull=0'` to the AWS DMS source endpoint for the task\.

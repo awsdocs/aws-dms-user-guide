@@ -2,20 +2,28 @@
 
 You use the transformation actions to specify any transformations you want to apply to the selected schema, table, or view\. Transformation rules are optional\. 
 
-**Note**  
-AWS DMS doesn't support more than one transformation rule per schema level or per table level\. However, AWS DMS does support more than one transformation rule per column level\.  
-Performing multiple rule actions on columns that include converting to lowercase can prevent some transformations from happening correctly\. For example, using the `convert-lowercase` and `change-data-type` rule actions together might not succeed\. Instead, use the `convert-lowercase` rule action separately\.   
-Column names in transformation rules are case\-sensitive\. For example, you must provide column names for an Oracle database in upper case\.
+## Limitations<a name="CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Transformations.Limitations"></a>
++ AWS DMS doesn't support more than one transformation rule per schema level or per table level\. However, AWS DMS does support more than one transformation rule per column level\.
++ Performing multiple rule actions on columns that include converting to lowercase can prevent some transformations from happening correctly\. For example, using the `convert-lowercase` and `change-data-type` rule actions together might not succeed\. Instead, use the `convert-lowercase` rule action separately\. 
++ Column names in transformation rules are case\-sensitive\. For example, you must provide column names for an Oracle database in upper case\.
++ Transformations are not supported for columns with Right\-to\-Left languages\.
++ Transformations cannot be performed on columns that contain special characters \(e\.g\. \#, \\, /, \-\) in their name\.
++ The only supported transformation for columns that are mapped to BLOB/CLOB datatypes is to drop the column on the target\.
+
+## Values<a name="CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Transformations.Values"></a>
 
 For table\-mapping rules that use the transformation rule type, you can apply the following values\. 
 
 [\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Transformations.html)
+
+## Examples<a name="CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Transformations.Examples"></a>
 
 **Example Rename a schema**  
 The following example renames a schema from `Test` in your source to `Test1` in your target\.  
 
 ```
 {
+
     "rules": [
         {
             "rule-type": "selection",
@@ -132,7 +140,7 @@ The following example renames the table tablespace named `SetSpace` for a table 
             "object-locator": {
                 "schema-name": "Play",
                 "table-name": "Actor",
-                "table-tablespace-name: "SetSpace"
+                "table-tablespace-name": "SetSpace"
             },
             "value": "SceneTblSpace"
         }
@@ -165,7 +173,7 @@ The following example renames the index tablespace named `SetISpace` for a table
             "object-locator": {
                 "schema-name": "Play",
                 "table-name": "Actor",
-                "table-tablespace-name: "SetISpace"
+                "table-tablespace-name": "SetISpace"
             },
             "value": "SceneIdxSpace"
         }
@@ -416,7 +424,7 @@ The following example defines a primary key named `ITEM-primary-key` on three co
 			"table-name": "ITEM"
 		},
 		"primary-key-def": {
-			"name": ITEM-primary-key,
+			"name": "ITEM-primary-key",
 			"columns": [
 				"ITEM-NAME",
 				"BOM-MODEL-NUM",
@@ -452,8 +460,8 @@ The following example defines a unique index named `ITEM-unique-idx` on three co
 			"table-name": "ITEM"
 		},
 		"primary-key-def": {
-			"name": ITEM-unique-idx,
-			"origin": unique-index,
+			"name": "ITEM-unique-idx",
+			"origin": "unique-index",
 			"columns": [
 				"ITEM-NAME",
 				"BOM-MODEL-NUM",

@@ -2,6 +2,8 @@
 
 While a task is running, you can reload a target database table using data from the source\. You might want to reload a table if, during the task, an error occurs or data changes due to partition operations \(for example, when using Oracle\)\. You can reload up to 10 tables from a task\.
 
+Reloading tables does not stop the task\.
+
 To reload a table, the following conditions must apply:
 + The task must be running\.
 + The migration method for the task must be either full load or full load with CDC\.

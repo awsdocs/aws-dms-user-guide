@@ -15,6 +15,22 @@ You can specify logging for the following actions:
 + TARGET\_APPLY – Data and data definition language \(DDL\) statements are applied to the target database\.
 + TASK\_MANAGER – The task manager triggers an event\.
 
+When using a replication task with AWS DMS version 3\.3\.3 or later, you can specify logging for the following actions:
++ TRANSFORMATION
++ IO
++ PERFORMANCE
++ SORTER
++ REST\_SERVER
++ VALIDATOR\_EXT
++ TABLES\_MANAGER
++ METADATA\_MANAGER
++ FILE\_FACTORY
++ COMMON
++ ADDONS
++ DATA\_STRUCTURE
++ COMMUNICATION
++ FILE\_TRANSFER
+
 After you specify one of the preceding, you can then specify the amount of information that is logged, as shown in the following list\. 
 
 The levels of severity are in order from lowest to highest level of information\. The higher levels always include information from the lower levels\. 

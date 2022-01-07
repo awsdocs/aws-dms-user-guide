@@ -380,7 +380,7 @@ The following policy gives you access to AWS DMS, including the AWS DMS console,
         {
             "Effect": "Allow",
             "Action": "dms:*",
-            "Resource": "*"
+            "Resource": "arn:aws:dms:region:account:resourcetype/id"
         },
         {
             "Effect": "Allow",
@@ -388,7 +388,7 @@ The following policy gives you access to AWS DMS, including the AWS DMS console,
                 "kms:ListAliases", 
                 "kms:DescribeKey"
             ],
-            "Resource": "*"
+            "Resource": "arn:aws:service:region:account:resourcetype/id"
         },
         {
             "Effect": "Allow",
@@ -398,7 +398,7 @@ The following policy gives you access to AWS DMS, including the AWS DMS console,
                 "iam:CreateRole",
                 "iam:AttachRolePolicy"
             ],
-            "Resource": "*"
+            "Resource": "arn:aws:service:region:account:resourcetype/id"
         },
         {
             "Effect": "Allow",
@@ -412,7 +412,7 @@ The following policy gives you access to AWS DMS, including the AWS DMS console,
                 "ec2:CreateNetworkInterface",
                 "ec2:DeleteNetworkInterface"
             ],
-            "Resource": "*"
+            "Resource": "arn:aws:service:region:account:resourcetype/id"
         },
         {
             "Effect": "Allow",
@@ -420,7 +420,7 @@ The following policy gives you access to AWS DMS, including the AWS DMS console,
                 "cloudwatch:Get*",
                 "cloudwatch:List*"
             ],
-            "Resource": "*"
+            "Resource": "arn:aws:service:region:account:resourcetype/id"
         },
         {
             "Effect": "Allow",
@@ -430,7 +430,7 @@ The following policy gives you access to AWS DMS, including the AWS DMS console,
                 "logs:FilterLogEvents",
                 "logs:GetLogEvents"
             ],
-            "Resource": "*"
+            "Resource": "arn:aws:service:region:account:resourcetype/id"
         },
         {
             "Effect": "Allow",
@@ -438,7 +438,7 @@ The following policy gives you access to AWS DMS, including the AWS DMS console,
                 "redshift:Describe*",
                 "redshift:ModifyClusterIamRoles"
             ],
-            "Resource": "*"
+            "Resource": "arn:aws:dms:region:account:resourcetype/id"
         }
     ]
 }
@@ -455,7 +455,7 @@ The following section is required to allow the user to list their available AWS 
                 "kms:ListAliases", 
                 "kms:DescribeKey"
             ],
-            "Resource": "*"
+            "Resource": "arn:aws:service:region:account:resourcetype/id"
         }
 ```
 
@@ -470,7 +470,7 @@ The following section is required for certain endpoint types that require a role
                 "iam:CreateRole",
                 "iam:AttachRolePolicy"
             ],
-            "Resource": "*"
+            "Resource": "arn:aws:service:region:account:resourcetype/id"
         }
 ```
 
@@ -489,7 +489,7 @@ The following section is required because AWS DMS needs to create the Amazon EC2
                 "ec2:CreateNetworkInterface",
                 "ec2:DeleteNetworkInterface"
             ],
-            "Resource": "*"
+            "Resource": "arn:aws:service:region:account:resourcetype/id"
         }
 ```
 
@@ -502,7 +502,7 @@ The following section is required to allow the user to be able to view replicati
                 "cloudwatch:Get*",
                 "cloudwatch:List*"
             ],
-            "Resource": "*"
+            "Resource": "arn:aws:service:region:account:resourcetype/id"
         }
 ```
 
@@ -517,7 +517,7 @@ This section is required to allow the user to view replication logs\.
                 "logs:FilterLogEvents",
                 "logs:GetLogEvents"
             ],
-            "Resource": "*"
+            "Resource": "arn:aws:service:region:account:resourcetype/id"
         }
 ```
 
@@ -530,7 +530,7 @@ The following section is required when using Amazon Redshift as a target\. It al
                 "redshift:Describe*",
                 "redshift:ModifyClusterIamRoles"
             ],
-            "Resource": "*"
+            "Resource": "arn:aws:dms:region:account:resourcetype/id"
         }
 ```
 
@@ -1278,7 +1278,7 @@ You can further restrict access to AWS DMS resources using tagging\. For more in
         {
             "Effect": "Allow",
             "Action": "dms:*",
-            "Resource": "*"
+            "Resource": "arn:aws:dms:region:account:resourcetype/id"
         },
         {
             "Effect": "Allow",
@@ -1286,7 +1286,7 @@ You can further restrict access to AWS DMS resources using tagging\. For more in
                 "kms:ListAliases", 
                 "kms:DescribeKey"
             ],
-            "Resource": "*"
+            "Resource": "arn:aws:service:region:account:resourcetype/id"
         },
         {
             "Effect": "Allow",
@@ -1296,7 +1296,7 @@ You can further restrict access to AWS DMS resources using tagging\. For more in
                 "iam:CreateRole",
                 "iam:AttachRolePolicy"
             ],
-            "Resource": "*"
+            "Resource": "arn:aws:service:region:account:resourcetype/id"
         },
         {
             "Effect": "Allow",
@@ -1310,7 +1310,7 @@ You can further restrict access to AWS DMS resources using tagging\. For more in
                 "ec2:CreateNetworkInterface",
                 "ec2:DeleteNetworkInterface"
             ],
-            "Resource": "*"
+            "Resource": "arn:aws:service:region:account:resourcetype/id"
         },
         {
             "Effect": "Allow",
@@ -1318,7 +1318,7 @@ You can further restrict access to AWS DMS resources using tagging\. For more in
                 "cloudwatch:Get*",
                 "cloudwatch:List*"
             ],
-            "Resource": "*"
+            "Resource": "arn:aws:service:region:account:resourcetype/id"
         },
         {
             "Effect": "Allow",
@@ -1328,7 +1328,7 @@ You can further restrict access to AWS DMS resources using tagging\. For more in
                 "logs:FilterLogEvents",
                 "logs:GetLogEvents"
             ],
-            "Resource": "*"
+            "Resource": "arn:aws:service:region:account:resourcetype/id"
         },
         {
             "Effect": "Allow",
@@ -1336,7 +1336,7 @@ You can further restrict access to AWS DMS resources using tagging\. For more in
                 "redshift:Describe*",
                 "redshift:ModifyClusterIamRoles"
             ],
-            "Resource": "*"
+            "Resource": "arn:aws:dms:region:account:resourcetype/id"
         }
     ]
 }
@@ -1350,7 +1350,7 @@ The following section is required to allow the user to call AWS DMS API operatio
 {
             "Effect": "Allow",
             "Action": "dms:*",
-            "Resource": "*"
+            "Resource": "arn:aws:dms:region:account:resourcetype/id"
 }
 ```
 
@@ -1363,7 +1363,7 @@ The following section is required to allow the user to list their available AWS 
                 "kms:ListAliases", 
                 "kms:DescribeKey"
             ],
-            "Resource": "*"
+            "Resource": "arn:aws:service:region:account:resourcetype/id"
         }
 ```
 
@@ -1378,7 +1378,7 @@ The following section is required for certain endpoint types that require an IAM
                 "iam:CreateRole",
                 "iam:AttachRolePolicy"
             ],
-            "Resource": "*"
+            "Resource": "arn:aws:service:region:account:resourcetype/id"
         }
 ```
 
@@ -1397,7 +1397,7 @@ The following section is required because AWS DMS needs to create the Amazon EC2
                 "ec2:CreateNetworkInterface",
                 "ec2:DeleteNetworkInterface"
             ],
-            "Resource": "*"
+            "Resource": "arn:aws:service:region:account:resourcetype/id"
         }
 ```
 
@@ -1410,7 +1410,7 @@ The following section is required to allow the user to be able to view replicati
                 "cloudwatch:Get*",
                 "cloudwatch:List*"
             ],
-            "Resource": "*"
+            "Resource": "arn:aws:service:region:account:resourcetype/id"
         }
 ```
 
@@ -1425,7 +1425,7 @@ This section is required to allow the user to view replication logs\.
                 "logs:FilterLogEvents",
                 "logs:GetLogEvents"
             ],
-            "Resource": "*"
+            "Resource": "arn:aws:service:region:account:resourcetype/id"
         }
 ```
 
@@ -1438,7 +1438,7 @@ The following section is required when using Amazon Redshift as a target\. It al
                 "redshift:Describe*",
                 "redshift:ModifyClusterIamRoles"
             ],
-            "Resource": "*"
+            "Resource": "arn:aws:dms:region:account:resourcetype/id"
         }
 ```
 
@@ -1502,7 +1502,7 @@ The information returned from the command is as follows\.
                     "ec2:DeleteNetworkInterface", 
                     "ec2:ModifyNetworkInterfaceAttribute"
                 ], 
-                "Resource": "*", 
+                "Resource": "arn:aws:service:region:account:resourcetype/id", 
                 "Effect": "Allow"
             }
         ]

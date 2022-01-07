@@ -8,6 +8,7 @@ There are several main types of task settings, as listed following\.
 + [Task settings example](#CHAP_Tasks.CustomizingTasks.TaskSettings.Example)
 + [Target metadata task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.TargetMetadata.md)
 + [Full\-load task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.FullLoad.md)
++ [Time Travel task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.TimeTravel.md)
 + [Logging task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.Logging.md)
 + [Control table task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.ControlTable.md)
 + [Stream buffer task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.StreamBuffer.md)
@@ -15,8 +16,8 @@ There are several main types of task settings, as listed following\.
 + [Data validation task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.DataValidation.md)
 + [Task settings for change processing DDL handling](CHAP_Tasks.CustomizingTasks.TaskSettings.DDLHandling.md)
 + [Character substitution task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.CharacterSubstitution.md)
-+ [Task settings for before images](CHAP_Tasks.CustomizingTasks.TaskSettings.BeforeImage.md)
-+ [Error\-handling task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.ErrorHandling.md)
++ [Before image task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.BeforeImage.md)
++ [Error handling task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.ErrorHandling.md)
 + [Saving task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.Saving.md)
 
 
@@ -84,6 +85,22 @@ A task settings JSON file can look like the following\.
     "TransactionConsistencyTimeout": 600,
     "CommitRate": 10000
   },
+    "TTSettings" : {
+    "EnableTT" : true,
+    "TTS3Settings": {
+        "EncryptionMode": "SSE_KMS",
+        "ServerSideEncryptionKmsKeyId": "arn:aws:kms:us-west-2:112233445566:key/myKMSKey",
+        "ServiceAccessRoleArn": "arn:aws:iam::112233445566:role/dms-tt-s3-access-role",
+        "BucketName": "myttbucket",
+        "BucketFolder": "myttfolder",
+        "EnableDeletingFromS3OnTaskDelete": false
+      },
+    "TTRecordSettings": {
+        "EnableRawData" : true,
+        "OperationsToLog": "DELETE,UPDATE",
+        "MaxRecordSize": 64
+      }
+  },
   "Logging": {
     "EnableLogging": false
   },
@@ -120,17 +137,7 @@ A task settings JSON file can look like the following\.
     "SourceSchema": "LOOP-DATA",
     "TargetSchema": "loop-data"
   },
-  "ValidationSettings": {
-     "EnableValidation": true,
-     "FailureMaxCount": 10000,
-     "HandleCollationDiff": false,
-     "RecordFailureDelayLimitInMinutes": 0,
-     "SkipLobColumns": false,
-     "TableFailureMaxCount": 1000,
-     "ThreadCount": 5,
-     "ValidationOnly": false,
-     "ValidationPartialLobSize": 0
-  },
+
   "CharacterSetSettings": {
     "CharacterReplacements": [ {
         "SourceCharacterCodePoint": 35,
@@ -168,6 +175,23 @@ A task settings JSON file can look like the following\.
     "ApplyErrorEscalationPolicy":"LOG_ERROR",
     "ApplyErrorEscalationCount": 0,
     "FullLoadIgnoreConflicts": true
+  },
+  "ValidationSettings": {
+    "EnableValidation": false,
+    "ValidationMode": "ROW_LEVEL",
+    "ThreadCount": 5,
+    "PartitionSize": 10000,
+    "FailureMaxCount": 1000,
+    "RecordFailureDelayInMinutes": 5,
+    "RecordSuspendDelayInMinutes": 30,
+    "MaxKeyColumnSize": 8096,
+    "TableFailureMaxCount": 10000,
+    "ValidationOnly": false,
+    "HandleCollationDiff": false,
+    "RecordFailureDelayLimitInMinutes": 1,
+    "SkipLobColumns": false,
+    "ValidationPartialLobSize": 0,
+    "ValidationQueryCdcDelaySeconds": 0
   }
 }
 ```

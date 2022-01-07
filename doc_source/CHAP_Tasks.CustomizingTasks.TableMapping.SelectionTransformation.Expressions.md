@@ -7,6 +7,7 @@ To define content for new and existing columns, you can use an expression within
 + [Flagging target records using an expression](#CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Expressions-Flagging)
 + [Replicating source table headers using expressions](#CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Expressions-Headers)
 + [Using SQLite functions to build expressions](#CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Expressions-SQLite)
++ [Adding metadata to a target table using expressions](#CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Expressions-Metadata)
 
 ## Adding a column using an expression<a name="CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Expressions-adding"></a>
 
@@ -131,14 +132,14 @@ The following example adds a new column to the target that has a unique incremen
 
 ## Using SQLite functions to build expressions<a name="CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Expressions-SQLite"></a>
 
-To build transformation rule expressions that manipulate source column content, you can use the following types of SQLite functions:
-+ String functions
-+ LOB functions
-+ Numeric functions
-+ NULL check functions
-+ Date and time functions
-+ Hash function
-+ CASE expression
+You use table settings to specify any settings that you want to apply to the selected table or view for a specified operation\. Table\-settings rules are optional\. 
+
+**Note**  
+Instead of the concept of tables and views, MongoDB and DocumentDB databases store data records as documents that are gathered together in *collections*\. So then, when migrating from a MongoDB or DocumentDB source, consider the range segmentation type of parallel load settings for selected *collections* rather than tables and views\.
+
+**Topics**
++ [Using a CASE expression](#CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Expressions-SQLite.CASE)
++ [Examples](#CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Expressions-SQLite.Ex)
 
 Following, you can find string functions that you can use to build transformation rule expressions\.
 
@@ -228,7 +229,7 @@ The SQLite `CASE` expression evaluates a list of conditions and returns an expre
 The following example transformation rule adds a new string column, `emp_seniority`, to the target table, `employee`\. It uses the SQLite `round` function on the salary column, with a case condition to check if the salary equals or exceeds 20,000\. If it does, the column gets the value `SENIOR`, and anything else has the value `JUNIOR`\.  
 
 ```
-{
+  {
       "rule-type": "transformation",
       "rule-id": "2",
       "rule-name": "2",
@@ -245,14 +246,14 @@ The following example transformation rule adds a new string column, `emp_seniori
         "lenght": 50
       }
 
-}
+  }
 ```
 
 **Example of adding a new date column to the target table**  
 The following example adds a new date column, `createdate`, to the target table, `employee`\. When you use the SQLite date function `datetime`, the date is added to the newly created table for each row inserted\.  
 
 ```
-{
+  {
       "rule-type": "transformation",
       "rule-id": "2",
       "rule-name": "2",
@@ -268,14 +269,14 @@ The following example adds a new date column, `createdate`, to the target table,
         "type": "datetime",
         "precision": 6
       }
-   		 }
+  }
 ```
 
 **Example of adding a new numeric column to the target table**  
 The following example adds a new numeric column, `rounded_emp_salary`, to the target table, `employee`\. It uses the SQLite `round` function to add the rounded salary\.   
 
 ```
-{
+  {
       "rule-type": "transformation",
       "rule-id": "2",
       "rule-name": "2",
@@ -290,7 +291,7 @@ The following example adds a new numeric column, `rounded_emp_salary`, to the ta
       "data-type": {
         "type": "int8"
       }
-}
+  }
 ```
 
 **Example of adding a new string column to the target table using the hash function**  
@@ -313,5 +314,37 @@ The following example adds a new string column, `hashed_emp_number`, to the targ
         "type": "string",
         "lenght": 50
       }
-   		 }
+  }
+```
+
+## Adding metadata to a target table using expressions<a name="CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Expressions-Metadata"></a>
+
+You can add the metadata information to the target table by using the expressions following:
++ `$AR_M_SOURCE_SCHEMA` – The name of the source schema\.
++ `$AR_M_SOURCE_TABLE_NAME` – The name of the source table\.
++ `$AR_M_SOURCE_COLUMN_NAME` – The name of a column in the source table\.
++ `$AR_M_SOURCE_COLUMN_DATATYPE` – The data type of a column in the source table\.
+
+**Example of adding a column for a schema name using the schema name from the source**  
+The example following adds a new column named `schema_name` to the target by using the schema name from the source\.  
+
+```
+  {
+      "rule-type": "transformation",
+      "rule-id": "2",
+      "rule-name": "2",
+      "rule-action": "add-column",
+      "rule-target": "column",
+      "object-locator": {
+        "schema-name": "%",
+        "table-name": "%"
+      },
+      "rule-action": "add-column",
+      "value":"schema_name",
+      "expression": "$AR_M_SOURCE_SCHEMA", 
+      "data-type": { 
+         "type": "string",
+         "length": 50
+      }
+  }
 ```

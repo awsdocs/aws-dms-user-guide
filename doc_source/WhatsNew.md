@@ -6,6 +6,7 @@ You can subscribe to an RSS feed to be notified of updates to this documentation
 
 | Change | Description | Date | 
 | --- |--- |--- |
+| [AWS DMS Studio](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_DMSStudio.html) | AWS DMS Studio makes it easy to manage database migrations from start to finish\. Using AWS DMS Studio, you can accelerate your database migrations by providing an integrated experience through assessment, conversion, and data migration\. | December 1, 2021 | 
 | [Getting Started Tutorial](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_GettingStarted.html) | An update for the Getting Started Tutorial for AWS DMS\. The tutorial uses a MySQL database as a source and a PostgreSQL database as a target\. | May 20, 2021 | 
 | [Support for Amazon Neptune as a target](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Target.Neptune.html) | Added support for Amazon Neptune as a target for data migration\. | June 1, 2020 | 
 | [Support for Apache Kafka as a target](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Target.Kafka.html) | Added support for Apache Kafka as a target for data migration\. | March 20, 2020 | 

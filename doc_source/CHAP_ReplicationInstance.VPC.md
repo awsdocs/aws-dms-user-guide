@@ -6,6 +6,9 @@ Make sure that the elastic network interface allocated for your replication inst
 
 The source and target endpoints access the replication instance that is inside the VPC either by connecting to the VPC or by being inside the VPC\. The database endpoints must include network access control lists \(ACLs\) and security group rules \(if applicable\) that allow incoming access from the replication instance\. How you set this up depends on the network configuration that you use\. You can use the replication instance VPC security group, the replication instance's private or public IP address, or the NAT gateway's public IP address\. These connections form a network that you use for data migration\.
 
+**Note**  
+Since an IP address can change as a result of changes to underlying infrastructure, we recommend you use a VPC CIDR range, or route your replication instance outbound traffic through a NAT GW associated Elastic IP\. For more information about creating a VPC, including a CIDR block, see [Work with VPCs and subnets](https://docs.aws.amazon.com/vpc/latest/userguide/working-with-vpcs.html) in the *Amazon Virtual Private Cloud User Guide*\. For more information about Elastic IP addresses, see [Elastic IP addresses](https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/elastic-ip-addresses-eip.html) in the *Amazon Elastic Compute Cloud User Guide*\. 
+
 ## Network configurations for database migration<a name="CHAP_ReplicationInstance.VPC.Configurations"></a>
 
 You can use several different network configurations with AWS Database Migration Service\. The following are common configurations for a network used for database migration\.
@@ -27,7 +30,7 @@ The following illustration shows a configuration where a database on an Amazon E
 
 ![\[AWS Database Migration Service All in one VPC example\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-scenarioAllVPC.png)
 
-The VPC security group used in this configuration must allow ingress on the database port from the replication instance\. You can do this in a couple of ways\. You can ensure that the security group used by the replication instance has ingress to the endpoints\. Or you can explicitly allow the private IP address of the replication instance\. 
+The VPC security group used in this configuration must allow ingress on the database port from the replication instance\. You can do this in a couple of ways\. You can ensure that the security group used by the replication instance has ingress to the endpoints\. Or you can allow the VPC CIDR range, NAT GW Elastic IP, or private IP address of the replication instance if you are using one\. But we do not recommend you use the private IP address of the replication instance, because it can break your replication if the replication IP address changes\.
 
 ### Configuration with two VPCs<a name="CHAP_ReplicationInstance.VPC.Configurations.ScenarioVPCPeer"></a>
 
@@ -49,7 +52,7 @@ The following illustration shows a configuration where the source endpoint is an
 
 ![\[AWS Database Migration Service replication instance\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-scenarioDirect.png)
 
-In this configuration, the VPC security group must include a routing rule that sends traffic destined for a specific IP address or range to a host\. This host must be able to bridge traffic from the VPC into the on\-premises VPN\. In this case, the NAT host includes its own security group settings\. These settings must allow traffic from the replication instance's private IP address or security group into the NAT instance\. 
+In this configuration, the VPC security group must include a routing rule that sends traffic destined for a VPC CIDR range or specific IP address to a host\. This host must be able to bridge traffic from the VPC into the on\-premises VPN\. In this case, the NAT host includes its own security group settings\. These settings must allow traffic from the replication instance's VPC CIDR range, or private IP address, or security group into the NAT instance\. But we do not recommend you use the private IP address of the replication instance, because it can break your replication if the replication IP address changes\.
 
 ### Configuration for a network to a VPC using the internet<a name="CHAP_ReplicationInstance.VPC.Configurations.ScenarioInternet"></a>
 

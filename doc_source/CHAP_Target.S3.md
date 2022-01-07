@@ -47,6 +47,7 @@ To control the frequency of writes to an Amazon S3 target during a data replicat
 + [Amazon S3 object tagging](#CHAP_Target.S3.Tagging)
 + [Creating AWS KMS keys to encrypt Amazon S3 target objects](#CHAP_Target.S3.KMSKeys)
 + [Using date\-based folder partitioning](#CHAP_Target.S3.DatePartitioning)
++ [Parallel load of partitioned sources when using Amazon S3 as a target for AWS DMS](#CHAP_Target.S3.ParallelLoad)
 + [Endpoint settings when using Amazon S3 as a target for AWS DMS](#CHAP_Target.S3.EndpointSettings)
 + [Extra connection attributes when using Amazon S3 as a target for AWS DMS](#CHAP_Target.S3.Configuring)
 + [Indicating source DB operations in migrated S3 data](#CHAP_Target.S3.Configuring.InsertOps)
@@ -316,7 +317,7 @@ You can create and use custom AWS KMS keys to encrypt your Amazon S3 target obje
 To encrypt Amazon S3 target objects using a KMS key, you need an IAM role that has permissions to access the Amazon S3 bucket\. This IAM role is then accessed in a policy \(a key policy\) attached to the encryption key that you create\. You can do this in your IAM console by creating the following:
 + A policy with permissions to access the Amazon S3 bucket\.
 + An IAM role with this policy\.
-+ A KMS key with a key policy that references this role\.
++ A KMS key encryption key with a key policy that references this role\.
 
 The following procedures describe how to do this\.
 
@@ -385,7 +386,7 @@ You have now created the new policy to access Amazon S3 resources for encryption
 
 You have now created the new role to access Amazon S3 resources for encryption with a specified name, for example, `DMS-S3-endpoint-access-role`\.
 
-**To create a KMS key with a key policy that references your IAM role**
+**To create a KMS key encryption key with a key policy that references your IAM role**
 **Note**  
 For more information about how AWS DMS works with AWS KMS encryption keys, see [Setting an encryption key and specifying AWS KMS permissions](CHAP_Security.md#CHAP_Security.EncryptionKey)\.
 
@@ -523,6 +524,84 @@ The following example shows how to enable date\-based folder partitioning, with 
    --s3-settings '{"DatePartitionEnabled": true,"DatePartitionSequence": "YYYYMMDD","DatePartitionDelimiter": "SLASH"}'
 ```
 
+## Parallel load of partitioned sources when using Amazon S3 as a target for AWS DMS<a name="CHAP_Target.S3.ParallelLoad"></a>
+
+You can configure a parallel full load of partitioned data sources to Amazon S3 targets\. This approach improves the load times for migrating partitioned data from supported source database engines to the S3 target\. To improve the load times of partitioned source data, you create S3 target subfolders mapped to the partitions of every table in the source database\. These partition\-bound subfolders allow AWS DMS to run parallel processes to populate each subfolder on the target\.
+
+To configure a parallel full load of an S3 target, S3 supports three `parallel-load` rule types for the `table-settings` rule of table mapping:
++ `partitions-auto`
++ `partitions-list`
++ `ranges`
+
+For more information on these parallel\-load rule types, see [Table and collection settings rules and operations](CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Tablesettings.md)\.
+
+For the `partitions-auto` and `partitions-list` rule types, AWS DMS uses each partition name from the source endpoint to identify the target subfolder structure, as follows\.
+
+```
+bucket_name/bucket_folder/database_schema_name/table_name/partition_name/LOADseq_num.csv
+```
+
+Here, the subfolder path where data is migrated and stored on the S3 target includes an additional `partition_name` subfolder that corresponds to a source partition with the same name\. This `partition_name` subfolder then stores one or more `LOADseq_num.csv` files containing data migrated from the specified source partition\. Here, `seq_num` is the sequence number postfix on the \.csv file name, such as `00000001` in the \.csv file with the name, `LOAD00000001.csv`\.
+
+However, some database engines, such as MongoDB and DocumentDB, don't have the concept of partitions\. For these database engines, AWS DMS adds the running source segment index as a prefix to the target \.csv file name, as follows\.
+
+```
+.../database_schema_name/table_name/SEGMENT1_LOAD00000001.csv
+.../database_schema_name/table_name/SEGMENT1_LOAD00000002.csv
+...
+.../database_schema_name/table_name/SEGMENT2_LOAD00000009.csv
+.../database_schema_name/table_name/SEGMENT3_LOAD0000000A.csv
+```
+
+Here, the files `SEGMENT1_LOAD00000001.csv` and `SEGMENT1_LOAD00000002.csv` are named with the same running source segment index prefix, `SEGMENT1`\. They're named as so because the migrated source data for these two \.csv files is associated with the same running source segment index\. On the other hand, the migrated data stored in each of the target `SEGMENT2_LOAD00000009.csv` and `SEGMENT3_LOAD0000000A.csv` files is associated with different running source segment indexes\. Each file has its file name prefixed with the name of its running segment index, `SEGMENT2` and `SEGMENT3`\.
+
+For the `ranges` parallel\-load type, you define the column names and column values using the `columns` and `boundaries` settings of the `table-settings` rules\. With these rules, you can specify partitions corresponding to segment names, as follows\.
+
+```
+"parallel-load": {
+    "type": "ranges",
+    "columns": [
+         "region",
+         "sale"
+    ],
+    "boundaries": [
+          [
+               "NORTH",
+               "1000"
+          ],
+          [
+               "WEST",
+               "3000"
+          ]
+    ],
+    "segment-names": [
+          "custom_segment1",
+          "custom_segment2",
+          "custom_segment3"
+    ]
+}
+```
+
+Here, the `segment-names` setting defines names for three partitions to migrate data in parallel on the S3 target\. The migrated data is parallel\-loaded and stored in \.csv files under the partition subfolders in order, as follows\.
+
+```
+.../database_schema_name/table_name/custom_segment1/LOAD[00000001...].csv
+.../database_schema_name/table_name/custom_segment2/LOAD[00000001...].csv
+.../database_schema_name/table_name/custom_segment3/LOAD[00000001...].csv
+```
+
+Here, AWS DMS stores a series of \.csv files in each of the three partition subfolders\. The series of \.csv files in each partition subfolder is named incrementally starting from `LOAD00000001.csv` until all the data is migrated\.
+
+In some cases, you might not explicitly name partition subfolders for a `ranges` parallel\-load type using the `segment-names` setting\. In these case, AWS DMS applies the default of creating each series of \.csv files under its `table_name` subfolder\. Here, AWS DMS prefixes the file names of each series of \.csv files with the name of the running source segment index, as follows\.
+
+```
+.../database_schema_name/table_name/SEGMENT1_LOAD[00000001...].csv
+.../database_schema_name/table_name/SEGMENT2_LOAD[00000001...].csv
+.../database_schema_name/table_name/SEGMENT3_LOAD[00000001...].csv
+...
+.../database_schema_name/table_name/SEGMENTZ_LOAD[00000001...].csv
+```
+
 ## Endpoint settings when using Amazon S3 as a target for AWS DMS<a name="CHAP_Target.S3.EndpointSettings"></a>
 
 You can use endpoint settings to configure your Amazon S3 target similar to using extra connection attributes\. You can specify these settings when you create the target endpoint using the `create-endpoint` command in the AWS CLI, with the `--s3-settings 'json-settings'` option\. Here, `json-settings` is a JSON object containing parameters to specify the settings\. 
@@ -654,7 +733,7 @@ You can specify the following options as extra connection attributes\. If you ha
 | addColumnName |  An optional parameter that when set to `true` or `y` you can use to add column name information to the \.csv output file\. Default value: `false` Valid values: `true`, `false`, `y`, `n` Example: `addColumnName=true;`  | 
 | bucketFolder |  An optional parameter to set a folder name in the S3 bucket\. If provided, target objects are created as \.csv or \.parquet files in the path `bucketFolder/schema_name/table_name/`\. If this parameter isn't specified, then the path used is `schema_name/table_name/`\.  Example: `bucketFolder=testFolder;`  | 
 | bucketName |  The name of the S3 bucket where S3 target objects are created as \.csv or \.parquet files\. Example: `bucketName=buckettest;`  | 
-| cannedAclForObjects |  A value that enables AWS DMS to specify a predefined \(canned\) access control list for objects created in the S3 bucket as \.csv or \.parquet files\. For more information about Amazon S3 canned ACLs, see [Canned ACL](http://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) in the *Amazon S3 Developer Guide\.* Default value: `NONE` Valid values for this attribute are: `NONE`; `PRIVATE`; `PUBLIC_READ`; `PUBLIC_READ_WRITE`; `AUTHENTICATED_READ`; `AWS_EXEC_READ`; `BUCKET_OWNER_READ`; `BUCKET_OWNER_FULL_CONTROL`\. Example: `cannedAclForObjects=PUBLIC_READ;`  | 
+| cannedAclForObjects |  A value that enables AWS DMS to specify a predefined \(canned\) access control list for objects created in the S3 bucket as \.csv or \.parquet files\. For more information about Amazon S3 canned ACLs, see [Canned ACL](http://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) in the *Amazon S3 Developer Guide\.* Default value: NONE Valid values for this attribute are: NONE; PRIVATE; PUBLIC\_READ; PUBLIC\_READ\_WRITE; AUTHENTICATED\_READ; AWS\_EXEC\_READ; BUCKET\_OWNER\_READ; BUCKET\_OWNER\_FULL\_CONTROL\. Example: `cannedAclForObjects=PUBLIC_READ;`  | 
 | cdcInsertsOnly |  An optional parameter during a change data capture \(CDC\) load to write only INSERT operations to the comma\-separated value \(\.csv\) or columnar storage \(\.parquet\) output files\. By default \(the `false` setting\), the first field in a \.csv or \.parquet record contains the letter I \(INSERT\), U \(UPDATE\), or D \(DELETE\)\. This letter indicates whether the row was inserted, updated, or deleted at the source database for a CDC load to the target\. If `cdcInsertsOnly` is set to `true` or `y`, only INSERTs from the source database are migrated to the \.csv or \.parquet file\.  For \.csv format only, how these INSERTS are recorded depends on the value of `includeOpForFullLoad`\. If `includeOpForFullLoad` is set to `true`, the first field of every CDC record is set to I to indicate the INSERT operation at the source\. If `includeOpForFullLoad` is set to `false`, every CDC record is written without a first field to indicate the INSERT operation at the source\. For more information about how these parameters work together, see [Indicating source DB operations in migrated S3 data](#CHAP_Target.S3.Configuring.InsertOps)\. Default value: `false` Valid values: `true`, `false`, `y`, `n` Example: `cdcInsertsOnly=true;`  | 
 | cdcInsertsAndUpdates |  Enables a change data capture \(CDC\) load to write INSERT and UPDATE operations to \.csv or \.parquet \(columnar storage\) output files\. The default setting is `false`, but when `cdcInsertsAndUpdates` is set to `true` or `y`, INSERTs and UPDATEs from the source database are migrated to the \.csv or \.parquet file\.  For \.csv file format only, how these INSERTs and UPDATEs are recorded depends on the value of the `includeOpForFullLoad` parameter\. If `includeOpForFullLoad` is set to `true`, the first field of every CDC record is set to either `I` or `U` to indicate INSERT and UPDATE operations at the source\. But if `includeOpForFullLoad` is set to `false`, CDC records are written without an indication of INSERT or UPDATE operations at the source\.   For more information about how these parameters work together, see [Indicating source DB operations in migrated S3 data](#CHAP_Target.S3.Configuring.InsertOps)\.  `cdcInsertsOnly` and `cdcInsertsAndUpdates` can't both be set to true for the same endpoint\. Set either `cdcInsertsOnly` or `cdcInsertsAndUpdates` to `true` for the same endpoint, but not both\.   Default value: `false` Valid values: `true`, `false`, `y`, `n` Example: `cdcInsertsAndUpdates=true;`  | 
 |  `CdcPath`  |  Specifies the folder path of CDC files\. For an S3 source, this setting is required if a task captures change data; otherwise, it's optional\. If `CdcPath` is set, DMS reads CDC files from this path and replicates the data changes to the target endpoint\. For an S3 target if you set `PreserveTransactions` to true, DMS verifies that you have set this parameter to a folder path on your S3 target where DMS can save the transaction order for the CDC load\. DMS creates this CDC folder path in either your S3 target working directory or the S3 target location specified by `BucketFolder` and `BucketName`\. Type: String For example, if you specify `CdcPath` as `MyChangedData`, and you specify `BucketName` as `MyTargetBucket` but do not specify `BucketFolder`, DMS creates the following CDC folder path: `MyTargetBucket/MyChangedData`\.  If you specify the same `CdcPath`, and you specify `BucketName` as `MyTargetBucket` and `BucketFolder` as `MyTargetData`, DMS creates the following CDC folder path: `MyTargetBucket/MyTargetData/MyChangedData`\. This setting is supported in AWS DMS versions 3\.4\.2 and later\. When capturing data changes in transaction order, DMS always stores the row changes in \.csv files regardless of the value of the DataFormat S3 setting on the target\. DMS doesn't save data changes in transaction order using \.parquet files\.   | 

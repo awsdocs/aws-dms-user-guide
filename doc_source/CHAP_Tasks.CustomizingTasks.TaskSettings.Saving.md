@@ -8,7 +8,6 @@ While reusing task settings for other tasks, remove any `CloudWatchLogGroup` and
 For example, the following JSON file contains settings saved for a task\.
 
 ```
-                    
 {
     "TargetMetadata": {
         "TargetSchema": "",

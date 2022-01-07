@@ -4,7 +4,7 @@ AWS DMS encrypts the storage used by a replication instance and the endpoint con
 
 You can specify your own encryption key by supplying a KMS key identifier to encrypt your AWS DMS resources\. When you specify your own encryption key, the user account used to perform the database migration must have access to that key\. For more information on creating your own encryption keys and giving users access to an encryption key, see the *[AWS KMS Developer Guide](https://docs.aws.amazon.com/kms/latest/developerguide/create-keys.html)*\. 
 
-If you don't specify a KMS key identifier, then AWS DMS uses your default encryption key\. AWS KMS creates the default encryption key for AWS DMS for your AWS account\. Your AWS account has a different default encryption key for each AWS Region\. 
+If you don't specify a KMS key identifier, then AWS DMS uses your default encryption key\. KMS creates the default encryption key for AWS DMS for your AWS account\. Your AWS account has a different default encryption key for each AWS Region\. 
 
 To manage the keys used for encrypting your AWS DMS resources, you use AWS KMS\. You can find AWS KMS in the AWS Management Console by searching for **KMS** on the navigation pane\. 
 

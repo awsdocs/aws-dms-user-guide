@@ -30,6 +30,8 @@ PostgreSQL as a source doesn't support a custom CDC start time\. This is because
   + Oracle
   + MySQL
 
+When the task is created, AWS DMS marks the CDC start point, and it can't be changed\. To use a different CDC start point, create a new task\.
+
 ### Determining a CDC native start point<a name="CHAP_Task.CDC.StartPoint.Native"></a>
 
 A *CDC native start point* is a point in the database engine's log that defines a time where you can begin CDC\. As an example, suppose that a bulk data dump has already been applied to the target\. You can look up the native start point for the ongoing replication\-only task\. To avoid any data inconsistencies, carefully choose the start point for the replication\-only task\. DMS captures transactions that started after the chosen CDC start point\.

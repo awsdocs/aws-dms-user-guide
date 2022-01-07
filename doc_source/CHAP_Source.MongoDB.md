@@ -316,7 +316,7 @@ AWS DMS versions 3\.4\.5 and later support migrating multiple databases in a sin
    + On the DMS console's **Create endpoint** page, make sure that **Database name** is empty under **Endpoint configuration**\.
    + Using the AWS CLI `CreateEndpoint` command, assign an empty string value to the `DatabaseName` parameter in `MongoDBSettings`\.
 
-1. For each database that you want to migrate from a MongoDB source, specify the database name as a schema name in the table mapping for the task\. You can do this using either the guided input in the console or directly in JSON\. For more information on the guided input, see [Specifying table selection and transformations rules from the console](CHAP_Tasks.CustomizingTasks.TableMapping.Console.md)\. For more information on the JSON, see [Selection rules and actions](CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Selections.md)\.
+1. For each database that you want to migrate from a MongoDB source, specify the database name as a schema name in the table mapping for the task\. You can do this using either the guided input in the console or directly in JSON\. For more information on the guided input, see [ Specifying table selection and transformations rules from the console](CHAP_Tasks.CustomizingTasks.TableMapping.Console.md)\. For more information on the JSON, see [Selection rules and actions](CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Selections.md)\.
 
 For example, you might specify the JSON following to migrate three MongoDB databases\.
 

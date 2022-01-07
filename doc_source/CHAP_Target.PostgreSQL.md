@@ -37,7 +37,7 @@ For additional details on working with a PostgreSQL database as a target for AWS
 ## Limitations on using PostgreSQL as a target for AWS Database Migration Service<a name="CHAP_Target.PostgreSQL.Limitations"></a>
 
 The following limitations apply when using a PostgreSQL database as a target for AWS DMS:
-+ The JSON data type is converted to the Native CLOB data type\.
++ For heterogeneous migrations, the JSON data type is converted to the Native CLOB data type internally\.
 + In an Oracle to PostgreSQL migration, if a column in Oracle contains a NULL character \(hex value U\+0000\), AWS DMS converts the NULL character to a space \(hex value U\+0020\)\. This is due to a PostgreSQL limitation\.
 + AWS DMS doesn't support replication to a table with a unique index created with coalesce function\.
 

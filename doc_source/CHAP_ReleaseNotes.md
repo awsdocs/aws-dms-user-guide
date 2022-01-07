@@ -4,9 +4,31 @@ Following, you can find release notes for current and previous versions of AWS D
 
 AWS DMS uses a semantic versioning scheme to identify a service release\. A version consists of a three\-component number in the format of X\.Y\.Z where X represents an *epic* version, X\.Y represents a *major* version, and Z represents a *minor* version \(**Epic**\.**Major**\.**Minor**\)\.
 
-**Note**  
-You can upgrade any version of AWS Database Migration Service to AWS DMS version 3\.4\.4\. The upgrade path to 3\.4\.5 is not available\. To upgrade to AWS DMS version 3\.4\.5, create a new replication instance and move your replication tasks to the new instance\. For information about moving tasks, see [Moving a task](CHAP_Tasks.Moving.md)\.  
-To stay current with the latest features, enhancements, and performance improvements, upgrade to AWS DMS version 3\.4\.5\.
+## AWS Database Migration Service 3\.4\.6 release notes<a name="CHAP_ReleaseNotes.DMS346"></a>
+
+The following table shows the new features and enhancements introduced in AWS Database Migration Service \(AWS DMS\) version 3\.4\.6\. 
+
+
+| New feature or enhancement | Description | 
+| --- | --- | 
+| AWS DMS Time Travel | AWS DMS introduces [Time Travel](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Monitoring.html#CHAP_Monitoring.TimeTravel), a feature granting customers flexibility on their logging capabilities, and enhancing their troubleshooting experience\. With Time Travel, you can store and encrypt AWS DMS logs using Amazon S3, and view, download and obfuscate the logs within a certain time frame\.  | 
+| Support Microsoft Azure SQL Managed Instance as a source | AWS DMS now supports Microsoft Azure SQL Managed Instance as a source\. Using AWS DMS, you can now perform live migrations from Microsoft Azure SQL Managed Instance to any AWS DMS supported target\.  For information about AWS DMS sources, see [Sources for data migration](CHAP_Source.md)\. For information about supported AWS DMS targets, see [Targets for data migration](CHAP_Target.md)\. | 
+| Support Google Cloud SQL for MySQL as a source | AWS DMS now supports Google Cloud SQL for MySQL as a source\. Using AWS DMS, you can now perform live migrations from Google Cloud SQL for MySQL to any AWS DMS supported target\. For information about AWS DMS sources, see [Sources for data migration](CHAP_Source.md)\. For information about supported AWS DMS targets, see [Targets for data migration](CHAP_Target.md)\. | 
+| Support parallel load for partitioned data to S3 | AWS DMS now supports parallel load for partitioned data to Amazon S3, improving the load times for migrating partitioned data from supported database engine source data to Amazon S3\. This feature creates Amazon S3 sub\-folders for each partition of the table in the database source, allowing AWS DMS to run parallel processes to populate each sub\-folder\.  | 
+| Support multiple Apache Kafka target topics in a single task |  AWS DMS now supports Apache Kafka multi\-topic targets with a single task\. Using AWS DMS, you can now replicate multiple schemas from a single database to different Apache Kafka target topics using the same task\. This eliminates the need to create multiple separate tasks in situations where many tables from the same source database need to be migrated to different Kafka target topics\.  | 
+
+The issues resolved in AWS DMS 3\.4\.6 include the following:
++ Fixed an issue where columns from UPDATE statements were populated to incorrect columns if the primary key column is not the first column when using Amazon S3 as a target with CSV format\.
++ Fixed an issue where AWS DMS tasks might crash when using the pglogical plugin with `NULL` values in `BYTEA` columns under limited LOB mode when using PostgreSQL as a source\.
++ Fixed an issue where AWS DMS tasks might crash when a large number of source tables are deleted when using PostgreSQL as a source\. 
++ Improved Amazon S3 date\-based folder partitioning by introducing a new Amazon S3 setting `DatePartitionTimezone` to allow partitioning on non\-UTC dates\. 
++ Supported the mapping between data type `TIMESTAMP WITH TIME ZONE` from sources to `TIMESTAMPTZ` when using Redshift as a target
++ Improved the performance of CDC for tasks without wildcard selection rules when using MongoDB or Amazon DocumentDB as a source\. 
++ Fixed an issue where schema names with underscore wildcard and length less than 8 were not captured by AWS DMS tasks when using Db2 LUW as a source\. 
++ Fixed an issue where AWS DMS instances ran out of memory under large data volume when using Amazon ES as a target\. 
++ Improved the performance of data validation by supporting full load validation only tasks\. 
++ Fixed an issue where AWS DMS tasks failed to resume after forced failover when using Sybase as a source\.
++ Fixed an issue where AWS DMS sent warning `Invalid BC timestamp was encountered in column` incorrectly\.
 
 ## AWS Database Migration Service 3\.4\.5 release notes<a name="CHAP_ReleaseNotes.DMS345"></a>
 

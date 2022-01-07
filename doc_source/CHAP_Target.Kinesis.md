@@ -23,7 +23,7 @@ You can set connection settings in the following ways:
 
 In the CLI, use the following request parameters of the `kinesis-settings` option:
 **Note**  
-Support for the `IncludeNullAndEmpty` endpoint setting is available in AWS DMS version 3\.4\.1 and higher\. But support for the other following endpoint settings for Kinesis Data Streams targets is available in AWS DMS\.
+Support for the `IncludeNullAndEmpty` endpoint setting is available in AWS DMS version 3\.4\.1 and higher\. But support for the other following endpoint settings for Kinesis Data Streams targets is available in AWS DMS\. 
 + `MessageFormat` – The output format for the records created on the endpoint\. The message format is `JSON` \(default\) or `JSON_UNFORMATTED` \(a single line with no tab\)\.
 + `IncludeControlDetails` – Shows detailed control information for table definition, column definition, and table and column changes in the Kinesis message output\. The default is `false`\.
 + `IncludeNullAndEmpty` – Include NULL and empty columns in the target\. The default is `false`\.
@@ -211,7 +211,6 @@ The role that you use for the migration to a Kinesis data stream must have the f
 ## Limitations when using Kinesis Data Streams as a target for AWS Database Migration Service<a name="CHAP_Target.Kinesis.Limitations"></a>
 
 The following limitations apply when using Kinesis Data Streams as a target:
-+ AWS DMS supports a maximum message size of 1 MiB for a Kinesis Data Streams target\.
 + AWS DMS publishes each update to a single record in the source database as one data record in a given Kinesis data stream regardless of transactions\. However, you can include transaction details for each data record by using relevant parameters of the `KinesisSettings` API\.
 + Full LOB mode is not supported\.
 + Kinesis Data Streams don't support deduplication\. Applications that consume data from a stream need to handle duplicate records\. For more information, see [Handling duplicate records](https://docs.aws.amazon.com/streams/latest/dev/kinesis-record-processor-duplicates.html) in the *Amazon Kinesis Data Streams Developer Guide\.*
@@ -220,6 +219,7 @@ The following limitations apply when using Kinesis Data Streams as a target:
   + `${AttributeName}`: The value of one of the fields in the JSON, or the primary key of the table in the source database\.
 + For information about encrypting your data at rest within Kinesis Data Streams, see [Data protection in Kinesis Data Streams](https://docs.aws.amazon.com/streams/latest/dev/server-side-encryption.html.html) in the *AWS Key Management Service Developer Guide*\. 
 + `BatchApply` is not supported for a Kinesis endpoint\. Using Batch Apply \(for example, the `BatchApplyEnabled` target metadata task setting\) for a Kinesis target might result in loss of data\.
++ Kinesis targets are only supported for a Kinesis data stream in the same AWS account\.
 
 ## Using object mapping to migrate data to a Kinesis data stream<a name="CHAP_Target.Kinesis.ObjectMapping"></a>
 

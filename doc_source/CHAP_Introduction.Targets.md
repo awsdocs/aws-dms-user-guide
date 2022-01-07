@@ -9,9 +9,7 @@ You can use the following data stores as target endpoints for data migration usi
 + MariaDB \(supported as a MySQL\-compatible data target\) versions 10\.0\.24 to 10\.0\.28, 10\.1, 10\.2, 10\.3 and 10\.4\.
 **Note**  
 Support for MariaDB as a target is available in all AWS DMS versions where MySQL is supported\.
-+ PostgreSQL version 9\.4 and later \(for versions 9\.x\), 10\.x, 11\.x, and 12\.x\.
-**Note**  
-PostgreSQL versions 12\.x are supported as a target in AWS DMS versions 3\.3\.3 and later\.
++ PostgreSQL version 9\.4 and later \(for versions 9\.x\), 10\.x, 11\.x, 12\.x, and 13x\.
 + SAP Adaptive Server Enterprise \(ASE\) versions 15, 15\.5, 15\.7, 16 and later\.
 + Redis versions 6\.x\.
 
@@ -23,8 +21,6 @@ PostgreSQL versions 12\.x are supported as a target in AWS DMS versions 3\.3\.3 
 **Note**  
 Support for MariaDB as a target is available in all AWS DMS versions where MySQL is supported\.
 + PostgreSQL version 9\.4 and later \(for versions 9\.x\), 10\.x, 11\.x, and 12\.x\.
-**Note**  
-PostgreSQL versions 12\.x are supported as a target in AWS DMS versions 3\.3\.3 and later\.
 + Amazon Aurora MySQL\-Compatible Edition
 + Amazon Aurora PostgreSQL\-Compatible Edition
 + Amazon Aurora Serverless

@@ -90,7 +90,7 @@ The following example migrates two tables\. Table `loadfirst` \(with priority 2\
                 "table-name": "loadfirst"
                  },
         "rule-action": "include",
-	    "load-order": "2"
+	    "load-order": "1"
         },
 	{
 	    "rule-type": "selection",
@@ -101,7 +101,7 @@ The following example migrates two tables\. Table `loadfirst` \(with priority 2\
                 "table-name": "loadsecond"
             },
             "rule-action": "include",
-	    "load-order": "1"
+	    "load-order": "2"
          }
     ]    
 }

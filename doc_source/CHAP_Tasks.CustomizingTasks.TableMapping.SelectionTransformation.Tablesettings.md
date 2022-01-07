@@ -7,6 +7,7 @@ Instead of using tables and views, MongoDB and Amazon DocumentDB databases store
 When migrating from a MongoDB or Amazon DocumentDB source, you work with parallel load settings slightly differently\. In this case, consider the autosegmentation or range segmentation type of parallel load settings for selected collections rather than tables and views\.
 
 **Topics**
++ [Wildcards in table\-settings are restricted](#CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Tablesettings.Wildcards)
 + [Using parallel load for selected tables, views, and collections](#CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Tablesettings.ParallelLoad)
 + [Specifying LOB settings for a selected table or view](#CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Tablesettings.LOB)
 + [Table\-settings examples](#CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Tablesettings.Examples)
@@ -14,6 +15,40 @@ When migrating from a MongoDB or Amazon DocumentDB source, you work with paralle
 For table\-mapping rules that use the table\-settings rule type, you can apply the following parameters\. 
 
 [\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Tablesettings.html)
+
+## Wildcards in table\-settings are restricted<a name="CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Tablesettings.Wildcards"></a>
+
+Using the percent wildcard \(`"%"`\) in `"table-settings"` rules is not supported for source databases as shown following\.
+
+```
+{
+    "rule-type": "table-settings",
+    "rule-id": "8",
+    "rule-name": "8",
+    "object-locator": {
+        "schema-name": "ipipeline-prod",            
+        "table-name": "%"
+    },
+    "parallel-load": {
+        "type": "partitions-auto",
+        "number-of-partitions": 16,
+        "collection-count-from-metadata": "true",
+        "max-records-skip-per-page": 1000000,
+        "batch-size": 50000
+    }
+  }
+```
+
+If you use `"%"` in the `"table-settings"` rules as shown, AWS DMS returns the exception following\.
+
+```
+Error in mapping rules. Rule with ruleId = x failed validation. Exact 
+schema and table name required when using table settings rule.
+```
+
+In addition, AWS recommends that you don't load a great number of large collections using a single task with `parallel-load`\. Note that AWS DMS limits resource contention as well as the number of segments loaded in parallel by the value of the `MaxFullLoadSubTasks` task settings parameter, with a maximum value of 49\. 
+
+Instead, specify all collections for your source database for the largest collections by specifying each `"schema-name"` and `"table-name"` individually\. Also, scale up your migration properly\. For example, run multiple tasks across a sufficient number of replication instances to handle a great number of large collections in your database\.
 
 ## Using parallel load for selected tables, views, and collections<a name="CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Tablesettings.ParallelLoad"></a>
 
@@ -43,6 +78,7 @@ Parallel load for use with table\-setting rules are supported for the following 
 + Microsoft SQL Server
 + MySQL
 + PostgreSQL
++ Amazon S3
 + SAP Adaptive Server Enterprise \(ASE\)
 + Amazon Redshift
 + MongoDB \(only supports the autosegmentation and range segmentation options of a parallel full load\)

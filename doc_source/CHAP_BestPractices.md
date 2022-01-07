@@ -18,6 +18,7 @@ To use AWS Database Migration Service \(AWS DMS\) most effectively, see this sec
 + [Monitoring your AWS DMS tasks using metrics](#CHAP_BestPractices.Metrics)
 + [Events and notifications](#CHAP_BestPractices.Events)
 + [Using the task log to troubleshoot migration issues](#CHAP_BestPractices.TaskLog)
++ [Troubleshooting replication tasks with Time Travel](#CHAP_BestPractices.TimeTravel)
 + [Changing the user and schema for an Oracle target](#CHAP_BestPractices.ChangeOracleSchema)
 + [Changing table and index tablespaces for an Oracle target](#CHAP_BestPractices.ChangeOracleTablespace)
 + [Upgrading a replication instance version](#CHAP_BestPractices.RIUpgrade)
@@ -115,7 +116,8 @@ For more information on these settings, see [Table and collection settings rules
 Indexes, triggers, and referential integrity constraints can affect your migration performance and cause your migration to fail\. How these affect migration depends on whether your replication task is a full load task or an ongoing replication \(change data capture, or CDC\) task\.  
 For a full load task, we recommend that you drop primary key indexes, secondary indexes, referential integrity constraints, and data manipulation language \(DML\) triggers\. Or you can delay their creation until after the full load tasks are complete\. You don't need indexes during a full load task, and indexes incur maintenance overhead if they are present\. Because the full load task loads groups of tables at a time, referential integrity constraints are violated\. Similarly, insert, update, and delete triggers can cause errors, for example if a row insert is triggered for a previously bulk loaded table\. Other types of triggers also affect performance due to added processing\.  
 If your data volumes are relatively small and the additional migration time doesn't concern you, you can build primary key and secondary indexes before a full load task\. Always turn off referential integrity constraints and triggers\.  
-For a full load plus CDC task, we recommend that you add secondary indexes before the CDC phase\. Because AWS DMS uses logical replication, make sure that secondary indexes that support DML operations are in place to prevent full table scans\. You can pause the replication task before the CDC phase to build indexes, create triggers, and create referential integrity constraints before you restart the task\.
+For a full load plus CDC task, we recommend that you add secondary indexes before the CDC phase\. Because AWS DMS uses logical replication, make sure that secondary indexes that support DML operations are in place to prevent full table scans\. You can pause the replication task before the CDC phase to build indexes and create referential integrity constraints before you restart the task\.  
+You should enable triggers right before the cutover\.
 
 ** Turn off backups and transaction logging **  
  When migrating to an Amazon RDS database, it's a good idea to turn off backups and Multi\-AZ on the target until you're ready to cut over\. Similarly, when migrating to systems other than Amazon RDS, turning off any logging on the target until after cutover is usually a good idea\. 
@@ -246,30 +248,30 @@ Next, create a migration task and modify the LOB handling for your table using t
 
 ```
 {
-  "rules": [
-    {
-      "rule-type": "selection",
-      "rule-id": "1",
-      "rule-name": "1",
-      "object-locator": {
-      "schema-name": "HR",
-      "table-name": "TEST_CLOB"
-    },
-    "rule-action": "include"
-    },
-    {
-      "rule-type": "table-settings",
-      "rule-id": "2",
-      "rule-name": "2",
-      "object-locator": {
-      "schema-name": "HR",
-      "table-name": "TEST_CLOB"
-    },
-    "lob-settings": {
-      "mode": "limited",
-      "bulk-max-size": 16
-    }
-  ]
+	"rules": [{
+			"rule-type": "selection",
+			"rule-id": "1",
+			"rule-name": "1",
+			"object-locator": {
+				"schema-name": "HR",
+				"table-name": "TEST_CLOB"
+			},
+			"rule-action": "include"
+		},
+		{
+			"rule-type": "table-settings",
+			"rule-id": "2",
+			"rule-name": "2",
+			"object-locator": {
+				"schema-name": "HR",
+				"table-name": "TEST_CLOB"
+			},
+			"lob-settings": {
+				"mode": "limited",
+				"bulk-max-size": "16"
+			}
+		}
+	]
 }
 ```
 
@@ -319,7 +321,7 @@ For example, you might use the following AWS DMS task settings\. Here, setting `
 
 To improve the performance when migrating a large table, you can break the migration into more than one task\. To break the migration into multiple tasks using row filtering, use a key or a partition key\. For example, if you have an integer primary key ID from 1 to 8,000,000, you can create eight tasks using row filtering to migrate 1 million records each\.
 
-To apply row filtering in the console, open the console, choose **Tasks**, and create a new task\. In the **Table mappings** section, add a value for **Selection Rule**\. You can then add a column filter with either a less than or equal to, greater than or equal to, equal to, or range condition \(between two values\)\. For more information about column filtering, see [Specifying table selection and transformations rules from the console](CHAP_Tasks.CustomizingTasks.TableMapping.Console.md)\.
+To apply row filtering in the console, open the console, choose **Tasks**, and create a new task\. In the **Table mappings** section, add a value for **Selection Rule**\. You can then add a column filter with either a less than or equal to, greater than or equal to, equal to, or range condition \(between two values\)\. For more information about column filtering, see [ Specifying table selection and transformations rules from the console](CHAP_Tasks.CustomizingTasks.TableMapping.Console.md)\.
 
 Or if you have a large partitioned table that is partitioned by date, you can migrate data based on date\. For example, suppose that you have a table partitioned by month, and only the current month's data is updated\. In this case, you can create a full load task for each static monthly partition and create a full load plus CDC task for the currently updated partition\.
 
@@ -394,6 +396,16 @@ For more information, see [Working with events and notifications in AWS Database
 In some cases, AWS DMS can encounter issues for which warnings or error messages appear only in the task log\. In particular, data truncation issues or row rejections due to foreign key violations are only written in the task log\. Therefore, be sure to review the task log when migrating a database\. To view the task log, configure Amazon CloudWatch as part of task creation\.
 
 For more information, see [Monitoring replication tasks using Amazon CloudWatch](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Monitoring.html#CHAP_Monitoring.CloudWatch)\.
+
+## Troubleshooting replication tasks with Time Travel<a name="CHAP_BestPractices.TimeTravel"></a>
+
+To troubleshoot AWS DMS migration issues, you can work with Time Travel\. For more information about Time Travel, see [Time Travel task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.TimeTravel.md)\. 
+
+When you work with Time Travel, be aware of the following considerations:
++ To avoid overhead on a DMS replication instance, turn on Time Travel only for tasks that need debugging\.
++ When you use Time Travel to troubleshoot replication tasks that might run for several days, monitor replication instance metrics for resource overheads\. This approach applies especially in cases where high transaction loads run on source databases for extended periods of time\. For more details, see [Monitoring AWS DMS tasks](CHAP_Monitoring.md)\.
++ When the Time Travel task setting `EnableRawData` is set to `true`, the task memory usage during DMS replication might be higher than when Time Travel isn't turned on\. If you turn on Time Travel for extended periods of time, monitor your task\.
++ Currently, you can turn on Time Travel only at the task level\. Changes to all tables are logged in Time Travel logs\. If you are troubleshooting for specific tables in a database with high transaction volume, create a separate task \.
 
 ## Changing the user and schema for an Oracle target<a name="CHAP_BestPractices.ChangeOracleSchema"></a>
 

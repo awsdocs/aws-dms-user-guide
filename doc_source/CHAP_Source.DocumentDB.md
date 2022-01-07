@@ -11,7 +11,7 @@ AWS DMS supports two migration modes when using Amazon DocumentDB as a source, d
 
 **Document mode**  
 In *document mode, *the JSON document is migrated as is\. That means the document data is consolidated into one of two items\. When you use a relational database as a target, the data is a single column named `_doc` in a target table\. When you use a nonrelational database as a target, the data is a single JSON document\. Document mode is the default mode, which we recommend when migrating to an Amazon DocumentDB target\.  
-For example, consider the following documents in an Amazon DocumentDB collection called `myCollection`\.  
+For example, consider the following documents in a Amazon DocumentDB collection called `myCollection`\.  
 
 ```
 > db.myCollection.find()
@@ -24,7 +24,7 @@ You can optionally set the extra connection attribute `extractDocID` to `true` t
 If you add a new collection to the source database, AWS DMS creates a new target table for the collection and replicates any documents\. 
 
 **Table mode**  
-In *table mode, *AWS DMS transforms each top\-level field in an Amazon DocumentDB document into a column in the target table\. If a field is nested, AWS DMS flattens the nested values into a single column\. AWS DMS then adds a key field and data types to the target table's column set\.   
+In *table mode, *AWS DMS transforms each top\-level field in a Amazon DocumentDB document into a column in the target table\. If a field is nested, AWS DMS flattens the nested values into a single column\. AWS DMS then adds a key field and data types to the target table's column set\.   
 For each Amazon DocumentDB document, AWS DMS adds each key and type to the target table's column set\. For example, using table mode, AWS DMS migrates the previous example into the following table\.      
 [\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.DocumentDB.html)
 Nested values are flattened into a column containing dot\-separated key names\. The column is named using the concatenation of the flattened field names separated by periods\. For example, AWS DMS migrates a JSON document with a field of nested values such as `{"a" : {"b" : {"c": 1}}}` into a column named `a.b.c.`  
@@ -322,7 +322,7 @@ AWS DMS versions 3\.4\.5 and later support migrating multiple databases in a sin
    + In the AWS Management Console for AWS DMS, leave **Database name** empty under **Endpoint configuration** on the **Create endpoint** page\.
    + In the AWS Command Line Interface \(AWS CLI\), assign an empty string value to the **DatabaseName** parameter in **DocumentDBSettings** that you specify for the **CreateEndpoint** action\.
 
-1. For each database that you want to migrate from this Amazon DocumentDB source endpoint, specify the name of each database as the name of a schema in the table\-mapping for the task using either the guided input in the console or directly in JSON\. For more information on the guided input, see the description of the [Specifying table selection and transformations rules from the console](CHAP_Tasks.CustomizingTasks.TableMapping.Console.md)\. For more information on the JSON, see [Selection rules and actions](CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Selections.md)\.
+1. For each database that you want to migrate from this Amazon DocumentDB source endpoint, specify the name of each database as the name of a schema in the table\-mapping for the task using either the guided input in the console or directly in JSON\. For more information on the guided input, see the description of the [ Specifying table selection and transformations rules from the console](CHAP_Tasks.CustomizingTasks.TableMapping.Console.md)\. For more information on the JSON, see [Selection rules and actions](CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Selections.md)\.
 
 For example, you might specify the JSON following to migrate three Amazon DocumentDB databases\.
 

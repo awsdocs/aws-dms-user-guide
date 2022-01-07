@@ -2,7 +2,7 @@
 
 Your first task in migrating a database is to create a replication instance\. This replication instance requires sufficient storage and processing power to perform the tasks that you assign and migrate data from your source database to the target database\. The required size of this instance varies depending on the amount of data you need to migrate and the tasks that you need the instance to perform\. For more information about replication instances, see [Working with an AWS DMS replication instance](CHAP_ReplicationInstance.md)\. 
 
-To perform the following procedure, choose **Replication instances** from the AWS DMS console's navigation pane and then choose **Create replication instance**\.
+The procedure following assumes that you have chosen the AWS DMS console wizard\. You can also do this step by choosing **Replication instances** from the AWS DMS console's navigation pane and then choosing **Create replication instance**\.
 
 **To create a replication instance by using the AWS console**
 

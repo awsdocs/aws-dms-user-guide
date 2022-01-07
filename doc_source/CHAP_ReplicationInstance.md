@@ -18,7 +18,7 @@ Following, you can find out more details about replication instances\.
 
 **Topics**
 + [Choosing the right AWS DMS replication instance for your migration](CHAP_ReplicationInstance.Types.md)
-+ [Choosing the optimum size for a replication instance](CHAP_BestPractices.SizingReplicationInstance.md)
++ [Choosing the best size for a replication instance](CHAP_BestPractices.SizingReplicationInstance.md)
 + [Public and private replication instances](CHAP_ReplicationInstance.PublicPrivate.md)
 + [Working with replication engine versions](CHAP_ReplicationInstance.EngineVersions.md)
 + [Setting up a network for a replication instance](CHAP_ReplicationInstance.VPC.md)

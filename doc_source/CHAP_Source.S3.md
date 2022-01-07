@@ -29,6 +29,14 @@ s3://mybucket/sourcedata/hr/employee
 
 You can specify the column delimiter, row delimiter, null value indicator, and other parameters using extra connection attributes\. For more information, see [Extra connection attributes for Amazon S3 as a source for AWS DMS](#CHAP_Source.S3.Configuring)\.
 
+**Topics**
++ [Defining external tables for Amazon S3 as a source for AWS DMS](#CHAP_Source.S3.ExternalTableDef)
++ [Using CDC with Amazon S3 as a source for AWS DMS](#CHAP_Source.S3.CDC)
++ [Prerequisites when using Amazon S3 as a source for AWS DMS](#CHAP_Source.S3.Prerequisites)
++ [Limitations when using Amazon S3 as a source for AWS DMS](#CHAP_Source.S3.Limitations)
++ [Extra connection attributes for Amazon S3 as a source for AWS DMS](#CHAP_Source.S3.Configuring)
++ [Source data types for Amazon S3](#CHAP_Source.S3.DataTypes)
+
 ## Defining external tables for Amazon S3 as a source for AWS DMS<a name="CHAP_Source.S3.ExternalTableDef"></a>
 
 In addition to the data files, you must also provide an external table definition\. An *external table definition* is a JSON document that describes how AWS DMS should interpret the data from Amazon S3\. The maximum size of this document is 2 MB\. If you create a source endpoint using the AWS DMS Management Console, you can enter the JSON directly into the table\-mapping box\. If you use the AWS Command Line Interface \(AWS CLI\) or AWS DMS API to perform migrations, you can create a JSON file to specify the external table definition\.
@@ -91,26 +99,24 @@ The elements in this JSON document are as follows:
 
 `Tables` – an array consisting of one JSON map per source table\. In this example, there is only one map\. Each map consists of the following elements:
 + `TableName` – the name of the source table\.
-+ `TablePath` – the path in your Amazon S3 bucket where AWS DMS can find the full data load file\. If a `bucketFolder` value is specified, this value is prepended to the path\.
++ `TablePath` – the path in your Amazon S3 bucket where AWS DMS can find the full data load file\. If a `bucketFolder` value is specified, its value is prepended to the path\.
 + `TableOwner` – the schema name for this table\.
 + `TableColumns` – an array of one or more maps, each of which describes a column in the source table:
   + `ColumnName` – the name of a column in the source table\.
   + `ColumnType` – the data type for the column\. For valid data types, see [Source data types for Amazon S3](#CHAP_Source.S3.DataTypes)\.
-  + `ColumnLength` – the number of bytes in this column\. Maximum column length is limited to2147483647 Bytes \(2,047 MegaBytes\) since an S3 source doesn't support FULL LOB mode\.
+  + `ColumnLength` – the number of bytes in this column\. Maximum column length is limited to2147483647 Bytes \(2,047 MegaBytes\) since an S3 source doesn't support FULL LOB mode\. `ColumnLength` is valid for the following data types:
+    + BYTE
+    + STRING
   + `ColumnNullable` – a Boolean value that is `true` if this column can contain NULL values \(default=`false`\)\.
   + `ColumnIsPk` – a Boolean value that is `true` if this column is part of the primary key \(default=`false`\)\.
 + `TableColumnsTotal` – the total number of columns\. This number must match the number of elements in the `TableColumns` array\.
-
-`ColumnLength` applies for the following data types:
-+ BYTE
-+ STRING
 
 If you don't specify otherwise, AWS DMS assumes that `ColumnLength` is zero\.
 
 **Note**  
 In supported versions of AWS DMS, the S3 source data can also contain an optional operation column as the first column before the `TableName` column value\. This operation column identifies the operation \(`INSERT`\) used to migrate the data to an S3 target endpoint during a full load\.   
 If present, the value of this column is the initial character of the `INSERT` operation keyword \(`I`\)\. If specified, this column generally indicates that the S3 source was created by DMS as an S3 target during a previous migration\.   
-In previous DMS versions, this column wasn't present in S3 source data created from a previous DMS full load\. Adding this column to S3 target data allows the format of all rows written to the S3 target to be consistent whether they are written during a full load or during a CDC load\. For more information on the options for formatting S3 target data, see [Indicating source DB operations in migrated S3 data](CHAP_Target.S3.md#CHAP_Target.S3.Configuring.InsertOps)\.
+In DMS versions prior to 3\.4\.2, this column wasn't present in S3 source data created from a previous DMS full load\. Adding this column to S3 target data allows the format of all rows written to the S3 target to be consistent whether they are written during a full load or during a CDC load\. For more information on the options for formatting S3 target data, see [Indicating source DB operations in migrated S3 data](CHAP_Target.S3.md#CHAP_Target.S3.Configuring.InsertOps)\.
 
 For a column of the NUMERIC type, specify the precision and scale\. *Precision* is the total number of digits in a number, and *scale* is the number of digits to the right of the decimal point\. You use the `ColumnPrecision` and `ColumnScale` elements for this, as shown following\.
 
@@ -124,6 +130,20 @@ For a column of the NUMERIC type, specify the precision and scale\. *Precision* 
     }
 ...
 ```
+
+For a column of the DATETIME type with data that contains fractional seconds, specify the scale\. *Scale* is the number of digits for the fractional seconds, and can range from 0 to 9\. You use the `ColumnScale` element for this, as shown following\.
+
+```
+...
+{
+      "ColumnName": "HireDate",
+      "ColumnType": "DATETIME",
+      "ColumnScale": "3"
+}
+...
+```
+
+If you don't specify otherwise, AWS DMS assumes `ColumnScale` is zero and truncates the fractional seconds\.
 
 ## Using CDC with Amazon S3 as a source for AWS DMS<a name="CHAP_Source.S3.CDC"></a>
 
@@ -204,6 +224,11 @@ The AWS Identity and Access Management \(IAM\) role assigned to the user account
 }
 ```
 
+## Limitations when using Amazon S3 as a source for AWS DMS<a name="CHAP_Source.S3.Limitations"></a>
+
+The following limitations apply when using Amazon S3 as a source:
++ A VPCE\-enabled \(gateway VPC\) S3 bucket isn't currently supported\.
+
 ## Extra connection attributes for Amazon S3 as a source for AWS DMS<a name="CHAP_Source.S3.Configuring"></a>
 
 You can specify the following options as extra connection attributes\.
@@ -211,12 +236,11 @@ You can specify the following options as extra connection attributes\.
 
 | **Option** | **Description** | 
 | --- | --- | 
-| bucketFolder |  \(Optional\) A folder name in the S3 bucket\. If this attribute is provided, source data files and CDC files are read from the path `bucketFolder/schemaName/tableName/`\. If this attribute isn't specified, then the path used is `schemaName/tableName/`\. An example follows\. `bucketFolder=testFolder;`  | 
-| bucketName |  The name of the S3 bucket\. An example follows\. `bucketName=buckettest;`  | 
-| cdcPath | The location of CDC files\. This attribute is required if a task captures change data; otherwise, it's optional\. If cdcPath is present, then AWS DMS reads CDC files from this path and replicates the data changes to the target endpoint\. For more information, see [Using CDC with Amazon S3 as a source for AWS DMS](#CHAP_Source.S3.CDC)\. An example follows\.`cdcPath=dataChanges;` | 
+| bucketFolder |  \(Optional\) A folder name in the S3 bucket\. If this attribute is provided, source data files and CDC files are read from the path `s3://myBucket/bucketFolder/schemaName/tableName/` and `s3://myBucket/bucketFolder/` respectively\. If this attribute isn't specified, then the path used is `schemaName/tableName/`\. An example follows\. `bucketFolder=sourceData;`  | 
+| bucketName |  The name of the S3 bucket\. An example follows\. `bucketName=myBucket;`  | 
+| cdcPath | The location of CDC files\. This attribute is required if a task captures change data; otherwise, it's optional\. If cdcPath is present, then AWS DMS reads CDC files from this path and replicates the data changes to the target endpoint\. For more information, see [Using CDC with Amazon S3 as a source for AWS DMS](#CHAP_Source.S3.CDC)\. An example follows\.`cdcPath=changeData;` | 
 | csvDelimiter |  The delimiter used to separate columns in the source files\. The default is a comma\. An example follows\. `csvDelimiter=,;`  | 
 | csvRowDelimiter |  The delimiter used to separate rows in the source files\. The default is a newline \(`\n`\)\. An example follows\. `csvRowDelimiter=\n;`  | 
-| externalTableDefinition |  A JSON object that describes how AWS DMS should interpret the data in the Amazon S3 bucket during the migration\. For more information, see [Defining external tables for Amazon S3 as a source for AWS DMS](#CHAP_Source.S3.ExternalTableDef)\. An example follows\. `externalTableDefinition=`*json\_object*`;`  | 
 | ignoreHeaderRows |  When this value is set to 1, AWS DMS ignores the first row header in a \.csv file\. A value of 1 enables the feature, a value of 0 disables the feature\. The default is 0\. Example: `ignoreHeaderRows=1;`  | 
 | rfc4180 |  When this value is set to `true` or `y`, each leading double quotation mark has to be followed by an ending double quotation mark\. This formatting complies with RFC 4180\. When this value is set to `false` or `n`, string literals are copied to the target as is\. In this case, a delimiter \(row or column\) signals the end of the field\. Thus, you can't use a delimiter as part of the string, because it signals the end of the value\. The default is `true`\. Valid values: `true`, `false`, `y`, `n` Example: `rfc4180=false;`  | 
 
@@ -233,7 +257,6 @@ The following AWS DMS data types are used with Amazon S3 as a source:
 + DATE
 + TIME
 + DATETIME
-+ TIMESTAMP
 + INT1
 + INT2
 + INT4

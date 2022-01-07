@@ -55,6 +55,7 @@ In AWS DMS, there are two methods for reading the redo logs when doing change da
 | Supports Oracle transparent data encryption \(TDE\) | Yes |  Partially Binary Reader supports TDE only for self\-managed Oracle databases\.  | 
 | Supports all Oracle compression methods | Yes | No | 
 | Supports XA transactions | No | Yes | 
+| RAC |  Yes Not recommended  |  Yes Highly recommended  | 
 
 **Note**  
 By default, AWS DMS uses Oracle LogMiner for \(CDC\)\. 
@@ -121,7 +122,7 @@ For more information on configuring CDC for an AWS\-managed Oracle database as a
 
 ## Workflows for configuring a self\-managed or AWS\-managed Oracle source database for AWS DMS<a name="CHAP_Source.Oracle.Workflows"></a>
 
-To configure a self\-managed source database instance, use the following workflow steps, depending on how you perform CDC\. 
+To configure a self\-managed source database instance, use the following workflow steps , depending on how you perform CDC\.  
 
 
 | For this workflow step | If you perform CDC using LogMiner, do this | If you perform CDC using Binary Reader, do this | 
@@ -234,11 +235,13 @@ Here, `name`, `value`, and `description` are columns somewhere in the database t
 
 #### Making sure that ARCHIVELOG mode is on<a name="CHAP_Source.Oracle.Self-Managed.Configuration.ArchiveLogMode"></a>
 
-You can run Oracle in two different modes: the `ARCHIVELOG` mode and the `NOARCHIVELOG` mode\. To run a CDC task, run the database in `ARCHIVELOG` mode\. If the database is not set to `ARCHIVELOG` mode, run the following command to set it\.
+You can run Oracle in two different modes: the `ARCHIVELOG` mode and the `NOARCHIVELOG` mode\. To run a CDC task, run the database in `ARCHIVELOG` mode\. To know if the database is in `ARCHIVELOG` mode, execute the following query\.
 
 ```
-ALTER database ARCHIVELOG;
+SQL> SELECT log_mode FROM v$database;
 ```
+
+If `NOARCHIVELOG` mode is returned, set the database to `ARCHIVELOG` per Oracle instructions\. 
 
 #### Setting up supplemental logging<a name="CHAP_Source.Oracle.Self-Managed.Configuration.SupplementalLogging"></a>
 
@@ -411,9 +414,10 @@ For all parameter values such as `db_user` and `any-replicated-table`, Oracle as
 GRANT CREATE SESSION to db_user;
 GRANT SELECT ANY TRANSACTION to db_user;
 GRANT SELECT on DBA_TABLESPACES to db_user;
-GRANT LOGMINING to db_user; (for Oracle 12c only)
 GRANT SELECT ON any-replicated-table to db_user;
 GRANT EXECUTE on rdsadmin.rdsadmin_util to db_user;
+ -- For Oracle 12c only:
+GRANT LOGMINING to db_user
 ```
 
 In addition, grant `SELECT` and `EXECUTE` permissions on `SYS` objects using the Amazon RDS procedure `rdsadmin.rdsadmin_util.grant_sys_object` as shown\. For more information, see [Granting SELECT or EXECUTE privileges to SYS objects](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Appendix.Oracle.CommonDBATasks.html#Appendix.Oracle.CommonDBATasks.TransferPrivileges)\.
@@ -455,6 +459,7 @@ exec rdsadmin.rdsadmin_util.grant_sys_object('REGISTRY$SQLPATCH', 'db_user', 'SE
 exec rdsadmin.rdsadmin_util.grant_sys_object('V_$STANDBY_LOG', 'db_user', 'SELECT'); 
 
 -- (for transparent data encryption (TDE))
+
 exec rdsadmin.rdsadmin_util.grant_sys_object('ENC$', 'db_user', 'SELECT'); 
                
 -- (for validation with LOB columns)
@@ -471,17 +476,9 @@ For more information on using Oracle TDE with AWS DMS, see [Supported encryption
 ### Configuring an AWS\-managed Oracle source for AWS DMS<a name="CHAP_Source.Oracle.Amazon-Managed.Configuration"></a>
 
 Before using an AWS\-managed Oracle database as a source for AWS DMS, perform the following tasks for the Oracle database:
-+ Enable automatic backups\.
++ Enable automatic backups\. For more information about enabling automatic backups, see [Enabling automated backups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.html#USER_WorkingWithAutomatedBackups.Enabling) in the *Amazon RDS User Guide*\.
 + Set up supplemental logging\.
 + Set up archiving\. Archiving the redo logs for your Amazon RDS for Oracle DB instance allows AWS DMS to retrieve the log information using Oracle LogMiner or Binary Reader\. 
-
-Each of the preceding steps is described in more detail following\.
-
-**To enable automatic backups**
-
-1. Sign in to the AWS Management Console and open the Amazon RDS console at [https://console\.aws\.amazon\.com/rds/](https://console.aws.amazon.com/rds/)\.
-
-1. In the **Management Settings** section for your RDS for Oracle database instance, set the **Enabled Automatic Backups** option to **Yes**\.
 
 **To set up archiving**
 
@@ -655,7 +652,7 @@ The following limitations apply when using an Oracle database as a source for AW
 + AWS DMS truncates any data in `LONG` or `LONG RAW` columns that is longer than 64 KB to 64 KB\.
 + AWS DMS doesn't replicate tables whose names contain apostrophes\.
 + AWS DMS doesn't support CDC from dynamic views\.
-+ When you use AWS DMS Binary Reader to access the redo logs, AWS DMS doesn't support CDC for index\-organized tables with an overflow segment\. Or you can consider using LogMiner for such tables\.
++ AWS DMS doesn't support CDC for index\-organized tables with an overflow segment\.
 + When you use Oracle LogMiner to access the redo logs, AWS DMS has the following limitations:
   + For Oracle 12 only, AWS DMS doesn't replicate any changes to LOB columns\.
   + For all Oracle versions, AWS DMS doesn't replicate the result of `UPDATE` operations on `XMLTYPE` and LOB columns\.
@@ -675,6 +672,7 @@ The following limitations apply when using an Oracle database as a source for AW
 + AWS DMS doesn't load or capture global temporary tables\.
 + For S3 targets using replication, enable supplemental logging on every column so source row updates can capture every column value\. An example follows: `alter table yourtablename add supplemental log data (all) columns;`\.
 + An update for a row with a composite unique key that contains `null` can't be replicated at the target\.
++ AWS DMS doesn't support use of multiple Oracle TDE encryption keys on the same source endpoint\. Each endpoint can have only one attribute for TDE encryption Key Name "`securityDbEncryptionName`", and one TDE password for this key\.
 
 ## SSL support for an Oracle endpoint<a name="CHAP_Security.SSL.Oracle"></a>
 
@@ -726,20 +724,20 @@ When you have completed the steps previous, you can import the wallet file with 
 
 ### Using a self\-signed certificate for Oracle SSL<a name="CHAP_Security.SSL.Oracle.SelfSigned"></a>
 
-To use a self\-signed certificate for Oracle SSL, do the following\.
+To use a self\-signed certificate for Oracle SSL, do the steps following, assuming an Oracle wallet password of `oracle123`\.
 
 **To use a self\-signed certificate for Oracle SSL with AWS DMS**
 
 1. Create a directory you will use to work with the self\-signed certificate\.
 
    ```
-   mkdir SELF_SIGNED_CERT_DIRECTORY
+   mkdir -p /u01/app/oracle/self_signed_cert
    ```
 
 1. Change into the directory you created in the previous step\.
 
    ```
-   cd SELF_SIGNED_CERT_DIRECTORY
+   cd /u01/app/oracle/self_signed_cert
    ```
 
 1. Create a root key\.
@@ -752,91 +750,137 @@ To use a self\-signed certificate for Oracle SSL, do the following\.
 
    ```
    openssl req -x509 -new -nodes -key self-rootCA.key 
-       -sha256 -days 1024 -out self-rootCA.pem
+           -sha256 -days 3650 -out self-rootCA.pem
    ```
+
+   Use input parameters like the following\.
+   + `Country Name (2 letter code) [XX]`, for example: `AU`
+   + `State or Province Name (full name) []`, for example: `NSW`
+   + `Locality Name (e.g., city) [Default City]`, for example: `Sydney`
+   + `Organization Name (e.g., company) [Default Company Ltd]`, for example: `AmazonWebService`
+   + `Organizational Unit Name (e.g., section) []`, for example: `DBeng`
+   + `Common Name (e.g., your name or your server's hostname) []`, for example: `aws`
+   + `Email Address []`, for example: abcd\.efgh@amazonwebservice\.com
 
 1. Create an Oracle wallet directory for the Oracle database\.
 
    ```
-   mkdir $ORACLE_HOME/self_signed_ssl_wallet
+   mkdir -p /u01/app/oracle/wallet
    ```
 
 1. Create a new Oracle wallet\.
 
    ```
-   orapki wallet create -wallet $ORACLE_HOME/self_signed_ssl_wallet 
-        -pwd password -auto_login_local
+   orapki wallet create -wallet "/u01/app/oracle/wallet" -pwd oracle123 -auto_login_local
    ```
 
 1. Add the root certificate to the Oracle wallet\.
 
    ```
-   orapki wallet add -wallet $ORACLE_HOME/self_signed_ssl_wallet 
-        -trusted_cert -cert self-rootCA.pem -pwd password
+   orapki wallet add -wallet "/u01/app/oracle/wallet" -pwd oracle123 -trusted_cert 
+   -cert /u01/app/oracle/self_signed_cert/self-rootCA.pem
    ```
 
 1. List the contents of the Oracle wallet\. The list should include the root certificate\. 
 
    ```
-   orapki wallet display -wallet $ORACLE_HOME/self_signed_ssl_wallet
+   orapki wallet display -wallet /u01/app/oracle/wallet -pwd oracle123
+   ```
+
+   For example, this might display similar to the following\.
+
+   ```
+   Requested Certificates:
+   User Certificates:
+   Trusted Certificates:
+   Subject:        CN=aws,OU=DBeng,O= AmazonWebService,L=Sydney,ST=NSW,C=AU
    ```
 
 1. Generate the Certificate Signing Request \(CSR\) using the ORAPKI utility\.
 
    ```
-   orapki wallet add -wallet $ORACLE_HOME/self_signed_ssl_wallet 
-        -dn "CN=dms" -keysize 2048 -sign_alg sha256 -pwd password
+   orapki wallet add -wallet "/u01/app/oracle/wallet" -pwd oracle123 
+   -dn "CN=aws" -keysize 2048 -sign_alg sha256
    ```
 
 1. Run the following command\.
 
    ```
-   openssl pkcs12 -in $ORACLE_HOME/self_signed_ssl_wallet/ewallet.p12 -nodes -out nonoracle_wallet.pem
+   openssl pkcs12 -in /u01/app/oracle/wallet/ewallet.p12 -nodes -out /u01/app/oracle/wallet/nonoracle_wallet.pem
+   ```
+
+   This has output like the following\.
+
+   ```
+   Enter Import Password:
+   MAC verified OK
+   Warning unsupported bag type: secretBag
    ```
 
 1. Put 'dms' as the common name\.
 
    ```
-   openssl req -new -key nonoracle_wallet.pem -out self-signed-oracle.csr
+   openssl req -new -key /u01/app/oracle/wallet/nonoracle_wallet.pem -out certdms.csr
    ```
+
+   Use input parameters like the following\.
+   + `Country Name (2 letter code) [XX]`, for example: `AU`
+   + `State or Province Name (full name) []`, for example: `NSW`
+   + `Locality Name (e.g., city) [Default City]`, for example: `Sydney`
+   + `Organization Name (e.g., company) [Default Company Ltd]`, for example: `AmazonWebService`
+   + `Organizational Unit Name (e.g., section) []`, for example: `aws`
+   + `Common Name (e.g., your name or your server's hostname) []`, for example: `aws`
+   + `Email Address []`, for example: abcd\.efgh@amazonwebservice\.com
+
+   Make sure this is not same as step 4\. You can do this, for example, by changing Organizational Unit Name to a different name as shown\.
+
+   Enter the additional attributes following to be sent with your certificate request\.
+   + `A challenge password []`, for example: `oracle123`
+   + `An optional company name []`, for example: `aws`
 
 1. Get the certificate signature\.
 
    ```
-   openssl req -noout -text -in self-signed-oracle.csr | grep -i signature
+   openssl req -noout -text -in certdms.csr | grep -i signature
    ```
 
-1. If the output from step 12 is sha1WithRSAEncryption or sha256WithRSAEncryption, then run the following code\.
+   The signature key for this post is `sha256WithRSAEncryption` \.
+
+1. Run the command following to generate the certificate \(`.crt`\) file\.
 
    ```
-   openssl x509 -req -in self-signed-oracle.csr -CA self-rootCA.pem
-   -CAkey self-rootCA.key -CAcreateserial
-   -out self-signed-oracle.crt -days 365 -sha256
+   openssl x509 -req -in certdms.csr -CA self-rootCA.pem -CAkey self-rootCA.key 
+   -CAcreateserial -out certdms.crt -days 365 -sha256
    ```
 
-1. If the output from step 12 is `md5WithRSAEncryption`, then run the following code\.
+   This displays output like the following\.
 
    ```
-   openssl x509 -req -in self-signed-oracle.csr -CA self-rootCA.pem 
-   -CAkey self-rootCA.key -CAcreateserial 
-   -out self-signed-oracle.crt -days 365 -sha256
+   Signature ok
+   subject=/C=AU/ST=NSW/L=Sydney/O=awsweb/OU=DBeng/CN=aws
+   Getting CA Private Key
    ```
 
 1. Add the certificate to the wallet\.
 
    ```
-   orapki wallet add -wallet $ORACLE_HOME/self_signed_ssl_wallet -user_cert 
-   -cert self-signed-oracle.crt -pwd password
+   orapki wallet add -wallet /u01/app/oracle/wallet -pwd oracle123 -user_cert -cert certdms.crt
    ```
 
-1. Configure the sqlnet\.ora file \($ORACLE\_HOME/network/admin/sqlnet\.ora\)\.
+1. View the wallet\. It should have two entries\. See the code following\.
+
+   ```
+   orapki wallet display -wallet /u01/app/oracle/wallet -pwd oracle123
+   ```
+
+1. Configure the `sqlnet.ora` file \(`$ORACLE_HOME/network/admin/sqlnet.ora`\)\.
 
    ```
    WALLET_LOCATION =
       (SOURCE =
         (METHOD = FILE)
         (METHOD_DATA =
-          (DIRECTORY = ORACLE_HOME/self_signed_ssl_wallet)
+          (DIRECTORY = /u01/app/oracle/wallet/)
         )
       ) 
    
@@ -860,7 +904,7 @@ To use a self\-signed certificate for Oracle SSL, do the following\.
      (SOURCE =
        (METHOD = FILE)
        (METHOD_DATA =
-         (DIRECTORY = ORACLE_HOME/self_signed_ssl_wallet)
+         (DIRECTORY = /u01/app/oracle/wallet/)
        )
      )
    
@@ -940,7 +984,7 @@ To use a self\-signed certificate for Oracle SSL, do the following\.
 1. Change directory to the directory with the self\-signed certificate\.
 
    ```
-   cd SELF_SIGNED_CERT_DIRECTORY
+   cd /u01/app/oracle/self_signed_cert
    ```
 
 1. Create a new client Oracle wallet for AWS DMS to use\.
@@ -959,6 +1003,13 @@ To use a self\-signed certificate for Oracle SSL, do the following\.
 
    ```
    orapki wallet display -wallet ./
+   ```
+
+   This has output like the following\.
+
+   ```
+   Trusted Certificates:
+   Subject:        CN=aws,OU=DBeng,O=AmazonWebService,L=Sydney,ST=NSW,C=AU
    ```
 
 1. Upload the Oracle wallet that you just created to AWS DMS\.

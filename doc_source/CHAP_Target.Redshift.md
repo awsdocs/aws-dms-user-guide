@@ -179,7 +179,7 @@ The following procedures describe how to do this\.
 
 You have now created the new role to access Amazon Redshift resources for encryption with a specified name, for example `DMS-Redshift-endpoint-access-role`\.
 
-**To create a KMS key with a key policy that references your IAM role**
+**To create an AWS KMS encryption key with a key policy that references your IAM role**
 **Note**  
 For more information about how AWS DMS works with AWS KMS encryption keys, see [Setting an encryption key and specifying AWS KMS permissions](CHAP_Security.md#CHAP_Security.EncryptionKey)\.
 
@@ -339,7 +339,7 @@ You can also use the CLI `modify-endpoint` command to change the value of the `E
 
 ### Amazon S3 bucket settings<a name="CHAP_Target.Redshift.EndpointSettings.S3Buckets"></a>
 
-When you migrate data to an Amazon Redshift target endpoint, AWS DMS uses a default Amazon S3 bucket as intermediate task storage before copying the migrated data to Amazon Redshift\. For example, the examples shown for creating an Amazon Redshift target endpoint with an AWS KMS data encryption key use this default S3 bucket \(see [KMS key settings for data encryption](#CHAP_Target.Redshift.EndpointSettings.KMSkeys)\)\. 
+When you migrate data to an Amazon Redshift target endpoint, AWS DMS uses a default Amazon S3 bucket as intermediate task storage before copying the migrated data to Amazon Redshift\. For example, the examples shown for creating an Amazon Redshift target endpoint with a AWS KMS data encryption key use this default S3 bucket \(see [KMS key settings for data encryption](#CHAP_Target.Redshift.EndpointSettings.KMSkeys)\)\. 
 
 You can instead specify a custom S3 bucket for this intermediate storage by including the following parameters in the value of your `--redshift-settings` option on the AWS CLI `create-endpoint` command:
 + `BucketName` – A string you specify as the name of the S3 bucket storage\.
@@ -430,7 +430,7 @@ For additional information about AWS DMS data types, see [Data types for AWS Dat
 | BYTES | VARCHAR \(Length\) | 
 | DATE | DATE | 
 | TIME | VARCHAR\(20\) | 
-| DATETIME | If the scale is => 0 and =< 6, then:  TIMESTAMP \(s\)  If the scale is => 7 and =< 9, then:  VARCHAR \(37\) | 
+| DATETIME |  If the scale is => 0 and =< 6, depending on Redshift target column type, then one of the following: TIMESTAMP \(s\) TIMESTAMPTZ \(s\) — If source timestamp contains a zone offset \(such as in SQL Server or Oracle\) it converts to UTC on insert/update\. If it doesn't contain an offset, then time is considered in UTC already\. If the scale is => 7 and =< 9, then:  VARCHAR \(37\) | 
 | INT1 | INT2 | 
 | INT2 | INT2 | 
 | INT4 | INT4 | 

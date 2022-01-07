@@ -4,12 +4,6 @@ Every AWS DMS replication instance has a weekly maintenance window during which 
 
 If AWS DMS determines that maintenance is required during a given week, the maintenance occurs during the 30\-minute maintenance window you chose when you created the replication instance\. AWS DMS completes most maintenance during the 30\-minute maintenance window\. However, a longer time might be required for larger changes\.
 
-The 30\-minute maintenance window that you selected when you created the replication instance is from an 8\-hour block of time allocated for each AWS Region\. If you don't specify a preferred maintenance window when you create your replication instance, AWS DMS assigns one on a randomly selected day of the week\. For a replication instance that uses a Multi\-AZ deployment, a failover might be required for maintenance to be completed\.
-
-The following table lists the maintenance window for each AWS Region that supports AWS DMS\.
-
-[\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_ReplicationInstance.MaintenanceWindow.html)
-
 ## Effect of maintenance on existing migration tasks<a name="CHAP_ReplicationInstance.MaintenanceWindow.Effect"></a>
 
 When an AWS DMS migration task is running on an instance, the following events occur when a patch is applied:

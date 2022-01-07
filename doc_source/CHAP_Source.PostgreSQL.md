@@ -122,6 +122,8 @@ You can't use RDS PostgreSQL read replicas for CDC \(ongoing replication\)\.
 
 1. Set the `wal_sender_timeout` parameter to 0, as a best practice\. Setting this parameter to 0 prevents PostgreSQL from terminating replication connections that are inactive longer than the specified timeout\. When AWS DMS migrates data, replication connections need to be able to last longer than the specified timeout\.
 
+1.  Ensure the value of the `max_worker_processes` parameter in your DB Cluster Parameter Group is equal to, or higher than the total combined values of `max_logical_replication_workers`, `autovacuum_max_workers`, and `max_parallel_workers`\. A high number of background worker processes might impact application workloads on small instances\. So, monitor performance of your database if you set `max_worker_processes` higher than the default value\.
+
 ### Migrating an Amazon RDS for PostgreSQL database without using the master user account<a name="CHAP_Source.PostgreSQL.RDSPostgreSQL.NonMasterUser"></a>
 
 In some cases, you might not use the master user account for the Amazon RDS PostgreSQL DB instance that you are using as a source\. In these cases, you create several objects to capture data definition language \(DDL\) events\. You create these objects in the account other than the master account and then create a trigger in the master user account\.

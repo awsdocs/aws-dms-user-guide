@@ -19,10 +19,11 @@ The following lists SQL Server editions you can use as a source with Amazon RDS 
 **Note**  
 Support for Microsoft SQL Server version 2019 as a source is available\.
 
-The source SQL Server database can be installed on any computer in your network\. A SQL Server account with appropriate access privileges to the source database for the type of task you chose is required for use with AWS DMS\. This account must have the `view definition` permission\. You add this permission using the following command:
+The source SQL Server database can be installed on any computer in your network\. A SQL Server account with appropriate access privileges to the source database for the type of task you chose is required for use with AWS DMS\. This account must have the `view definition` and `view server state` permissions\. You add this permission using the following command:
 
 ```
 grant view definition to [user]
+grant view server state to [user]
 ```
 
 AWS DMS supports migrating data from named instances of SQL Server\. You can use the following notation in the server name when you create the source endpoint\.
@@ -51,7 +52,7 @@ For additional details on working with SQL Server source databases and AWS DMS, 
 + [Permissions for full load only tasks](#CHAP_Source.SQLServer.Permissions)
 + [Prerequisites of using ongoing replication \(CDC\) from a SQL Server source](#CHAP_Source.SQLServer.Prerequisites)
 + [Capturing data changes for self\-managed SQL Server on\-premises or on EC2](#CHAP_Source.SQLServer.CDC)
-+ [Setting up ongoing replication on an RDS for SQL Server DB instance](#CHAP_Source.SQLServer.Configuration)
++ [Setting up ongoing replication on a Cloud SQL Server DB instance](#CHAP_Source.SQLServer.Configuration)
 + [Supported compression methods](#CHAP_Source.SQLServer.Compression)
 + [Working with SQL Server AlwaysOn availability groups](#CHAP_Source.SQLServer.AlwaysOn)
 + [Extra connection attributes when using SQL Server as a source for AWS DMS](#CHAP_Source.SQLServer.ConnectionAttrib)
@@ -88,6 +89,8 @@ The following limitations apply when using a SQL Server database as a source for
 + Replicating data from indexed views isn't supported\.
 + Renaming tables using sp\_rename isn't supported \(for example, `sp_rename 'Sales.SalesRegion', 'SalesReg;)`
 + Renaming columns using sp\_rename isn't supported \(for example, `sp_rename 'Sales.Sales.Region', 'RegID', 'COLUMN';`\)
++ AWS DMS doesn't support change processing to set and unset column default values \(using the `ALTER COLUMN SET DEFAULT` clause with `ALTER TABLE` statements\)\.
++ AWS DMS doesn't support change processing to set column nullability \(using the `ALTER COLUMN [SET|DROP] NOT NULL` clause with `ALTER TABLE` statements\)\.
 + With SQL Server 2012 and SQL Server 2014, when using DMS replication with Availability Groups, the distribution database can't be placed in an availability group\. SQL 2016 supports placing the distribution database into an availability group, except for distribution databases used in merge, bidirectional, or peer\-to\-peer replication topologies\.
 
 The following limitations apply when accessing the backup transaction logs:  
@@ -128,7 +131,7 @@ The following permissions are required to perform full load only tasks\.
 
 ## Prerequisites of using ongoing replication \(CDC\) from a SQL Server source<a name="CHAP_Source.SQLServer.Prerequisites"></a>
 
-You can use ongoing replication \(change data capture, or CDC\) for a self\-managed SQL Server database on\-premises or on Amazon EC2, or an AWS\-managed database on Amazon RDS\. 
+You can use ongoing replication \(change data capture, or CDC\) for a self\-managed SQL Server database on\-premises or on Amazon EC2, or a cloud database such as Amazon RDS or an Azure Sql managed instance\.
 
 The following requirements apply specifically when using ongoing replication with a SQL Server database as a source for AWS DMS\.
 + SQL Server must be configured for full backups, and you must perform a backup before beginning to replicate data\.
@@ -309,20 +312,31 @@ GO
 
 For more information on setting up MS\-CDC for specific tables, see the [SQL Server documentation](https://msdn.microsoft.com/en-us/library/cc627369.aspx)\.
 
-## Setting up ongoing replication on an RDS for SQL Server DB instance<a name="CHAP_Source.SQLServer.Configuration"></a>
+## Setting up ongoing replication on a Cloud SQL Server DB instance<a name="CHAP_Source.SQLServer.Configuration"></a>
 
 Before setting up ongoing replication, see [Prerequisites of using ongoing replication \(CDC\) from a SQL Server source](#CHAP_Source.SQLServer.Prerequisites)\. 
 
 Unlike self\-managed Microsoft SQL Server sources, Amazon RDS for SQL Server doesn't support MS\-Replication\. Therefore, AWS DMS needs to use MS\-CDC for tables with or without primary keys\.
 
-Amazon RDS doesn't grant sysadmin privileges for setting replication artifacts that AWS DMS uses for ongoing changes in a source SQL Server instance\. Make sure to turn on MS\-CDC for the Amazon RDS instance as in the following procedure\.
+Amazon RDS doesn't grant sysadmin privileges for setting replication artifacts that AWS DMS uses for ongoing changes in a source SQL Server instance\. Make sure to turn on MS\-CDC for the Amazon RDS instance \(using Master user privileges\) as in the following procedure\.
 
-**To turn on MS\-CDC for an RDS for SQL Server DB instance**
+**To turn on MS\-CDC for a Cloud SQL Server DB instance**
 
 1. Run the following query at the database level\.
 
+   *For an RDS for SQL Server DB instance:*
+
    ```
    exec msdb.dbo.rds_cdc_enable_db 'DB_name'
+   ```
+
+   *For an Azure SQL Managed DB Instance:*
+
+   ```
+   USE DB_name 
+   GO 
+   EXEC sys.sp_cdc_enable_db 
+   GO
    ```
 
 1. For each table with a primary key, run the following query to turn on MS\-CDC\.
@@ -371,7 +385,7 @@ Amazon RDS doesn't grant sysadmin privileges for setting replication artifacts t
 **Note**  
 With some versions of SQL Server, if the value of `pollinginterval` is set to more than 3599 seconds, the value resets to the default five seconds\. When this happens, T\-Log entries are purged before AWS DMS can read them\. To determine which SQL Server versions are affected by this known issue, see [this Microsoft KB article](https://support.microsoft.com/en-us/topic/kb4459220-fix-incorrect-results-occur-when-you-convert-pollinginterval-parameter-from-seconds-to-hours-in-sys-sp-cdc-scan-in-sql-server-dac8aefe-b60b-7745-f987-582dda2cfa78)\.
 
-   If you are using Amazon RDS with Multi\-AZ, make sure that also you set your secondary to have the right values in case of failover\.
+   If you are using Amazon RDS with Multi\-AZ, make sure that you also set your secondary to have the right values in case of failover\.
 
    ```
    exec rdsadmin..rds_set_configuration 'cdc_capture_pollinginterval' , 86399
@@ -436,7 +450,7 @@ The following table shows the extra connection attributes that you can use with 
 
 | Name | Description | 
 | --- | --- | 
-| alwaysOnSharedSynchedBackupIsEnabled |  This attribute adjusts the behavior of AWS DMS when migrating from an SQL Server source database that is hosted as part of an Always On availability group cluster\.   AWS DMS has enhanced support for SQL Server source databases that are configured to run in an Always On cluster\. In this case, AWS DMS attempts to track if transaction backups are happening from nodes in the Always On cluster other than the node where the source database instance is hosted\. At migration task startup, AWS DMS tries to connect to each node in the cluster, but fails if it can't connect to any one of the nodes\.  If you need AWS DMS to poll all the nodes in the Always On cluster for transaction backups, set this attribute to `false`\. Default value: `true` Valid values: `true` or `false` Example: `alwaysOnSharedSynchedBackupIsEnabled=false;`  | 
+| alwaysOnSharedSynchedBackupIsEnabled |  This attribute adjusts the behavior of AWS DMS when migrating from an SQL Server source database that is hosted as part of an Always On availability group cluster\.  AWS DMS has enhanced support for SQL Server source databases that are configured to run in an Always On cluster\. In this case, AWS DMS attempts to track if transaction backups are happening from nodes in the Always On cluster other than the node where the source database instance is hosted\. At migration task startup, AWS DMS tries to connect to each node in the cluster, but fails if it can't connect to any one of the nodes\.  If you need AWS DMS to poll all the nodes in the Always On cluster for transaction backups, set this attribute to `false`\. Default value: `true` Valid values: `true` or `false` Example: `alwaysOnSharedSynchedBackupIsEnabled=false;`  | 
 |  `safeguardPolicy`  |  For optimal performance, AWS DMS tries to capture all unread changes from the active transaction log \(TLOG\)\. However, sometimes due to truncation, the active TLOG might not contain all of the unread changes\. When this occurs, AWS DMS accesses the backup log to capture the missing changes\. To minimize the need to access the backup log, AWS DMS prevents truncation using one of the following methods:  1\. **Start transactions in the database:** This is the default method\. When this method is used, AWS DMS prevents TLOG truncation by mimicking a transaction in the database\. As long as such a transaction is open, changes that appear after the transaction started aren't truncated\. If you need Microsoft Replication to be enabled in your database, then you must choose this method\.  2\.** Exclusively use sp\_repldone within a single task:** When this method is used, AWS DMS reads the changes and then uses sp\_repldone to mark the TLOG transactions as ready for truncation\. Although this method doesn't involve any transactional activities, it can only be used when Microsoft Replication isn't running\. Also, when using this method, only one AWS DMS task can access the database at any given time\. Therefore, if you need to run parallel AWS DMS tasks against the same database, use the default method\.  Default value: `RELY_ON_SQL_SERVER_REPLICATION_AGENT`  Valid values: \{`EXCLUSIVE_AUTOMATIC_TRUNCATION`, `RELY_ON_SQL_SERVER_REPLICATION_AGENT`\}  Example: `safeguardPolicy=RELY_ON_SQL_SERVER_REPLICATION_AGENT;` **Note:** `EXCLUSIVE_AUTOMATIC_TRUNCATION ` doesn’t work on RDS for SQL Server source instances because RDS users don't have access to run the SQL Server stored procedure, `sp_repldone`\.  | 
 | `readBackupOnly` | Use of this attribute requires **sysadmin** privileges\. When this attribute is set to `Y`, during ongoing replication AWS DMS reads changes only from transaction log backups and doesn't read from the active transaction log file\. Setting this parameter to `Y` enables you to control active transaction log file growth during full load and ongoing replication tasks\. However, it can add some source latency to ongoing replication\.  Valid values: `N` or `Y`\. The default is `N`\.  Example: `readBackupOnly=Y;` **Note:** This parameter doesn't work on Amazon RDS SQL Server source instances because of the way RDS performs backups\.  | 
 | `use3rdPartyBackupDevice` | When this attribute is set to `Y`, AWS DMS processes third\-party transaction log backups if they are created in native format\. | 

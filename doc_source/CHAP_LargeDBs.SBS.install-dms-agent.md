@@ -8,20 +8,20 @@ After you finish this step, you should have two local machines prepared:
 
 **To install the AWS DMS Agent**
 
-1. In the AWS SCT installation directory, locate the RPM file called `aws-schema-conversion-tool-dms-agent-2.4.1-R1.x86_64.rpm`\.
+1. In the AWS SCT installation directory, locate the RPM file called `aws-schema-conversion-tool-dms-agent-X.X.X-XX.x86_64.rpm`\.
 
    Copy it to Machine \#2 \(Connectivity\), the AWS DMS Agent machine\. SCT and the DMS Agent should be installed on separate machines\. AWS DMS Agent should be located on the same machine as the Edge client and the ODBC drivers\.
 
 1. On Machine \#2 \(Connectivity\), run the following command to install the DMS Agent\. To simplify permissions, run this command as the `root` user\.
 
    ```
-   sudo rpm -i aws-schema-conversion-tool-dms-agent-2.4.0-R2.x86_64.rpm
+   sudo rpm -i aws-schema-conversion-tool-dms-agent-X.X.X-XX.x86_64.rpm
    ```
 
    This command uses the default installation location of `/opt/amazon/aws-schema-conversion-tool-dms-agent`\. To install the DMS Agent to a different location, use the following option\.
 
    ```
-   sudo rpm --prefix installation_directory -i aws-schema-conversion-tool-dms-agent-2.4.0-R2.x86_64.rpm 
+   sudo rpm --prefix installation_directory -i aws-schema-conversion-tool-dms-agent-X.X.X-XX.x86_64.rpm
    ```
 
 1. To verify that the AWS DMS Agent is running, use the following command\.

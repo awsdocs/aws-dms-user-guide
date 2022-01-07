@@ -8,6 +8,8 @@ For a comprehensive list of valid sources, see [Sources for AWS DMS](CHAP_Introd
 + [Using an Oracle database as a source for AWS DMS](CHAP_Source.Oracle.md)
 + [Using a Microsoft SQL Server database as a source for AWS DMS](CHAP_Source.SQLServer.md)
 + [Using Microsoft Azure SQL database as a source for AWS DMS](CHAP_Source.AzureSQL.md)
++ [Using Microsoft Azure SQL Managed Instance as a source for AWS DMS](CHAP_Source.AzureMgd.md)
++ [Using Google Cloud for MySQL as a source for AWS DMS](CHAP_Source.GC.md)
 + [Using a PostgreSQL database as an AWS DMS source](CHAP_Source.PostgreSQL.md)
 + [Using a MySQL\-compatible database as a source for AWS DMS](CHAP_Source.MySQL.md)
 + [Using an SAP ASE database as a source for AWS DMS](CHAP_Source.SAP.md)

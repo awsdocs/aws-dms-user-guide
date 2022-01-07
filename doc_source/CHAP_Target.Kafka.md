@@ -379,6 +379,7 @@ For information on using the `add-before-image-columns` rule action, see [ Trans
 ## Limitations when using Apache Kafka as a target for AWS Database Migration Service<a name="CHAP_Target.Kafka.Limitations"></a>
 
 The following limitations apply when using Apache Kafka as a target:
++ AWS DMS supports a maximum message size of 1 MiB for a Kafka target\.
 + Make sure to configure both your AWS DMS replication instance and your Kafka cluster in the same virtual private cloud \(VPC\) based on Amazon VPC and in the same security group\. The Kafka cluster can either be an Amazon MSK instance or your own Kafka instance running on Amazon EC2\. For more information, see [Setting up a network for a replication instance](CHAP_ReplicationInstance.VPC.md)\.
 **Note**  
 To specify a security group for Amazon MSK, on the **Create cluster** page, choose **Advanced settings**, select **Customize settings**, and select the security group or accept the default if it is the same as for your replication instance\.
@@ -488,6 +489,11 @@ Given a Kafka topic and a partition key \(in this case, `taskResourceId.schemaNa
      "DateOfBirth": "02/29/1988"
   }
 ```
+
+**Topics**
++ [Restructuring data with attribute mapping](#CHAP_Target.Kafka.AttributeMapping)
++ [Multitopic replication using object mapping](#CHAP_Target.Kafka.MultiTopic)
++ [Message format for Apache Kafka](#CHAP_Target.Kafka.Messageformat)
 
 ### Restructuring data with attribute mapping<a name="CHAP_Target.Kafka.AttributeMapping"></a>
 
@@ -623,6 +629,67 @@ To set a constant value for `partition-key`, specify a `partition-key` value\. F
 
 **Note**  
 The `partition-key` value for a control record that is for a specific table is `TaskId.SchemaName.TableName`\. The `partition-key` value for a control record that is for a specific task is that record's `TaskId`\. Specifying a `partition-key` value in the object mapping has no impact on the `partition-key` for a control record\.
+
+### Multitopic replication using object mapping<a name="CHAP_Target.Kafka.MultiTopic"></a>
+
+By default, AWS DMS tasks migrate all source data to one of the Kafka topics following:
++ As specified in the **Topic** field of the AWS DMS target endpoint\.
++ As specified by `kafka-default-topic` if the **Topic** field of the target endpoint isn't populated and the Kafka `auto.create.topics.enable` setting is set to `true`\.
+
+With AWS DMS engine versions 3\.4\.6 and later, you can use the `kafka-target-topic` attribute to map each migrated source table to a separate topic\. For example, the object mapping rules following migrate the source tables `Customer` and `Address` to the Kafka topics `customer_topic` and `address_topic`, respectively\. At the same time, AWS DMS migrates all other source tables, including the `Bills` table in the `Test` schema, to the topic specified in the target endpoint\.
+
+```
+{
+    "rules": [
+        {
+            "rule-type": "selection",
+            "rule-id": "1",
+            "rule-name": "1",
+            "rule-action": "include",
+            "object-locator": {
+                "schema-name": "Test",
+                "table-name": "%"
+            }
+        },
+        {
+            "rule-type": "object-mapping",
+            "rule-id": "2",
+            "rule-name": "MapToKafka1",
+            "rule-action": "map-record-to-record",
+            "kafka-target-topic": "customer_topic",
+            "object-locator": {
+                "schema-name": "Test",
+                "table-name": "Customer" 
+            }
+            "partition-key": {"value": "ConstantPartitionKey" },
+        },
+        {
+            "rule-type": "object-mapping",
+            "rule-id": "3",
+            "rule-name": "MapToKafka2",
+            "rule-action": "map-record-to-record",
+            "kafka-target-topic": "address_topic",
+            "object-locator": {
+                "schema-name": "Test",
+                "table-name": "Address"
+            }
+            "partition-key": {"value": "HomeAddress" },
+        },
+        {
+            "rule-type": "object-mapping",
+            "rule-id": "4",
+            "rule-name": "DefaultMapToKafka",
+            "rule-action": "map-record-to-record",
+            "object-locator": {
+                "schema-name": "Test",
+                "table-name": "Bills"
+            }
+        }
+    ]
+}
+```
+
+By using Kafka multitopic replication, you can group and migrate source tables to separate Kafka topics using a single replication task\.
 
 ### Message format for Apache Kafka<a name="CHAP_Target.Kafka.Messageformat"></a>
 

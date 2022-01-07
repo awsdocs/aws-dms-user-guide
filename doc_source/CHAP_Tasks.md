@@ -34,7 +34,6 @@ The following are actions that you can do when working with an AWS DMS task\.
 + [Moving a task](CHAP_Tasks.Moving.md)
 + [Reloading tables during a task](CHAP_Tasks.ReloadTables.md)
 + [Using table mapping to specify task settings](CHAP_Tasks.CustomizingTasks.TableMapping.md)
-+ [Table and collection settings rules and operations](CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Tablesettings.md)
 + [Using source filters](CHAP_Tasks.CustomizingTasks.Filters.md)
 + [Enabling and working with premigration assessments for a task](CHAP_Tasks.AssessmentReport.md)
 + [Specifying supplemental data for task settings](CHAP_Tasks.TaskData.md)

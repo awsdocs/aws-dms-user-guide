@@ -21,7 +21,7 @@ The following Identity and Access Management \(IAM\) policy allows DMS to store 
 
 **To access an S3 bucket for a premigration assessment**
 
-1. Create a service role using IAM and attach an IAM policy like the following to your service role\.
+1. Create a service role using IAM and attach an IAM policy like the following to your service role\. For information about creating a service role in the console, see [ Creating a role for an AWS service \(console\)](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-service.html#roles-creatingrole-service-console)\.
 
    ```
    //Policy to access S3 bucket

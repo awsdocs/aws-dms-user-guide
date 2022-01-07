@@ -79,6 +79,7 @@ exec rdsadmin.rdsadmin_util.grant_sys_object('GV_$ASM_DISK_STAT','script_user','
 exec rdsadmin.rdsadmin_util.grant_sys_object('GV_$SESSION','script_user','SELECT');
 exec rdsadmin.rdsadmin_util.grant_sys_object('GV_$SQL','script_user','SELECT');
 exec rdsadmin.rdsadmin_util.grant_sys_object('DBA_ENCRYPTED_COLUMNS','script_user','SELECT');
+
 exec rdsadmin.rdsadmin_util.grant_sys_object('DBA_PDBS','script_user','SELECT');
 
 exec rdsadmin.rdsadmin_util.grant_sys_object('DBMS_UTILITY','script_user','EXECUTE');
