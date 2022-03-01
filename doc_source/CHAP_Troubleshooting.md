@@ -111,7 +111,7 @@ Other configuration\-related issues can include the following:
 
   In some cases, the VPC includes a default route to that NAT gateway instead of the internet gateway\. In such cases, the replication instance instead appears to contact the database endpoint using the public IP address of the NAT gateway\. Here, the ingress to the database endpoint outside the VPC needs to allow ingress from the NAT address instead of the replication instance's public IP address\. 
 
-For information about using your own on\-premises name server, see [ Using your own on\-premises name server ](CHAP_BestPractices.md#CHAP_BestPractices.Rte53DNSResolver)\. 
+For information about using your own on\-premises name server, see [ Using your own on\-premises name server](CHAP_BestPractices.md#CHAP_BestPractices.Rte53DNSResolver)\. 
 
 ## CDC is stuck after full load<a name="CHAP_Troubleshooting.General.CDCStuck"></a>
 

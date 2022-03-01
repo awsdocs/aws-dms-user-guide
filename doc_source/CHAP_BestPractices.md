@@ -319,11 +319,21 @@ For example, you might use the following AWS DMS task settings\. Here, setting `
 
 ## Improving performance when migrating large tables using row filtering<a name="CHAP_BestPractices.LargeTables"></a>
 
-To improve the performance when migrating a large table, you can break the migration into more than one task\. To break the migration into multiple tasks using row filtering, use a key or a partition key\. For example, if you have an integer primary key ID from 1 to 8,000,000, you can create eight tasks using row filtering to migrate 1 million records each\.
+To improve the performance when migrating a large table, break the migration into more than one task\. To break the migration into multiple tasks using row filtering, use a key or a partition key\. For example, if you have an integer primary key ID from 1 to 8,000,000, you can create eight tasks using row filtering to migrate 1 million records each\.
 
-To apply row filtering in the console, open the console, choose **Tasks**, and create a new task\. In the **Table mappings** section, add a value for **Selection Rule**\. You can then add a column filter with either a less than or equal to, greater than or equal to, equal to, or range condition \(between two values\)\. For more information about column filtering, see [ Specifying table selection and transformations rules from the console](CHAP_Tasks.CustomizingTasks.TableMapping.Console.md)\.
+**To apply row filtering in the console:**
 
-Or if you have a large partitioned table that is partitioned by date, you can migrate data based on date\. For example, suppose that you have a table partitioned by month, and only the current month's data is updated\. In this case, you can create a full load task for each static monthly partition and create a full load plus CDC task for the currently updated partition\.
+1. Open the AWS Management Console\.
+
+1. Choose **Tasks**, and create a new task\.
+
+1. Choose the **Table mappings** tab, and expand **Selection rules**\.
+
+1. Choose **Add new selection rule**\. You can now add a column filter with either a less than or equal to, greater than or equal to, equal to, or a range condition between two values\. For more information on column filtering, see [ Specifying table selection and transformations rules from the console](CHAP_Tasks.CustomizingTasks.TableMapping.Console.md)\.
+
+If you have a large partitioned table that is partitioned by date, you can migrate data based on date\. For example, suppose that you have a table partitioned by month, and only the current month's data is updated\. In this case, you can create a full load task for each static monthly partition and create a full load plus CDC task for the currently updated partition\.
+
+If your table has a single\-column primary key or unique index, you can have your AWS DMS task segment the table using a parallel load of the ranges type to load the data in parallel\. For more information, see [Table and collection settings rules and operations](CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Tablesettings.md)\.
 
 ## Ongoing replication<a name="CHAP_BestPractices.OnGoingReplication"></a>
 
