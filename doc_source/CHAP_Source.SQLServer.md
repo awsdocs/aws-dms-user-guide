@@ -50,10 +50,11 @@ For additional details on working with SQL Server source databases and AWS DMS, 
 **Topics**
 + [Limitations on using SQL Server as a source for AWS DMS](#CHAP_Source.SQLServer.Limitations)
 + [Permissions for full load only tasks](#CHAP_Source.SQLServer.Permissions)
-+ [Prerequisites of using ongoing replication \(CDC\) from a SQL Server source](#CHAP_Source.SQLServer.Prerequisites)
-+ [Capturing data changes for self\-managed SQL Server on\-premises or on EC2](#CHAP_Source.SQLServer.CDC)
-+ [Setting up ongoing replication on a Cloud SQL Server DB instance](#CHAP_Source.SQLServer.Configuration)
-+ [Supported compression methods](#CHAP_Source.SQLServer.Compression)
++ [Prerequisites for using ongoing replication \(CDC\) from a SQL Server source](#CHAP_Source.SQLServer.Prerequisites)
++ [Capturing data changes for self\-managed SQL Server on\-premises or on Amazon EC2](#CHAP_Source.SQLServer.CDC)
++ [Setting up ongoing replication on a cloud SQL Server DB instance](#CHAP_Source.SQLServer.Configuration)
++ [Optional settings when using Amazon RDS for SQL Server as a source for AWS DMS](#CHAP_Source.SQLServer.OptionalSettings)
++ [Supported compression methods for SQL Server](#CHAP_Source.SQLServer.Compression)
 + [Working with SQL Server AlwaysOn availability groups](#CHAP_Source.SQLServer.AlwaysOn)
 + [Extra connection attributes when using SQL Server as a source for AWS DMS](#CHAP_Source.SQLServer.ConnectionAttrib)
 + [Source data types for SQL Server](#CHAP_Source.SQLServer.DataTypes)
@@ -129,7 +130,7 @@ The following permissions are required to perform full load only tasks\.
                 GRANT VIEW SERVER STATE TO dms_user;
 ```
 
-## Prerequisites of using ongoing replication \(CDC\) from a SQL Server source<a name="CHAP_Source.SQLServer.Prerequisites"></a>
+## Prerequisites for using ongoing replication \(CDC\) from a SQL Server source<a name="CHAP_Source.SQLServer.Prerequisites"></a>
 
 You can use ongoing replication \(change data capture, or CDC\) for a self\-managed SQL Server database on\-premises or on Amazon EC2, or a cloud database such as Amazon RDS or an Azure Sql managed instance\.
 
@@ -144,7 +145,7 @@ The following requirements apply specifically when using ongoing replication wit
 + You can't reuse the SQL Server *tlog* until the changes have been processed\.
 + CDC operations aren't supported on memory\-optimized tables\. This limitation applies to SQL Server 2014 \(when the feature was first introduced\) and later\.
 
-## Capturing data changes for self\-managed SQL Server on\-premises or on EC2<a name="CHAP_Source.SQLServer.CDC"></a>
+## Capturing data changes for self\-managed SQL Server on\-premises or on Amazon EC2<a name="CHAP_Source.SQLServer.CDC"></a>
 
 To capture changes from a source Microsoft SQL Server database, make sure that the database is configured for full backups\. Configure the database either in full recovery mode or bulk\-logged mode\.
 
@@ -164,7 +165,7 @@ When setting up a SQL Server database for ongoing replication \(CDC\), you can d
 
 AWS DMS ongoing replication for SQL Server uses native SQL Server replication for tables with primary keys, and change data capture \(CDC\) for tables without primary keys\.
 
-Before setting up ongoing replication, see [Prerequisites of using ongoing replication \(CDC\) from a SQL Server source](#CHAP_Source.SQLServer.Prerequisites)\. 
+Before setting up ongoing replication, see [Prerequisites for using ongoing replication \(CDC\) from a SQL Server source](#CHAP_Source.SQLServer.Prerequisites)\. 
 
 For tables with primary keys, AWS DMS can generally configure the required artifacts on the source\. However, for SQL Server source instances that are self\-managed, make sure to first configure the SQL Server distribution manually\. After you do so, AWS DMS source users with sysadmin permission can automatically create the publication for tables with primary keys\.
 
@@ -222,7 +223,7 @@ You can set up ongoing replication for a SQL Server database source that doesn't
 **Note**  
 You can perform this procedure while the DMS task is running\. If the DMS task is stopped, you can perform this procedure only if there are no transaction log or database backups in progress\. This is because SQL Server requires the SYSADMIN privilege to query the backups for the log sequence number \(LSN\) position\.
 
-Before setting up ongoing replication, see [Prerequisites of using ongoing replication \(CDC\) from a SQL Server source](#CHAP_Source.SQLServer.Prerequisites)\. 
+Before setting up ongoing replication, see [Prerequisites for using ongoing replication \(CDC\) from a SQL Server source](#CHAP_Source.SQLServer.Prerequisites)\. 
 
 For tables with primary keys, perform the following procedure\. 
 
@@ -257,7 +258,7 @@ For tables with primary keys, perform the following procedure\.
 
    1. Open the context \(right\-click\) menu for **Local Publications**\.
 
-   1.  In the New Publication Wizard, choose **Next**\.
+   1.  In the New Publication wizard, choose **Next**\.
 
    1. Choose the database where you want to create the publication\.
 
@@ -312,25 +313,25 @@ GO
 
 For more information on setting up MS\-CDC for specific tables, see the [SQL Server documentation](https://msdn.microsoft.com/en-us/library/cc627369.aspx)\.
 
-## Setting up ongoing replication on a Cloud SQL Server DB instance<a name="CHAP_Source.SQLServer.Configuration"></a>
+## Setting up ongoing replication on a cloud SQL Server DB instance<a name="CHAP_Source.SQLServer.Configuration"></a>
 
-Before setting up ongoing replication, see [Prerequisites of using ongoing replication \(CDC\) from a SQL Server source](#CHAP_Source.SQLServer.Prerequisites)\. 
+Before setting up ongoing replication, see [Prerequisites for using ongoing replication \(CDC\) from a SQL Server source](#CHAP_Source.SQLServer.Prerequisites)\. 
 
 Unlike self\-managed Microsoft SQL Server sources, Amazon RDS for SQL Server doesn't support MS\-Replication\. Therefore, AWS DMS needs to use MS\-CDC for tables with or without primary keys\.
 
-Amazon RDS doesn't grant sysadmin privileges for setting replication artifacts that AWS DMS uses for ongoing changes in a source SQL Server instance\. Make sure to turn on MS\-CDC for the Amazon RDS instance \(using Master user privileges\) as in the following procedure\.
+Amazon RDS doesn't grant sysadmin privileges for setting replication artifacts that AWS DMS uses for ongoing changes in a source SQL Server instance\. Make sure to turn on MS\-CDC for the Amazon RDS instance \(using master user privileges\) as in the following procedure\.
 
-**To turn on MS\-CDC for a Cloud SQL Server DB instance**
+**To turn on MS\-CDC for a cloud SQL Server DB instance**
 
-1. Run the following query at the database level\.
+1. Run one of the following queries at the database level\.
 
-   *For an RDS for SQL Server DB instance:*
+   For an RDS for SQL Server DB instance, use this query\.
 
    ```
    exec msdb.dbo.rds_cdc_enable_db 'DB_name'
    ```
 
-   *For an Azure SQL Managed DB Instance:*
+   For an Azure SQL managed DB instance, use this query\.
 
    ```
    USE DB_name 
@@ -413,7 +414,43 @@ If an AWS DMS replication task that captures ongoing changes to your SQL Server 
 
 Remember to start the job that truncates SQL Server transaction logs\. Otherwise, storage on your SQL Server instance might fill up\.
 
-## Supported compression methods<a name="CHAP_Source.SQLServer.Compression"></a>
+## Optional settings when using Amazon RDS for SQL Server as a source for AWS DMS<a name="CHAP_Source.SQLServer.OptionalSettings"></a>
+
+When you work with Amazon RDS for SQL Server as a source, the capture job relies on the parameters `maxscans` and `maxtrans`\. These parameters govern the maximum number of scans that the capture does on the transaction log and the number of transactions that are processed for each scan\.
+
+For databases, where a number of transactions is greater than `maxtrans*maxscans`, increasing the `polling_interval` value can cause an accumulation of active transaction log records\. In turn, this accumulation can lead to an increase in the size of the transaction log\.
+
+**To address the transaction log increase that is caused by MS\-CDC**
+
+1. Check the `Log Space Used %` for the database AWS DMS is replicating from and validate that it increases continuously\.
+
+   ```
+   DBCC SQLPERF(LOGSPACE)
+   ```
+
+1. Identify what is blocking the transaction log backup process\.
+
+   ```
+   Select log_reuse_wait, log_reuse_wait_desc, name from sys.databases where name = db_name();
+   ```
+
+   If the `log_reuse_wait_desc` value equals `REPLICATION`, the log backup retention is caused by the latency in MS\-CDC\.
+
+1. Increase the number of events processed by the capture job by increasing the `maxtrans` and `maxscans` parameter values\.
+
+   ```
+   EXEC sys.sp_cdc_change_job @job_type = 'capture' ,@maxtrans = 5000, @maxscans = 20 
+   exec sp_cdc_stop_job 'capture'
+   exec sp_cdc_start_job 'capture'
+   ```
+
+To address this issue, set the values of `maxscans` and `maxtrans` so that `maxtrans*maxscans` is equal to the average number of events generated for tables that AWS DMS replicates from the source database for each day\.
+
+If you set these parameters higher than the recommended value, the capture jobs process all events in the transaction logs\. If you set these parameters below the recommended value, MS\-CDC latency increases and your transaction log grows\.
+
+Identifying appropriate values for `maxscans` and `maxtrans` can be difficult because changes in workload produce varying number of events\. In this case, we recommend that you set up monitoring on MS\-CDC latency\. For more information, see [ Monitor the process](https://docs.microsoft.com/en-us/sql/relational-databases/track-changes/administer-and-monitor-change-data-capture-sql-server?view=sql-server-ver15#Monitor) in SQL Server documentation\. Then configure `maxtrans` and `maxscans` dynamically based on the monitoring results\.
+
+## Supported compression methods for SQL Server<a name="CHAP_Source.SQLServer.Compression"></a>
 
 The following table shows the compression methods that AWS DMS supports for each SQL Server version\. 
 

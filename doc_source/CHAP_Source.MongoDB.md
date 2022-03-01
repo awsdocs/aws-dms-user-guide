@@ -167,7 +167,7 @@ You can specify the segmentation criteria using the table\-settings options foll
 |  `"type"`  |  \(Required\) Set to `"partitions-auto"` for MongoDB as a source\.  | 
 |  `"number-of-partitions"`  |  \(Optional\) Total number of partitions \(segments\) used for migration\. The default is 16\.  | 
 |  `"collection-count-from-metadata"`  |  \(Optional\) If this option is set to `true`, AWS DMS uses an estimated collection count for determining the number of partitions\. If this option is set to `false`, AWS DMS uses the actual collection count\. The default is `true`\.  | 
-|  `"max-records-skip-per-page"`  |  \(Optional\) The number of records to skip at once when determining the boundaries for each partition\. AWS DMS uses a paginated skip approach to determine the minimum boundary for a partition\. The default is 10,000\.  Setting a relatively large value can result in curser timeouts and task failures\. Setting a relatively low value results in more operations per page and a slower full load\.   | 
+|  `"max-records-skip-per-page"`  |  \(Optional\) The number of records to skip at once when determining the boundaries for each partition\. AWS DMS uses a paginated skip approach to determine the minimum boundary for a partition\. The default is 10,000\.  Setting a relatively large value can result in cursor timeouts and task failures\. Setting a relatively low value results in more operations per page and a slower full load\.   | 
 |  `"batch-size"`  |  \(Optional\) Limits the number of documents returned in one batch\. Each batch requires a round trip to the server\. If the batch size is zero \(0\), the cursor uses the server\-defined maximum batch size\. The default is 0\.  | 
 
 The example following shows a table mapping for autosegmentation\.

@@ -81,6 +81,7 @@ For additional information about AWS DMS data types, see [Data types for AWS Dat
 |  AWS DMS data type  |  PostgreSQL data type  | 
 | --- | --- | 
 |  BOOLEAN  |  BOOLEAN  | 
+|  BLOB  |  BYTEA  | 
 |  BYTES  |  BYTEA  | 
 |  DATE  |  DATE  | 
 |  TIME  |  TIME  | 

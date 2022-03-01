@@ -13,6 +13,8 @@ AWS DMS provides support for data validation to ensure that your data was migrat
 
 During data validation, AWS DMS compares each row in the source with its corresponding row at the target, verifies the rows contain the same data, and reports any mismatches\. To accomplish this AWS DMS issues appropriate queries to retrieve the data\. Note that these queries will consume additional resources at the source and target as well as additional network resources\. 
 
+For a CDC only task with validation enabled, all pre\-existing data in a table is validated before starting validation of new data\.
+
 Data validation works with the following databases wherever AWS DMS supports them as source and target endpoints:
 + Oracle
 + PostgreSQL\-compatible database \(PostgreSQL, Aurora PostgreSQL, or Aurora Serverless for PostgreSQL\)

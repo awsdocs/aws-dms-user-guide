@@ -107,6 +107,7 @@ When using an Amazon Redshift database as a target, AWS DMS doesn't support the 
   Update on table 1 changes PK to a PK that was previously updated in the same bulk update.
   ```
 + DMS doesn't support custom DNS names when configuring an endpoint for a Redshift cluster, and you need to use the Amazon provided DNS name\. Since the Amazon Redshift cluster must be in the same AWS account and Region as the replication instance, validation fails if you use a custom DNS endpoint\.
++ Amazon Redshift has a default 4\-hour idle session timeout\. When there isn't any activity within the DMS replication task, Redshift disconnects the session after 4 hours\. Errors can result from DMS being unable to connect and potentially needing to restart\. As a workaround, set a SESSION TIMEOUT limit greater than 4 hours for the DMS replication user\. Or, see the description of [ALTER USER](https://docs.aws.amazon.com/redshift/latest/dg/r_ALTER_USER.html) in the *Amazon Redshift Database Developer Guide*\.
 
 ## Configuring an Amazon Redshift database as a target for AWS Database Migration Service<a name="CHAP_Target.Redshift.Configuration"></a>
 

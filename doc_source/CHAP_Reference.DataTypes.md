@@ -23,7 +23,7 @@ AWS Database Migration Service uses built\-in data types to migrate data from a 
 |  UINT2  |  A two\-byte, unsigned integer\.  | 
 |  UINT4  |  A four\-byte, unsigned integer\.  | 
 |  UINT8  |  An eight\-byte, unsigned integer\.  | 
-|  BLOB  |   Binary large object\. This data type can be used only with Oracle endpoints\.  | 
+|  BLOB  |   Binary large object\.  | 
 |  CLOB  |  Character large object\.    | 
 |  NCLOB  |  Native character large object\.    | 
 

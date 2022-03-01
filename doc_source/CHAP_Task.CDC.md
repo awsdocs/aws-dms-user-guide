@@ -45,7 +45,7 @@ In SQL Server, a log sequence number \(LSN\) has three parts:
 + Slot number
  An example LSN is as follows: `00000014:00000061:0001`   
 To get the start point for a SQL Server migration task based on your transaction log backup settings, use the `fn_dblog()` or `fn_dump_dblog()` function in SQL Server\.   
-To use CDC native start point with SQL Server, create a publication on any table participating in ongoing replication\. For more information about creating a publication, see [Setting up ongoing replication without the sysadmin role on self\-managed SQL Server](CHAP_Source.SQLServer.md#CHAP_Source.SQLServer.CDC.Publication)\. AWS DMS creates the publication automatically when you use CDC without using a CDC native start point\.
+To use CDC native start point with SQL Server, create a publication on any table participating in ongoing replication\.  AWS DMS creates the publication automatically when you use CDC without using a CDC native start point\.
 
 **PostgreSQL**  
 You can use a CDC recovery checkpoint for your PostgreSQL source database\. This checkpoint value is generated at various points as an ongoing replication task runs for your source database \(the parent task\)\. For more information about checkpoints in general, see [Using a checkpoint as a CDC start point](#CHAP_Task.CDC.StartPoint.Checkpoint)\.   

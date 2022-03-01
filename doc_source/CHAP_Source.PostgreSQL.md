@@ -110,7 +110,7 @@ You can't use RDS PostgreSQL read replicas for CDC \(ongoing replication\)\.
 |  Aurora PostgreSQL version  |  AWS DMS full load support   |  AWS DMS CDC support  | 
 | --- | --- | --- | 
 |  Aurora PostgreSQL version 2\.1 with PostgreSQL 10\.5 compatibility \(or lower\)  |  Yes  |  No  | 
-|  Aurora PostgreSQL version 2\.2 with PostgreSQL 10\.6 compatibility \(or higher\) till version 3\.3 with PostgreSQL 11\.8 compatibility  |  Yes  |  Yes  | 
+|  Aurora PostgreSQL version 2\.2 with PostgreSQL 10\.6 compatibility \(or higher\)   |  Yes  |  Yes  | 
 
 **To enable logical replication for an RDS PostgreSQL DB instance**
 
@@ -209,7 +209,7 @@ AWS DMS supports CDC for PostgreSQL tables with primary keys\. If a table doesn'
 For full load and CDC and CDC only tasks, AWS DMS uses logical replication slots to retain WAL logs for replication until the logs are decoded\. On restart \(not resume\) for a full load and CDC task or a CDC task, the replication slot gets recreated\.
 
 **Note**  
-For logical decoding, DMS uses either test\_decoding or pglogical plugin\. If the pglogical plugin is available on a source PostgreSQL database, DMS creates a replication slot using pglogical, otherwise a test\_decoding plugin is used\.
+For logical decoding, DMS uses either test\_decoding or pglogical plugin\. If the pglogical plugin is available on a source PostgreSQL database, DMS creates a replication slot using pglogical, otherwise a test\_decoding plugin is used\. For more information about the test\_decoding plugin, see [PostgreSQL Documentation](https://www.postgresql.org/docs/9.4/test-decoding.html)\.
 
 ### Configuring the pglogical plugin<a name="CHAP_Source.PostgreSQL.Security.Pglogical"></a>
 

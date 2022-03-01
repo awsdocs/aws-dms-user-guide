@@ -21,8 +21,9 @@ Support for MariaDB as a source is available in all AWS DMS versions where MySQL
   + Version 11\.1, all fix packs are supported\.
   + Version 11\.5, with Fix Pack Zero supported
 
-**Microsoft Azure**
-+ Azure SQL Database\.
+**Third\-party managed database services:**
++ Microsoft Azure SQL Database
++ Google Cloud for MySQL
 
 **Amazon RDS instance databases, and Amazon Simple Storage Service \(Amazon S3\)**
 + Oracle versions 11g \(versions 11\.2\.0\.4 and later\) and up to 12\.2, 18c, and 19c for the Enterprise, Standard, Standard One, and Standard Two editions\.
