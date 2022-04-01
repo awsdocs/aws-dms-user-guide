@@ -40,6 +40,7 @@ The following limitations apply when using a PostgreSQL database as a target for
 + For heterogeneous migrations, the JSON data type is converted to the Native CLOB data type internally\.
 + In an Oracle to PostgreSQL migration, if a column in Oracle contains a NULL character \(hex value U\+0000\), AWS DMS converts the NULL character to a space \(hex value U\+0020\)\. This is due to a PostgreSQL limitation\.
 + AWS DMS doesn't support replication to a table with a unique index created with coalesce function\.
++ AWS DMS doesn't support migrating SQL Server source tables to the `babelfish_db` database for Aurora PostgreSQL with Babelfish turned on\.
 
 ## Security requirements when using a PostgreSQL database as a target for AWS Database Migration Service<a name="CHAP_Target.PostgreSQL.Security"></a>
 
@@ -73,7 +74,7 @@ The following table shows the extra connection attributes you can use to configu
 
 ## Target data types for PostgreSQL<a name="CHAP_Target.PostgreSQL.DataTypes"></a>
 
-The PostgreSQL database endpoint for AWS DMS supports most PostgreSQL database data types\. The following table shows the PostgreSQL database target data types that are supported when using AWS DMS and the default mapping from AWS DMS data types\. Unsupported data types are listed following the table\.
+The PostgreSQL database endpoint for AWS DMS supports most PostgreSQL database data types\. The following table shows the PostgreSQL database target data types that are supported when using AWS DMS and the default mapping from AWS DMS data types\.
 
 For additional information about AWS DMS data types, see [Data types for AWS Database Migration Service](CHAP_Reference.DataTypes.md)\.
 

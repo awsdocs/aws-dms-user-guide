@@ -21,7 +21,7 @@ To help increase the speed of the transfer, AWS DMS supports a multithreaded ful
 If you don't change `ParallelLoadThreads` from its default \(0\), AWS DMS transfers a single record at a time\. This approach puts undue load on your Amazon ES cluster\. Make sure that you set this option to 1 or more\.
 + `ParallelLoadBufferSize` – Use this option to specify the maximum number of records to store in the buffer that the parallel load threads use to load data to the Amazon ES target\. The default value is 50\. The maximum value is 1,000\. Use this setting with `ParallelLoadThreads`\. `ParallelLoadBufferSize` is valid only when there is more than one thread\.
 
-For more information on how DMS loads an Amazon ES cluster using multithreading, see the AWS blog post [Scale Amazon Elasticsearch Service Service for AWS Database Migration Service migrations](http://aws.amazon.com/blogs/database/scale-amazon-elasticsearch-service-for-aws-database-migration-service-migrations/)\. 
+For more information on how DMS loads an Amazon ES cluster using multithreading, see the AWS blog post [Scale Amazon Elasticsearch Service for AWS Database Migration Service migrations](http://aws.amazon.com/blogs/database/scale-amazon-elasticsearch-service-for-aws-database-migration-service-migrations/)\. 
 
 **Multithreaded CDC load task settings**
 

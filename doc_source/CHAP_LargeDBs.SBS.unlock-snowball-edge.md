@@ -1,4 +1,4 @@
-# Step 3: Unlock the AWS Snowball Edge device<a name="CHAP_LargeDBs.SBS.unlock-snowball-edge"></a>
+# Step 3: Unlock the Snowball Edge device<a name="CHAP_LargeDBs.SBS.unlock-snowball-edge"></a>
 
 When the Edge device arrives, prepare it for use\. 
 

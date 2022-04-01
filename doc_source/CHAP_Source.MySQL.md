@@ -132,7 +132,7 @@ You can use the following AWS\-managed MySQL\-compatible databases as sources fo
 + Amazon Aurora MySQL\-Compatible Edition
 
 When using an AWS\-managed MySQL\-compatible database as a source for AWS DMS, make sure that you have the following prerequisites for CDC:
-+ To enable binary logs for for MySQL Amazon RDS and Maria DB Amazon RDS, enable automatic backups at the instance level\. To enable binary logs for an Aurora MySQL cluster, change the variable `binlog_format` in the parameter group\.
++ To enable binary logs for RDS for MySQL and for RDS for MariaDB, enable automatic backups at the instance level\. To enable binary logs for an Aurora MySQL cluster, change the variable `binlog_format` in the parameter group\.
 
   For more information about setting up automatic backups, see [Working with automated backups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.html) in the *Amazon RDS User Guide*\.
 

@@ -505,8 +505,8 @@ AWS DMS provides the following reserved fields to make it easier to consume the 
 The record type can be either data or control\. *Data records *represent the actual rows in the source\. *Control records* are for important events in the stream, for example a restart of the task\.
 
 **Operation**  
-For data records, the operation can be `create`,`read`, `update`, or `delete`\.  
-For control records, the operation can be `TruncateTable` or `DropTable`\. 
+For data records, the operation can be `load`, `insert`, `update`, or `delete`\.  
+For control records, the operation can be `create-table`, `rename-table`, `drop-table`, `change-columns`, `add-column`, `drop-column`, `rename-column`, or `column-type-change`\.
 
 **SchemaName**  
 The source schema for the record\. This field can be empty for a control record\.

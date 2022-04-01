@@ -30,6 +30,20 @@ The issues resolved in AWS DMS 3\.4\.6 include the following:
 + Fixed an issue where AWS DMS tasks failed to resume after forced failover when using Sybase as a source\.
 + Fixed an issue where AWS DMS sent warning `Invalid BC timestamp was encountered in column` incorrectly\.
 
+Issues resolved in the DMS 3\.4\.6 maintenance release include the following:
++ Fixed an issue of a task crashing when bulk apply mode is enabled when using Oracle as the source and target\.
++ Fixed an issue so that a full load task properly uses the `ExecuteTimeout` endpoint setting with PostgreSQL as source\.
++ Fixed an issue with migrating Array data type columns when the task is set to limited LOB mode while using PostgreSQL as a source\.
++ Fixed an issue with migrating timestamps with time zone before 1970\-01\-01 when using PostgreSQL as a source\.
++ Fixed an issue where DMS was treating an empty string as null during replication when using SQL Server as a source and target\.
++ Fixed an issue to honor session read and write timeout endpoint settings when using MySQL source/target\.
++ Fixed an issue where a DMS CDC task was downloading full load related files when using Amazon S3 as a source\.
++ Fixed a log crashing issue when `CdcInsertsAndUpdates` and `PreserveTransactions` are both set to `true` when using Amazon S3 as a target\. 
++ Fixed an issue where a task crashed when the ParallelApply\* feature is enabled, but some tables don't have a default primary key when using Amazon Kinesis Data Streams as a source\.
++ Fixed an issue where an error wasn't given for an incorrect StreamArn when using Amazon Kinesis Data Streams as a source\.
++ Fixed an issue where a primary key value as an empty string would cause a task to crash when using OpenSearch as a target\.
++ Fixed an issue where too much disk space was used by data validation\.
+
 ## AWS Database Migration Service 3\.4\.5 release notes<a name="CHAP_ReleaseNotes.DMS345"></a>
 
 The following table shows the new features and enhancements introduced in AWS Database Migration Service \(AWS DMS\) version 3\.4\.5\. 
@@ -229,7 +243,7 @@ The issues resolved in AWS DMS 3\.4\.0 include the following:
 + Fixed an issue for a PostgreSQL to PostgreSQL migration when a new column was added on the PostgreSQL source and the column was created with a different data type than the data type for which the column was originally created on the source\.
 + Fixed an issue with a MySQL source the migration task stopped unexpectedly when it was unable to fetch binlogs\.
 + Fixed an issue related to an Oracle target when `BatchApply` was being used\.
-+ Fixed an issue for MySQL and MariaDb when migrating the `TIME` data type\.
++ Fixed an issue for MySQL and MariaDB when migrating the `TIME` data type\.
 + Fixed an issue for an IBM DB2 LUW source where migrating tables with LOBs fail when the tables don't have a primary key or unique key\.
 
 ## AWS Database Migration Service 3\.3\.4 release notes<a name="CHAP_ReleaseNotes.DMS334"></a>

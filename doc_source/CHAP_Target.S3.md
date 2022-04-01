@@ -94,6 +94,7 @@ To set up this account access, ensure that the role assigned to the user account
 ## Limitations to using Amazon S3 as a target<a name="CHAP_Target.S3.Limitations"></a>
 
 The following limitations apply when using Amazon S3 as a target:
++ Don’t enable versioning for S3\. If you need S3 versioning, use lifecycle policies to actively delete old versions\. Otherwise, you might encounter endpoint test connection failures because of an S3 `list-object` call timeout\. To create a lifecycle policy for an S3 bucket, see [ Managing your storage lifecycle](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html)\. To delete a version of an S3 object, see [ Deleting object versions from a versioning\-enabled bucket](https://docs.aws.amazon.com/AmazonS3/latest/dev/DeletingObjectVersions.html)\.
 + A VPCE\-enabled \(gateway VPC\) S3 bucket isn't currently supported\.
 + The following data definition language \(DDL\) commands are supported for change data capture \(CDC\): Truncate Table, Drop Table, Create Table, Rename Table, Add Column, Drop Column, Rename Column, and Change Column Data Type\.
 **Note**  

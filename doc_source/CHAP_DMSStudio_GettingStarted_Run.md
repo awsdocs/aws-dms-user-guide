@@ -15,7 +15,7 @@ If you specified your local database manually rather than configuring a domain c
 
 1. From the navigation pane, choose **Discovery**\. On the **OS Servers** tab, choose **Run discovery**\.
 
-1. In the **Discovery parameters** dialog, verify that the **LDAP servers** field is correct, and chooose **Run discovery**\.
+1. In the **Discovery parameters** dialog, verify that the **LDAP servers** field is correct, and choose **Run discovery**\.
 
 1. When the discovery process is complete, the page shows your local computer, and any other servers on your local network\. Choose your local computer, and then choose **Add to monitored objects**\. 
 

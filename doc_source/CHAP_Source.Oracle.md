@@ -52,7 +52,7 @@ In AWS DMS, there are two methods for reading the redo logs when doing change da
 | Supports all types of Oracle Hybrid Columnar Compression \(HCC\) | Yes |  Partially Binary Reader doesn't support QUERY LOW for tasks with CDC\. All other HCC types are fully supported\.  | 
 | LOB column support in Oracle 12c only | No | Yes | 
 | Supports UPDATE statements that affect only LOB columns | No | Yes | 
-| Supports Oracle transparent data encryption \(TDE\) | Yes |  Partially Binary Reader supports TDE only for self\-managed Oracle databases\.  | 
+| Supports Oracle transparent data encryption \(TDE\) |  Partially When using Oracle LogMiner, AWS DMS doesn't support TDE encryption on column level for Amazon RDS for Oracle\.  |  Partially Binary Reader supports TDE only for self\-managed Oracle databases\.  | 
 | Supports all Oracle compression methods | Yes | No | 
 | Supports XA transactions | No | Yes | 
 | RAC |  Yes Not recommended  |  Yes Highly recommended  | 
@@ -302,7 +302,6 @@ Make sure to turn on supplemental logging if your replication task updates a tab
      In some cases, the target table primary key or unique index is different than the source table primary key or unique index\. In such cases, add supplemental logging manually on the source table columns that make up the target table primary key or unique index\.
 
      Also, if you change the target table primary key, add supplemental logging on the target unique index's columns instead of the columns of the source primary key or unique index\.
-   + When tables are updated using WHERE clauses not referencing primary key columns, use supplemental logging for all columns\.
 
 If a filter or transformation is defined for a table, you might need to enable additional logging\.
 
@@ -659,13 +658,14 @@ The following limitations apply when using an Oracle database as a source for AW
   + AWS DMS doesn't replicate results of the DDL statement `ALTER TABLE ADD column data_type DEFAULT default_value`\. Instead of replicating `default_value` to the target, it sets the new column to `NULL`\. Such a result can also happen even if the DDL statement that added the new column was run in a prior task\. 
 
     If the new column is nullable, Oracle updates all the table rows before logging the DDL itself\. As a result, AWS DMS captures the changes but doesn't update the target\. With the new column set to `NULL`, if the target table has no primary key or unique index subsequent updates raise a "zero rows affected" message\.
-  + AWS DMS doesn't support XA transactions in replication while using Oracle LogMiner\. 
+  + AWS DMS doesn't support XA transactions in replication while using Oracle LogMiner\.
 + Oracle LogMiner doesn't support connections to a pluggable database \(PDB\)\. To connect to a PDB, access the redo logs using Binary Reader\.
 + When you use Binary Reader, AWS DMS has these limitations:
   + It doesn't support table clusters\.
   + It supports only table\-level `SHRINK SPACE` operations\. This level includes the full table, partitions, and subpartitions\.
   + It doesn't support changes to index\-organized tables with key compression\.
   + It doesn't support implementing online redo logs on raw devices\.
+  + Binary Reader supports TDE only for self\-managed Oracle databases since RDS for Oracle doesn't support wallet password retrieval for TDE encryption keys\.
 + AWS DMS doesn't support connections to an Amazon RDS Oracle source using an Oracle Automatic Storage Management \(ASM\) proxy\.
 + AWS DMS doesn't support virtual columns\. 
 + AWS DMS doesn't support the `ROWID` data type or materialized views based on a `ROWID` column\.
@@ -673,6 +673,7 @@ The following limitations apply when using an Oracle database as a source for AW
 + For S3 targets using replication, enable supplemental logging on every column so source row updates can capture every column value\. An example follows: `alter table yourtablename add supplemental log data (all) columns;`\.
 + An update for a row with a composite unique key that contains `null` can't be replicated at the target\.
 + AWS DMS doesn't support use of multiple Oracle TDE encryption keys on the same source endpoint\. Each endpoint can have only one attribute for TDE encryption Key Name "`securityDbEncryptionName`", and one TDE password for this key\.
++ When replicating from Amazon RDS for Oracle, TDE is supported only with encrypted tablespace and using Oracle LogMiner\.
 
 ## SSL support for an Oracle endpoint<a name="CHAP_Security.SSL.Oracle"></a>
 

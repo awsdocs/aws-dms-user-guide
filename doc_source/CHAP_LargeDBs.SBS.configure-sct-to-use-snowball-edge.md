@@ -1,6 +1,6 @@
-# Step 7: Configure AWS SCT to use the AWS Snowball Edge<a name="CHAP_LargeDBs.SBS.configure-sct-to-use-snowball-edge"></a>
+# Step 7: Configure AWS SCT to use Snowball Edge<a name="CHAP_LargeDBs.SBS.configure-sct-to-use-snowball-edge"></a>
 
-Your AWS SCT service profile must be updated to use the AWS DMS Agent, which is a local AWS DMS that works on\-premises\.
+Your AWS SCT service profile must be updated to use the AWS DMS agent, which is a local AWS DMS that works on\-premises\.
 
 **To update the AWS SCT profile to work with the AWS DMS agent**
 

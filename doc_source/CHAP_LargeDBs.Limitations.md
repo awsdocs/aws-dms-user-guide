@@ -1,4 +1,4 @@
-# Limitations when working with AWS Snowball Edge and AWS DMS<a name="CHAP_LargeDBs.Limitations"></a>
+# Limitations when working with Snowball Edge and AWS DMS<a name="CHAP_LargeDBs.Limitations"></a>
 
 There are some limitations you should be aware of when working with AWS Snowball Edge:
 + Every AWS SCT task creates two endpoint connections on AWS DMS\. If you create multiple tasks, you can reach a resource limit for the number of endpoints that you can create\.

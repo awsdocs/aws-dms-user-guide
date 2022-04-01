@@ -227,6 +227,7 @@ The AWS Identity and Access Management \(IAM\) role assigned to the user account
 ## Limitations when using Amazon S3 as a source for AWS DMS<a name="CHAP_Source.S3.Limitations"></a>
 
 The following limitations apply when using Amazon S3 as a source:
++ Don’t enable versioning for S3\. If you need S3 versioning, use lifecycle policies to actively delete old versions\. Otherwise, you might encounter endpoint test connection failures because of an S3 `list-object` call timeout\. To create a lifecycle policy for an S3 bucket, see [ Managing your storage lifecycle](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html)\. To delete a version of an S3 object, see [ Deleting object versions from a versioning\-enabled bucket](https://docs.aws.amazon.com/AmazonS3/latest/dev/DeletingObjectVersions.html)\.
 + A VPCE\-enabled \(gateway VPC\) S3 bucket isn't currently supported\.
 
 ## Extra connection attributes for Amazon S3 as a source for AWS DMS<a name="CHAP_Source.S3.Configuring"></a>
@@ -256,12 +257,12 @@ The following AWS DMS data types are used with Amazon S3 as a source:
 + BYTE – Requires `ColumnLength`\. For more information, see [Defining external tables for Amazon S3 as a source for AWS DMS](#CHAP_Source.S3.ExternalTableDef)\.
 + DATE
 + TIME
-+ DATETIME
++ DATETIME – For more information and an example, see the DATETIME type example in [Defining external tables for Amazon S3 as a source for AWS DMS](#CHAP_Source.S3.ExternalTableDef)\.
 + INT1
 + INT2
 + INT4
 + INT8
-+ NUMERIC – Requires `ColumnPrecision` and `ColumnScale`\. For more information, see [Defining external tables for Amazon S3 as a source for AWS DMS](#CHAP_Source.S3.ExternalTableDef)\.
++ NUMERIC – Requires `ColumnPrecision` and `ColumnScale`\. For more information and an example, see the NUMERIC type example in [Defining external tables for Amazon S3 as a source for AWS DMS](#CHAP_Source.S3.ExternalTableDef)\.
 + REAL4
 + REAL8
 + STRING – Requires `ColumnLength`\. For more information, see [Defining external tables for Amazon S3 as a source for AWS DMS](#CHAP_Source.S3.ExternalTableDef)\.

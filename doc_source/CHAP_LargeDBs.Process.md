@@ -1,4 +1,4 @@
-# Overview of migrating large data stores using AWS DMS and AWS Snowball Edge<a name="CHAP_LargeDBs.Process"></a>
+# Overview of migrating large data stores using AWS DMS and Snowball Edge<a name="CHAP_LargeDBs.Process"></a>
 
 The process of using AWS DMS and Snowball Edge incorporates both on\-premises applications and AWS\-managed services\. We use the terms *local* and *remote* to distinguish these components\.
 

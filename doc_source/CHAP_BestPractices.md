@@ -399,7 +399,7 @@ For more information on metrics monitoring, see [Monitoring AWS DMS tasks](CHAP_
 
 AWS DMS uses Amazon SNS to provide notifications when an AWS DMS event occurs, for example the creation or deletion of a replication instance\. You can work with these notifications in any form supported by Amazon SNS for an AWS Region\. These can include email messages, text messages, or calls to an HTTP endpoint\.
 
-For more information, see [Working with events and notifications in AWS Database Migration Service](CHAP_Events.md)\.
+For more information, see [Working with Amazon SNS events and notifications in AWS Database Migration Service](CHAP_Events.md)\.
 
 ## Using the task log to troubleshoot migration issues<a name="CHAP_BestPractices.TaskLog"></a>
 

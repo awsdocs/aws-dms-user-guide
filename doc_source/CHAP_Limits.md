@@ -15,18 +15,18 @@ The following table lists the AWS DMS resources and their quotas for each AWS Re
 
 | Resource | Default quota | 
 | --- | --- | 
-| API request throttling | 100 request maximum per second | 
-| API request refresh rate | 4 requests per second | 
-| Replication instances per user | 60 | 
+| API request throttling | 200 request maximum per second | 
+| API request refresh rate | 8 requests per second | 
+| Replication instances per user account | 60 | 
 | Total amount of storage for a replication instance | 30,000 GB | 
-| Event subscriptions per user | 60 | 
-| Replication subnet groups per user | 60 | 
+| Event subscriptions per user account | 60 | 
+| Replication subnet groups per user account | 60 | 
 | Subnets per replication subnet group | 60 | 
-| Endpoints per user | 1000 | 
+| Endpoints per user account | 1000 | 
 | Endpoints per replication instance | 100 | 
-| Tasks per user | 600 | 
+| Tasks per user account | 600 | 
 | Tasks per replication instance | 200 | 
-| Certificates per user | 100 | 
+| Certificates per user account | 100 | 
 
 For more information on the API request throttling quota and refresh rate, see [Understanding API request throttling](#CHAP_Limits.Throttling)\.
 

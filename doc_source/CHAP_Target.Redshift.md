@@ -92,7 +92,8 @@ GRANT ASSUMEROLE
 
 ## Limitations on using Amazon Redshift as a target for AWS Database Migration Service<a name="CHAP_Target.Redshift.Limitations"></a>
 
-When using an Amazon Redshift database as a target, AWS DMS doesn't support the following:
+The following limitations apply when using an Amazon Redshift database as a target:
++ Don’t enable versioning for the S3 bucket you use as intermediate storage for your Amazon Redshift target\. If you need S3 versioning, use lifecycle policies to actively delete old versions\. Otherwise, you might encounter endpoint test connection failures because of an S3 `list-object` call timeout\. To create a lifecycle policy for an S3 bucket, see [ Managing your storage lifecycle](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html)\. To delete a version of an S3 object, see [ Deleting object versions from a versioning\-enabled bucket](https://docs.aws.amazon.com/AmazonS3/latest/dev/DeletingObjectVersions.html)\.
 + The following DDL is not supported:
 
   ```

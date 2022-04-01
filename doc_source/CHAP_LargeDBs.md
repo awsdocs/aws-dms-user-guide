@@ -1,4 +1,4 @@
-# Migrating large data stores using AWS Database Migration Service and AWS Snowball Edge<a name="CHAP_LargeDBs"></a>
+# Migrating large data stores using AWS Database Migration Service and Snowball Edge<a name="CHAP_LargeDBs"></a>
 
 Larger data migrations can include many terabytes of information\. This process can be cumbersome due to network bandwidth limits or just the sheer amount of data\. AWS Database Migration Service \(AWS DMS\) can use [Snowball Edge](https://aws.amazon.com/snowball-edge/) and Amazon S3 to migrate large databases more quickly than by other methods\. 
 
@@ -19,11 +19,11 @@ When you're using an Edge device, the data migration process has the following s
 In the following sections, you can learn about using an Edge device to migrate relational databases with AWS SCT and AWS DMS\. You can also use an Edge device and AWS SCT to migrate on\-premises data warehouses to the AWS Cloud\. For more information about data warehouse migrations, see [Migrating data from an on\-premises data warehouse to Amazon Redshift ](https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/agents.dw.html) in the *AWS Schema Conversion Tool User Guide*\.
 
 **Topics**
-+ [Overview of migrating large data stores using AWS DMS and AWS Snowball Edge](CHAP_LargeDBs.Process.md)
-+ [Prerequisites for migrating large data stores using AWS DMS and AWS Snowball Edge](CHAP_LargeDBs.Process.prereqs.md)
++ [Overview of migrating large data stores using AWS DMS and Snowball Edge](CHAP_LargeDBs.Process.md)
++ [Prerequisites for migrating large data stores using AWS DMS and Snowball Edge](CHAP_LargeDBs.Process.prereqs.md)
 + [Migration checklist](CHAP_LargeDBs.Process.checklist.md)
-+ [Step\-by\-step procedures for migrating data using AWS DMS with AWS Snowball Edge](CHAP_LargeDBs.SBS.md)
-+ [Limitations when working with AWS Snowball Edge and AWS DMS](CHAP_LargeDBs.Limitations.md)
++ [Step\-by\-step procedures for migrating data using AWS DMS with Snowball Edge](CHAP_LargeDBs.SBS.md)
++ [Limitations when working with Snowball Edge and AWS DMS](CHAP_LargeDBs.Limitations.md)
 
 **Note**  
 You can't use an AWS Snowcone device to migrate data with AWS DMS\.

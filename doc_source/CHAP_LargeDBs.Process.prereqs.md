@@ -1,4 +1,4 @@
-# Prerequisites for migrating large data stores using AWS DMS and AWS Snowball Edge<a name="CHAP_LargeDBs.Process.prereqs"></a>
+# Prerequisites for migrating large data stores using AWS DMS and Snowball Edge<a name="CHAP_LargeDBs.Process.prereqs"></a>
 
 Before you start the migration process, you need the following prerequisites:
 + You are familiar with the basic operation of AWS SCT\.

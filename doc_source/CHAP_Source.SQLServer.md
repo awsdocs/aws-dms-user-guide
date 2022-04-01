@@ -53,7 +53,7 @@ For additional details on working with SQL Server source databases and AWS DMS, 
 + [Prerequisites for using ongoing replication \(CDC\) from a SQL Server source](#CHAP_Source.SQLServer.Prerequisites)
 + [Capturing data changes for self\-managed SQL Server on\-premises or on Amazon EC2](#CHAP_Source.SQLServer.CDC)
 + [Setting up ongoing replication on a cloud SQL Server DB instance](#CHAP_Source.SQLServer.Configuration)
-+ [Optional settings when using Amazon RDS for SQL Server as a source for AWS DMS](#CHAP_Source.SQLServer.OptionalSettings)
++ [Recommended settings when using Amazon RDS for SQL Server as a source for AWS DMS](#CHAP_Source.SQLServer.OptionalSettings)
 + [Supported compression methods for SQL Server](#CHAP_Source.SQLServer.Compression)
 + [Working with SQL Server AlwaysOn availability groups](#CHAP_Source.SQLServer.AlwaysOn)
 + [Extra connection attributes when using SQL Server as a source for AWS DMS](#CHAP_Source.SQLServer.ConnectionAttrib)
@@ -93,6 +93,7 @@ The following limitations apply when using a SQL Server database as a source for
 + AWS DMS doesn't support change processing to set and unset column default values \(using the `ALTER COLUMN SET DEFAULT` clause with `ALTER TABLE` statements\)\.
 + AWS DMS doesn't support change processing to set column nullability \(using the `ALTER COLUMN [SET|DROP] NOT NULL` clause with `ALTER TABLE` statements\)\.
 + With SQL Server 2012 and SQL Server 2014, when using DMS replication with Availability Groups, the distribution database can't be placed in an availability group\. SQL 2016 supports placing the distribution database into an availability group, except for distribution databases used in merge, bidirectional, or peer\-to\-peer replication topologies\.
++ For partitioned tables, AWS DMS doesn't support different data compression settings for each partition\.
 
 The following limitations apply when accessing the backup transaction logs:  
 + Encrypted backups aren't supported\.
@@ -414,7 +415,7 @@ If an AWS DMS replication task that captures ongoing changes to your SQL Server 
 
 Remember to start the job that truncates SQL Server transaction logs\. Otherwise, storage on your SQL Server instance might fill up\.
 
-## Optional settings when using Amazon RDS for SQL Server as a source for AWS DMS<a name="CHAP_Source.SQLServer.OptionalSettings"></a>
+## Recommended settings when using Amazon RDS for SQL Server as a source for AWS DMS<a name="CHAP_Source.SQLServer.OptionalSettings"></a>
 
 When you work with Amazon RDS for SQL Server as a source, the capture job relies on the parameters `maxscans` and `maxtrans`\. These parameters govern the maximum number of scans that the capture does on the transaction log and the number of transactions that are processed for each scan\.
 
@@ -449,6 +450,8 @@ To address this issue, set the values of `maxscans` and `maxtrans` so that `maxt
 If you set these parameters higher than the recommended value, the capture jobs process all events in the transaction logs\. If you set these parameters below the recommended value, MS\-CDC latency increases and your transaction log grows\.
 
 Identifying appropriate values for `maxscans` and `maxtrans` can be difficult because changes in workload produce varying number of events\. In this case, we recommend that you set up monitoring on MS\-CDC latency\. For more information, see [ Monitor the process](https://docs.microsoft.com/en-us/sql/relational-databases/track-changes/administer-and-monitor-change-data-capture-sql-server?view=sql-server-ver15#Monitor) in SQL Server documentation\. Then configure `maxtrans` and `maxscans` dynamically based on the monitoring results\.
+
+If the AWS DMS task is unable to find the log sequence numbers \(LSNs\) needed to resume or continue the task, the task may fail and require a complete reload\.
 
 ## Supported compression methods for SQL Server<a name="CHAP_Source.SQLServer.Compression"></a>
 

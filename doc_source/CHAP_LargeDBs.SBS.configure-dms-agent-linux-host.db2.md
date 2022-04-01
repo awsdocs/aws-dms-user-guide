@@ -4,7 +4,7 @@ To install the IBM DB2 for LUW driver on the agent machine, do the following:
 + Install the appropriate version of IBM Data Server Client on the AWS DMS Agent machine:
   + For IBM DB2 for LUW 10\.5, install client version 10\.5\.
   + For IBM DB2 for LUW 11\.1 and 11\.5, install client version 11\.1\.
-+ Download and unzip the DB2 Server Software\. For examle, `v10.5fp9_linuxx64_server_t.tar.gz` is the package for IBM DB2 for LUW version 10\.5\.
++ Download and unzip the DB2 Server Software\. For example, `v10.5fp9_linuxx64_server_t.tar.gz` is the package for IBM DB2 for LUW version 10\.5\.
 + Install the DB2 client using the `db2_install command`\. When prompted, choose to install **CLIENT**\.
 + On the AWS DMS Agent machine, create a DB2 instance by running the following commands:
 
