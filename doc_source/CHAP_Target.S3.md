@@ -767,16 +767,14 @@ You can specify the following options as extra connection attributes\. If you ha
 
 ## Indicating source DB operations in migrated S3 data<a name="CHAP_Target.S3.Configuring.InsertOps"></a>
 
-When AWS DMS migrates records to an S3 target, it can create an additional field in each migrated record\. This additional field indicates the operation applied to the record at the source database\. 
+When AWS DMS migrates records to an S3 target, it can create an additional field in each migrated record\. This additional field indicates the operation applied to the record at the source database\. How AWS DMS creates and sets this first field depends on the migration task type and settings of `includeOpForFullLoad`, `cdcInsertsOnly`, and `cdcInsertsAndUpdates`\.
 
-For a full load when `includeOpForFullLoad` is `true` and the output format is \.csv, DMS always creates an additional first field in each \.csv record\. This field contains the letter I \(INSERT\) to indicate that the row was inserted at the source database\. For a CDC load when `cdcInsertsOnly` is `false` \(the default\), DMS also always creates an additional first field in each \.csv or \.parquet record\. This field contains the letter I \(INSERT\), U \(UPDATE\), or D \(DELETE\) to indicate whether the row was inserted, updated, or deleted at the source database\.
+For a full load when `includeOpForFullLoad` is `true`, AWS DMS always creates an additional first field in each \.csv record\. This field contains the letter I \(INSERT\) to indicate that the row was inserted at the source database\. For a CDC load when `cdcInsertsOnly` is `false` \(the default\), AWS DMS also always creates an additional first field in each \.csv or \.parquet record\. This field contains the letter I \(INSERT\), U \(UPDATE\), or D \(DELETE\) to indicate whether the row was inserted, updated, or deleted at the source database\.
 
-When the output format is \.csv only, if and how DMS creates and sets this first field also depends on the settings of `includeOpForFullLoad` and `cdcInsertsOnly` or `cdcInsertsAndUpdates`\.
-
-In the following table, you can see how the settings of the `includeOpForFullLoad` and `cdcInsertsOnly` attributes work together to affect the setting of migrated records in this format\. 
+In the following table, you can see how the settings of the `includeOpForFullLoad` and `cdcInsertsOnly` attributes work together to affect the setting of migrated records\.
 
 
-| With these parameter settings | DMS sets target records as follows for \.csv output  | includeOpForFullLoad | cdcInsertsOnly | For full load | For CDC load | 
+| With these parameter settings | DMS sets target records as follows for \.csv and \.parquet output  | includeOpForFullLoad | cdcInsertsOnly | For full load | For CDC load | 
 | --- | --- | --- | --- | --- | --- | 
 | true | true | Added first field value set to I | Added first field value set to I | 
 | false | false | No added field | Added first field value set to I, U, or D | 

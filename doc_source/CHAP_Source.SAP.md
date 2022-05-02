@@ -25,7 +25,7 @@ For ongoing change data capture \(CDC\) replication, DMS runs `dbcc logtransfer`
 ## Limitations on using SAP ASE as a source for AWS DMS<a name="CHAP_Source.SAP.Limitations"></a>
 
 The following limitations apply when using an SAP ASE database as a source for AWS DMS:
-+ Only one AWS DMS task can be run for each SAP ASE database\.
++ You can run only one AWS DMS task with ongoing replication or CDC for each SAP ASE database\. You can run multiple full\-load\-only tasks in parallel\.
 + You can't rename a table\. For example, the following command fails\.
 
   ```
@@ -49,6 +49,8 @@ The following limitations apply when using an SAP ASE database as a source for A
 + The `reorg rebuild` index command isn't supported\.
 + AWS DMS does not support clusters or using MSA \(Multi\-Site Availability\)/Warm Standby as a source\.
 + When `AR_H_TIMESTAMP` transformation header expression is used in mapping rules, the milliseconds won't be captured for an added column\.
++ Running Merge operations during CDC will result in a non\-recoverable error\. To bring the target back in sync, run a full load\.
++ Rollback trigger events are not supported for tables that use a data row locking scheme\.
 
 ## Permissions required for using SAP ASE as a source for AWS DMS<a name="CHAP_Source.SAP.Security"></a>
 

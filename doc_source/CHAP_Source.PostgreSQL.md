@@ -77,9 +77,9 @@ AWS DMS supports change data capture \(CDC\) using logical replication\. To enab
 + Set `max_wal_senders` to a value greater than 1\.
 
   The `max_wal_senders` parameter sets the number of concurrent tasks that can run\.
-+ Set `wal_sender_timeout =0`\.
++ The `wal_sender_timeout` parameter ends replication connections that are inactive longer than the specified number of milliseconds\. The default is 60000 milliseconds \(60 seconds\)\. Setting the value to 0 \(zero\) disables the timeout mechanism, and is a valid setting for DMS\.
 
-  The `wal_sender_timeout` parameter ends replication connections that are inactive longer than the specified number of milliseconds\. Although the default is 60 seconds, we recommend that you set this parameter to zero\. Doing this turns off the timeout mechanism\.
+  When setting `wal_sender_timeout` to a non\-zero value, DMS requires a minimum of 10000 milliseconds \(10 seconds\), and fails if the value is between 0 and 10000\. Keep the value less than 5 minutes to avoid causing a delay during a Multi\-AZ failover of a DMS replication instance\.
 
 Some parameters are static, and you can only set them at server start\. Any changes to their entries in the configuration file \(for a self\-managed database\) or DB parameter group \(for an RDS for PostgreSQL database\) are ignored until the server is restarted\. For more information, see the [PostgreSQL documentation](https://www.postgresql.org/docs/current/intro-whatis.html)\.
 
@@ -120,7 +120,9 @@ You can't use RDS PostgreSQL read replicas for CDC \(ongoing replication\)\.
 
 1. Set the `rds.logical_replication` parameter in your DB CLUSTER parameter group to 1\. This static parameter requires a reboot of the DB instance to take effect\. As part of applying this parameter, AWS DMS sets the `wal_level`, `max_wal_senders`, `max_replication_slots`, and `max_connections` parameters\. These parameter changes can increase write ahead log \(WAL\) generation, so only set `rds.logical_replication` when you use logical replication slots\.
 
-1. Set the `wal_sender_timeout` parameter to 0, as a best practice\. Setting this parameter to 0 prevents PostgreSQL from terminating replication connections that are inactive longer than the specified timeout\. When AWS DMS migrates data, replication connections need to be able to last longer than the specified timeout\.
+1. The `wal_sender_timeout` parameter ends replication connections that are inactive longer than the specified number of milliseconds\. The default is 60000 milliseconds \(60 seconds\)\. Setting the value to 0 \(zero\) disables the timeout mechanism, and is a valid setting for DMS\.
+
+   When setting `wal_sender_timeout` to a non\-zero value, DMS requires a minimum of 10000 milliseconds \(10 seconds\), and fails if the value is between 0 and 10000\. Keep the value less than 5 minutes to avoid causing a delay during a Multi\-AZ failover of a DMS replication instance\.
 
 1.  Ensure the value of the `max_worker_processes` parameter in your DB Cluster Parameter Group is equal to, or higher than the total combined values of `max_logical_replication_workers`, `autovacuum_max_workers`, and `max_parallel_workers`\. A high number of background worker processes might impact application workloads on small instances\. So, monitor performance of your database if you set `max_worker_processes` higher than the default value\.
 
@@ -526,7 +528,7 @@ The following limitations apply when using PostgreSQL as a source for AWS DMS:
   $$;
   ```
 + Currently, `boolean` data types in a PostgreSQL source are migrated to a SQL Server target as `bit` data type with inconsistent values\. As a workaround, precreate the table with a `VARCHAR(1)` data type for the column \(or have AWS DMS create the table\)\. Then have downstream processing treat an "F" as False and a "T" as True\.
-+ AWS DMS doesn't support change processing of TRUNCATE operations for PostgreSQL version 11\.x or lower\.
++ AWS DMS doesn't support change processing of TRUNCATE operations\.
 + The OID LOB data type isn't migrated to the target\.
 + If your source is a PostgreSQL database that is on\-premises or on an Amazon EC2 instance, ensure that the test\_decoding output plugin is installed on your source endpoint\. You can find this plugin in the Postgres contrib package\. For more information about the test\-decoding plugin, see the [PostgreSQL documentation](https://www.postgresql.org/docs/10/static/test-decoding.html)\.
 + AWS DMS doesn't support change processing to set and unset column default values \(using the ALTER COLUMN SET DEFAULT clause on ALTER TABLE statements\)\.
@@ -541,6 +543,7 @@ The following limitations apply when using PostgreSQL as a source for AWS DMS:
 + The PostgreSQL `NUMERIC` data type isn't fixed in size\. When transferring data that is a `NUMERIC` data type but without precision and scale, DMS uses `NUMERIC(28,6)` \(a precision of 28 and scale of 6\) by default\. As an example, the value 0\.611111104488373 from the source is converted to 0\.611111 on the PostgreSQL target\.
 + CDC isn't supported for Aurora PostgreSQL Serverless as a source\.
 + AWS DMS doesn't support replication of a table with a unique index created with a coalesce function\.
++ When using LOB mode, both the source table and the corresponding target table must have an identical Primary Key\. If one of the tables does not have a Primary Key, the result of DELETE and UPDATE record operations will be unpredictable\.
 
 ## Source data types for PostgreSQL<a name="CHAP_Source-PostgreSQL-DataTypes"></a>
 

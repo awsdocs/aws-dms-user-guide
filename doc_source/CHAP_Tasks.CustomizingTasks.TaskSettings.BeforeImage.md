@@ -11,7 +11,7 @@ Don't apply `BeforeImageSettings` to tasks that are full load only\.
 Possible options for `BeforeImageSettings` are the following:
 + `EnableBeforeImage` – Turns on before imaging when set to `true`\. The default is `false`\. 
 + `FieldName` – Assigns a name to the new JSON attribute\. When `EnableBeforeImage` is `true`, `FieldName` is required and can't be empty\.
-+ `ColumnFilter` – Specifies a column to add by using before imaging\. To add only columns that are part of the table's primary keys, use the default value, `pk-only`\. To add only columns that are not of LOB type, use `non-lob`\. To add any column that has a before image value, use `all`\. 
++ `ColumnFilter` – Specifies a column to add by using before imaging\. To add only columns that are part of the table's primary keys, use the default value, `pk-only`\. To add any column that has a before image value, use `all`\. Note that the before image doesn't support large binary object \(LOB\) data types such as CLOB and BLOB\.
 
 The following shows an example of the use of `BeforeImageSettings`\. 
 

@@ -5,7 +5,7 @@ You can migrate data from an IBM Db2 for Linux, Unix, and Windows \(Db2 LUW\) da
 + Version 10\.1, with all Fix Packs supported
 + Version 10\.5, with all Fix Packs supported except for Fix Pack 5
 + Version 11\.1, with all Fix Packs supported
-+ Version 11\.5, with Fix Pack Zero supported
++ Version 11\.5\.0, with only Fix Pack 0 supported
 
 You can use Secure Sockets Layer \(SSL\) to encrypt connections between your Db2 LUW endpoint and the replication instance\. For more information on using SSL with a Db2 LUW endpoint, see [Using SSL with AWS Database Migration Service](CHAP_Security.md#CHAP_Security.SSL)\.
 
@@ -44,6 +44,7 @@ When using ongoing replication \(CDC\), the following limitations apply:
 + When the change table option is enabled, the first timestamp record in the table is zero \(1970\-01\-01 00:00:00\.000000\)\.
 + For Db2 LUW versions 10\.5 and higher, variable\-length string columns with data that is stored out\-of\-row are ignored\. This limitation only applies to tables created with extended row size for columns with data types like VARCHAR and VARGRAPHIC\. To work around this limitation, move the table to a table space with a higher page size\. For more information, see [What can I do if I want to change the pagesize of DB2 tablespaces]( https://www.ibm.com/support/pages/what-can-i-do-if-i-want-change-pagesize-db2-tablespaces )\.
 + For ongoing replication, DMS doesn't support migrating data loaded at the page level by the DB2 LOAD utility\. Instead, use the IMPORT utility which uses SQL inserts\. For more information, see [ differences between the import and load utilities]( https://www.ibm.com/docs/en/db2/11.1?topic=utilities-differences-between-import-load-utility)\. 
++ While a replication task is running, DMS captures CREATE TABLE DDLs only if the tables were created with the DATA CAPTURE CHANGE attribute\.
 
 ## Extra connection attributes when using Db2 LUW as a source for AWS DMS<a name="CHAP_Source.DB2.ConnectionAttrib"></a>
 

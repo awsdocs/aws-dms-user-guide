@@ -17,7 +17,6 @@ You can't move a task to the same replication instance where it currently reside
 You can't modify the settings of a task while it's moving\.
 A task you have run must have a status of **Stopped**, **Failed**, or **Failed\-move** before you can move it\.
 You can't move a task that has Amazon S3 as its target endpoint\.
-When moving tasks between replication instances, you can move no more than five tasks at a time\.
 You can move a task to DMS version 3\.4\.2 or above without any issues\. But you can't move a task to DMS version 3\.4\.1 due to compatibility issues\.
 
 There are two task statuses that relate to moving a DMS task, **Moving **and **Failed\-move**\. For more information about those task status, see [Task status](CHAP_Monitoring.md#CHAP_Tasks.Status)\. 

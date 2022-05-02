@@ -17,6 +17,9 @@ You can set the error handling behavior of your replication task during change d
   + `SUSPEND_TABLE` – The task continues but data from the table with the error record is moved into an error state and the data isn't replicated\.
   + `STOP_TASK` – The task stops and manual intervention is required\.
 + `DataErrorEscalationCount` – Sets the maximum number of errors that can occur to the data for a specific record\. When this number is reached, the data for the table that contains the error record is handled according to the policy set in the `DataErrorEscalationPolicy`\. The default is 0\. 
++ `EventErrorPolicy` – Determines the action AWS DMS takes when an error occurs while sending a task\-related event\. Its possible values are
+  + `IGNORE` – The task continues and any data associated with that event is ignored\.
+  + `STOP_TASK` – The task stops and manual intervention is required\.
 + `TableErrorPolicy` – Determines the action AWS DMS takes when an error occurs when processing data or metadata for a specific table\. This error only applies to general table data and isn't an error that relates to a specific record\. The default is `SUSPEND_TABLE`\.
   + `SUSPEND_TABLE` – The task continues but data from the table with the error record is moved into an error state and the data isn't replicated\.
   + `STOP_TASK` – The task stops and manual intervention is required\.

@@ -317,7 +317,7 @@ If you are using PuTTY, enable TCP keepalives on the **Connection** settings pag
 1. Run the following command\. Provide the endpoint for your source RDS instance that you noted previously, for example `dms-mysql.cdv5fbeyiy4e.us-west-2.rds.amazonaws.com`\.
 
    ```
-   mysql -h dms-mysql.abcdefghij01.us-west-2.rds.amazonaws.com -P 3306 -u admin -pchangeit dms_sample < ~/aws-database-migration-samples/mysql/sampledb/v1/install-rds.sql
+   mysql -h dms-mysql.abcdefghij01.us-west-2.rds.amazonaws.com -P 3306 -u admin -p dms_sample < ~/aws-database-migration-samples/mysql/sampledb/v1/install-rds.sql
    ```
 
 1. Let the database creation script run\. The script takes up to 45 minutes to create the schema and populate the data\.

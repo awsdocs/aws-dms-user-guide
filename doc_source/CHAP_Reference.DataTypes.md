@@ -11,7 +11,7 @@ AWS Database Migration Service uses built\-in data types to migrate data from a 
 |  BYTE  |  A binary data value\.  | 
 |  DATE  |  A date value: year, month, day\.  | 
 |  TIME  |  A time value: hour, minutes, seconds\.  | 
-|  DATETIME  |  A timestamp value: year, month, day, hour, minute, second, fractional seconds\. The fractional seconds have a maximum scale of 9 digits\. The following format is supported: YYYY:MM:DD HH:MM:SS\.F\(9\)\.  | 
+|  DATETIME  |  A timestamp value: year, month, day, hour, minute, second, fractional seconds\. The fractional seconds have a maximum scale of 9 digits\. The following format is supported: YYYY:MM:DD HH:MM:SS\.F\(9\)\. For Amazon S3 Select and Amazon S3 Glacier Select, the DATETIME data type format is different\. For more information, see the description of the `timestamp` primitive data type in [ Supported Data Types](https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-glacier-select-sql-reference-data-types.html) of the *Amazon Simple Storage Service Getting Started Guide*\.  | 
 |  INT1  |  A one\-byte, signed integer\.  | 
 |  INT2  |  A two\-byte, signed integer\.  | 
 |  INT4  |  A four\-byte, signed integer\.  | 

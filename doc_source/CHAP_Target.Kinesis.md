@@ -68,7 +68,7 @@ When writing CDC updates to a data\-streaming target like Kinesis, you can view 
 Different source database engines provide different amounts of information for a before image: 
 + Oracle provides updates to columns only if they change\. 
 + PostgreSQL provides only data for columns that are part of the primary key \(changed or not\)\. 
-+ MySQL generally provides data for all columns \(changed or not\)\.
++ MySQL generally provides data for all columns except for BLOB and CLOB data types \(changed or not\)\.
 
 To enable before imaging to add original values from the source database to the AWS DMS output, use either the `BeforeImageSettings` task setting or the `add-before-image-columns` parameter\. This parameter applies a column transformation rule\. 
 
@@ -88,7 +88,7 @@ Only apply `BeforeImageSettings` to AWS DMS tasks that contain a CDC component, 
 For `BeforeImageSettings` options, the following applies:
 + Set the `EnableBeforeImage` option to `true` to enable before imaging\. The default is `false`\. 
 + Use the `FieldName` option to assign a name to the new JSON attribute\. When `EnableBeforeImage` is `true`, `FieldName` is required and can't be empty\.
-+ The `ColumnFilter` option specifies a column to add by using before imaging\. To add only columns that are part of the table's primary keys, use the default value, `pk-only`\. To add only columns that are not of LOB type, use `non-lob`\. To add any column that has a before image value, use `all`\. 
++ The `ColumnFilter` option specifies a column to add by using before imaging\. To add only columns that are part of the table's primary keys, use the default value, `pk-only`\. To add any column that has a before image value, use `all`\. Note that the before image does not contain columns with LOB data types, such as CLOB or BLOB\.
 
   ```
   "BeforeImageSettings": {
@@ -220,6 +220,7 @@ The following limitations apply when using Kinesis Data Streams as a target:
 + For information about encrypting your data at rest within Kinesis Data Streams, see [Data protection in Kinesis Data Streams](https://docs.aws.amazon.com/streams/latest/dev/server-side-encryption.html.html) in the *AWS Key Management Service Developer Guide*\. 
 + `BatchApply` is not supported for a Kinesis endpoint\. Using Batch Apply \(for example, the `BatchApplyEnabled` target metadata task setting\) for a Kinesis target might result in loss of data\.
 + Kinesis targets are only supported for a Kinesis data stream in the same AWS account\.
++ When migrating from a MySQL source, the BeforeImage data doesn't include CLOB and BLOB data types\. For more information, see [Using a before image to view original values of CDC rows for a Kinesis data stream as a target](#CHAP_Target.Kinesis.BeforeImage)\.
 
 ## Using object mapping to migrate data to a Kinesis data stream<a name="CHAP_Target.Kinesis.ObjectMapping"></a>
 

@@ -177,6 +177,7 @@ When using a MySQL database as a source, consider the following:
 + AWS DMS doesn't support DDL changes for partitioned tables for MySQL\.
 + AWS DMS doesn't currently support XA transactions\.
 + AWS DMS doesn't support GTID for replication\. 
++ AWS DMS doesn't support binary log transaction compression\.
 
 ## Extra connection attributes when using MySQL as a source for AWS DMS<a name="CHAP_Source.MySQL.ConnectionAttrib"></a>
 
