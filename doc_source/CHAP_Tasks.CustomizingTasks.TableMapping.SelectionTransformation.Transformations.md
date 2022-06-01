@@ -5,7 +5,7 @@ You use the transformation actions to specify any transformations you want to ap
 ## Limitations<a name="CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Transformations.Limitations"></a>
 + AWS DMS doesn't support more than one transformation rule per schema level or per table level\. However, AWS DMS does support more than one transformation rule per column level\.
 + Performing multiple rule actions on columns that include converting to lowercase can prevent some transformations from happening correctly\. For example, using the `convert-lowercase` and `change-data-type` rule actions together might not succeed\. Instead, use the `convert-lowercase` rule action separately\. 
-+ Column names in transformation rules are case\-sensitive\. For example, you must provide column names for an Oracle database in upper case\.
++ Column names in transformation rules are case\-sensitive\. For example, you must provide column names for an Oracle or Db2 database in upper case\.
 + Transformations are not supported for columns with Right\-to\-Left languages\.
 + Transformations cannot be performed on columns that contain special characters \(e\.g\. \#, \\, /, \-\) in their name\.
 + The only supported transformation for columns that are mapped to BLOB/CLOB datatypes is to drop the column on the target\.

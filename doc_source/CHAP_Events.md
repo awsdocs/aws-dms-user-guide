@@ -144,45 +144,50 @@ Beginning with the release of AWS DMS 3\.4\.6 and with later versions, we recomm
 
 The AWS DMS console indicates that the subscription is being created\.
 
-### Using AWS DMS API and CLI<a name="USER_Events.Subscribing.API"></a>
+**Note**  
+You can also create Amazon SNS event notification subscriptions using the AWS DMS API and CLI\. For more information, see the [CreateEventSubscription](https://docs.aws.amazon.com/dms/latest/APIReference/API_CreateEventSubscription.html) in the *AWS DMS API Reference* and [create\-event\-subscription](https://docs.aws.amazon.com/cli/latest/reference/dms/create-event-subscription.html) in the *AWS DMS CLI Reference* documentation\. 
 
-**Important**  
-Beginning with the release of AWS DMS 3\.4\.6 and with later versions, we recommend that you use Amazon EventBridge to provide notifications when an AWS DMS event occurs\. For more information about using EventBridge events with AWS DMS, see [Working with Amazon EventBridge events and notifications in AWS Database Migration Service](CHAP_EventBridge.md)\. 
+### Validating the access policy of your SNS topic<a name="USER_Events.Subscribing.Access"></a>
 
-If you choose to create Amazon SNS event notification subscriptions using the AWS DMS API, create an Amazon SNS topic and subscribe to that topic with the Amazon SNS console or API\. In this case, you also need to note the topic's Amazon Resource Name \(ARN\), because this ARN is used when submitting CLI commands or API actions\. For information on creating an Amazon SNS topic and subscribing to it, see [Getting started with Amazon SNS](https://docs.aws.amazon.com/sns/latest/dg/GettingStarted.html)\.
+Your SNS access policy requires permissions that allow AWS DMS to publish events to your SNS topic\. You can validate and update your access policy as described in the following procedures\.
 
-In a notification subscription created using the AWS DMS API or CLI, you can specify the type of source you want to be notified of, and the AWS DMS source that triggers the event\. You define the type of source by specifying a* source type* value\. You define the source generating the event by specifying a *source identifier* value\.
+**To validate your access policy**
 
-The following `create-event-subscription` example shows the syntax to create event notification subscriptions using the AWS CLI\.
+1. Open the **Amazon SNS **console\.
 
-```
-aws dms create-event-subscription \
-  --subscription-name string \ 
-  --sns-topic-arn string \
-  [--source-type string] \
-  [--event-categories string] \
-  [--source-ids string] \
-  [--enabled | --no-enabled] \
-  [--tags string] \
-  [--cli-input-json string] \
-  [--generate-cli-skeleton string]
-```
+1. From the navigation panel, choose **Topics** and select the topic that you want to receive DMS notifications about\.
 
-To subscribe to AWS DMS event notification using the AWS DMS API, call the [https://docs.aws.amazon.com/dms/latest/APIReference/API_CreateEventSubscription.html](https://docs.aws.amazon.com/dms/latest/APIReference/API_CreateEventSubscription.html) operation\. The following provides an example request syntax for the `CreateEventSubscription` API operation\.
+1. Select the **Access policy** tab\.
 
-```
-{
-   "Enabled": boolean,
-   "EventCategories": [ "string" ],
-   "SnsTopicArn": "string",
-   "SourceIds": [ "string" ],
-   "SourceType": "string",
-   "SubscriptionName": "string",
-   "Tags": [ 
-      { 
-         "Key": "string",
-         "Value": "string"
-      }
-   ]
-}
-```
+You can update your policy if your SNS access policy doesn't allow AWS DMS to publish events to your SNS topic\.
+
+**To update your access policy**
+
+1. From the **Details** section of your topic page, choose **Edit**\.
+
+1. Expand the **Access policy** section, and attach the following policy into the JSON editor\.
+
+   ```
+   {
+         "Sid": "dms-allow-publish",
+         "Effect": "Allow",
+         "Principal": {
+           "Service": "dms.amazonaws.com"
+         },
+         "Action": "sns:Publish",
+         "Resource": "your-SNS-topic-ARN"
+       }
+   ```
+
+   We recommend that you further restrict the access to your SNS topic by specifying the `aws:SourceArn` condition, which is the DMS EventSubscription Arn that publishes events to the topic\.
+
+   ```
+   ...
+   "Resource": "your-SNS-topic-ARN"
+   "Condition": {
+       "StringEquals": {
+          "aws:SourceArn": "arn:partition:dms:your-AWS-region:your-AWS-account-ID:es:your-dms-es-arn or *"
+    }
+   ```
+
+1. Choose **Save changes**\.

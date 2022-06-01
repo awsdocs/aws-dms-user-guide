@@ -544,6 +544,7 @@ The following limitations apply when using PostgreSQL as a source for AWS DMS:
 + CDC isn't supported for Aurora PostgreSQL Serverless as a source\.
 + AWS DMS doesn't support replication of a table with a unique index created with a coalesce function\.
 + When using LOB mode, both the source table and the corresponding target table must have an identical Primary Key\. If one of the tables does not have a Primary Key, the result of DELETE and UPDATE record operations will be unpredictable\.
++ When using the Parallel Load feature, table segmentation according to partitions or sub\-partitions isn't supported\. For more informaion about Parallel Load, see [Using parallel load for selected tables, views, and collections](CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Tablesettings.md#CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Tablesettings.ParallelLoad) 
 
 ## Source data types for PostgreSQL<a name="CHAP_Source-PostgreSQL-DataTypes"></a>
 

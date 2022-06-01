@@ -17,9 +17,9 @@ For example, you can manually add an object to monitor\.
 
 **To add an object to monitor manually**
 
-1. From the **Monitored Object** page, choose **\+Server**\. The **Add monitored object screen** opens\. 
+1. From the **Monitored Objects** page, choose **\+Server**\. The **Add monitored object screen** opens\. 
 
-1. Add information about the server, and choose **Save**\.
+1. Add information about the server, and choose **Save**\. 
 
 You can also use a `.csv` file to import a large list of objects to monitor\. Use the following `.csv` file format to import a list of objects to DMS Collector\.
 

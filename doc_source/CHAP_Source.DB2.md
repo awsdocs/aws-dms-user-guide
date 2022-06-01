@@ -5,7 +5,7 @@ You can migrate data from an IBM Db2 for Linux, Unix, and Windows \(Db2 LUW\) da
 + Version 10\.1, with all Fix Packs supported
 + Version 10\.5, with all Fix Packs supported except for Fix Pack 5
 + Version 11\.1, with all Fix Packs supported
-+ Version 11\.5\.0, with only Fix Pack 0 supported
++ Version 11\.5, Mods \(0\-7\) with only Fix Pack 0 supported
 
 You can use Secure Sockets Layer \(SSL\) to encrypt connections between your Db2 LUW endpoint and the replication instance\. For more information on using SSL with a Db2 LUW endpoint, see [Using SSL with AWS Database Migration Service](CHAP_Security.md#CHAP_Security.SSL)\.
 

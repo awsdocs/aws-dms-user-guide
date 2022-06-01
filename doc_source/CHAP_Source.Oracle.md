@@ -659,10 +659,11 @@ The following limitations apply when using an Oracle database as a source for AW
 
     If the new column is nullable, Oracle updates all the table rows before logging the DDL itself\. As a result, AWS DMS captures the changes but doesn't update the target\. With the new column set to `NULL`, if the target table has no primary key or unique index subsequent updates raise a "zero rows affected" message\.
   + AWS DMS doesn't support XA transactions in replication while using Oracle LogMiner\.
-+ Oracle LogMiner doesn't support connections to a pluggable database \(PDB\)\. To connect to a PDB, access the redo logs using Binary Reader\.
+  + Oracle LogMiner doesn't support connections to a pluggable database \(PDB\)\. To connect to a PDB, access the redo logs using Binary Reader\.
+  + SHRINK SPACE operations aren’t supported\.
 + When you use Binary Reader, AWS DMS has these limitations:
   + It doesn't support table clusters\.
-  + It supports only table\-level `SHRINK SPACE` operations\. This level includes the full table, partitions, and subpartitions\.
+  + It supports only table\-level `SHRINK SPACE` operations\. This level includes the full table, partitions, and sub\-partitions\.
   + It doesn't support changes to index\-organized tables with key compression\.
   + It doesn't support implementing online redo logs on raw devices\.
   + Binary Reader supports TDE only for self\-managed Oracle databases since RDS for Oracle doesn't support wallet password retrieval for TDE encryption keys\.
@@ -675,6 +676,16 @@ The following limitations apply when using an Oracle database as a source for AW
 + AWS DMS doesn't support use of multiple Oracle TDE encryption keys on the same source endpoint\. Each endpoint can have only one attribute for TDE encryption Key Name "`securityDbEncryptionName`", and one TDE password for this key\.
 + When replicating from Amazon RDS for Oracle, TDE is supported only with encrypted tablespace and using Oracle LogMiner\.
 + AWS DMS does not support multiple table rename operations in quick succession\.
++ When using Oracle 19\.0 as source, AWS DMS doesn't support the following features:
+  + Data\-guard DML redirect
+  + Partitioned hybrid tables
+  + Schema\-only Oracle accounts
++ AWS DMS doesn't support migration of tables or views of type `BIN$` or `DR$`\.
++ Beginning with Oracle 18\.x, AWS DMS doesn't support change data capture \(CDC\) from Oracle Express Edition \(Oracle Database XE\)\.
++ When migrating data from a CHAR column, DMS truncates any trailing spaces\. 
++ AWS DMS doesn't support a virtual private database \(VPD\)\.
++ AWS DMS doesn't support replication from application containers\.
++ AWS DMS doesn't support performing Oracle Flashback Database and restore points, as these operations affect the consistency of Oracle Redo Log files\.
 
 ## SSL support for an Oracle endpoint<a name="CHAP_Security.SSL.Oracle"></a>
 

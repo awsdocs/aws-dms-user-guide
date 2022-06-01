@@ -84,9 +84,9 @@ The following limitations apply when using a SQL Server database as a source for
   ALTER SERVER AUDIT [my_audit_test-20140710] WITH (STATE=on)
   GO
   ```
-+ Geometry columns are not supported in full lob mode when using SQL Server as a source\. Instead, use limited lob mode or set the `InlineLobMaxSize` task setting to use inline lob mode\.
-+ A secondary SQL Server database isn't supported as a source database for ongoing replication \(CDC\) tasks\.
-+ When using a Microsoft SQL Server source database in a replication task, the SQL Server Replication Publisher definitions are not removed if you remove the task\. A Microsoft SQL Server system administrator must delete those definitions from Microsoft SQL Server\.
++ Geometry columns aren't supported in full lob mode when using SQL Server as a source\. Instead, use limited lob mode or set the `InlineLobMaxSize` task setting to use inline lob mode\.
++ A secondary SQL Server database isn't supported as a source databaseu for ongoing replication \(CDC\) tasks\.
++ When using a Microsoft SQL Server source database in a replication task, the SQL Server Replication Publisher definitions aren't removed if you remove the task\. A Microsoft SQL Server system administrator must delete those definitions from Microsoft SQL Server\.
 + Replicating data from indexed views isn't supported\.
 + Renaming tables using sp\_rename isn't supported \(for example, `sp_rename 'Sales.SalesRegion', 'SalesReg;)`
 + Renaming columns using sp\_rename isn't supported \(for example, `sp_rename 'Sales.Sales.Region', 'RegID', 'COLUMN';`\)
@@ -94,18 +94,6 @@ The following limitations apply when using a SQL Server database as a source for
 + AWS DMS doesn't support change processing to set column nullability \(using the `ALTER COLUMN [SET|DROP] NOT NULL` clause with `ALTER TABLE` statements\)\.
 + With SQL Server 2012 and SQL Server 2014, when using DMS replication with Availability Groups, the distribution database can't be placed in an availability group\. SQL 2016 supports placing the distribution database into an availability group, except for distribution databases used in merge, bidirectional, or peer\-to\-peer replication topologies\.
 + For partitioned tables, AWS DMS doesn't support different data compression settings for each partition\.
-
-The following limitations apply when accessing the backup transaction logs:  
-+ Encrypted backups aren't supported\.
-+ Backups stored at a URL or on Windows Azure aren't supported\.
-
-The following limitations apply when accessing the backup transaction logs at file level:
-+ The backup transaction logs must reside in a shared folder with the appropriate permissions and access rights\.
-+ Active transaction logs are accessed through the Microsoft SQL Server API \(and not at file\-level\)\.
-+ Compressed backup transaction logs aren't supported\.
-+ UNIX platforms aren't supported\.
-+ Reading the backup logs from multiple stripes isn't supported\.
-+ Microsoft SQL Server backup to multiple disks isn't supported\.
 + When inserting a value into SQL Server spatial data types \(GEOGRAPHY and GEOMETRY\), you can either ignore the spatial reference system identifier \(SRID\) property or specify a different number\. When replicating tables with spatial data types, AWS DMS replaces the SRID with the default SRID \(0 for GEOMETRY and 4326 for GEOGRAPHY\)\.
 + If your database isn't configured for MS\-REPLICATION or MS\-CDC, you can still capture tables that do not have a Primary Key, but only INSERT/DELETE DML events are captured\. UPDATE and TRUNCATE TABLE events are ignored\.
 + Columnstore indexes aren't supported\.
@@ -114,13 +102,33 @@ The following limitations apply when accessing the backup transaction logs at fi
 + Delayed durability isn't supported\.
 + The `readBackupOnly=Y` endpoint setting \(ECA\) doesn't work on RDS for SQL Server source instances because of the way RDS performs backups\.
 + `EXCLUSIVE_AUTOMATIC_TRUNCATION` doesn’t work on Amazon RDS SQL Server source instances because RDS users don't have access to run the SQL Server stored procedure, `sp_repldone`\.
++ AWS DMS doesn't capture truncate commands\.
++ AWS DMS doesn't support replication from databases with accelerated database recovery \(ADR\) turned on\.
++ AWS DMS doesn't support capturing data definition language \(DDL\) and data manipulation language \(DML\) statements within a single transaction\.
++ AWS DMS doesn't support the replication of data\-tier application packages \(DACPAC\)\.
++ UPDATE statements that involve primary keys or unique indexes and update multiple data rows, can cause conflicts when you apply changes to the target database\. This might happen, for example, when the target database applies updates as INSERT and DELETE statements instead of a single UPDATE statement\. With the batch optimized apply mode, the table might be ignored\. With the transactional apply mode, the UPDATE operation might result in constraint violations\. To avoid this issue, reload the relevant table\. Alternatively, locate the problematic records in the Apply Exceptions control table \(`dmslogs.awsdms_apply_exceptions`\) and edit them manually in the target database\. For more information, see [Change processing tuning settings](CHAP_Tasks.CustomizingTasks.TaskSettings.ChangeProcessingTuning.md)\.
++ AWS DMS doesn't support the replication of tables and schemas, where the name includes a special character from the following set\.
+
+  `\\ -- \n \" \b \r ' \t ;` 
++ Data masking isn't supported\. AWS DMS migrates masked data without masking\.
+
+The following limitations apply when accessing the backup transaction logs:  
++ Encrypted backups aren't supported\.
++ Backups stored at a URL or on Windows Azure aren't supported\.
+
+The following limitations apply when accessing the backup transaction logs at file level:
++ The backup transaction logs must reside in a shared folder with the appropriate permissions and access rights\.
++ Active transaction logs are accessed through the Microsoft SQL Server API \(and not at file\-level\)\.
++ UNIX platforms aren't supported\.
++ Reading the backup logs from multiple stripes isn't supported\.
++ Microsoft SQL Server backup to multiple disks isn't supported\.
 
 ## Permissions for full load only tasks<a name="CHAP_Source.SQLServer.Permissions"></a>
 
 The following permissions are required to perform full load only tasks\.
 
 ```
-                USE db_name;
+USE db_name;
                 
                 CREATE USER dms_user FOR LOGIN dms_user; 
                 ALTER ROLE [db_datareader] ADD MEMBER dms_user; 

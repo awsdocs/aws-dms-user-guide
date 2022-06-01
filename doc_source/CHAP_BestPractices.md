@@ -95,7 +95,8 @@ Depending on the instance class, your replication server comes with either 50 GB
 All storage volumes in AWS DMS are GP2 or General\-Purpose solid\-state drives \(SSDs\)\. GP2 volumes come with a base performance of three I/O operations per second \(IOPS\), with abilities to burst up to 3,000 IOPS on a credit basis\. As a rule of thumb, check the `ReadIOPS` and `WriteIOPS` metrics for the replication instance\. Make sure that the sum of these values doesn't cross the base performance for that volume\.
 
 **Multi\-AZ**  
-Choosing a Multi\-AZ instance can protect your migration from storage failures\. Most migrations are transient and aren't intended to run for long periods of time\. If you use AWS DMS for ongoing replication purposes, choosing a Multi\-AZ instance can improve your availability should a storage issue occur\.
+Choosing a Multi\-AZ instance can protect your migration from storage failures\. Most migrations are transient and aren't intended to run for long periods of time\. If you use AWS DMS for ongoing replication purposes, choosing a Multi\-AZ instance can improve your availability should a storage issue occur\.  
+When using a single AZ or Multi\-AZ replication instance during a FULL LOAD and a failover or host replacement occurs, the full load task is expected to fail\. You can restart the task from the point of failure for the remaining tables that didn't complete, or are in an error state\.
 
 ** Loading multiple tables in parallel **  
  By default, AWS DMS loads eight tables at a time\. You might see some performance improvement by increasing this slightly when using a very large replication server, such as a dms\.c4\.xlarge or larger instance\. However, at some point, increasing this parallelism reduces performance\. If your replication server is relatively small, such as a dms\.t2\.medium, we recommend that you reduce the number of tables loaded in parallel\.   

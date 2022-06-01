@@ -58,6 +58,13 @@ Limitations when using Oracle as a target for data migration include the followi
 + AWS DMS doesn't support the `Use direct path full load` option for tables with INDEXTYPE CONTEXT\. As a workaround, you can use array load\. 
 + With the batch optimized apply option, loading into the net changes table uses a direct path, which doesn't support XML type\. As a workaround, you can use transactional apply mode\.
 + Empty strings migrated from source databases can be treated differently by the Oracle target \(converted to one\-space strings, for example\)\. This can result in AWS DMS validation reporting a mismatch\.
++ You can express the total number of columns per table supported in Batch optimized apply mode, using the following formula:
+
+  ```
+  2 * columns_in_original_table + columns_in_primary_key <= 999
+  ```
+
+  For example, if the original table has 25 columns and its Primary Key consists of 5 columns, then the total number of columns is 55\. If a table exceeds the supported number of columns, then all of the changes are applied in one\-by\-one mode\.
 
 ## User account privileges required for using Oracle as a target<a name="CHAP_Target.Oracle.Privileges"></a>
 

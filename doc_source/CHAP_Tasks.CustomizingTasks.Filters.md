@@ -10,7 +10,7 @@ Source filters must follow these constraints:
 + Filters are only applied when `rule-action = 'include'`\.
 + Filters require a column name and a list of filter conditions\. Filter conditions must have a filter operator that is associated with either one value, two values, or no value, depending on the operator\.
 + You can specify no more than one filter condition within a single filter if you specify a negative operator like `noteq` \(not equal to\), `notbetween` \(not equal to or between two values\), or `notnull` \(no `NULL` values\)\.
-+ Column names, table names, view names, and schema names are case\-sensitive\. 
++ Column names, table names, view names, and schema names are case\-sensitive\. Oracle and Db2 should always use UPPER case\.
 
 The following limitations apply to using source filters:
 + Filters don't calculate columns of right\-to\-left languages\.

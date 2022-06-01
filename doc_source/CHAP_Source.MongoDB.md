@@ -1,6 +1,6 @@
 # Using MongoDB as a source for AWS DMS<a name="CHAP_Source.MongoDB"></a>
 
-AWS DMS supports MongoDB versions 3\.x and 4\.0 as a database source\. Starting with AWS DMS 3\.4\.5, AWS DMS supports MongoDB versions 4\.2 and 4\.4\. Starting with Mongo DB version 4\.2, AWS DMS 3\.4\.5 and later supports distributed transactions\. For more information on MongoDB distributed transactions, see [Transactions](https://docs.mongodb.com/manual/core/transactions/) in MongoDB\.
+AWS DMS supports MongoDB versions 3\.x and 4\.0 as a database source\. Starting with AWS DMS 3\.4\.5, AWS DMS supports MongoDB versions 4\.2 and 4\.4\. Starting with MongoDB version 4\.2, AWS DMS 3\.4\.5 and later supports distributed transactions\. For more information on MongoDB distributed transactions, see [Transactions](https://docs.mongodb.com/manual/core/transactions/) in MongoDB\.
 
 If you are new to MongoDB, be aware of the following important MongoDB database concepts: 
 + A record in MongoDB is a *document*, which is a data structure composed of field and value pairs\. The value of a field can include other documents, arrays, and arrays of documents\. A document is roughly equivalent to a row in a relational database table\.
@@ -23,7 +23,7 @@ For example, consider the following documents in a MongoDB collection called myC
 ```
 After migrating the data to a relational database table using document mode, the data is structured as follows\. The data fields in the MongoDB document are consolidated into the` _doc` column\.      
 [\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.MongoDB.html)
-You can optionally set the extra connection attribute `extractDocID` to *true* to create a second column named `"_id"` that acts as the primary key\. If you are going to use CDC, set this parameter to *true* except when using Amazon DocumentDB as target\.  
+You can optionally set the extra connection attribute `extractDocID` to *true* to create a second column named `"_id"` that acts as the primary key\. If you are going to use CDC, set this parameter to *true*\.  
 In document mode, AWS DMS manages the creation and renaming of collections like this:  
 + If you add a new collection to the source database, AWS DMS creates a new target table for the collection and replicates any documents\. 
 + If you rename an existing collection on the source database, AWS DMS doesn't rename the target table\. 
@@ -378,7 +378,7 @@ The following table describes the configuration settings available when using Mo
 
 If you choose **Document** as **Metadata mode**, different options are available\. 
 
-If the target endpoint is DocumentDB, make sure to run the migration in **Document mode** Also, modify your source endpoint and select the option **\_id as separate column**\.
+If the target endpoint is DocumentDB, make sure to run the migration in **Document mode** Also, modify your source endpoint and select the option **\_id as separate column**\. This is a mandatory prerequisite if your source MongoDB workload involves transactions\.
 
 ## Source data types for MongoDB<a name="CHAP_Source.MongoDB.DataTypes"></a>
 
