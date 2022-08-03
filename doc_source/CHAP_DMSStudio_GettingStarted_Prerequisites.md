@@ -1,10 +1,5 @@
 # Prerequisites for working with DMS Studio<a name="CHAP_DMSStudio_GettingStarted_Prerequisites"></a>
 
-
-|  | 
-| --- |
-| AWS DMS Studio is in preview release for AWS Database Migration Service and is subject to change\. | 
-
 In this section, you do the following prerequisite tasks to run this tutorial: 
 + [MySQL database](#CHAP_DMSStudio_GettingStarted_Prerequisites_Database) for the DMS Collector to discover\.
 + [Amazon S3 bucket](#CHAP_DMSStudio_GettingStarted_Prerequisites_S3) to store your collected information\.

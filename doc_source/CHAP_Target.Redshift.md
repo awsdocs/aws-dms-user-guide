@@ -310,6 +310,11 @@ The parameter names for endpoint settings are the same as the names for equivale
 You can use Amazon Redshift target endpoint settings to configure the following:
 + A custom AWS KMS data encryption key\. You can then use this key to encrypt your data pushed to Amazon S3 before it is copied to Amazon Redshift\.
 + A custom S3 bucket as intermediate storage for data migrated to Amazon Redshift\.
++ Map a boolean as a boolean from a PostgreSQL source\. By default, a BOOLEAN type is migrated as varchar\(1\)\. You can specify `MapBooleanAsBoolean` to let your Redshift target migrate the boolean type as boolean, as shown in the example following\.
+
+  ```
+  redshift-settings='{"MapBooleanAsBoolean": "true"}'
+  ```
 
 ### KMS key settings for data encryption<a name="CHAP_Target.Redshift.EndpointSettings.KMSkeys"></a>
 

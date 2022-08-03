@@ -1,10 +1,5 @@
 # Step 3: Collect and verify data<a name="CHAP_DMSStudio_GettingStarted_Collect"></a>
 
-
-|  | 
-| --- |
-| AWS DMS Studio is in preview release for AWS Database Migration Service and is subject to change\. | 
-
 Next, you collect information about your local database environment\. DMS Collector automatically uploads your database information to AWS after collection is complete\.
 
 **To collect information about your local database environment**

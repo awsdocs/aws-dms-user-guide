@@ -77,7 +77,7 @@ You can use Amazon CloudWatch alarms or events to more closely track your migrat
 
 If your replication task doesn't create CloudWatch logs, see [AWS DMS does not create CloudWatch logs](CHAP_Troubleshooting.md#CHAP_Troubleshooting.General.CWL) in the troubleshooting guide\.
 
-The AWS DMS console shows basic CloudWatch statistics for each task, including the task status, percent complete, elapsed time, and table statistics, as shown following\. Select the replication task and then select the **Task monitoring** tab\.
+The AWS DMS console shows basic CloudWatch statistics for each task, including the task status, percent complete, elapsed time, and table statistics, as shown following\. Select the replication task and then select the **CloudWatch metrics** tab\.
 
 ![\[AWS DMS monitoring\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-monitoring1.png)
 
@@ -85,7 +85,7 @@ The AWS DMS console shows performance statistics for each table, including the n
 
 ![\[AWS DMS monitoring\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-monitoring3.png)
 
-In addition, if you select a replication instance from the **Replication Instance** page, you can view performance metrics for the instance by selecting the **Monitoring** tab\.
+In addition, if you select a replication instance from the **Replication Instance** page, you can view performance metrics for the instance by choosing the **CloudWatch metrics** tab\.
 
 ![\[AWS DMS monitoring\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-monitoring4.png)
 
@@ -123,135 +123,52 @@ For AWS DMS to perform conversions optimally, the CPU must be available when the
 
 ### Replication instance metrics<a name="CHAP_Monitoring.Metrics.CloudWatch"></a>
 
-Replication instance monitoring include Amazon CloudWatch metrics for the following statistics:
+Replication instance monitoring includes Amazon CloudWatch metrics for the following statistics\.
 
-**AvailableMemory**  
-An estimate of how much memory is available for starting new applications, without swapping\. For more information, see `MemAvailable` value in `/proc/memInfo` section of the [Linux man\-pages](https://man7.org/linux/man-pages/man5/proc.5.html)\.  
-Units: Bytes
 
-**CPUAllocated**  
-The percentage of CPU maximally allocated for the task \(0 means no limit\)\.  
-Units: Percent
-
-**CPUUtilization**  
-The percentage of allocated vCPU \(virtual CPU\) currently in use on the instance\.  
- Units: Percent 
-
-**DiskQueueDepth**  
-The number of outstanding read/write requests \(I/Os\) waiting to access the disk\.   
- Units: Count 
-
-**FreeStorageSpace**  
- The amount of available storage space\.  
-Units: Bytes
-
-**FreeMemory**  
-The amount of physical memory available for use by applications, page cache, and for the kernel’s own data structures\. For more information, see `MemFree` value in `/proc/memInfo` section of the [Linux man\-pages](https://man7.org/linux/man-pages/man5/proc.5.html)\.  
-Units: Bytes
-
-**FreeableMemory**  
- The amount of available random access memory\.  
-Units: Bytes
-
-**MemoryAllocated **  
-The maximum allocation of memory for the task \(0 means no limits\)\. Units: MiB
-
-**WriteIOPS**  
- The average number of disk write I/O operations per second\.  
-Units: Count/Second
-
-**ReadIOPS**  
- The average number of disk read I/O operations per second\.  
-Units: Count/Second
-
-**WriteThroughput**  
- The average number of bytes written to disk per second\.  
-Units: Bytes/Second
-
-**ReadThroughput**  
- The average number of bytes read from disk per second\.  
-Units: Bytes/Second
-
-**WriteLatency**  
- The average amount of time taken per disk I/O \(output\) operation\.  
-Units: Milliseconds
-
-**ReadLatency**  
- The average amount of time taken per disk I/O \(input\) operation\.  
-Units: Milliseconds
-
-**SwapUsage**  
- The amount of swap space used on the replication instance\.  
-Units: Bytes
-
-**NetworkTransmitThroughput**  
-The outgoing \(Transmit\) network traffic on the replication instance, including both customer database traffic and AWS DMS traffic used for monitoring and replication\.  
-Units: Bytes/second
-
-**NetworkReceiveThroughput**  
-The incoming \(Receive\) network traffic on the replication instance, including both customer database traffic and AWS DMS traffic used for monitoring and replication\.  
-Units: Bytes/second
+|  Metric  |  Description  | 
+| --- | --- | 
+| AvailableMemory |  An estimate of how much memory is available for starting new applications, without swapping\. For more information, see `MemAvailable` value in `/proc/memInfo` section of the [Linux man\-pages](https://man7.org/linux/man-pages/man5/proc.5.html)\. Units: Bytes  | 
+| CPUAllocated |  The percentage of CPU maximally allocated for the task \(0 means no limit\)\. Units: Percent  | 
+| CPUUtilization |  The percentage of allocated vCPU \(virtual CPU\) currently in use on the instance\.  Units: Percent   | 
+| DiskQueueDepth |  The number of outstanding read/write requests \(I/Os\) waiting to access the disk\.  Units: Count   | 
+| FreeStorageSpace |  The amount of available storage space\. Units: Bytes  | 
+| FreeMemory |  The amount of physical memory available for use by applications, page cache, and for the kernel’s own data structures\. For more information, see `MemFree` value in `/proc/memInfo` section of the [Linux man\-pages](https://man7.org/linux/man-pages/man5/proc.5.html)\. Units: Bytes  | 
+| FreeableMemory |  The amount of available random access memory\. Units: Bytes  | 
+| MemoryAllocated |  The maximum allocation of memory for the task \(0 means no limits\)\. Units: MiB  | 
+| WriteIOPS |  The average number of disk write I/O operations per second\. Units: Count/Second  | 
+| ReadIOPS |  The average number of disk read I/O operations per second\. Units: Count/Second  | 
+| WriteThroughput |  The average number of bytes written to disk per second\. Units: Bytes/Second  | 
+| ReadThroughput |  The average number of bytes read from disk per second\. Units: Bytes/Second  | 
+| WriteLatency |  The average amount of time taken per disk I/O \(output\) operation\. Units: Milliseconds  | 
+| ReadLatency |  The average amount of time taken per disk I/O \(input\) operation\. Units: Milliseconds  | 
+| SwapUsage |  The amount of swap space used on the replication instance\. Units: Bytes  | 
+| NetworkTransmitThroughput |  The outgoing \(Transmit\) network traffic on the replication instance, including both customer database traffic and AWS DMS traffic used for monitoring and replication\. Units: Bytes/second  | 
+| NetworkReceiveThroughput |  The incoming \(Receive\) network traffic on the replication instance, including both customer database traffic and AWS DMS traffic used for monitoring and replication\. Units: Bytes/second  | 
 
 ### Replication task metrics<a name="CHAP_Monitoring.Metrics.Task"></a>
 
-Replication task monitoring includes metrics for the following statistics:
+Replication task monitoring includes metrics for the following statistics\.
 
-**FullLoadThroughputBandwidthTarget**  
-Outgoing data transmitted from a full load for the target in KB per second\.
 
-**FullLoadThroughputRowsTarget**  
-Outgoing changes from a full load for the target in rows per second\.
-
-**CDCIncomingChanges**  
-The total number of change events at a point\-in\-time that are waiting to be applied to the target\. Note that this is not the same as a measure of the transaction change rate of the source endpoint\. A large number for this metric usually indicates AWS DMS is unable to apply captured changes in a timely manner, thus causing high target latency\.
-
-**CDCChangesMemorySource**  
-Amount of rows accumulating in a memory and waiting to be committed from the source\. You can view this metric together with CDCChangesDiskSource\.
-
-**CDCChangesMemoryTarget**  
-Amount of rows accumulating in a memory and waiting to be committed to the target\. You can view this metric together with CDCChangesDiskTarget\.
-
-**CDCChangesDiskSource**  
-Amount of rows accumulating on disk and waiting to be committed from the source\. You can view this metric together with CDCChangesMemorySource\.
-
-**CDCChangesDiskTarget**  
-Amount of rows accumulating on disk and waiting to be committed to the target\. You can view this metric together with CDCChangesMemoryTarget\. 
-
-**CDCChangesDiskSource**  
-Amount of rows accumulating on disk and waiting to be committed from the source\. You can view this metric together with CDCChangesMemorySource\.
-
-**CDCChangesDiskTarget**  
-Amount of rows accumulating on disk and waiting to be committed to the target\. You can view this metric together with CDCChangesMemoryTarget\. 
-
-**CDCThroughputBandwidthSource**  
-Incoming data received for the source in KB per second\. CDCThroughputBandwidth records incoming data received on sampling points\. If no task network traffic is found, the value is zero\. Because CDC does not issue long\-running transactions, network traffic may not be recorded\.
-
-**CDCThroughputBandwidthTarget**  
-Outgoing data transmitted for the target in KB per second\. CDCThroughputBandwidth records outgoing data transmitted on sampling points\. If no task network traffic is found, the value is zero\. Because CDC does not issue long\-running transactions, network traffic may not be recorded\.
-
-**CDCThroughputRowsSource**  
-Incoming task changes from the source in rows per second\.
-
-**CDCThroughputRowsTarget**  
-Outgoing task changes for the target in rows per second\.
-
-**CDCLatencySource**  
-The gap, in seconds, between the last event captured from the source endpoint and current system time stamp of the AWS DMS instance\. CDCLatencySource represents the latency between source and replication instance\. High CDCLatencySource means the process of capturing changes from source is delayed\. To identify latency in an ongoing replication, you can view this metric together with CDCLatencyTarget\. If both CDCLatencySource and CDCLatencyTarget are high, investigate CDCLatencySource first\.
-
-**CDCLatencyTarget**  
-The gap, in seconds, between the first event timestamp waiting to commit on the target and the current timestamp of the AWS DMS instance\. CDCLatencyTarget represents the latency between replication instance and target\. When CDCLatencyTarget is high, it indicates the process of applying change events to the target is delayed\. To identify latency in an ongoing replication, you can view this metric together with CDCLatencySource\. If CDCLatencyTarget is high but CDCLatencySource isn’t high, investigate if:  
-+ No primary keys or indexes are in the target
-+ Resource bottlenecks occur in the target or replication instance
-+ Network issues reside between replication instance and target
-
-**CPUUtilization**  
-The percentage of CPU being used by a task across multiple cores\. The semantics of task CPUUtilization is slightly different from replication CPUUtilizaiton\. If 1 vCPU is fully used, it indicates 100%, but if multiple vCPUs are in use, the value could be above 100%\. Units: Percent
-
-**SwapUsage**  
-The amount of swap used by the task\. Units: Bytes
-
-**MemoryUsage**  
-The resident set size \(RSS\) occupied by a task\. It indicates the portion of memory occupied by a task held in main memory \(RAM\)\. Since parts of the occupied memory are paged out, or parts of the executable are never loaded, MemoryUsage doesn’t include memory held in swap space or file system\.
+|  Metric  |  Description  | 
+| --- | --- | 
+| FullLoadThroughputBandwidthTarget |  Outgoing data transmitted from a full load for the target in KB per second\.  | 
+| FullLoadThroughputRowsTarget |  Outgoing changes from a full load for the target in rows per second\.  | 
+| CDCIncomingChanges |  The total number of change events at a point\-in\-time that are waiting to be applied to the target\. Note that this is not the same as a measure of the transaction change rate of the source endpoint\. A large number for this metric usually indicates AWS DMS is unable to apply captured changes in a timely manner, thus causing high target latency\.  | 
+| CDCChangesMemorySource |  Amount of rows accumulating in a memory and waiting to be committed from the source\. You can view this metric together with CDCChangesDiskSource\.  | 
+| CDCChangesMemoryTarget |  Amount of rows accumulating in a memory and waiting to be committed to the target\. You can view this metric together with CDCChangesDiskTarget\.  | 
+| CDCChangesDiskSource |  Amount of rows accumulating on disk and waiting to be committed from the source\. You can view this metric together with CDCChangesMemorySource\.  | 
+| CDCChangesDiskTarget |  Amount of rows accumulating on disk and waiting to be committed to the target\. You can view this metric together with CDCChangesMemoryTarget\.  | 
+| CDCThroughputBandwidthSource |  Incoming data received for the source in KB per second\. CDCThroughputBandwidth records incoming data received on sampling points\. If no task network traffic is found, the value is zero\. Because CDC does not issue long\-running transactions, network traffic may not be recorded\.  | 
+| CDCThroughputBandwidthTarget |  Outgoing data transmitted for the target in KB per second\. CDCThroughputBandwidth records outgoing data transmitted on sampling points\. If no task network traffic is found, the value is zero\. Because CDC does not issue long\-running transactions, network traffic may not be recorded\.  | 
+| CDCThroughputRowsSource |  Incoming task changes from the source in rows per second\.  | 
+| CDCThroughputRowsTarget |  Outgoing task changes for the target in rows per second\.  | 
+| CDCLatencySource |  The gap, in seconds, between the last event captured from the source endpoint and current system time stamp of the AWS DMS instance\. CDCLatencySource represents the latency between source and replication instance\. High CDCLatencySource means the process of capturing changes from source is delayed\. To identify latency in an ongoing replication, you can view this metric together with CDCLatencyTarget\. If both CDCLatencySource and CDCLatencyTarget are high, investigate CDCLatencySource first\.  | 
+| CDCLatencyTarget |  The gap, in seconds, between the first event timestamp waiting to commit on the target and the current timestamp of the AWS DMS instance\. CDCLatencyTarget represents the latency between replication instance and target\. When CDCLatencyTarget is high, it indicates the process of applying change events to the target is delayed\. To identify latency in an ongoing replication, you can view this metric together with CDCLatencySource\. If CDCLatencyTarget is high but CDCLatencySource isn’t high, investigate if: [\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_Monitoring.html)  | 
+| CPUUtilization |  The percentage of CPU being used by a task across multiple cores\. The semantics of task CPUUtilization is slightly different from replication CPUUtilizaiton\. If 1 vCPU is fully used, it indicates 100%, but if multiple vCPUs are in use, the value could be above 100%\. Units: Percent  | 
+| SwapUsage |  The amount of swap used by the task\. Units: Bytes  | 
+| MemoryUsage |  The resident set size \(RSS\) occupied by a task\. It indicates the portion of memory occupied by a task held in main memory \(RAM\)\. Since parts of the occupied memory are paged out, or parts of the executable are never loaded, MemoryUsage doesn’t include memory held in swap space or file system\.  | 
 
 ## Viewing and managing AWS DMS task logs<a name="CHAP_Monitoring.ManagingLogs"></a>
 

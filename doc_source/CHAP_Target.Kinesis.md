@@ -11,7 +11,7 @@ You use object mapping to migrate your data from any supported data source to a 
 When AWS DMS creates tables on an Kinesis Data Streams target endpoint, it creates as many tables as in the source database endpoint\. AWS DMS also sets several Kinesis Data Streams parameter values\. The cost for the table creation depends on the amount of data and the number of tables to be migrated\.
 
 **Note**  
-The SSL Mode option on the DMS console or API doesn’t apply to some data streaming and NoSQL services like Kinesis, and DynamoDB\. They are secure by default, so DMS shows the SSL mode setting is equal to none \(**SSL Mode=None**\)\. You don’t need to provide any additional configuration for your endpoint to make use of SSL\. For example, when using Kinesis as a target endpoint, it is secure by default\. All API calls to Kinesis use SSL, so there is no need for an additional SSL option in the DMS endpoint\. You can securely put data and retrieve data through SSL endpoints using the HTTPS protocol, which DMS uses by default when connecting to a Kinesis Data Stream\.
+The **SSL Mode** option on the AWS DMS console or API doesn’t apply to some data streaming and NoSQL services like Kinesis and DynamoDB\. They are secure by default, so AWS DMS shows the SSL mode setting is equal to none \(**SSL Mode=None**\)\. You don’t need to provide any additional configuration for your endpoint to make use of SSL\. For example, when using Kinesis as a target endpoint, it is secure by default\. All API calls to Kinesis use SSL, so there is no need for an additional SSL option in the AWS DMS endpoint\. You can securely put data and retrieve data through SSL endpoints using the HTTPS protocol, which AWS DMS uses by default when connecting to a Kinesis Data Stream\.
 
 **Kinesis Data Streams endpoint settings**
 
@@ -221,6 +221,7 @@ The following limitations apply when using Kinesis Data Streams as a target:
 + `BatchApply` is not supported for a Kinesis endpoint\. Using Batch Apply \(for example, the `BatchApplyEnabled` target metadata task setting\) for a Kinesis target might result in loss of data\.
 + Kinesis targets are only supported for a Kinesis data stream in the same AWS account\.
 + When migrating from a MySQL source, the BeforeImage data doesn't include CLOB and BLOB data types\. For more information, see [Using a before image to view original values of CDC rows for a Kinesis data stream as a target](#CHAP_Target.Kinesis.BeforeImage)\.
++ AWS DMS migrates values of `BigInt` data type with more than 16 digits in the scientific notation form\.
 
 ## Using object mapping to migrate data to a Kinesis data stream<a name="CHAP_Target.Kinesis.ObjectMapping"></a>
 

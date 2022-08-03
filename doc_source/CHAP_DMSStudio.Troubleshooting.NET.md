@@ -1,10 +1,5 @@
 # Data collection issues related to network and server connections<a name="CHAP_DMSStudio.Troubleshooting.NET"></a>
 
-
-|  | 
-| --- |
-| AWS DMS Studio is in preview release for AWS Database Migration Service and is subject to change\. | 
-
 **NET: An exception occurred during a ping request\.**  
 Check the name of the computer to see if it's in a state where it can't be resolved to an IP address\.  
 For example, check if the computer is switched off, disconnected from the network, or decommissioned\.

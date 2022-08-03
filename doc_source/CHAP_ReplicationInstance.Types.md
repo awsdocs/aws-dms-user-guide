@@ -1,6 +1,6 @@
 # Choosing the right AWS DMS replication instance for your migration<a name="CHAP_ReplicationInstance.Types"></a>
 
-AWS DMS creates the replication instance on an Amazon EC2 instance\. AWS DMS currently supports the T2, T3, C4, C5, R4, and R5 Amazon EC2 instance classes for replication instances: 
+AWS DMS creates the replication instance on an Amazon EC2 instance\. AWS DMS currently supports the T2, T3, C4, C5, R4, and R5 Amazon EC2 instance classes for replication instances:
 + T2 instances are burstable performance instances that provide a baseline level of CPU performance with the ability to burst above the baseline\. The baseline performance and ability to burst are governed by CPU credits\. T2 instances receive CPU credits continuously at a set rate depending on the instance size\. They accumulate CPU credits when they are idle and consume CPU credits when they are active\. 
 
   T2 instances are a good choice for a variety of general\-purpose workloads\. These include microservices, low\-latency interactive applications, small and medium databases, virtual desktops, development, build and stage environments, code repositories, and product prototypes\.

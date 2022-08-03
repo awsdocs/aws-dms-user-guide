@@ -1,10 +1,5 @@
 # Managing monitored objects for DMS Studio<a name="CHAP_DMSStudio.ManagingObjects"></a>
 
-
-|  | 
-| --- |
-| AWS DMS Studio is in preview release for AWS Database Migration Service and is subject to change\. | 
-
 You can select objects to monitor when you run the server discovery process as described in [Discovering OS and database servers to monitor in AWS DMS Studio](CHAP_DMSStudio.Discovering.md)\. Also, you can manually manage objects such as operating\-system \(OS\) servers and database servers\. You can take these actions to manage monitored objects:
 + Add new objects to monitor\.
 + Remove existing objects\.

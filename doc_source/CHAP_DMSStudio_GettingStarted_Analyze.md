@@ -1,10 +1,5 @@
 # Step 4: Analyze discovery data<a name="CHAP_DMSStudio_GettingStarted_Analyze"></a>
 
-
-|  | 
-| --- |
-| AWS DMS Studio is in preview release for AWS Database Migration Service and is subject to change\. | 
-
 Next, you analyze your local database information, and get recommendations about how to migrate your data to AWS\.
 
 **To analyze your local database information and get migration recommendations**

@@ -12,7 +12,7 @@ To create an AWS DMS migration task, you do the following:
 + Enable and run premigration task assessments before you run the task\. For more information about premigration assessments, see [Enabling and working with premigration assessments for a task](CHAP_Tasks.AssessmentReport.md)\.
 + Specify any required supplemental data for the task to migrate your data\. For more information, see [Specifying supplemental data for task settings](CHAP_Tasks.TaskData.md)\.
 
-You can choose to start a task as soon as you finish specifying information for that task on the **Create task** page\. Alternatively, you can start the task from the Dashboard page after you finish specifying task information\.
+You can choose to start a task as soon as you finish specifying information for that task on the **Create task** page\. Alternatively, you can start the task from the Dashboard page later as well\.
 
 The following procedure assumes that you have already specified replication instance information and endpoints\. For more information about setting up endpoints, see [Creating source and target endpoints](CHAP_Endpoints.Creating.md)\.
 
@@ -22,25 +22,19 @@ The following procedure assumes that you have already specified replication inst
 
    If you are signed in as an AWS Identity and Access Management \(IAM\) user, make sure that you have the appropriate permissions to access AWS DMS\. For more information about the permissions required, see [IAM permissions needed to use AWS DMS](CHAP_Security.md#CHAP_Security.IAMPermissions)\.
 
-1. On the navigation pane, choose **Tasks**, and then choose **Create task**\.
+1. On the navigation pane, choose **Database migration tasks**, and then choose **Create task**\.
 
-1. On the **Create Task** page, specify the task options\. The following table describes the settings\.  
+1. On the **Create database migration task** page, in the **Task configuration** section, specify the task options\. The following table describes the settings\.  
 ![\[Create task\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-gs-wizard4.png)    
 [\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_Tasks.Creating.html)
 
-1. Choose the **Task Settings** tab, shown following, and specify values for your target table, LOB support, and to enable logging\. The task settings shown depend on the **Migration type** value that you choose\. For example, when you choose **Migrate existing data**, the following options appear\.  
-![\[Task settings\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-gs-wizard4-settings.png)    
+1. In the **Task Settings** section, specify values for editing your task, target table preparation mode, stop task, LOB settings, validation, and logging\.    
 [\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_Tasks.Creating.html)
 
-   When you select **Migrate existing data and replicate** for **Migration type**, the following options are shown:  
-![\[Task settings\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-gs-wizard4a-settings.png)    
-[\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_Tasks.Creating.html)
+1. In the **Premigration assessment** section, choose whether to run a premigration assessment\. A premigration assessment warns you of potential migration issues before starting your database migration task\. For more information, see [Enabling and working with premigration assessments](CHAP_Tasks.AssessmentReport.md)\. 
 
-1. Choose the **Table mappings** tab, shown following, to set values for schema mapping and the mapping method\. If you choose **Custom**, you can specify the target schema and table values\. For more information about table mapping, see [Using table mapping to specify task settings](CHAP_Tasks.CustomizingTasks.TableMapping.md)\.
+1. In the **Migration task startup configuration** section, specify whether to start the task automatically after creation\.
 
-     
-![\[Table mapping\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-gs-wizard4-tablemapping.png)
-
-1. If necessary, specify supplemental task data in the appropriate tab\. For example, if your target endpoint is for an Amazon Neptune graph database, choose the **Graph mapping rules** tab\. Then either browse to choose the appropriate graph mapping configuration file or enter the mapping rules directly using the editor\. For more information about specifying supplemental task data, see [Specifying supplemental data for task settings](CHAP_Tasks.TaskData.md)\.
+1. In the **Tags** section, specify any tags you need to organize your task\. You can use tags to manage your IAM roles and policies, and track your DMS costs\. For more information, see [Tagging resources](CHAP_Tagging.md)\.
 
 1. After you have finished with the task settings, choose **Create task**\.

@@ -10,7 +10,7 @@ You can start the migration task when connections to all endpoints are successfu
   + The staging Amazon S3 bucket
   + The target database on AWS
 
-If all connections are functioning properly, your SCT console resembles the following screenshot, and you are ready to begin\.
+If all connections are functioning properly, your SCT console resembles the following screen shot, and you are ready to begin\.
 
 ![\[Image NOT FOUND\]](http://docs.aws.amazon.com/dms/latest/userguide/images/snowball-sct-connections.png)
 

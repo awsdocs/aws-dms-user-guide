@@ -2,7 +2,7 @@
 
 The SAP Sybase ASE ODBC 64\-bit client should be installed\.
 
-If the installation directory is `/opt/sap`, update the `site_arep_login.sh` script with the following\.
+If the installation directory is `/opt/sap`, update the `site_arep_login.sh` script under the bin folder of the agent installation with the following\.
 
 ```
 export SYBASE_HOME=/opt/sap

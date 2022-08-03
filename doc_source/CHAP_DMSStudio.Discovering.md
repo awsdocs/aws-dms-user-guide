@@ -1,10 +1,5 @@
 # Discovering OS and database servers to monitor in AWS DMS Studio<a name="CHAP_DMSStudio.Discovering"></a>
 
-
-|  | 
-| --- |
-| AWS DMS Studio is in preview release for AWS Database Migration Service and is subject to change\. | 
-
 You can use your on\-premises DMS Collector to find and list all available servers in your network that you can monitor\. We recommend that you discover all operating system \(OS\) servers before discovering databases on those servers\. To discover OS servers, the user needs permission to execute remote PowerShell, Secure Shell \(SSH\), and Windows Management Instrumentation \(WMI\) scripts and commands and access the Windows registry\. To discover database servers in your network and collect data from them, the user needs read\-only administrator permissions for remote database connection\. 
 
 To get started with the AWS DMS Fleet Advisor, complete the following tasks:

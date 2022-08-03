@@ -117,6 +117,7 @@ The AWS DMS user account must be granted read permissions for the following DBA 
 + SELECT on DBA\_INDEXES
 + SELECT on DBA\_TABLES
 + SELECT on DBA\_TRIGGERS
++ SELECT on SYS\.DBA\_REGISTRY
 
 If any of the required privileges cannot be granted to V$xxx, then grant them to V\_$xxx\.
 

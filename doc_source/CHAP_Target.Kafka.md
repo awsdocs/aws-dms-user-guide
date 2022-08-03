@@ -269,7 +269,8 @@ Then, when you create your Kafka target endpoint, set the security protocol endp
 ```
 
 **Note**  
-Currently, AWS DMS supports only public CA backed SASL/SSL\. DMS doesn't support SASL/SSL for use with self\-managed Kafka that is backed by private CA\. 
+Currently, AWS DMS supports only public CA backed SASL/SSL\. DMS doesn't support SASL/SSL for use with self\-managed Kafka that is backed by private CA\.  
+For SASL/SSL authentication, AWS DMS supports only the SCRAM\-SHA\-512 mechanism\.
 
 ## Using a before image to view original values of CDC rows for Apache Kafka as a target<a name="CHAP_Target.Kafka.BeforeImage"></a>
 
@@ -379,6 +380,7 @@ For information on using the `add-before-image-columns` rule action, see [ Trans
 ## Limitations when using Apache Kafka as a target for AWS Database Migration Service<a name="CHAP_Target.Kafka.Limitations"></a>
 
 The following limitations apply when using Apache Kafka as a target:
++ AWS DMS Kafka target endpoints don't support IAM access control for Amazon Managed Streaming for Apache Kafka \(Amazon MSK\)\.
 + AWS DMS supports a maximum message size of 1 MiB for a Kafka target\.
 + Make sure to configure both your AWS DMS replication instance and your Kafka cluster in the same virtual private cloud \(VPC\) based on Amazon VPC and in the same security group\. The Kafka cluster can either be an Amazon MSK instance or your own Kafka instance running on Amazon EC2\. For more information, see [Setting up a network for a replication instance](CHAP_ReplicationInstance.VPC.md)\.
 **Note**  
@@ -407,6 +409,7 @@ To specify a security group for Amazon MSK, on the **Create cluster** page, choo
   + `SchemaName.TableName`: A combination of the schema and table name\.
   + `${AttributeName}`: The value of one of the fields in the JSON, or the primary key of the table in the source database\.
 + `BatchApply` is not supported for a Kafka endpoint\. Using Batch Apply \(for example, the `BatchApplyEnabled` target metadata task setting\) for a Kafka target might result in loss of data\.
++ AWS DMS migrates values of `BigInt` data type with more than 16 digits in the scientific notation form\.
 
 ## Using object mapping to migrate data to a Kafka topic<a name="CHAP_Target.Kafka.ObjectMapping"></a>
 

@@ -87,7 +87,7 @@ The following example migrates two tables\. Table `loadfirst` \(with priority 2\
             "rule-name": "1",
             "object-locator": {
                 "schema-name": "Test",
-                "table-name": "loadfirst"
+                "table-name": "loadsecond"
                  },
         "rule-action": "include",
 	    "load-order": "1"
@@ -98,7 +98,7 @@ The following example migrates two tables\. Table `loadfirst` \(with priority 2\
             "rule-name": "2",
             "object-locator": {
                 "schema-name": "Test",
-                "table-name": "loadsecond"
+                "table-name": "loadfirst"
             },
             "rule-action": "include",
 	    "load-order": "2"

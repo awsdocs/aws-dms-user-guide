@@ -54,7 +54,7 @@ The following example adds a new column to the `ITEM` table\. It sets the new co
 To flag records in target tables as inserted, updated, or deleted in the source table, use an expression in a transformation rule\. The expression uses an `operation_indicator` function to flag records\. Records deleted from the source aren't deleted from the target\. Instead, the target record is flagged with a user\-provided value to indicate that it was deleted from the source\.
 
 **Note**  
-The `operation_indicator` function works only on tables that have a primary key\.
+The `operation_indicator` function works only on tables that have a primary key on both source and target database\. 
 
 For example, the following transformation rule first adds a new `Operation` column to a target table\. It then updates the column with the value `D` whenever a record is deleted from a source table\.
 

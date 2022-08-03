@@ -155,7 +155,7 @@ For MariaDB, if the `binlog_format` parameter is switched to `ROW` for replicati
 ## Limitations on using a MySQL database as a source for AWS DMS<a name="CHAP_Source.MySQL.Limitations"></a>
 
 When using a MySQL database as a source, consider the following:
-+  Change data capture \(CDC\) isn't supported for Amazon RDS MySQL 5\.5 or lower\. For Amazon RDS MySQL, you must use version 5\.6 or 5\.7 to enable CDC\. CDC is supported for self\-managed MySQL 5\.5 sources\. 
++  Change data capture \(CDC\) isn't supported for Amazon RDS MySQL 5\.5 or lower\. For Amazon RDS MySQL, you must use version 5\.6, 5\.7, or 8\.0 to enable CDC\. CDC is supported for self\-managed MySQL 5\.5 sources\. 
 + For CDC, `CREATE TABLE`, `ADD COLUMN`, and `DROP COLUMN` changing the column data type, and `renaming a column` are supported\. However, `DROP TABLE`, `RENAME TABLE`, and updates made to other attributes, such as column default value, column nullability, character set and so on, are not supported\.
 +  For partitioned tables on the source, when you set **Target table preparation mode** to **Drop tables on target**, AWS DMS creates a simple table without any partitions on the MySQL target\. To migrate partitioned tables to a partitioned table on the target, precreate the partitioned tables on the target MySQL database\.
 +  Using an `ALTER TABLE table_name ADD COLUMN column_name` statement to add columns to the beginning \(FIRST\) or the middle of a table \(AFTER\) isn't supported\. Columns are always added to the end of the table\.
@@ -172,7 +172,6 @@ When using a MySQL database as a source, consider the following:
   BLOB, TINYBLOB, TEXT, and TINYTEXT columns aren't affected and are migrated to the target\.
 + Temporal data tables or system—versioned tables are not supported on MariaDB source and target databases\.
 + If migrating between two Amazon RDS Aurora MySQL clusters, the RDS Aurora MySQL source endpoint must be a read/write instance, not a replica instance\. 
-+ AWS DMS currently doesn't support compressed transaction log payloads introduced in MySQL 8\.0\.20\.
 + AWS DMS currently doesn't support views migration for MariaDB\.
 + AWS DMS doesn't support DDL changes for partitioned tables for MySQL\.
 + AWS DMS doesn't currently support XA transactions\.

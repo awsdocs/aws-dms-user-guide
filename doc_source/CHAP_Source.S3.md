@@ -29,6 +29,12 @@ s3://mybucket/sourcedata/hr/employee
 
 You can specify the column delimiter, row delimiter, null value indicator, and other parameters using extra connection attributes\. For more information, see [Extra connection attributes for Amazon S3 as a source for AWS DMS](#CHAP_Source.S3.Configuring)\.
 
+You can specify a bucket owner and prevent sniping by using the `ExpectedBucketOwner` Amazon S3 endpoint setting, as shown following\. Then, when you make a request to test a connection or perform a migration, S3 checks the account ID of the bucket owner against the specified parameter\.
+
+```
+--s3-settings='{"ExpectedBucketOwner": "AWS_Account_ID"}'
+```
+
 **Topics**
 + [Defining external tables for Amazon S3 as a source for AWS DMS](#CHAP_Source.S3.ExternalTableDef)
 + [Using CDC with Amazon S3 as a source for AWS DMS](#CHAP_Source.S3.CDC)
@@ -109,6 +115,18 @@ The elements in this JSON document are as follows:
     + STRING
   + `ColumnNullable` – a Boolean value that is `true` if this column can contain NULL values \(default=`false`\)\.
   + `ColumnIsPk` – a Boolean value that is `true` if this column is part of the primary key \(default=`false`\)\.
+  + `ColumnDateFormat` – the input date format for a column with DATE, TIME, and DATETIME types, and used to parse a data string into a date object\. Possible values include:
+
+    ```
+    - YYYY-MM-dd HH:mm:ss
+    - YYYY-MM-dd HH:mm:ss.F
+    - YYYY/MM/dd HH:mm:ss
+    - YYYY/MM/dd HH:mm:ss.F
+    - MM/dd/YYYY HH:mm:ss
+    - MM/dd/YYYY HH:mm:ss.F
+    - YYYYMMdd HH:mm:ss
+    - YYYYMMdd HH:mm:ss.F
+    ```
 + `TableColumnsTotal` – the total number of columns\. This number must match the number of elements in the `TableColumns` array\.
 
 If you don't specify otherwise, AWS DMS assumes that `ColumnLength` is zero\.
@@ -228,7 +246,7 @@ The AWS Identity and Access Management \(IAM\) role assigned to the user account
 
 The following limitations apply when using Amazon S3 as a source:
 + Don’t enable versioning for S3\. If you need S3 versioning, use lifecycle policies to actively delete old versions\. Otherwise, you might encounter endpoint test connection failures because of an S3 `list-object` call timeout\. To create a lifecycle policy for an S3 bucket, see [ Managing your storage lifecycle](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html)\. To delete a version of an S3 object, see [ Deleting object versions from a versioning\-enabled bucket](https://docs.aws.amazon.com/AmazonS3/latest/dev/DeletingObjectVersions.html)\.
-+ A VPCE\-enabled \(gateway VPC\) S3 bucket isn't currently supported\.
++ A VPC\-enabled \(gateway VPC\) S3 bucket is supported in versions 3\.4\.7 and higher\.
 
 ## Extra connection attributes for Amazon S3 as a source for AWS DMS<a name="CHAP_Source.S3.Configuring"></a>
 

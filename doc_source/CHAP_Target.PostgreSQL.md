@@ -1,6 +1,6 @@
 # Using a PostgreSQL database as a target for AWS Database Migration Service<a name="CHAP_Target.PostgreSQL"></a>
 
-You can migrate data to PostgreSQL databases using AWS DMS, either from another PostgreSQL database or from one of the other supported databases\. AWS DMS supports a PostgreSQL version 9\.4 and later \(for versions 9\.x\), 10\.x, 11\.x, 12\.x, and 13\.x database as a target for these types of databases:
+You can migrate data to PostgreSQL databases using AWS DMS, either from another PostgreSQL database or from one of the other supported databases\. AWS DMS supports a PostgreSQL version 9\.4 and later \(for versions 9\.x\), 10\.x, 11\.x, 12\.x, 13\.x, and 14\.0 database as a target for these types of databases:
 + On\-premises databases
 + Databases on an EC2 instance
 + Databases on an Amazon RDS DB instance
@@ -9,7 +9,7 @@ You can migrate data to PostgreSQL databases using AWS DMS, either from another 
 [\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_Target.PostgreSQL.html)
 
 **Note**  
-Amazon Aurora Serverless is available as a TARGET for Amazon Aurora with PostgreSQL version 10\.12 compatibility\. For more information about Amazon Aurora Serverless, see [Using Amazon Aurora Serverless](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless.html) in the *Amazon Aurora User Guide*\.
+Amazon Aurora Serverless is available as a TARGET for Amazon Aurora with PostgreSQL compatibility\. For more information about Amazon Aurora Serverless, see [Using Amazon Aurora Serverless](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless.html) in the *Amazon Aurora User Guide*\.
 Aurora Serverless DB clusters are accessible only from an Amazon VPC and can't use a [public IP address](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless.html#aurora-serverless.requirements)\. So, if you intend to have a replication instance in a different region than Aurora PostgreSQL Serverless, you must configure [vpc peering](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_ReplicationInstance.VPC.html#CHAP_ReplicationInstance.VPC.Configurations.ScenarioVPCPeer)\. Otherwise, check the availability of Aurora PostgreSQL Serverless [regions](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Concepts.AuroraFeaturesRegionsDBEngines.grids.html#Concepts.Aurora_Fea_Regions_DB-eng.Feature.Serverless), and decide to use one of those regions for both Aurora PostgreSQL Serverless and your replication instance\.
 
 AWS DMS takes a table\-by\-table approach when migrating data from source to target in the Full Load phase\. Table order during the full load phase cannot be guaranteed\. Tables are out of sync during the full load phase and while cached transactions for individual tables are being applied\. As a result, active referential integrity constraints can result in task failure during the full load phase\.

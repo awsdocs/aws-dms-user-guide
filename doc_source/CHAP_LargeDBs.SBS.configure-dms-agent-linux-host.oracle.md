@@ -8,7 +8,7 @@ In addition, if not already included in your system, you need to create a symbol
 lrwxrwxrwx 1 oracle oracle 63 Oct 2 14:16 libclntsh.so ->/u01/app/oracle/home/lib/libclntsh.so.12.1 
 ```
 
-In addition, the `LD_LIBRARY_PATH` environment variable should be appended with the Oracle lib directory and added to the `site_arep_login.sh` script under the lib folder of the installation\. Add this script if it doesn't exist\.
+The `LD_LIBRARY_PATH` environment variable should be appended with the Oracle lib directory and added to the `site_arep_login.sh` script under the **bin **folder of the **agent** installation\. Add this script if it doesn't exist\.
 
 ```
 vi /opt/amazon/aws-schema-conversion-tool-dms-agent/bin/site_arep_login.sh

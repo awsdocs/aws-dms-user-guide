@@ -1,10 +1,5 @@
 # Step 1: Create a data collector and install the DMS Collector<a name="CHAP_DMSStudio_GettingStarted_Install"></a>
 
-
-|  | 
-| --- |
-| AWS DMS Studio is in preview release for AWS Database Migration Service and is subject to change\. | 
-
 After your prerequisites are in place as described in [Prerequisites](CHAP_DMSStudio_GettingStarted_Prerequisites.md), you create a data collector\. You then download, install, and configure the DMS Collector\. A *data collector *is an AWS resource that you use to manage incoming information from the DMS Collector\. The DMS Collector is an executable file that you run locally to collect information about your data environment\.
 
 **To create a data collector**

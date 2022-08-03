@@ -63,7 +63,7 @@ db.createUser(
   })
 ```
 
-The following code creates a user with minimal privileges on the database to be migrated\.
+For Amazon DocumentDB 3\.6, the code following creates a user with minimal privileges on the database to be migrated\.
 
 ```
 use database_to_migrate
@@ -72,6 +72,17 @@ db.createUser(
     user: "dms-user",
     pwd: "password",
     roles: [ { role: "read", db: "db_name" }, "read"] 
+})
+```
+
+For Amazon DocumentDB 4\.0 and above, AWS DMS uses a deployment\-wide change stream\. Here, the code following creates a user with minimal privileges\.
+
+```
+db.createUser( 
+{ 
+    user: "dms-user",
+    pwd: "password",
+    roles: [ { role: "readAnyDatabase", db: "admin" }] 
 })
 ```
 
@@ -365,6 +376,7 @@ The following are limitations when using Amazon DocumentDB as a source for AWS D
 + Table mode and document mode have the limitations discussed preceding\.
 + Migrating in parallel using autosegmentation has the limitations described preceding\.
 + An Amazon DocumentDB \(MongoDB compatible\) source doesn’t support using a specific timestamp as a start position for change data capture \(CDC\)\. An ongoing replication task starts capturing changes regardless of the timestamp\.
++ When using DocumentDB \(MongoDB compatible\) as a source, DMS can handle a maximum of 250 records per second\.
 
 ## Using extra connections attributes with Amazon DocumentDB as a source<a name="CHAP_Source.DocumentDB.ECAs"></a>
 

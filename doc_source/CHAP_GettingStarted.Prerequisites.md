@@ -32,32 +32,23 @@ Using a VPC for your tutorial resources also ensures that you delete all of the 
 
 1. Sign in to the AWS Management Console and open the Amazon VPC console at [https://console\.aws\.amazon\.com/vpc/](https://console.aws.amazon.com/vpc/)\.
 
-1. On the navigation pane, choose **VPC Dashboard**, and then choose **Launch VPC Wizard**\.
+1. On the navigation pane, choose **VPC Dashboard**, and then choose **Create VPC**\.
 
-1. Leave **VPC with a Single Public Subnet** selected, and choose **Select**\.
-
-1. On the **Step 2: VPC with a Single Public Subnet** page, enter the following options:
-   + **VPC Name**: **DMSVPC**
-   + **Availability Zone**: **us\-west\-2a**
-   + **Subnet Name**: **DMSSubnet1**
+1. On the **Create VPC** page, enter the following options:
+   + **Resources to create**: **VPC and more**
+   + **Name tag auto generation**: Choose **Auto\-generate**, and enter **DMSVPC**\.
+   + **IPv4 block**: **10\.0\.1\.0/24**
+   + **IPv6 CIDR block**: **No IPv6 CIDR block**
+   + **Tenancy**: **Default**
+   + **Number of availability zones**: 2
+   + **Number of public subnets**: 2
+   + **Number of private subnets**: 2
+   + **NAT gateways \($\)**: **None**
+   + **VPC endpoints**: **None**
 
    Choose **Create VPC**\.
 
 1. On the navigation pane, choose **Your VPCs**\. Note the VPC ID for **DMSVPC**\.
-
-1. On the navigation pane, choose **Subnets**, and choose **DMSSubnet1**\. Note the **Route table** ID in the **Details** section\.
-
-1. Choose **Create Subnet**, and on the **Create subnet** page, choose the following settings:
-   + **VPC ID**: Choose the VPC ID for **DMSVPC**\.
-   + **Subnet name**: **DMSSubnet2**
-   + **Availability Zone**: **US West \(Oregon\) / us\-west\-2b**
-   + **IPv4 CIDR block**: **10\.0\.1\.0/24**
-
-1. Choose **Create subnet**, and on the **Subnets** page, choose **DMSSubnet2**\. 
-
-1. Choose the **Route table** tab, and then choose **Edit route table association**\.
-
-1. On the **Edit route table association** page, choose the **Route table ID** that you noted previously\. Choose **Save**\.
 
 1. On the navigation pane, choose **Security Groups**\. 
 
@@ -65,9 +56,9 @@ Using a VPC for your tutorial resources also ensures that you delete all of the 
 
 1. Choose the **Inbound rules** tab, and choose **Edit inbound rules**\.
 
-1. Choose **Add rule**\. Add a rule of type **MySQL/Aurora** and enter **0\.0\.0\.0/0** for **Source**\. 
+1. Choose **Add rule**\. Add a rule of type **MySQL/Aurora** and choose **Anywhere\-IPv4** for **Source**\. 
 
-1. Choose **Add rule** again\. Add a rule of type **PostgreSQL** and enter **0\.0\.0\.0/0** for **Source**\.
+1. Choose **Add rule** again\. Add a rule of type **PostgreSQL** and choose **Anywhere\-IPv4** for **Source**\.
 
 1. Choose **Save rules**\.
 
@@ -111,7 +102,7 @@ To specify settings for your source and target databases for AWS DMS, use Amazon
 
 1. On the **Parameter groups** page, choose **dms\-postgresql\-parameters**\.
 
-1. On the **dms\-postgresql\-parameters** page, choose **Edit parameters**, and set **session\_replication\_role parameter** to **replica**\.
+1. On the **dms\-postgresql\-parameters** page, choose **Edit parameters**, and set **session\_replication\_role parameter** to **replica**\. Note that the **session\_replication\_role ** parameter is not on the first page of parameters\. Use the pagination controls or the search field to find the parameter\.
 
 1. Choose **Save changes**\.
 
@@ -126,8 +117,10 @@ Use the following procedure to create your source Amazon RDS database\.
 1. On the **Dashboard** page, choose **Create Database** in the **Database** section\. Don't choose **Create Database** in the **Amazon Aurora** section at the top of the page\.
 
 1. On the **Create database** page, set the following options:
-   + **Engine options**: For **Engine type**, choose **MySQL**\.
+   + **Choose a database creation method**: Choose **Standard Create**\.
+   + **Engine options**: For **Engine type**, choose **MySQL**\. For **Version**, leave **MySQL 8\.0\.28** selected\.
    + **Templates**: Choose **Dev/Test**\.
+   + **Availability and Durability**: Leave **Multi\-AZ DB Instance** selected\.
    + **Settings**: 
      + **DB instance identifier**: Enter **dms\-mysql**\.
      + **Master username**: Leave as **admin**\.
@@ -140,13 +133,12 @@ Use the following procedure to create your source Amazon RDS database\.
    + **Storage**: 
      + Clear the **Enable storage autoscaling** box\.
      + Leave the rest of the settings as they are\.
-   + **Availability & Durability**: Leave the setting as it is\.
    + **Connectivity**:
      + **Virtual private cloud**: **DMSVPC**
      + **Public access**: **Yes**\. You must enable public access to use the AWS Schema Conversion Tool\.
      + **Availability zone**: **us\-west\-2a**
      + Leave the rest of the settings as they are\.
-   + **Database authentication**: Leave **Password authentication** chosen\.
+   + **Database authentication**: Leave **Password authentication** selected\.
    + Expand **Additional configuration**:
      + Under **Database options**, enter **dms\_sample** for **Initial database name**\. 
      + Under **DB parameter group**, choose **dms\-mysql\-parameters**\.
@@ -171,7 +163,11 @@ Repeat the previous procedure to create your target Amazon RDS database, with th
 
    1. For **Engine options**, choose **PostgreSQL**\.
 
+   1. For **Version**, choose **PostgreSQL 13\.4\-R1**
+
    1. For **DB instance identifier**, enter **dms\-postgresql**\.
+
+   1. For **Master username**, leave **postgres** selected\.
 
    1. For **DB parameter group**, choose **dms\-postgresql\-parameters**\.
 
@@ -194,42 +190,31 @@ Using an Amazon EC2 client to access your databases provides the following advan
 
 1. On the **Dashboard**, choose **Launch instance**\.
 
-1. In the **Amazon Linux 2 AMI \(HVM\), SSD Volume Type** section, choose **Select**\.
+1. On the **Launch an Instance** page, enter the following values:
 
-1. On the **Step 2: Choose an Instance Type** page, choose **t2\.xlarge**\. Choose **Next: Configure instance details**\.
+   1. In the **Name and tags** section, enter **DMSClient** for **Name**\.
 
-1. On the **Step 3: Configure Instance Details** page, choose the following settings:
-   + **Network**: **DMSVPC**
-   + **Subnet**: **DMSSubnet1**
-   + **Auto\-assign Public IP**: choose **Enable**\.
+   1. In the **Application and OS Images \(Amazon Machine Image\)** section, leave the settings as they are\.
 
-   Leave the rest of the settings as they are, and choose **5\. Add Tags** in the header\.
+   1. In the **Instance Type** section, choose **t2\.xlarge**\.
 
-1. On the **Step 5: Add Tags** page, choose **Add Tag**\. Add a tag with a **Key** of **Name** and a **Value** of **DMSClient**\.
+   1. In the **Key pair \(login\)** section, choose **Create a new key pair**\. 
 
-1. Leave the rest of the settings as they are, choose **7\. Review** in the header, and then choose **Launch**\.
+   1. On the **Create key pair** page, enter the following:
+      + **Key pair name**: **DMSKeyPair**
+      + **Key pair type**: Leave as **RSA**\.
+      + **Private key file format**: Choose **pem** for OpenSSH on MacOS or Linux, or **ppk** for PuTTY on Windows\.
 
-1. On the **Select an existing key pair or create a new key pair** page, do the following:
-
-   1. Choose **Create a new key pair**\.
-
-   1.  Name the key pair **DMSKeyPair**\.
-
-   1. Choose **Download Key Pair**, and save the key for the new key pair\.
+      Save the key file when prompted\.
 **Note**  
 You can also use an existing Amazon EC2 key pair rather than creating a new one\.
 
-1. Acknowledge that you have the key pair file, and then choose **Launch instances**\.
+   1. In the **Network Settings** section, choose **Edit**\. Choose the following settings:
+      + **VPC \- *required***: Choose the VPC with the ID that you recorded for the **DMSVPC** VPC\.
+      + **Subnet**: Choose the first public subnet\.
+      + **Auto\-assign public IP**: Choose **Enable**\.
 
-1. On the navigation pane, choose **Instances**, and then select the **DMSClient** box\. Note the **Public IPv4 DNS** value for later use\.
-
-1. On the navigation pane, choose **Security groups**, and choose the group named **default** that has a **VPC ID** value that matches the ID that you noted for **DMSVPC**\.
-
-1. Choose the **Inbound rules** tab, and choose **Edit inbound rules**\.
-
-1. Choose **Add rule**\. Set **Type** to **All traffic** and **Source** to **Custom**, **launch\-wizard\-1** \(or whichever security group you created for your Amazon EC2 instance\)\.
-
-1. Choose **Save rules**\.
+      Leave the rest of the settings as they are, and choose **Launch instance**\.
 
 ## Populate your source database<a name="CHAP_GettingStarted.Prerequisites.Populate"></a>
 

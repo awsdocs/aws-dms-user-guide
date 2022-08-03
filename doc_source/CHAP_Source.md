@@ -17,3 +17,4 @@ For a comprehensive list of valid sources, see [Sources for AWS DMS](CHAP_Introd
 + [Using Amazon DocumentDB \(with MongoDB compatibility\) as a source for AWS DMS](CHAP_Source.DocumentDB.md)
 + [Using Amazon S3 as a source for AWS DMS](CHAP_Source.S3.md)
 + [Using IBM Db2 for Linux, Unix, and Windows database \(Db2 LUW\) as a source for AWS DMS](CHAP_Source.DB2.md)
++ [Using IBM Db2 for z/OS databases as a source for AWS DMS](CHAP_Source.DB2zOS.md)

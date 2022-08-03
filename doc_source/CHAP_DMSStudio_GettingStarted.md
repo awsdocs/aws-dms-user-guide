@@ -1,10 +1,5 @@
 # Getting started with AWS DMS Studio<a name="CHAP_DMSStudio_GettingStarted"></a>
 
-
-|  | 
-| --- |
-| AWS DMS Studio is in preview release for AWS Database Migration Service and is subject to change\. | 
-
 Following, you can find a getting started tutorial for AWS DMS Studio\. With DMS Studio, you can discover databases in your local environment and get recommendations for migrating your data to AWS\.
 
 The DMS Studio collector is only available for Microsoft Windows\. For system requirements, see [Using AWS DMS Fleet Advisor to evaluate databases for migration](CHAP_DMSStudio.FleetAdvisor.md#system.req.1)\.

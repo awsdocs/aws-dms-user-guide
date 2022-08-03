@@ -1,10 +1,5 @@
 # Step 5: Clean up<a name="CHAP_DMSStudio_GettingStarted_Cleanup"></a>
 
-
-|  | 
-| --- |
-| AWS DMS Studio is in preview release for AWS Database Migration Service and is subject to change\. | 
-
 After you complete the getting started tutorial, clean up your resources unless you need them for future projects\.
 
 **Topics**
@@ -21,8 +16,6 @@ To start cleanup, uninstall the DMS Collector\.
 1. On your PC, open **Settings**, **Apps & Features**\.
 
 1.  Choose AWS **DMS Collector**, and choose **Uninstall**\. Verify your choice\. Microsoft Windows uninstalls the DMS Collector\.
-
-1. Delete the `%PROGRAMDATA%\Amazon\AWS DMS Fleet Advisor` folder\.
 
 ## Uninstall AWS resources<a name="CHAP_DMSStudio_GettingStarted_Cleanup_AZ_Resources"></a>
 

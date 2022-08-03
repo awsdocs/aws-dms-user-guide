@@ -51,7 +51,6 @@ Before you begin to work with a MySQL\-compatible database as a target for AWS D
 When using a MySQL database as a target, AWS DMS doesn't support the following:
 + The data definition language \(DDL\) statements TRUNCATE PARTITION, DROP TABLE, and RENAME TABLE\.
 + Using an `ALTER TABLE table_name ADD COLUMN column_name` statement to add columns to the beginning or the middle of a table\.
-+ When only the LOB column in a source table is updated, AWS DMS doesn't update the corresponding target column\. The target LOB is only updated if at least one other column is updated in the same transaction\.
 + When loading data to a MySQL\-compatible target in a full load task, AWS DMS doesn't report duplicate key errors in the task log\. This is because of the way that MySQL handles CSV load data\.
 + When you update a column's value to its existing value, MySQL\-compatible databases return a `0 rows affected` warning\. Although this behavior isn't technically an error, it is different from how the situation is handled by other database engines\. For example, Oracle performs an update of one row\. For MySQL\-compatible databases, AWS DMS generates an entry in the awsdms\_apply\_exceptions control table and logs the following warning\.
 

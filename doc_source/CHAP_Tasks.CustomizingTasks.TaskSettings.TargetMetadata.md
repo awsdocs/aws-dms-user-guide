@@ -11,7 +11,9 @@ Target metadata settings include the following\. For information about how to us
 + `LoadMaxFileSize` – An option for CSV\-based target endpoints like MySQL, PostgreSQL, and Amazon Redshift that support use of comma\-separated value \(\.csv\) files for loading data\. `LoadMaxFileSize` defines the maximum size on disk of stored, unloaded data, such as \.csv files\. This option overrides the target endpoint connection attribute, `maxFileSize`\. You can provide values from 0, which indicates that this option doesn't override the connection attribute, to 100,000 KB\.
 + `BatchApplyEnabled` – Determines if each transaction is applied individually or if changes are committed in batches\. The default value is `false`\.
 
-  When `BatchApplyEnabled` is set to `true`, AWS DMS generates an error message if a target table has a unique constraint\. When `BatchApplyEnabled` is set to true and AWS DMS encounters a data error from a table with the default error\-handling policy, the AWS DMS task switches from batch mode to one\-by\-one mode for the rest of the tables\. To alter this behavior, you can set the `"SUSPEND_TABLE"` action on the following policies in the `"ErrorBehavior"` group property of the task settings JSON file:
+  When `BatchApplyEnabled` is set to `true`, AWS DMS generates an error message if a target table has a unique constraint and a primary key\. Target tables with both a unique constraint and primary key aren't supported when `BatchApplyEnabled` is set to `true`\.
+
+  When `BatchApplyEnabled` is set to true and AWS DMS encounters a data error from a table with the default error\-handling policy, the AWS DMS task switches from batch mode to one\-by\-one mode for the rest of the tables\. To alter this behavior, you can set the `"SUSPEND_TABLE"` action on the following policies in the `"ErrorBehavior"` group property of the task settings JSON file:
   + `DataErrorPolicy`
   + `ApplyErrorDeletePolicy`
   + `ApplyErrorInsertPolicy`

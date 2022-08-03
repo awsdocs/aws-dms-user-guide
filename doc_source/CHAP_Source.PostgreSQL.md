@@ -1,6 +1,6 @@
 # Using a PostgreSQL database as an AWS DMS source<a name="CHAP_Source.PostgreSQL"></a>
 
-You can migrate data from one or many PostgreSQL databases using AWS DMS\. With a PostgreSQL database as a source, you can migrate data to either another PostgreSQL database or one of the other supported databases\. AWS DMS supports a PostgreSQL version 9\.4 and later \(for versions 9\.x\), 10\.x, 11\.x, 12\.x, and 13\.x database as a source for these types of databases: 
+You can migrate data from one or many PostgreSQL databases using AWS DMS\. With a PostgreSQL database as a source, you can migrate data to either another PostgreSQL database or one of the other supported databases\. AWS DMS supports a PostgreSQL version 9\.4 and later \(for versions 9\.x\), 10\.x, 11\.x, 12\.x, 13\.x and 14\.0 database as a source for these types of databases: 
 + On\-premises databases
 + Databases on an Amazon EC2 instance
 + Databases on an Amazon RDS DB instance
@@ -13,6 +13,7 @@ You can migrate data from one or many PostgreSQL databases using AWS DMS\. With 
 | --- | --- | 
 |  9\.x, 10\.x, 11\.x, 12\.x  |  Use any available AWS DMS version\.  | 
 |  13\.x  |  Use AWS DMS version 3\.4\.3 and above\.  | 
+|  14\.0  |  Use AWS DMS version 3\.4\.7 and above\.  | 
 
 You can use Secure Socket Layers \(SSL\) to encrypt connections between your PostgreSQL endpoint and the replication instance\. For more information on using SSL with a PostgreSQL endpoint, see [Using SSL with AWS Database Migration Service](CHAP_Security.md#CHAP_Security.SSL)\.
 
@@ -225,7 +226,7 @@ Implemented as a PostgreSQL extension, the pglogical plugin is a logical replica
 |  Amazon RDS PostgreSQL 9\.6 or higher  |  Yes  | 
 |  Aurora PostgreSQL 1\.x till 2\.5\.x  |  No  | 
 |  Aurora PostgreSQL 2\.6\.x or higher  |  Yes  | 
-|  Aurora PostgreSQL 3\.3\.x or higher  |  Supported  | 
+|  Aurora PostgreSQL 3\.3\.x or higher  |  Yes  | 
 
 Before configuring pglogical for use with AWS DMS, first enable logical replication for change data capture \(CDC\) on your PostgreSQL source database\. 
 + For information about enabling logical replication for CDC on *self\-managed* PostgreSQL source databases, see [Enabling CDC using a self\-managed PostgreSQL database as a AWS DMS source](#CHAP_Source.PostgreSQL.Prerequisites.CDC)
@@ -505,6 +506,22 @@ The following table shows the extra connection attributes that you can use when 
 
 [\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.PostgreSQL.html)
 
+### Using the MapBooleanAsBoolean PostgreSQL endpoint setting<a name="CHAP_Source.PostgreSQL.ConnectionAttrib.Endpointsetting"></a>
+
+You can use endpoint settings to configure your PostgreSQL source similar to using extra connection attributes\. You can specify these settings when you create the source endpoint using the `create-endpoint` command in the AWS CLI, with the `--postgre-sql-settings` json\-settings option\. Here, json\-settings is a JSON object containing parameters to specify the settings\. You can also specify a \.json file containing the same json\-settings object\. For example, as in the following:
+
+```
+--postgre-sql-settings file:///your-file-path/my_postgresql_settings.json
+```
+
+Here, `my_postgre-sql_settings.json` is the name of a \.json file that contains the same json\-settings object\.
+
+You can use PostgreSQL endpoint settings to map a boolean as a boolean from your PostgreSQL source to a Amazon Redshift target\. By default, a BOOLEAN type is migrated as varchar\(5\)\. You can specify `MapBooleanAsBoolean` to let PostgreSQL to migrate the boolean type as boolean as shown in the example following\.
+
+```
+--postgre-sql-settings='{"MapBooleanAsBoolean": "true"}'
+```
+
 ## Limitations on using a PostgreSQL database as a DMS source<a name="CHAP_Source.PostgreSQL.Limitations"></a>
 
 The following limitations apply when using PostgreSQL as a source for AWS DMS:
@@ -545,6 +562,10 @@ The following limitations apply when using PostgreSQL as a source for AWS DMS:
 + AWS DMS doesn't support replication of a table with a unique index created with a coalesce function\.
 + When using LOB mode, both the source table and the corresponding target table must have an identical Primary Key\. If one of the tables does not have a Primary Key, the result of DELETE and UPDATE record operations will be unpredictable\.
 + When using the Parallel Load feature, table segmentation according to partitions or sub\-partitions isn't supported\. For more informaion about Parallel Load, see [Using parallel load for selected tables, views, and collections](CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Tablesettings.md#CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Tablesettings.ParallelLoad) 
++ AWS DMS doesn't support Deferred Constraints\.
++ AWS DMS version 3\.4\.7 supports PostgreSQL 14\.0 as a source with these limitations:
+  + AWS DMS doesn't support change processing of two phase commits\.
+  + AWS DMS doesn't support logical replication to stream long in\-progress transactions\.
 
 ## Source data types for PostgreSQL<a name="CHAP_Source-PostgreSQL-DataTypes"></a>
 

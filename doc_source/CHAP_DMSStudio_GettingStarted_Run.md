@@ -1,10 +1,5 @@
 # Step 2: Run discovery<a name="CHAP_DMSStudio_GettingStarted_Run"></a>
 
-
-|  | 
-| --- |
-| AWS DMS Studio is in preview release for AWS Database Migration Service and is subject to change\. | 
-
 Next, you run the discovery process for your local database servers, databases, and schemas\.
 
 If you specified your local database manually rather than configuring a domain controller, skip to [Step 3: Collect and verify data](CHAP_DMSStudio_GettingStarted_Collect.md)\.

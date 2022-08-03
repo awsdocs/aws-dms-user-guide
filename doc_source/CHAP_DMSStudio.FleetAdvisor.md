@@ -1,10 +1,5 @@
 # Using AWS DMS Fleet Advisor to evaluate databases for migration<a name="CHAP_DMSStudio.FleetAdvisor"></a>
 
-
-|  | 
-| --- |
-| AWS DMS Studio is in preview release for AWS Database Migration Service and is subject to change\. | 
-
 AWS DMS Fleet Advisor collects data from multiple database environments to provide insight into your data infrastructure\. Fleet Advisor collects data from your on\-premises database and analytic servers from one or more central locations without the need to install agents on every computer\. Currently, Fleet Advisor supports Microsoft SQL Server, MySQL, Oracle, and PostgreSQL database servers\.
 
 Based on data discovered from your network, AWS DMS Fleet Advisor builds an inventory that you can review to determine which database servers and objects to monitor\. As details about these servers, databases, and schemas are collected, you can analyze the feasibility of your intended database migrations\.

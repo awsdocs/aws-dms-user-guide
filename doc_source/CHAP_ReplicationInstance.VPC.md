@@ -15,7 +15,7 @@ You can use several different network configurations with AWS Database Migration
 
 **Topics**
 + [Configuration with all database migration components in one VPC](#CHAP_ReplicationInstance.VPC.Configurations.ScenarioAllVPC)
-+ [Configuration with two VPCs](#CHAP_ReplicationInstance.VPC.Configurations.ScenarioVPCPeer)
++ [Configuration with multiple VPCs](#CHAP_ReplicationInstance.VPC.Configurations.ScenarioVPCPeer)
 + [Configuration for a network to a VPC using AWS Direct Connect or a VPN](#CHAP_ReplicationInstance.VPC.Configurations.ScenarioDirect)
 + [Configuration for a network to a VPC using the internet](#CHAP_ReplicationInstance.VPC.Configurations.ScenarioInternet)
 + [Configuration with an RDS DB instance not in a VPC to a DB instance in a VPC using ClassicLink](#CHAP_ReplicationInstance.VPC.Configurations.ClassicLink)
@@ -32,7 +32,7 @@ The following illustration shows a configuration where a database on an Amazon E
 
 The VPC security group used in this configuration must allow ingress on the database port from the replication instance\. You can do this in a couple of ways\. You can ensure that the security group used by the replication instance has ingress to the endpoints\. Or you can allow the VPC CIDR range, NAT GW Elastic IP, or private IP address of the replication instance if you are using one\. But we do not recommend you use the private IP address of the replication instance, because it can break your replication if the replication IP address changes\.
 
-### Configuration with two VPCs<a name="CHAP_ReplicationInstance.VPC.Configurations.ScenarioVPCPeer"></a>
+### Configuration with multiple VPCs<a name="CHAP_ReplicationInstance.VPC.Configurations.ScenarioVPCPeer"></a>
 
 If your source endpoint and target endpoints are in different VPCs, you can create your replication instance in one of the VPCs\. You can then link the two VPCs by using VPC peering\.
 
@@ -42,7 +42,9 @@ The following illustration shows an example configuration using VPC peering\. He
 
 ![\[AWS Database Migration Service replication instance\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-scenarioVPCPeer.png)
 
-The VPC security groups used in this configuration must allow ingress on the database port from the replication instance\.
+To implement VPC peering, follow the instructions in [Work with VPC peering connections](https://docs.aws.amazon.com/vpc/latest/peering/working-with-vpc-peering.html) located in the *Amazon Virtual Private Cloud, VPC Peering* documentation\. Be sure the route table of one VPC contains the CIDR block of the other\. For example, if VPC A is using destination 10\.0\.0\.0/16 and VPC B is using destination172\.31\.0\.0, the route table of VPC A should contain 172\.31\.0\.0, and route table of VPC B must contain 10\.0\.0\.0/16\. For more detailed information, see [Update your route tables for VPC peering connection](https://docs.aws.amazon.com/vpc/latest/peering/vpc-peering-routing.html) in the *Amazon Virtual Private Cloud, VPC Peering* documentation\. 
+
+The VPC security groups used in this configuration must allow ingress on the database port from the replication instance, or it should allow ingress on the CIDR block for the VPC being peered\.
 
 ### Configuration for a network to a VPC using AWS Direct Connect or a VPN<a name="CHAP_ReplicationInstance.VPC.Configurations.ScenarioDirect"></a>
 
@@ -65,6 +67,11 @@ To add an internet gateway to your VPC, see [Attaching an internet gateway](http
 The VPC route table must include routing rules that send traffic not destined for the VPC by default to the internet gateway\. In this configuration, the connection to the endpoint appears to come from the public IP address of the replication instance, not the private IP address\. For more information, see [VPC Route Tables](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Route_Tables.html) in the *Amazon VPC User Guide*\.
 
 ### Configuration with an RDS DB instance not in a VPC to a DB instance in a VPC using ClassicLink<a name="CHAP_ReplicationInstance.VPC.Configurations.ClassicLink"></a>
+
+
+|  | 
+| --- |
+| We are retiring EC2\-Classic on August 15, 2022\. We recommend that you migrate from EC2\-Classic to a VPC\. For more information, see [Migrate from EC2\-Classic to a VPC](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/vpc-migrate.html) in the Amazon EC2 User Guide and the blog [ EC2\-Classic Networking is Retiring – Here’s How to Prepare](http://aws.amazon.com/blogs/aws/ec2-classic-is-retiring-heres-how-to-prepare/)\. | 
 
 To connect an Amazon RDS DB instance not in a VPC to a DMS replication server and DB instance in a VPC, you can use ClassicLink with a proxy server\. 
 

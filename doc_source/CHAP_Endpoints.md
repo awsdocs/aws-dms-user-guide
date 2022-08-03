@@ -8,4 +8,5 @@ Following, you can find out more details about endpoints\.
 + [Creating source and target endpoints](CHAP_Endpoints.Creating.md)
 + [Sources for data migration](CHAP_Source.md)
 + [Targets for data migration](CHAP_Target.md)
++ [Configuring VPC endpoints as AWS DMS source and target endpoints](CHAP_VPC_Endpoints.md)
 + [DDL statements supported by AWS DMS](CHAP_Introduction.SupportedDDL.md)

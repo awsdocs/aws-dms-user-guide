@@ -4,6 +4,47 @@ Following, you can find release notes for current and previous versions of AWS D
 
 AWS DMS uses a semantic versioning scheme to identify a service release\. A version consists of a three\-component number in the format of X\.Y\.Z where X represents an *epic* version, X\.Y represents a *major* version, and Z represents a *minor* version \(**Epic**\.**Major**\.**Minor**\)\.
 
+## AWS Database Migration Service 3\.4\.7 release notes<a name="CHAP_ReleaseNotes.DMS347"></a>
+
+The following table shows the new features and enhancements introduced in AWS Database Migration Service \(AWS DMS\) version 3\.4\.7\. 
+
+
+| New feature or enhancement | Description | 
+| --- | --- | 
+| Support Babelfish as a target |  AWS DMS now supports Babelfish as a target\. Using AWS DMS, you can now migrate live data from any AWS DMS supported source to a Babelfish, with minimal downtime\. For more information, see [Using Babelfish as a target for AWS Database Migration Service](CHAP_Target.Babelfish.md)\.  | 
+| Support IBM Db2 z/OS databases as a source for full load only |  AWS DMS now supports IBM Db2 z/OS databases as a source\. Using AWS DMS, you can now perform live migrations from Db2 mainframes to any AWS DMS supported target\. For more information, see [Using IBM Db2 for z/OS databases as a source for AWS DMS](CHAP_Source.DB2zOS.md)\.  | 
+| Support SQL Server read replica as a source |  AWS DMS now supports SQL Server read replica as a source\. Using AWS DMS, you can now perform live migrations from SQL Server read replica to any AWS DMS supported target\. For more information, see [Using a Microsoft SQL Server database as a source for AWS DMS](CHAP_Source.SQLServer.md)\.  | 
+| Support EventBridge DMS events |  AWS DMS supports managing event subscriptions using EventBridge for DMS events\. For more information, see [Working with Amazon EventBridge events and notifications in AWS Database Migration Service](CHAP_EventBridge.md)\.  | 
+| Support VPC source and target endpoints |  AWS DMS now supports virtual private cloud \(VPC\) endpoints as sources and targets\. AWS DMS can now connect to any AWS service with VPC endpoints when explicitly defined routes to the services are defined in their AWS DMS VPC\. For more information, see [Configuring VPC endpoints as AWS DMS source and target endpoints](CHAP_VPC_Endpoints.md)\.  | 
+| New PostgreSQL version | PostgreSQL version 14\.x is now supported as a source\. | 
+| Support Aurora Serverless v2 as a target |  AWS DMS now supports Aurora Serverless v2 as a target\. Using AWS DMS, you can now perform live migrations to Aurora Serverless v2\. For information about supported AWS DMS targets, see [Targets for data migration](CHAP_Target.md)\.  | 
+|  New IBM Db2 for LUW versions  |  AWS DMS now supports IBM Db2 for LUW versions 11\.5\.6 and 11\.5\.7 as a source\. Using AWS DMS, you can now perform live migrations from the latest versions of IBM DB2 for LUW\. For information about AWS DMS sources, see [Sources for data migration](CHAP_Source.md)\. For information about supported AWS DMS targets, see [Targets for data migration](CHAP_Target.md)\.  | 
+
+AWS DMS 3\.4\.7 includes the following new or changed behavior and resolved issues:
++ You can now use a date format from the table definition to parse a data string into a date object when using Amazon S3 as a source\.
++ New table statistics counters are now available: `AppliedInserts`, `AppliedDdls`, `AppliedDeletes`, and `AppliedUpdates.`
++ You can now choose the default mapping type when using OpenSearch as a target\.
++ The new `TrimSpaceInChar` endpoint setting for Oracle, PostgreSQL, and SQLServer sources allows you to specify whether to trim data on CHAR and NCHAR data types\.
++ The new `ExpectedBucketOwner` endpoint setting for Amazon S3 prevents sniping when using S3 as a source or target\.
++ For RDS SQL Server, Azure SQL Server, and self\-managed SQL Server — DMS now provides automated setup of MS\-CDC on all tables selected for a migration task that are with or without a PRIMARY KEY, or with a unique index considering the enablement priority for MS\-REPLICATION on self\-managed SQL Server tables with PRIMARY KEY\.
++ Added support for replication of Oracle Partition and sub\-partition DDL Operations during Oracle homogenous migrations\.
++ Fixed an issue where a data validation task crashes with a composite primary key while using Oracle as a source and target\.
++ Fixed an issue with correctly casting a varying character type to a boolean while the target column was pre\-created as a boolean when using Redshift as a target\.
++ Fixed an issue that was causing data truncation for `varchar` data types migrated as `varchar(255)` due to a known ODBC issue when using PostgreSQL as a target\.
++ Fixed an issue where Parallel Hint for the DELETE operation wasn't respected with `BatchApplyEnabled` set to `true` and `BatchApplyPreserveTransaction` set to `false` when using Oracle as a target\.
++ The new `AddTrailingPaddingCharacter` endpoint setting for an Amazon S3 adds padding on string data when using S3 as a target\.
++ The new `max_statement_timeout_seconds` task setting extends the default timeout of endpoint queries\. This setting is currently used by MySQL endpoint metadata queries\.
++ When using PostgreSQL as a target, fixed an issue where a CDC task wasn't properly utilizing the error handling task settings\.
++ Fixed an issue where DMS was unable to correctly identify Redis mode for a Redis Enterprise instance\.
++ Extended the support of `includeOpForFullLoad` extra connection attribute \(ECA\) for the S3 target parquet format\.
++ Introduced a new PostgreSQL endpoint setting `migrateBooleanAsBoolean`\. When this setting is set to `true` for a PostgreSQL to Redshift migration, a boolean will be migrated as varchar\(1\)\. When it is set to `false`, a boolean is migrated as varchar\(15\), which is the default behavior\.
++ When using SQL Server source, fixed a migration issue with `datetime` datatype\. This fix addresses the issue of inserting `Null` when precision is in milliseconds\.
++ For PostgresSQL source with PGLOGICAL, fixed a migration issue when using pglogical and removing a field from the source table during the CDC phase, where the value after the removed field wasn't migrated to the target table\.
++ Fixed a SQL Server Loopback migration issue with Bidirectional replication getting repeated records\.
++ Added a new ECA `mapBooleanAsBoolean` for PostgresSQL as a source\. Using this extra connection attribute , you can override default data type mapping of a PostgresSQL Boolean to a RedShift Boolean data type\.
++ Fixed a migration issue when using SQL Server as source that addresses the ALTER DECIMAL/NUMERIC SCALE not replicating to targets\.
++ Fixed connection issue with SQL Server 2005\.
+
 ## AWS Database Migration Service 3\.4\.6 release notes<a name="CHAP_ReleaseNotes.DMS346"></a>
 
 The following table shows the new features and enhancements introduced in AWS Database Migration Service \(AWS DMS\) version 3\.4\.6\. 

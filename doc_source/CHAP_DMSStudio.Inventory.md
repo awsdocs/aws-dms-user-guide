@@ -1,10 +1,5 @@
 # Using inventories for analysis in AWS DMS Studio Fleet Advisor<a name="CHAP_DMSStudio.Inventory"></a>
 
-
-|  | 
-| --- |
-| AWS DMS Studio is in preview release for AWS Database Migration Service and is subject to change\. | 
-
 To check the feasibility of potential database migrations, you can work with inventories of discovered databases and schemas\. You can use the information in these inventories to understand which databases and schemas are good candidates for migration\.
 
 You can access database and schema inventories from the DMS Studio console\. To do so, choose **Fleet Advisor** and **Inventory** from the console\.
@@ -12,11 +7,6 @@ You can access database and schema inventories from the DMS Studio console\. To 
 ![\[DMS Studio console toggle\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-dmsstudio-console-2.png)
 
 ## Using a database inventory for analysis<a name="CHAP_DMSStudio.Inventory.Database"></a>
-
-
-|  | 
-| --- |
-| AWS DMS Studio is in preview release for AWS Database Migration Service and is subject to change\. | 
 
 To view a list of all databases on all the discovered servers within your network from which data was collected, use the following procedure\.
 
@@ -36,11 +26,6 @@ To view a list of all databases on all the discovered servers within your networ
    To identify duplicate schemas, the entire inventory is analyzed together\.
 
 ## Using a schema inventory for analysis<a name="CHAP_DMSStudio.Inventory.Schema"></a>
-
-
-|  | 
-| --- |
-| AWS DMS Studio is in preview release for AWS Database Migration Service and is subject to change\. | 
 
 To view a list of database schemas discovered on servers within your network from which data was collected, use the following procedure\.
 

@@ -34,6 +34,10 @@ A *replication instance* performs the actual data migration between source and t
 
    1. For **VPC**, choose **DMSVPC**\.
 
+   1. For **Multi AZ**, choose **Dev or test workload \(Single\-AZ\)**\.
+
+   1. Uncheck **Publicly accessible**\.
+
 1. Choose the **Advanced security and network configuration** tab to set values for network and encryption settings if you need them: 
 
    1. For **Replication subnet group**, leave the replication subnet group currently chosen\.

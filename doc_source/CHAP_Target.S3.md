@@ -20,6 +20,12 @@ database_schema_name/table_name/LOAD00000010.csv
 
 You can specify the column delimiter, row delimiter, and other parameters using the extra connection attributes\. For more information on the extra connection attributes, see [Extra connection attributes when using Amazon S3 as a target for AWS DMS](#CHAP_Target.S3.Configuring) at the end of this section\.
 
+You can specify a bucket owner and prevent sniping by using the `ExpectedBucketOwner` Amazon S3 endpoint setting, as shown following\. Then, when you make a request to test a connection or perform a migration, S3 checks the account ID of the bucket owner against the specified parameter\.
+
+```
+--s3-settings='{"ExpectedBucketOwner": "AWS_Account_ID"}'
+```
+
 When you use AWS DMS to replicate data changes using a CDC task, the first column of the \.csv or \.parquet output file indicates how the row data was changed as shown for the following \.csv file\.
 
 ```
@@ -95,7 +101,7 @@ To set up this account access, ensure that the role assigned to the user account
 
 The following limitations apply when using Amazon S3 as a target:
 + Don’t enable versioning for S3\. If you need S3 versioning, use lifecycle policies to actively delete old versions\. Otherwise, you might encounter endpoint test connection failures because of an S3 `list-object` call timeout\. To create a lifecycle policy for an S3 bucket, see [ Managing your storage lifecycle](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html)\. To delete a version of an S3 object, see [ Deleting object versions from a versioning\-enabled bucket](https://docs.aws.amazon.com/AmazonS3/latest/dev/DeletingObjectVersions.html)\.
-+ A VPCE\-enabled \(gateway VPC\) S3 bucket isn't currently supported\.
++ A VPC\-enabled \(gateway VPC\) S3 bucket is supported in versions 3\.4\.7 and higher\.
 + The following data definition language \(DDL\) commands are supported for change data capture \(CDC\): Truncate Table, Drop Table, Create Table, Rename Table, Add Column, Drop Column, Rename Column, and Change Column Data Type\.
 **Note**  
 A truncate DDL operation removes all files and corresponding table folders from an S3 bucket\. You can use task settings to disable that behavior and configure the way DMS handles DDL behavior during change data capture \(CDC\)\. For more information, see [Task settings for change processing DDL handling](CHAP_Tasks.CustomizingTasks.TaskSettings.DDLHandling.md)\.

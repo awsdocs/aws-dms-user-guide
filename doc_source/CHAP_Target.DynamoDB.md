@@ -8,6 +8,9 @@ You use object mapping to migrate your data from a source database to a target D
 
 When AWS DMS creates tables on an DynamoDB target endpoint, it creates as many tables as in the source database endpoint\. AWS DMS also sets several DynamoDB parameter values\. The cost for the table creation depends on the amount of data and the number of tables to be migrated\.
 
+**Note**  
+The **SSL Mode** option on the AWS DMS console or API doesn’t apply to some data streaming and NoSQL services like Kinesis and DynamoDB\. They are secure by default, so AWS DMS shows the SSL mode setting is equal to none \(**SSL Mode=None**\)\. You don’t need to provide any additional configuration for your endpoint to make use of SSL\. For example, when using DynamoDB as a target endpoint, it is secure by default\. All API calls to DynamoDB use SSL, so there is no need for an additional SSL option in the AWS DMS endpoint\. You can securely put data and retrieve data through SSL endpoints using the HTTPS protocol, which AWS DMS uses by default when connecting to a DynamoDB database\.
+
 To help increase the speed of the transfer, AWS DMS supports a multithreaded full load to a DynamoDB target instance\. DMS supports this multithreading with task settings that include the following:
 + `MaxFullLoadSubTasks` – Use this option to indicate the maximum number of source tables to load in parallel\. DMS loads each table into its corresponding DynamoDB target table using a dedicated subtask\. The default value is 8\. The maximum value is 49\.
 + `ParallelLoadThreads` – Use this option to specify the number of threads that AWS DMS uses to load each table into its DynamoDB target table\. The default value is 0 \(single\-threaded\)\. The maximum value is 200\. You can ask to have this maximum limit increased\.

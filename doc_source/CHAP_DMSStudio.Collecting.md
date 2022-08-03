@@ -1,10 +1,5 @@
 # Collecting data for AWS DMS Studio Fleet Advisor<a name="CHAP_DMSStudio.Collecting"></a>
 
-
-|  | 
-| --- |
-| AWS DMS Studio is in preview release for AWS Database Migration Service and is subject to change\. | 
-
 You can start collecting data by choosing **Start collection** from the DMS Collector home page, or from the **Monitored objects** or **Data collection** page\. DMS Collector can use up to four parallel threads to connect to a single database instance\.
 
 After data collection begins, you're redirected to the **Data collection** page, where collection queries are run and live progress is shown\. You can view overall collection health there or on the Data Collector home page\. If overall data collection health is less than 100 percent, you might need to fix issues related to the collection\.

@@ -1,10 +1,5 @@
 # Data collection issues related to Windows Management Instrumentation<a name="CHAP_DMSStudio.Troubleshooting.WMI"></a>
 
-
-|  | 
-| --- |
-| AWS DMS Studio is in preview release for AWS Database Migration Service and is subject to change\. | 
-
 ****  
 
 **WMI: The RPC server is unavailable\. \(Exception from HRESULT: 0x800706BA\)**  
