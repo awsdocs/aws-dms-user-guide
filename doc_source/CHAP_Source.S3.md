@@ -143,7 +143,7 @@ For a column of the NUMERIC type, specify the precision and scale\. *Precision* 
     {
         "ColumnName": "HourlyRate",
         "ColumnType": "NUMERIC",
-        "ColumnPrecision": "5"
+        "ColumnPrecision": "5",
         "ColumnScale": "2"
     }
 ...
