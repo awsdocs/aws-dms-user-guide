@@ -2,6 +2,13 @@
 
 An AWS Database Migration Service \(AWS DMS\) task is where all the work happens\. You specify what tables \(or views\) and schemas to use for your migration and any special processing, such as logging requirements, control table data, and error handling\. 
 
+A task can consist of three major phases:
++ Migration of existing data \(Full load\)
++ The application of cached changes
++ Ongoing replication \(Change Data Capture\)
+
+For more information and an overview of how AWS DMS migration tasks migrate data, see [High\-level view of AWS DMS](CHAP_Introduction.HighLevelView.md)
+
 When creating a migration task, you need to know several things:
 + Before you can create a task, make sure that you create a source endpoint, a target endpoint, and a replication instance\. 
 + You can specify many task settings to tailor your migration task\. You can set these by using the AWS Management Console, AWS Command Line Interface \(AWS CLI\), or AWS DMS API\. These settings include specifying how migration errors are handled, error logging, and control table information\. For information about how to use a task configuration file to set task settings, see [Task settings example](CHAP_Tasks.CustomizingTasks.TaskSettings.md#CHAP_Tasks.CustomizingTasks.TaskSettings.Example)\.

@@ -4,13 +4,13 @@
 *****Copyright &copy; Amazon Web Services, Inc. and/or its affiliates. All rights reserved.*****
 
 -----
-Amazon's trademarks and trade dress may not be used in 
-     connection with any product or service that is not Amazon's, 
-     in any manner that is likely to cause confusion among customers, 
-     or in any manner that disparages or discredits Amazon. All other 
-     trademarks not owned by Amazon are the property of their respective
-     owners, who may or may not be affiliated with, connected to, or 
-     sponsored by Amazon.
+Amazon's trademarks and trade dress may not be used in
+connection with any product or service that is not Amazon's,
+in any manner that is likely to cause confusion among customers,
+or in any manner that disparages or discredits Amazon. All other
+trademarks not owned by Amazon are the property of their respective
+owners, who may or may not be affiliated with, connected to, or
+sponsored by Amazon.
 
 -----
 ## Contents
@@ -87,7 +87,7 @@ Amazon's trademarks and trade dress may not be used in
       + [Using an Amazon DynamoDB database as a target for AWS Database Migration Service](CHAP_Target.DynamoDB.md)
       + [Using Amazon Kinesis Data Streams as a target for AWS Database Migration Service](CHAP_Target.Kinesis.md)
       + [Using Apache Kafka as a target for AWS Database Migration Service](CHAP_Target.Kafka.md)
-      + [Using an Amazon Elasticsearch Service cluster as a target for AWS Database Migration Service](CHAP_Target.Elasticsearch.md)
+      + [Using an Amazon OpenSearch Service cluster as a target for AWS Database Migration Service](CHAP_Target.Elasticsearch.md)
       + [Using Amazon DocumentDB as a target for AWS Database Migration Service](CHAP_Target.DocumentDB.md)
       + [Using Amazon Neptune as a target for AWS Database Migration Service](CHAP_Target.Neptune.md)
       + [Using Redis as a target for AWS Database Migration Service](CHAP_Target.Redis.md)
@@ -145,14 +145,14 @@ Amazon's trademarks and trade dress may not be used in
       + [SQL Server diagnostic support scripts](CHAP_SupportScripts.SQLServer.md)
       + [Diagnostic support scripts for MySQL-compatible databases](CHAP_SupportScripts.MySQL.md)
       + [PostgreSQL diagnostic support scripts](CHAP_SupportScripts.PostgreSQL.md)
-+ [Migrating large data stores using AWS Database Migration Service and Snowball Edge](CHAP_LargeDBs.md)
-   + [Overview of migrating large data stores using AWS DMS and Snowball Edge](CHAP_LargeDBs.Process.md)
-   + [Prerequisites for migrating large data stores using AWS DMS and Snowball Edge](CHAP_LargeDBs.Process.prereqs.md)
++ [Migrating large data stores using AWS Database Migration Service and AWS Snowball Edge](CHAP_LargeDBs.md)
+   + [Overview of migrating large data stores using AWS DMS and AWS Snowball Edge](CHAP_LargeDBs.Process.md)
+   + [Prerequisites for migrating large data stores using AWS DMS and AWS Snowball Edge](CHAP_LargeDBs.Process.prereqs.md)
    + [Migration checklist](CHAP_LargeDBs.Process.checklist.md)
-   + [Step-by-step procedures for migrating data using AWS DMS with Snowball Edge](CHAP_LargeDBs.SBS.md)
-      + [Step 1: Create a Snowball Edge job](CHAP_LargeDBs.SBS.create-snowball-job.md)
+   + [Step-by-step procedures for migrating data using AWS DMS with AWS Snowball Edge](CHAP_LargeDBs.SBS.md)
+      + [Step 1: Create a AWS Snowball Edge job](CHAP_LargeDBs.SBS.create-snowball-job.md)
       + [Step 2: Download and install the AWS Schema Conversion Tool (AWS SCT)](CHAP_LargeDBs.SBS.install-sct.md)
-      + [Step 3: Unlock the Snowball Edge device](CHAP_LargeDBs.SBS.unlock-snowball-edge.md)
+      + [Step 3: Unlock the AWS Snowball Edge device](CHAP_LargeDBs.SBS.unlock-snowball-edge.md)
       + [Step 4: Configure the AWS DMS agent host with ODBC drivers](CHAP_LargeDBs.SBS.configure-dms-agent-linux-host.md)
          + [Oracle](CHAP_LargeDBs.SBS.configure-dms-agent-linux-host.oracle.md)
          + [Microsoft SQL Server](CHAP_LargeDBs.SBS.configure-dms-agent-linux-host.sql-server.md)
@@ -162,11 +162,11 @@ Amazon's trademarks and trade dress may not be used in
          + [DB2 LUW](CHAP_LargeDBs.SBS.configure-dms-agent-linux-host.db2.md)
       + [Step 5: Install the AWS DMS Agent](CHAP_LargeDBs.SBS.install-dms-agent.md)
       + [Step 6: Create a new AWS SCT project](CHAP_LargeDBs.SBS.create-new-sct-project.md)
-      + [Step 7: Configure AWS SCT to use Snowball Edge](CHAP_LargeDBs.SBS.configure-sct-to-use-snowball-edge.md)
+      + [Step 7: Configure AWS SCT to use AWS Snowball Edge](CHAP_LargeDBs.SBS.configure-sct-to-use-snowball-edge.md)
       + [Step 8: Register the AWS DMS Agent in AWS SCT](CHAP_LargeDBs.SBS.register-dms-agent-in-sct.md)
       + [Step 9: Create a local and AWS DMS task](CHAP_LargeDBs.SBS.create-local-and-dms-task.md)
       + [Step 10: Run and monitor the task in SCT](CHAP_LargeDBs.SBS.run-and-monitor-task-in-sct.md)
-   + [Limitations when working with Snowball Edge and AWS DMS](CHAP_LargeDBs.Limitations.md)
+   + [Limitations when working with AWS Snowball Edge and AWS DMS](CHAP_LargeDBs.Limitations.md)
 + [AWS DMS reference](CHAP_Reference.md)
    + [Data types for AWS Database Migration Service](CHAP_Reference.DataTypes.md)
 + [AWS DMS release notes](CHAP_ReleaseNotes.md)

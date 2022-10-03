@@ -54,7 +54,7 @@ For additional details on working with Oracle databases as a target for AWS DMS,
 ## Limitations on Oracle as a target for AWS Database Migration Service<a name="CHAP_Target.Oracle.Limitations"></a>
 
 Limitations when using Oracle as a target for data migration include the following:
-+ AWS DMS doesn't create schema on the target Oracle database\. You have to create any schemas you want on the target Oracle database\. The schema name must already exist for the Oracle target\. Tables from source schema are imported to the user or schema, which AWS DMS uses to connect to the target instance\. To migrate multiple schemas, create multiple replication tasks\. 
++ AWS DMS doesn't create schema on the target Oracle database\. You have to create any schemas you want on the target Oracle database\. The schema name must already exist for the Oracle target\. Tables from source schema are imported to the user or schema, which AWS DMS uses to connect to the target instance\. To migrate multiple schemas, you can create multiple replication tasks\. You can also migrate data to different schemas on a target\. To do this, you need to use schema transformation rules on the AWS DMS table mappings\.
 + AWS DMS doesn't support the `Use direct path full load` option for tables with INDEXTYPE CONTEXT\. As a workaround, you can use array load\. 
 + With the batch optimized apply option, loading into the net changes table uses a direct path, which doesn't support XML type\. As a workaround, you can use transactional apply mode\.
 + Empty strings migrated from source databases can be treated differently by the Oracle target \(converted to one\-space strings, for example\)\. This can result in AWS DMS validation reporting a mismatch\.

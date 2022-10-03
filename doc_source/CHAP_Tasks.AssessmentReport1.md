@@ -7,17 +7,17 @@ A premigration assessment run specifies one or more individual assessments to ru
 The following table provides a brief overview of the individual assessments that are applicable to a given migration task based on its configuration\. You can choose from among the individual assessments to include in a new assessment run that are applicable to your task configuration\.
 
 
-| Assessment name \(console and API\) | Description | Source must be relational | Target must be relational | Target must be Amazon ES | Target must be DynamoDB | Migration type must perform CDC | Applicable AWS DMS engine versions | 
+| Assessment name \(console and API\) | Description | Source must be relational | Target must be relational | Target must be OpenSearch Service | Target must be DynamoDB | Migration type must perform CDC | Applicable AWS DMS engine versions | 
 | --- | --- | --- | --- | --- | --- | --- | --- | 
 |  Console – Unsupported data types API – `unsupported-data-types-in-source`  |  Checks for data types unsupported by AWS DMS in the source endpoint\. Not all data types can be migrated between engines\.  |  –  |  –  |  –  |  –  |  –  |  All supported versions  | 
 |  Console – Large objects \(LOBs\) are used but target LOB columns are not nullable API – `full-lob-not-nullable-at-target`  |  Checks for the nullability of a LOB column in the target when full LOB mode or inline LOB mode is used\. AWS DMS requires a LOB column to be null when using these LOB modes\.  |  X  |  X  |  –  |  –  |  –  |  All supported versions  | 
 |  Console – Source table with LOBs but without primary keys or unique constraints API – `table-with-lob-but-without-primary-key-or-unique-constraint`  |  Checks for the presence of source tables with LOBs but without a primary key or a unique key\. Currently, a table must have a primary key or a unique key for AWS DMS to migrate LOBs\.  |  X  |  –  |  –  |  –  |  –  |  All supported versions  | 
 |  Console – Source table without primary key for CDC or full load and CDC tasks only API – `table-with-no-primary-key-or-unique-constraint`  |  Checks for the presence of a primary key or a unique key in source tables for a full\-load and change data capture \(CDC\) migration or a CDC\-only migration\. Lack of a primary key or a unique key can cause performance issues during the CDC migration\.  |  X  |  –  |  –  |  –  |  X  |  All supported versions  | 
 |  Console – Target table without primary keys for CDC tasks only API – `target-table-has-unique-key-or-primary-key-for-cdc`  |  Checks for the presence of a primary key or a unique key in already\-created target tables for a CDC\-only migration\. Lack of a primary key or a unique key can cause full table scans in the target when AWS DMS applies updates and deletes resulting in performance issues during the CDC migration\.  |  –  |  X  |  –  |  –  |  X  |  All supported versions  | 
-|  Console – Unsupported source primary key types \- composite primary keys API – `unsupported-source-pk-type-for-elasticsearch-target`  |  Checks for the presence of composite primary keys in source tables when migrating to Amazon Elasticsearch Service \(Amazon ES\)\. The primary key of the source table must consist of a single column\.  |  X  |  –  |  –  |  X  |  –  |  All supported versions  | 
+|  Console – Unsupported source primary key types \- composite primary keys API – `unsupported-source-pk-type-for-elasticsearch-target`  |  Checks for the presence of composite primary keys in source tables when migrating to Amazon OpenSearch Service \(OpenSearch Service\)\. The primary key of the source table must consist of a single column\.  |  X  |  –  |  –  |  X  |  –  |  All supported versions  | 
 
 **Note**  
-AWS DMS supports migrating a source database to an Amazon ES target where the source primary key consists of multiple columns\.
+AWS DMS supports migrating a source database to an OpenSearch Service target where the source primary key consists of multiple columns\.
 
 AWS DMS supports premigration assessment runs for the following relational databases:
 + Oracle

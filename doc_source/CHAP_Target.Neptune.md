@@ -23,7 +23,7 @@ For more details, see the following\.
 Before starting a migration to a Neptune target, create the following resources in your AWS account:
 + A Neptune cluster for the target endpoint\. 
 + A SQL relational database supported by AWS DMS for the source endpoint\. 
-+ An Amazon S3 bucket for the target endpoint\. Create this S3 bucket in the same AWS Region as your Neptune cluster\. AWS DMS uses this S3 bucket as intermediate file storage for the target data that it bulk loads to the Neptune database\. For more information on creating an S3 bucket, see [Creating a bucket](https://docs.aws.amazon.com/AmazonS3/latest/gsg/CreatingABucket.html) in the *Amazon Simple Storage Service Getting Started Guide\.*
++ An Amazon S3 bucket for the target endpoint\. Create this S3 bucket in the same AWS Region as your Neptune cluster\. AWS DMS uses this S3 bucket as intermediate file storage for the target data that it bulk loads to the Neptune database\. For more information on creating an S3 bucket, see [Creating a bucket](https://docs.aws.amazon.com/AmazonS3/latest/gsg/CreatingABucket.html) in the *Amazon Simple Storage Service User Guide\.*
 + A virtual private cloud \(VPC\) endpoint for S3 in the same VPC as the Neptune cluster\. 
 + An AWS Identity and Access Management \(IAM\) role that includes an IAM policy\. This policy should specify the `GetObject`, `PutObject`, `DeleteObject` and `ListObject` permissions to the S3 bucket for your target endpoint\. This role is assumed by both AWS DMS and Neptune with IAM access to both the target S3 bucket and the Neptune database\. For more information, see [Creating an IAM service role for accessing Amazon Neptune as a target](#CHAP_Target.Neptune.ServiceRole)\.
 

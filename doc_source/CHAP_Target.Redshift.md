@@ -339,7 +339,7 @@ aws dms create-endpoint --endpoint-identifier redshift-target-endpoint --endpoin
 --redshift-settings '{"EncryptionMode": "SSE_S3"}'
 ```
 
-For more information about working with S3 server\-side encryption, see [Protecting data using server\-side encryption](https://docs.aws.amazon.com/AmazonS3/latest/dev/serv-side-encryption.html) in the *Amazon Simple Storage Service Developer Guide\.*
+For more information about working with S3 server\-side encryption, see [Protecting data using server\-side encryption](https://docs.aws.amazon.com/AmazonS3/latest/dev/serv-side-encryption.html) in the *Amazon Simple Storage Service User Guide\.*
 
 **Note**  
 You can also use the CLI `modify-endpoint` command to change the value of the `EncryptionMode` parameter for an existing endpoint from `SSE_KMS` to `SSE_S3`\. But you can’t change the `EncryptionMode` value from `SSE_S3` to `SSE_KMS`\.

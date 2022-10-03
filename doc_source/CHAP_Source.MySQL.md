@@ -150,7 +150,7 @@ When using an AWS\-managed MySQL\-compatible database as a source for AWS DMS, m
 For MariaDB, if the `binlog_format` parameter is switched to `ROW` for replication purposes, subsequent binary logs are still created in `MIXED` format\. This can prevent DMS from performing change data capture\. So, when switching the `binlog_format` parameter for MariaDB, perform a reboot or start then stop your replication task\.
 + Set the `binlog_row_image` parameter to `"Full"`\. 
 + Set the `binlog_checksum` parameter to `"NONE"`\. For more information about setting parameters in Amazon RDS MySQL, see [Working with automated backups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.html) in the *Amazon RDS User Guide*\.
-+ If you are using an Amazon RDS MySQL or Amazon RDS MariaDB read replica as a source, enable backups on the read replica\.
++ If you are using an Amazon RDS MySQL or Amazon RDS MariaDB read replica as a source, enable backups on the read replica, and ensure the `log_slave_updates` parameter is set to `TRUE`\.
 
 ## Limitations on using a MySQL database as a source for AWS DMS<a name="CHAP_Source.MySQL.Limitations"></a>
 
@@ -160,7 +160,7 @@ When using a MySQL database as a source, consider the following:
 +  For partitioned tables on the source, when you set **Target table preparation mode** to **Drop tables on target**, AWS DMS creates a simple table without any partitions on the MySQL target\. To migrate partitioned tables to a partitioned table on the target, precreate the partitioned tables on the target MySQL database\.
 +  Using an `ALTER TABLE table_name ADD COLUMN column_name` statement to add columns to the beginning \(FIRST\) or the middle of a table \(AFTER\) isn't supported\. Columns are always added to the end of the table\.
 + CDC isn't supported when a table name contains uppercase and lowercase characters, and the source engine is hosted on an operating system with case\-insensitive file names\. An example is Microsoft Windows or OS X using HFS\+\.
-+ You can use Aurora MySQLCompatible Edition Serverless for full load, but you can't use it for CDC\. This is because you can't enable the prerequisites for MySQL\. For more information, see [ Parameter groups and Aurora Serverless v1](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless.how-it-works.html#aurora-serverless.parameter-groups)\. 
++ You can use Aurora MySQL\-Compatible Edition Serverless for full load, but you can't use it for CDC\. This is because you can't enable the prerequisites for MySQL\. For more information, see [ Parameter groups and Aurora Serverless v1](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless.how-it-works.html#aurora-serverless.parameter-groups)\. 
 +  The AUTO\_INCREMENT attribute on a column isn't migrated to a target database column\.
 +  Capturing changes when the binary logs aren't stored on standard block storage isn't supported\. For example, CDC doesn't work when the binary logs are stored on Amazon S3\.
 +  AWS DMS creates target tables with the InnoDB storage engine by default\. If you need to use a storage engine other than InnoDB, you must manually create the table and migrate to it using [do nothing](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_GettingStarted.html) mode\.
@@ -198,24 +198,30 @@ For additional information about AWS DMS data types, see [Data types for AWS Dat
 |  MySQL data types  |  AWS DMS data types  | 
 | --- | --- | 
 |  INT  |  INT4  | 
-|  MEDIUMINT  |  INT4  | 
 |  BIGINT  |  INT8  | 
+|  MEDIUMINT  |  INT4  | 
 |  TINYINT  |  INT1  | 
+|  SMALLINT  |  INT2  | 
+|  UNSIGNED TINYINT  |  UINT1  | 
+|  UNSIGNED SMALLINT  |  UINT2  | 
+|  UNSIGNED MEDIUMINT  |  UINT4  | 
+|  UNSIGNED INT  |  UINT4  | 
+|  UNSIGNED BIGINT  |  UINT8  | 
 |  DECIMAL\(10\)  |  NUMERIC \(10,0\)  | 
 |  BINARY  |  BYTES\(1\)  | 
 |  BIT  |  BOOLEAN  | 
 |  BIT\(64\)  |  BYTES\(8\)  | 
-|  BLOB  |  BYTES\(66535\)  | 
+|  BLOB  |  BYTES\(65535\)  | 
 |  LONGBLOB  |  BLOB  | 
 |  MEDIUMBLOB  |  BLOB  | 
 |  TINYBLOB  |  BYTES\(255\)  | 
 |  DATE  |  DATE  | 
-|  DATETIME  |  DATETIME  | 
+|  DATETIME  |  DATETIME DATETIME without a parenthetical value is replicated without milliseconds\. DATETIME with a parenthetical value of 1 to 5 \(such as `DATETIME(5)`\) is replicated with milliseconds\. When replicating a DATETIME column, the time remains the same on the target\. It is not converted to UTC\.  | 
 |  TIME  |  STRING  | 
-|  TIMESTAMP  |  DATETIME  | 
+|  TIMESTAMP  |  DATETIME When replicating a TIMESTAMP column, the time is converted to UTC on the target\.  | 
 |  YEAR  |  INT2  | 
 |  DOUBLE  |  REAL8  | 
-|  FLOAT  |  REAL\(DOUBLE\) The supported FLOAT range is \-1\.79E\+308 to \-2\.23E\-308, 0 and 2\.23E\-308 to 1\.79E\+308 If FLOAT values aren't in this range, map the FLOAT data type to the STRING data type\.  | 
+|  FLOAT  |  REAL\(DOUBLE\) If the FLOAT values are not in the range following, use a transformation to map FLOAT to STRING\. For more information about transformations, see [ Transformation rules and actions](CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Transformations.md)\. The supported FLOAT range is \-1\.79E\+308 to \-2\.23E\-308, 0, and 2\.23E\-308 to 1\.79E\+308  | 
 |  VARCHAR \(45\)  |  WSTRING \(45\)  | 
 |  VARCHAR \(2000\)  |  WSTRING \(2000\)  | 
 |  VARCHAR \(4000\)  |  WSTRING \(4000\)  | 
@@ -223,10 +229,9 @@ For additional information about AWS DMS data types, see [Data types for AWS Dat
 |  VARBINARY \(2000\)  |  BYTES \(2000\)  | 
 |  CHAR  |  WSTRING  | 
 |  TEXT  |  WSTRING  | 
-|  JSON  |  NCLOB  | 
 |  LONGTEXT  |  NCLOB  | 
 |  MEDIUMTEXT  |  NCLOB  | 
-|  TINYTEXT  |  WSTRING \(255\)  | 
+|  TINYTEXT  |  WSTRING\(255\)  | 
 |  GEOMETRY  |  BLOB  | 
 |  POINT  |  BLOB  | 
 |  LINESTRING  |  BLOB  | 
@@ -237,6 +242,7 @@ For additional information about AWS DMS data types, see [Data types for AWS Dat
 |  GEOMETRYCOLLECTION  |  BLOB  | 
 |  ENUM  |  WSTRING \(*length*\) Here, *length* is the length of the longest value in the ENUM\.  | 
 |  SET  |  WSTRING \(*length*\) Here, *length* is the total length of all values in the SET, including commas\.  | 
+|  JSON  |  CLOB  | 
 
 **Note**  
 In some cases, you might specify the DATETIME and TIMESTAMP data types with a "zero" value \(that is, 0000\-00\-00\)\. If so, make sure that the target database in the replication task supports "zero" values for the DATETIME and TIMESTAMP data types\. Otherwise, these values are recorded as null on the target\.

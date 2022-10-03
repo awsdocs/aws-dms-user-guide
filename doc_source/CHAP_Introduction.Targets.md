@@ -13,7 +13,7 @@ Support for MariaDB as a target is available in all AWS DMS versions where MySQL
 + SAP Adaptive Server Enterprise \(ASE\) versions 15, 15\.5, 15\.7, 16 and later\.
 + Redis versions 6\.x\.
 
-**Amazon RDS instance databases, Amazon Redshift, Amazon DynamoDB, Amazon S3, Amazon Elasticsearch Service, Amazon ElastiCache for Redis, Amazon Kinesis Data Streams, Amazon DocumentDB, Amazon Neptune, and Apache Kafka**
+**Amazon RDS instance databases, Amazon Redshift, Amazon DynamoDB, Amazon S3, Amazon OpenSearch Service, Amazon ElastiCache for Redis, Amazon Kinesis Data Streams, Amazon DocumentDB, Amazon Neptune, and Apache Kafka**
 + Oracle versions 11g \(versions 11\.2\.0\.3\.v1 and later\), 12c, 18c, and 19c for the Enterprise, Standard, Standard One, and Standard Two editions\.
 + Microsoft SQL Server versions 2012, 2014, 2016, 2017, and 2019 for the Enterprise, Standard, Workgroup, and Developer editions\. The Web and Express editions are not supported\.
 + MySQL versions 5\.5, 5\.6, 5\.7, and 8\.0\.
@@ -27,7 +27,7 @@ Support for MariaDB as a target is available in all AWS DMS versions where MySQL
 + Amazon Redshift
 + Amazon S3
 + Amazon DynamoDB
-+ Amazon Elasticsearch Service
++ Amazon OpenSearch Service
 + Amazon ElastiCache for Redis
 + Amazon Kinesis Data Streams
 + Amazon DocumentDB \(with MongoDB compatibility\)

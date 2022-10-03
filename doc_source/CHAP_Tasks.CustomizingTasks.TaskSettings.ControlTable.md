@@ -12,7 +12,7 @@ The Apply Exceptions table \(`dmslogs.awsdms_apply_exceptions`\) contains the fo
 
 | Column | Type | Description | 
 | --- | --- | --- | 
-|  TASK\_NAME  |  nvchar  |  The name of the AWS DMS task\.  | 
+|  TASK\_NAME  |  nvchar  |  The Resource ID of the AWS DMS task\. Resource ID can be found in task ARN\.  | 
 |  TABLE\_OWNER  |  nvchar  |  The table owner\.  | 
 |  TABLE\_NAME  |  nvchar  |  The table name\.  | 
 |  ERROR\_TIME  |  timestamp  |  The time the exception \(error\) occurred\.  | 
@@ -25,7 +25,7 @@ The Replication History table \(`dmslogs.awsdms_history`\) contains the followin
 | Column | Type | Description | 
 | --- | --- | --- | 
 |  SERVER\_NAME  |  nvchar  |  The name of the machine where the replication task is running\.  | 
-|  TASK\_NAME  |  nvchar  |  The name of the AWS DMS task\.  | 
+|  TASK\_NAME  |  nvchar  |  The Resource ID of the AWS DMS task\. Resource ID can be found in task ARN\.  | 
 |  TIMESLOT\_TYPE  |  varchar  |  One of the following values: [\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_Tasks.CustomizingTasks.TaskSettings.ControlTable.html) If the task is running both full load and CDC, two history records are written to the time slot\.  | 
 | TIMESLOT |  timestamp  |  The ending timestamp of the time slot\.  | 
 |  TIMESLOT\_DURATION  |  int  |  The duration of the time slot, in minutes\.  | 
@@ -39,7 +39,7 @@ The Replication Status table \(`dmslogs.awsdms_status`\) contains the current st
 | Column | Type | Description | 
 | --- | --- | --- | 
 |  SERVER\_NAME  |  nvchar  |  The name of the machine where the replication task is running\.  | 
-|  TASK\_NAME  |  nvchar  |  The name of the AWS DMS task\.  | 
+|  TASK\_NAME  |  nvchar  |  The Resource ID of the AWS DMS task\. Resource ID can be found in task ARN\.  | 
 |  TASK\_STATUS  |  varchar  |  One of the following values: [\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_Tasks.CustomizingTasks.TaskSettings.ControlTable.html) Task status is set to FULL LOAD as long as there is at least one table in full load\. After all tables have been loaded, the task status changes to CHANGE PROCESSING if CDC is enabled\.  | 
 | STATUS\_TIME |  timestamp  |  The timestamp of the task status\.  | 
 |  PENDING\_CHANGES  |  int  |  The number of change records that weren't applied to the target\.  | 

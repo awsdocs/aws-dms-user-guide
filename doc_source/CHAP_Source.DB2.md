@@ -40,11 +40,10 @@ When using ongoing replication \(CDC\), the following limitations apply:
 + The RENAME COLUMN statement isn't supported\.
 + When performing updates to Multi\-Dimensional Clustering \(MDC\) tables, each update is shown in the AWS DMS console as INSERT \+ DELETE\.
 + When the task setting **Include LOB columns in replication** isn't enabled, any table that has LOB columns is suspended during ongoing replication\.
-+ When the audit table option is enabled, the first timestamp record in the audit table is NULL\.
-+ When the change table option is enabled, the first timestamp record in the table is zero \(1970\-01\-01 00:00:00\.000000\)\.
-+ For Db2 LUW versions 10\.5 and higher, variable\-length string columns with data that is stored out\-of\-row are ignored\. This limitation only applies to tables created with extended row size for columns with data types like VARCHAR and VARGRAPHIC\. To work around this limitation, move the table to a table space with a higher page size\. For more information, see [What can I do if I want to change the pagesize of DB2 tablespaces]( https://www.ibm.com/support/pages/what-can-i-do-if-i-want-change-pagesize-db2-tablespaces )\.
++ For Db2 LUW versions 10\.5 and higher, variable\-length string columns with data that is stored out\-of\-row are ignored\. This limitation only applies to tables created with extended row size for columns with data types like VARCHAR and VARGRAPHIC\. To work around this limitation, move the table to a table space with a higher page size\. For more information, see [ What can I do if I want to change the pagesize of DB2 tablespaces]( https://www.ibm.com/support/pages/what-can-i-do-if-i-want-change-pagesize-db2-tablespaces )\.
 + For ongoing replication, DMS doesn't support migrating data loaded at the page level by the DB2 LOAD utility\. Instead, use the IMPORT utility which uses SQL inserts\. For more information, see [ differences between the import and load utilities]( https://www.ibm.com/docs/en/db2/11.1?topic=utilities-differences-between-import-load-utility)\. 
 + While a replication task is running, DMS captures CREATE TABLE DDLs only if the tables were created with the DATA CAPTURE CHANGE attribute\.
++ DMS doesn't support DB2 Database Partition Feature \(DPF\)\.
 
 ## Extra connection attributes when using Db2 LUW as a source for AWS DMS<a name="CHAP_Source.DB2.ConnectionAttrib"></a>
 

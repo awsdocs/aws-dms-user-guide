@@ -108,10 +108,11 @@ AWS DMS supports CDC on Amazon RDS PostgreSQL databases when the DB instance is 
 You can't use RDS PostgreSQL read replicas for CDC \(ongoing replication\)\.
 
 
-|  Aurora PostgreSQL version  |  AWS DMS full load support   |  AWS DMS CDC support  | 
+|  PostgreSQL version  |  AWS DMS full load support   |  AWS DMS CDC support  | 
 | --- | --- | --- | 
 |  Aurora PostgreSQL version 2\.1 with PostgreSQL 10\.5 compatibility \(or lower\)  |  Yes  |  No  | 
 |  Aurora PostgreSQL version 2\.2 with PostgreSQL 10\.6 compatibility \(or higher\)   |  Yes  |  Yes  | 
+|  RDS for PostgreSQL with PostgreSQL 10\.21 compatibility \(or higher\)  |  Yes  |  Yes  | 
 
 **To enable logical replication for an RDS PostgreSQL DB instance**
 
@@ -250,29 +251,6 @@ After logical replication is enabled on your PostgreSQL source database, use the
 
    `select * FROM pg_catalog.pg_extension`
 
-1. Enable a CDC task to use a native start point as follows:
-
-   1. Create a replication slot, as shown following:
-
-      ```
-      SELECT * FROM pg_create_logical_replication_slot('replication_slot_name', 'pglogical');                        
-      ```
-
-   1. Create two replication sets, as shown following:
-
-      ```
-      select pglogical.create_replication_set('replication_slot_name', true, false, false, true);
-      select pglogical.create_replication_set('replication_slot_name', false, true, true, false);
-      ```
-
-   An example follows\.
-
-   ```
-   SELECT * FROM pg_create_logical_replication_slot('test_slot', 'pglogical');
-                           
-   select pglogical.create_replication_set('test_slot', false, true, true, false);
-   ```
-
 You can now create a AWS DMS task that performs change data capture for your PostgreSQL source database endpoint\.
 
 **Note**  
@@ -325,11 +303,21 @@ When using native CDC start points with the pglogical plugin and you want to use
 
 **To use a new replication slot not previously created as part of another DMS task**
 
-1. Create a replication slot\.
+1. Create a replication slot, as shown following:
 
    ```
    SELECT * FROM pg_create_logical_replication_slot('replication_slot_name', 'pglogical');
    ```
+
+1. After the database creates the replication slot, get and note the **restart\_lsn** and **confirmed\_flush\_lsn** values for the slot:
+
+   ```
+   select * from pg_replication_slots where slot_name like 'replication_slot_name';
+   ```
+
+   Note that the Native CDC Start position for a CDC task created after the replication slot can't be older than the **confirmed\_flush\_lsn** value\.
+
+   For information about the **restart\_lsn** and **confirmed\_flush\_lsn** values, see [pg\_replication\_slots](https://www.postgresql.org/docs/14/view-pg-replication-slots.html) 
 
 1. Create a pglogical node\.
 
@@ -337,32 +325,18 @@ When using native CDC start points with the pglogical plugin and you want to use
    SELECT pglogical.create_node(node_name := 'node_name', dsn := 'your_dsn_name');
    ```
 
-1. Create replication sets\.
+1. Create two replication sets using the `pglogical.create_replication_set` function\. The first replication set tracks updates and deletes for tables that have primary keys\. The second replication set tracks only inserts, and has the same name as the first replication set, with the added prefix 'i'\.
 
    ```
-   select pglogical.create_replication_set('replication_slot_name', false, true, true, false);
-   select pglogical.create_replication_set('ireplication_slot_name', true, false, false, true);
+   SELECT pglogical.create_replication_set('replication_slot_name', false, true, true, false);
+   SELECT pglogical.create_replication_set('ireplication_slot_name', true, false, false, true);
    ```
 
 1. Add a table to the replication set\.
 
    ```
-   select pglogical.replication_set_add_table('replication_slot_name', 'schemaname.tablename', true);
-   select pglogical.replication_set_add_table('ireplication_slot_name', 'schemaname.tablename', true);
-   ```
-
-   As shown in the example following\.
-
-   ```
-   SELECT * FROM pg_create_logical_replication_slot('test_slot', 'pglogical');
-   
-   SELECT pglogical.create_node(node_name := 'test_node', dsn := 'your_dsn_name');
-   
-   select pglogical.create_replication_set('test_slot', false, true, true, false);
-   select pglogical.create_replication_set('itest_slot', true, false, false, true);
-   
-   select pglogical.replication_set_add_table('test_slot', 'schemaname.tablename', true);
-   select pglogical.replication_set_add_table('itest_slot', 'schemaname.tablename', true);
+   SELECT pglogical.replication_set_add_table('replication_slot_name', 'schemaname.tablename', true);
+   SELECT pglogical.replication_set_add_table('ireplication_slot_name', 'schemaname.tablename', true);
    ```
 
 1. Set the extra connection attribute \(ECA\) following when you create your source endpoint\.
@@ -371,7 +345,7 @@ When using native CDC start points with the pglogical plugin and you want to use
    PluginName=PGLOGICAL;slotName=slot_name;
    ```
 
-You can now create a CDC only task with a PostgreSQL native start point using the new replication slot\.
+You can now create a CDC only task with a PostgreSQL native start point using the new replication slot\. For more information about the pglogical plugin, see the [pglogical 3\.7 documentation](https://www.enterprisedb.com/docs/pgd/3.7/pglogical/)
 
 ## Migrating from PostgreSQL to PostgreSQL using AWS DMS<a name="CHAP_Source.PostgreSQL.Homogeneous"></a>
 
@@ -496,7 +470,7 @@ You can add additional configuration settings when migrating data from a Postgre
 + You can override connection string parameters\. Choose this option to do either of the following:
   + Specify internal AWS DMS parameters\. Such parameters are rarely required so aren't exposed in the user interface\.
   + Specify pass\-through \(passthru\) values for the specific database client\. AWS DMS includes pass\-through parameters in the connection sting passed to the database client\.
-+ By using the table\-level parameter `REPLICATE IDENTITY` in PostgreSQL versions 9\.4, you can control information written to write\-ahead logs \(WALs\)\. In particular, it does so for WALs that identify rows that are updated or deleted\. `REPLICATE IDENTITY FULL` records the old values of all columns in the row\. Use `REPLICATE IDENTITY FULL` carefully for each table as `FULL` generates an extra number of WALs that might not be necessary\.
++ By using the table\-level parameter `REPLICATE IDENTITY` in PostgreSQL versions 9\.4 and higher, you can control information written to write\-ahead logs \(WALs\)\. In particular, it does so for WALs that identify rows that are updated or deleted\. `REPLICATE IDENTITY FULL` records the old values of all columns in the row\. Use `REPLICATE IDENTITY FULL` carefully for each table as `FULL` generates an extra number of WALs that might not be necessary\. For more information, see [ALTER TABLE\-REPLICA IDENTITY](https://www.postgresql.org/docs/devel/sql-altertable.html) 
 
 ## Extra connection attributes when using PostgreSQL as a DMS source<a name="CHAP_Source.PostgreSQL.ConnectionAttrib"></a>
 

@@ -1,11 +1,11 @@
-# Overview of migrating large data stores using AWS DMS and Snowball Edge<a name="CHAP_LargeDBs.Process"></a>
+# Overview of migrating large data stores using AWS DMS and AWS Snowball Edge<a name="CHAP_LargeDBs.Process"></a>
 
-The process of using AWS DMS and Snowball Edge incorporates both on\-premises applications and AWS\-managed services\. We use the terms *local* and *remote* to distinguish these components\.
+The process of using AWS DMS and AWS Snowball Edge incorporates both on\-premises applications and AWS\-managed services\. We use the terms *local* and *remote* to distinguish these components\.
 
 Local components include the following:
 + AWS SCT
 + AWS DMS Agent \(a local version of AWS DMS that works on\-premises\)
-+ Snowball Edge devices
++ AWS Snowball Edge devices
 
 Remote components include the following:
 + Amazon S3
@@ -33,18 +33,18 @@ To migrate from a local data store to an AWS data store, you follow these steps:
 
 1. Install and configure the AWS DMS Agent host on the machine with the Edge client tool\. For more information, see [Step 5: Install the AWS DMS Agent](CHAP_LargeDBs.SBS.install-dms-agent.md)\.
 
-   The AWS DMS Agent must have connectivity to the source database, AWS SCT, AWS, and Snowball Edge\. The AWS DMS Agent is supported on the following Linux platforms only:
+   The AWS DMS Agent must have connectivity to the source database, AWS SCT, AWS, and AWS Snowball Edge\. The AWS DMS Agent is supported on the following Linux platforms only:
    + Red Hat Enterprise Linux versions 6\.2 through 6\.8, 7\.0, and 7\.1 \(64\-bit\)
    + SUSE Linux version 12 \(64\-bit\)
 
    Although the AWS DMS Agent comes in the AWS SCT installation package, it's better that they aren't located in the same place\. We recommend that you install the DMS Agent on a different machine—not the machine you installed AWS SCT on\.
 
-1. Create a new project in AWS SCT as described in [Step\-by\-step procedures for migrating data using AWS DMS with Snowball Edge](CHAP_LargeDBs.SBS.md)\.
+1. Create a new project in AWS SCT as described in [Step\-by\-step procedures for migrating data using AWS DMS with AWS Snowball Edge](CHAP_LargeDBs.SBS.md)\.
 
-1. Configure AWS SCT to use the Snowball Edge device as described in [Step\-by\-step procedures for migrating data using AWS DMS with Snowball Edge](CHAP_LargeDBs.SBS.md)\. 
+1. Configure AWS SCT to use the AWS Snowball Edge device as described in [Step\-by\-step procedures for migrating data using AWS DMS with AWS Snowball Edge](CHAP_LargeDBs.SBS.md)\. 
 
-1. Register the AWS DMS Agent with AWS SCT as described in [Step\-by\-step procedures for migrating data using AWS DMS with Snowball Edge](CHAP_LargeDBs.SBS.md)\.
+1. Register the AWS DMS Agent with AWS SCT as described in [Step\-by\-step procedures for migrating data using AWS DMS with AWS Snowball Edge](CHAP_LargeDBs.SBS.md)\.
 
-1. Create a local and AWS DMS task in SCT as described in [Step\-by\-step procedures for migrating data using AWS DMS with Snowball Edge](CHAP_LargeDBs.SBS.md)\.
+1. Create a local and AWS DMS task in SCT as described in [Step\-by\-step procedures for migrating data using AWS DMS with AWS Snowball Edge](CHAP_LargeDBs.SBS.md)\.
 
-1. Run and monitor the task in SCT as described in [Step\-by\-step procedures for migrating data using AWS DMS with Snowball Edge](CHAP_LargeDBs.SBS.md)\.
+1. Run and monitor the task in SCT as described in [Step\-by\-step procedures for migrating data using AWS DMS with AWS Snowball Edge](CHAP_LargeDBs.SBS.md)\.

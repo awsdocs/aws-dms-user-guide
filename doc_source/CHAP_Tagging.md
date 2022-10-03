@@ -12,7 +12,7 @@ All AWS DMS resources can be tagged:
 
 An AWS DMS tag is a name\-value pair that you define and associate with an AWS DMS resource\. The name is referred to as the key\. Supplying a value for the key is optional\. You can use tags to assign arbitrary information to an AWS DMS resource\. A tag key could be used, for example, to define a category, and the tag value could be a item in that category\. For example, you could define a tag key of "project" and a tag value of "Salix", indicating that the AWS DMS resource is assigned to the Salix project\. You could also use tags to designate AWS DMS resources as being used for test or production by using a key such as environment=test or environment =production\. We recommend that you use a consistent set of tag keys to make it easier to track metadata associated with AWS DMS resources\. 
 
-Use tags to organize your AWS bill to reflect your own cost structure\. To do this, sign up to get your AWS account bill with tag key values included\. Then, to see the cost of combined resources, organize your billing information according to resources with the same tag key values\. For example, you can tag several resources with a specific application name, and then organize your billing information to see the total cost of that application across several services\. For more information, see [Using Cost Allocation Tags](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/cost-alloc-tags.html) in the *AWS Billing and Cost Management User Guide*\.
+Use tags to organize your AWS bill to reflect your own cost structure\. To do this, sign up to get your AWS account bill with tag key values included\. Then, to see the cost of combined resources, organize your billing information according to resources with the same tag key values\. For example, you can tag several resources with a specific application name, and then organize your billing information to see the total cost of that application across several services\. For more information, see [Using Cost Allocation Tags](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/cost-alloc-tags.html) in the *AWS Billing User Guide*\.
 
 Each AWS DMS resource has a tag set, which contains all the tags that are assigned to that AWS DMS resource\. A tag set can contain as many as ten tags, or it can be empty\. If you add a tag to an AWS DMS resource that has the same key as an existing tag on resource, the new value overwrites the old value\. 
 
@@ -31,7 +31,7 @@ Note that tags are cached for authorization purposes\. Because of this, addition
 ## API<a name="CHAP_Tagging.API"></a>
 
 You can add, list, or remove tags for a AWS DMS resource using the AWS DMS API\.
-+ To add a tag to an AWS DMS resource, use the [ `AddTagsToResource`](https://docs.aws.amazon.com/dms/latest/APIReference/API_AddTagsToResource.html) operation\.
++ To add a tag to an AWS DMS resource, use the [https://docs.aws.amazon.com/dms/latest/APIReference/API_AddTagsToResource.html](https://docs.aws.amazon.com/dms/latest/APIReference/API_AddTagsToResource.html) operation\.
 + To list tags that are assigned to an AWS DMS resource, use the [https://docs.aws.amazon.com/dms/latest/APIReference/API_ListTagsForResource.html](https://docs.aws.amazon.com/dms/latest/APIReference/API_ListTagsForResource.html) operation\.
 + To remove tags from an AWS DMS resource, use the [https://docs.aws.amazon.com/dms/latest/APIReference/API_RemoveTagsFromResource.html](https://docs.aws.amazon.com/dms/latest/APIReference/API_RemoveTagsFromResource.html) operation\.
 

@@ -155,7 +155,7 @@ A task settings JSON file can look like the following\.
   "BeforeImageSettings": {
     "EnableBeforeImage": false,
     "FieldName": "",  
-    "ColumnFilter": pk-only
+    "ColumnFilter": "pk-only"
   },
   "ErrorBehavior": {
     "DataErrorPolicy": "LOG_ERROR",

@@ -94,7 +94,7 @@ The following table shows the possible categories and events for the replication
 |  Maintenance  |  DMS\-EVENT\-0026  | Offline maintenance of the replication instance is taking place\. The replication instance is currently unavailable\.  | 
 |  Maintenance  |  DMS\-EVENT\-0027  | Offline maintenance of the replication instance is complete\. The replication instance is now available\.  | 
 |  Maintenance  |  DMS\-EVENT\-0068  | A replication instance is in a state that can't be upgraded\.  | 
-|  LowStorage  |  DMS\-EVENT\-0007  | Free storage for the replication instance is low\.  | 
+|  LowStorage  |  DMS\-EVENT\-0007  |  The replication instance has consumed more than 90% of its allocated storage\. You can monitor the storage space for a replication instance using the Free Storage Space metric\. | 
 |  Failover  |  DMS\-EVENT\-0013  | Failover started for a Multi\-AZ replication instance\.  | 
 |  Failover  |  DMS\-EVENT\-0049  | Failover is complete for a Multi\-AZ replication instance\. | 
 |  Failover  |  DMS\-EVENT\-0015  | Multi\-AZ failover to standby is complete\. | 

@@ -8,7 +8,7 @@ Before you collect data and create inventories of databases and schemas for the 
 + Create an Amazon S3 bucket where inventory metadata can be stored\. We recommend that you preconfigure this S3 bucket before using AWS DMS Fleet Advisor\. Make sure that this S3 bucket is in the same AWS Region where you plan to run DMS Fleet Advisor\. DMS stores your Fleet Advisor inventory metadata in this S3 bucket\. 
 
   For more information about creating an S3 bucket, see [Create your first S3 bucket](https://docs.aws.amazon.com/AmazonS3/latest/userguide/creating-bucket.html) in the *Amazon S3 User Guide*\. 
-+ Create an IAM role that grants permissions to access the specified Amazon S3 bucket\. We recommend that you preconfigure this IAM role before using AWS DMS Fleet Advisor\. For more information about creating an IAM role, see [Create an IAM role](CHAP_DMSStudio_GettingStarted_Prerequisites.md#CHAP_DMSStudio_GettingStarted_Prerequisites_IAM)\. 
++ Create an IAM role that grants permissions to access the specified Amazon S3 bucket\. We recommend that you preconfigure this IAM role before using AWS DMS Fleet Advisor\. For more information about creating an IAM role, see [Create IAM Resources](CHAP_DMSStudio_GettingStarted_Prerequisites.md#CHAP_DMSStudio_GettingStarted_Prerequisites_IAM)\. 
 
 After you perform these tasks, take the following steps, described in detail later in this topic:
 + Create a data collector and download the DMS Collector\.

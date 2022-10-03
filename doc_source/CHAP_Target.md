@@ -7,7 +7,7 @@ For a comprehensive list of valid targets, see [Targets for AWS DMS](CHAP_Introd
 **Note**  
 AWS DMS doesn't support migration across AWS Regions for the following target endpoint types:  
 Amazon DynamoDB
-Amazon Elasticsearch Service
+Amazon OpenSearch Service
 Amazon Kinesis Data Streams
 
 **Topics**
@@ -21,7 +21,7 @@ Amazon Kinesis Data Streams
 + [Using an Amazon DynamoDB database as a target for AWS Database Migration Service](CHAP_Target.DynamoDB.md)
 + [Using Amazon Kinesis Data Streams as a target for AWS Database Migration Service](CHAP_Target.Kinesis.md)
 + [Using Apache Kafka as a target for AWS Database Migration Service](CHAP_Target.Kafka.md)
-+ [Using an Amazon Elasticsearch Service cluster as a target for AWS Database Migration Service](CHAP_Target.Elasticsearch.md)
++ [Using an Amazon OpenSearch Service cluster as a target for AWS Database Migration Service](CHAP_Target.Elasticsearch.md)
 + [Using Amazon DocumentDB as a target for AWS Database Migration Service](CHAP_Target.DocumentDB.md)
 + [Using Amazon Neptune as a target for AWS Database Migration Service](CHAP_Target.Neptune.md)
 + [Using Redis as a target for AWS Database Migration Service](CHAP_Target.Redis.md)

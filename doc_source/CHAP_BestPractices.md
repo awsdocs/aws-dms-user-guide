@@ -132,7 +132,7 @@ You can use multiple tasks to create separate streams of replication\. By doing 
 
 ## Using your own on\-premises name server<a name="CHAP_BestPractices.Rte53DNSResolver"></a>
 
-Usually, an AWS DMS replication instance uses the Domain Name System \(DNS\) resolver in an Amazon EC2 instance to resolve domain endpoints\. However, you can use your own on\-premises name server to resolve certain endpoints if you use the Amazon Route 53 Resolver\. With this tool, you can query between on\-premises and AWS using inbound and outbound endpoints, forwarding rules, and a private connection\. The benefits of using an on\-premises name server include improved security and ease of use behind a firewall\.
+Usually, an AWS DMS replication instance uses the Domain Name System \(DNS\) resolver in an Amazon EC2 instance to resolve domain endpoints\. However, you can use your own on\-premises name server to resolve certain endpoints if you use the Amazon Route 53 Resolver\. With this tool, you can query between on\-premises and AWS using inbound and outbound endpoints, forwarding rules, and a private connection\. The benefits of using an on\-premises name server include improved security and ease of use behind a firewall\.
 
 If you have inbound endpoints, you can use DNS queries that originate on\-premises to resolve AWS\-hosted domains\. To configure the endpoints, assign IP addresses in each subnet that you want to provide a resolver\. To establish connectivity between your on\-premises DNS infrastructure and AWS, use AWS Direct Connect or a virtual private network \(VPN\)\.
 
@@ -142,21 +142,21 @@ To forward select domains to the name server, use forwarding rules\. An outbound
 
 You can configure domains hosted within your on\-premises DNS infrastructure as conditional forwarding rules that set up outbound DNS queries\. When a query is made to one of those domains, rules trigger an attempt to forward DNS requests to servers that were configured with the rules\. Again, a private connection over AWS Direct Connect or VPN is required\. 
 
-The following diagram shows the Route 53 Resolver architecture\.
+The following diagram shows the Route 53 Resolver architecture\.
 
 ![\[Route 53 Resolver Architecture\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-resolver-howitworks.png)
 
-For more information about Route 53 DNS Resolver, see [Getting started with Route 53 Resolver](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-getting-started.html) in the *Amazon Route 53 Developer Guide*\.
+For more information about Route 53 DNS Resolver, see [Getting started with Route 53 Resolver](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-getting-started.html) in the *Amazon Route 53 Developer Guide*\.
 
-### Using Amazon Route 53 Resolver with AWS DMS<a name="CHAP_BestPractices.Rte53DNSResolver.Set-up"></a>
+### Using Amazon Route 53 Resolver with AWS DMS<a name="CHAP_BestPractices.Rte53DNSResolver.Set-up"></a>
 
-You can create an on\-premises name server for AWS DMS to resolve endpoints using [Amazon Route 53 Resolver](https://aws.amazon.com/route53/)\. 
+You can create an on\-premises name server for AWS DMS to resolve endpoints using [Amazon Route 53 Resolver](https://aws.amazon.com/route53/)\. 
 
-**To create an on\-premises name server for AWS DMS based on Route 53**
+**To create an on\-premises name server for AWS DMS based on Route 53**
 
-1. Sign in to the AWS Management Console and open the Route 53 console at [https://console\.aws\.amazon\.com/route53/](https://console.aws.amazon.com/route53/)\.
+1. Sign in to the AWS Management Console and open the Route 53 console at [https://console\.aws\.amazon\.com/route53/](https://console.aws.amazon.com/route53/)\.
 
-1. On the Route 53 console, choose the AWS Region where you want to configure your Route 53 Resolver\. The Route 53 Resolver is specific to a Region\.
+1. On the Route 53 console, choose the AWS Region where you want to configure your Route 53 Resolver\. The Route 53 Resolver is specific to a Region\.
 
 1. Choose the query direction—inbound, outbound, or both\.
 
@@ -166,7 +166,7 @@ You can create an on\-premises name server for AWS DMS to resolve endpoints usin
 
    1. Assign one or more subnets from within the VPC \(for example, choose two for availability\)\. 
 
-   1. Assign specific IP addresses to use as endpoints, or have Route 53 Resolver assign them automatically\.
+   1. Assign specific IP addresses to use as endpoints, or have Route 53 Resolver assign them automatically\.
 
 1. Create a rule for your on\-premises domain so that workloads inside the VPC can route DNS queries to your DNS infrastructure\.
 
@@ -176,7 +176,7 @@ You can create an on\-premises name server for AWS DMS to resolve endpoints usin
 
 When everything is created, your VPC is associated with your inbound and outbound rules and can start routing traffic\. 
 
-For more information about Route 53 Resolver, see [Getting started with Route 53 Resolver](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-getting-started.html) in the *Amazon Route 53 Developer Guide*\.
+For more information about Route 53 Resolver, see [Getting started with Route 53 Resolver](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-getting-started.html) in the *Amazon Route 53 Developer Guide*\.
 
 ## Migrating large binary objects \(LOBs\)<a name="CHAP_BestPractices.LOBS"></a>
 
@@ -295,7 +295,7 @@ During change processing, both small and large LOBs are replicated by performing
 
 When you use inline LOB mode, the AWS DMS task checks all of the LOB sizes to determine which ones to transfer inline\. LOBs larger than the specified size are replicated using full LOB mode\. Therefore, if you know that most of the LOBs are larger than the specified setting, it's better not to use this option\. Instead, allow an unlimited LOB size\.
 
-You configure this option using an attribute in task settings, `InlineLobMaxSize`, which is only available when `FullLobMode` is set to `true`\. The default value for `InlineLobMaxSize` is 0\. The range is 1 KB–2 GB\.
+You configure this option using an attribute in task settings, `InlineLobMaxSize`, which is only available when `FullLobMode` is set to `true`\. The default value for `InlineLobMaxSize` is 0 and the range is 1 –102400 kilobytes \(100 MB\)\.
 
 For example, you might use the following AWS DMS task settings\. Here, setting `InlineLobMaxSize` to a value of 5 results in all LOBs smaller than or equal to 5,000 being transferred inline\.
 

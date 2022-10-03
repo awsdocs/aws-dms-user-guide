@@ -84,7 +84,15 @@ Parallel load for use with table\-setting rules are supported for the following 
 + MongoDB \(only supports the autosegmentation and range segmentation options of a parallel full load\)
 + Amazon DocumentDB \(only supports the autosegmentation and range segmentation options of a parallel full load\)
 
-To specify the maximum number of tables, views, and collections to load in parallel, use the `MaxFullLoadSubTasks` task setting\. To specify the maximum number of threads per table, view, or collection for a parallel\-load task, use the `ParallelLoadThreads` task setting\. To specify the buffer size for a parallel load task, use the `ParallelLoadBufferSize` task setting\. The availability and settings of `ParallelLoadThreads`and `ParallelLoadBufferSize` depend on the target endpoint\.
+To specify the maximum number of tables and views to load in parallel, use the `MaxFullLoadSubTasks` task setting\.
+
+To specify the maximum number of threads per table or view for the supported targets of a parallel\-load task, define more segments using column\-value boundaries\.
+
+To specify the maximum number of threads per table for Amazon DynamoDB, Amazon Kinesis Data Streams, Apache Kafka, or Amazon Elasticsearch Service targets, use the `ParallelLoadThreads` target metadata task setting\.
+
+To specify the buffer size for a parallel load task when `ParallelLoadThreads` is used, use the `ParallelLoadBufferSize` target metadata task setting\.
+
+The availability and settings of `ParallelLoadThreads` and `ParallelLoadBufferSize` depend on the target endpoint\. 
 
 For more information about the `ParallelLoadThreads` and `ParallelLoadBufferSize` settings, see [Target metadata task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.TargetMetadata.md)\. For more information about the `MaxFullLoadSubTasks` setting, see [Full\-load task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.FullLoad.md)\. For information specific to target endpoints, see the related topics\.
 

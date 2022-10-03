@@ -6,7 +6,7 @@ After your prerequisites are in place as described in [Prerequisites](CHAP_DMSSt
 
 1. Sign in to the AWS Management Console and open the AWS DMS console at [https://console\.aws\.amazon\.com/dms/v2/](https://console.aws.amazon.com/dms/v2/)\.
 
-1. Choose **DMS Studio Experience** to turn on DMS Studio functionality in the AWS DMS console\.
+1. Choose **DMS Studio** to turn on DMS Studio functionality in the AWS DMS console\.
 
 1. Choose **Data collectors** in the navigation pane\.
 
@@ -16,7 +16,7 @@ After your prerequisites are in place as described in [Prerequisites](CHAP_DMSSt
    + **Name** – **Test Collector**
    + **Description** – **My test collector**
    + **Amazon S3 bucket** – Choose the Amazon S3 bucket that you created in [Amazon S3 bucket](CHAP_DMSStudio_GettingStarted_Prerequisites.md#CHAP_DMSStudio_GettingStarted_Prerequisites_S3)\.
-   + **IAM role** – Choose **DMSDiscoveryS3FullAccess**\.
+   + **IAM role** – Choose **FleetAdvisorS3Role**\.
 
 1. Choose **Create data collector**\. 
 
@@ -32,25 +32,26 @@ The new data collector appears on the **Data collectors** page\.
 
 1. Choose **Test Collector**\.
 
-1. For **Actions**, choose **Download local collector**\.
+1. Choose **Download local collector**\.
 
 1. When the download completes, run the `AWS_DMS_Collector_Installer.msi` file\. Leave all of the settings as they are, and choose **Finish**\.
 
 1. After the DMS Collector installation is complete, open the following location in a browser if it doesn't open automatically: `http://localhost:11000`\. 
-
-   The DMS Collector **Configure Credentials** page appears\. Provide a login name and password, confirm the password, and choose **Configure credentials**\. Using a login name and password keeps your DMS Collector secure\.
 
    The DMS Collector page appears\.  
 ![\[Screenshot showing successful software check\]](http://docs.aws.amazon.com/dms/latest/userguide/images/dmsstudio_02.png)
 
 1. On the **DMS Collector** page, verify that **MySQL connector for \.NET** in the **Software check** section is **Passed**\.
 
-1. In the **Data forwarding** section, choose **Configure credentials**\.
+1. In the **Data forwarding** section, choose **Configure forwarding**\.
 
-1. In the **Configure credentials for data forwarding** dialog box, enter your AWS account credentials, and choose **Save credentials**\.  
+1. In the **Configure credentials for data forwarding** dialog box, enter the account credentials for the IAM user you created in the previous section, and choose **Browse data collectors**\.  
 ![\[Screenshot showing configured credentials dialog box\]](http://docs.aws.amazon.com/dms/latest/userguide/images/dmsstudio_03.png)
 
    For more information about account credentials, see [ Programmatic Access](https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys) in the *AWS General Reference*\. 
+
+1. In the **Choose data collector** dialog box, choose **Test Collector**, and choose **Choose**\. In the **Configure credentials for data forwarding** dialog box, choose **Save**\.  
+![\[Screenshot showing Choose data collector dialog box\]](http://docs.aws.amazon.com/dms/latest/userguide/images/dmsstudio_03_1.png)
 
 1. On the **DMS Collector** page, verify that the **Data forwarding** section has **Yes** for **Access to Amazon S3** and **Access to AWS DMS**\.  
 ![\[Screenshot showing successful connection\]](http://docs.aws.amazon.com/dms/latest/userguide/images/dmsstudio_04.png)

@@ -17,9 +17,9 @@ You can subscribe to an RSS feed to be notified of updates to this documentation
 | [Support for Amazon Neptune as a target](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Target.Neptune.html) | Added support for Amazon Neptune as a target for data migration\. | June 1, 2020 | 
 | [Support for Apache Kafka as a target](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Target.Kafka.html) | Added support for Apache Kafka as a target for data migration\. | March 20, 2020 | 
 | [Updated security content](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Security.html) | Updated and standardized security content as a response to customer requests\. | December 20, 2019 | 
-| [Migrating with Snowball Edge](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_LargeDBs.html) | Added support for using AWS Snowball Edge to migrate large databases\. | January 24, 2019 | 
+| [Migrating with AWS Snowball Edge](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_LargeDBs.html) | Added support for using AWS Snowball Edge to migrate large databases\. | January 24, 2019 | 
 | [Support for Amazon DocumentDB \(with MongoDB compatibility\) as a target](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Target.DocumentDB.html) | Added support for Amazon DocumentDB \(with MongoDB compatibility\) as a target for data migration\. | January 9, 2019 | 
-| [Support for Amazon Elasticsearch Service and Amazon Kinesis Data Streams as targets](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Target.html) | Added support for Amazon ES and Kinesis Data Streams as targets for data migration\. | November 15, 2018 | 
+| [Support for Amazon OpenSearch Service and Amazon Kinesis Data Streams as targets](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Target.html) | Added support for OpenSearch Service and Kinesis Data Streams as targets for data migration\. | November 15, 2018 | 
 | [CDC native start support](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Task.CDC.html) | Added support for native start points when using change data capture \(CDC\)\. | June 28, 2018 | 
 | [R4 support](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_ReplicationInstance.html#CHAP_ReplicationInstance.InDepth) | Added support for R4 replication instance classes\. | May 10, 2018 | 
 | [Db2 LUW support](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.DB2.html) | Added support for IBM Db2 LUW as a source for data migration\. | April 26, 2018 | 
@@ -33,7 +33,7 @@ The following table describes the important changes to the AWS Database Migratio
 
 | Change | Description | Date changed | 
 | --- | --- | --- | 
-| New feature | Added support for using AWS DMS with AWS Snowball to migrate large databases\. For more information, see [Migrating large data stores using AWS Database Migration Service and Snowball Edge](CHAP_LargeDBs.md)\. | November 17, 2017 | 
+| New feature | Added support for using AWS DMS with AWS Snowball to migrate large databases\. For more information, see [Migrating large data stores using AWS Database Migration Service and AWS Snowball Edge](CHAP_LargeDBs.md)\. | November 17, 2017 | 
 | New feature | Added support for task assessment report and data validation\. For more information about the task assessment report, see [Enabling and working with premigration assessments for a task](CHAP_Tasks.AssessmentReport.md)\. For more information about data validation, see [ Data validation task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.DataValidation.md)\. | November 17, 2017 | 
 | New feature | Added support for AWS CloudFormation templates\. For more information, see [AWS DMS support for AWS CloudFormation](CHAP_Introduction.AWS.md#CHAP_Introduction.AWS.CloudFormation)\. | July 11, 2017 | 
 | New feature | Added support for using Amazon Dynamo as a target\. For more information, see [Using an Amazon DynamoDB database as a target for AWS Database Migration Service](CHAP_Target.DynamoDB.md)\. | April 10, 2017 | 

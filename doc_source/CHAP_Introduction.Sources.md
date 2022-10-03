@@ -8,7 +8,7 @@ You can use the following data stores as source endpoints for data migration usi
 + MySQL versions 5\.5, 5\.6, 5\.7, and 8\.0\.
 **Note**  
 Support for MySQL 8\.0 as a source is available in AWS DMS versions 3\.4\.0 and later, except when the transaction payload is compressed\.
-+ MariaDB \(supported as a MySQL\-compatible data source\) versions 10\.0\.24 to 10\.0\.28, 10\.1, 10\.2, and 10\.3, 10\.3\.13, 10\.4, 10\.5\.
++ MariaDB \(supported as a MySQL\-compatible data source\) versions 10\.0 \(only versions 10\.0\.24 and later\), 10\.2, 10\.3, 10\.4, and 10\.5\.
 **Note**  
 Support for MariaDB as a source is available in all AWS DMS versions where MySQL is supported\.
 + PostgreSQL version 9\.4 and later \(for versions 9\.x\), 10\.x, 11\.x, 12\.x, 13\.x and 14\.0\.

@@ -59,7 +59,7 @@ You begin a database migration in one of two ways:
 
 1. You can choose the AWS DMS console and perform each step there\.
 
-1. You can use the AWS Command Line Interface \(AWS CLI\)\. For more information about using the CLI with AWS DMS, see [ AWS CLI for AWS DMS](http://docs.aws.amazon.com/cli/latest/reference/dms/index.html)\.
+1. You can use the AWS Command Line Interface \(AWS CLI\)\. For more information about using the CLI with AWS DMS, see [AWS CLI for AWS DMS](http://docs.aws.amazon.com/cli/latest/reference/dms/index.html)\.
 
 **To locate the DNS name and port number of your cluster**
 + Use the following AWS CLI command to provide the `replication-group-id` with the name of your replication group\.

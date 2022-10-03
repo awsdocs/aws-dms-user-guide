@@ -359,6 +359,7 @@ The following are limitations when using MongoDB as a source for AWS DMS:
 + Table mode and document mode have the limitations described preceding\.
 + Migrating in parallel using autosegmentation has the limitations described preceding\.
 + Source filters are not supported for MongoDB\.
++ AWS DMS doesn't support documents where the nesting level is greater than 97\.
 
 ## Endpoint configuration settings when using MongoDB as a source for AWS DMS<a name="CHAP_Source.MongoDB.Configuration"></a>
 

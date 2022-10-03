@@ -8,9 +8,9 @@ To perform a database migration, AWS DMS connects to the source data store, read
 + Create one or more migration tasks to migrate data between the source and target data stores\.
 
 A task can consist of three major phases:
-+ The full load of existing data
++ Migration of existing data \(Full load\)
 + The application of cached changes
-+ Ongoing replication
++ Ongoing replication \(Change Data Capture\)
 
 During a full load migration, where existing data from the source is moved to the target, AWS DMS loads data from tables on the source data store to tables on the target data store\. While the full load is in progress, any changes made to the tables being loaded are cached on the replication server; these are the cached changes\. It's important to note that AWS DMS doesn't capture changes for a given table until the full load for that table is started\. In other words, the point when change capture starts is different for each individual table\. 
 

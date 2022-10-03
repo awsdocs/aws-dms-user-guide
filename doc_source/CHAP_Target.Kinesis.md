@@ -67,7 +67,7 @@ When writing CDC updates to a data\-streaming target like Kinesis, you can view 
 
 Different source database engines provide different amounts of information for a before image: 
 + Oracle provides updates to columns only if they change\. 
-+ PostgreSQL provides only data for columns that are part of the primary key \(changed or not\)\. 
++ PostgreSQL provides only data for columns that are part of the primary key \(changed or not\)\. To provide data for all columns \(changed or not\), you need to set `REPLICA_IDENTITY` to `FULL` instead of `DEFAULT`\. Note that you should choose the `REPLICA_IDENTITY` setting carefully for each table\. If you set `REPLICA_IDENTITY` to `FULL`, all of the column values are written to write\-ahead logging \(WAL\) continuously\. This may cause performance or resource issues with tables that are updated frequently\.
 + MySQL generally provides data for all columns except for BLOB and CLOB data types \(changed or not\)\.
 
 To enable before imaging to add original values from the source database to the AWS DMS output, use either the `BeforeImageSettings` task setting or the `add-before-image-columns` parameter\. This parameter applies a column transformation rule\. 

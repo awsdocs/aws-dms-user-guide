@@ -87,7 +87,30 @@ If you don't coerce any of the source data types, the embedded `ContactDetails` 
 }
 ```
 
- However, you can add a transformation rule to coerce `ContactDetails` to a JSON object\. For example, suppose that the original source column name is `ContactDetails`\. Suppose also that the renamed source column is to be `json_ContactDetails`\. AWS DMS replicates the `ContactDetails` field as nested JSON, as follows\.
+However, you can add a transformation rule to coerce `ContactDetails` to a JSON object\. For example, suppose that the original source column name is `ContactDetails`\. To coerce the data type as Nested JSON, the column at source endpoint needs to be renamed as json\_ContactDetails” either by adding “\*json\_\*“ prefix on the source manually or through transformation rules\. For example, you can use the below transformation rule:
+
+```
+{
+    "rules": [
+    {
+    "rule-type": "transformation",
+    "rule-id": "1",
+    "rule-name": "1",
+    "rule-target": "column",
+    "object-locator": {
+    "schema-name": "%",
+    "table-name": "%",
+    "column-name": "ContactDetails"
+     },
+    "rule-action": "rename",
+    "value": "json_ContactDetails",
+    "old-value": null
+    }
+    ]
+}
+```
+
+AWS DMS replicates the ContactDetails field as nested JSON, as follows\. 
 
 ```
 {

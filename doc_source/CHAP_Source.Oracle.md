@@ -10,7 +10,7 @@ AWS DMS supports the following Oracle database editions:
 
 For self\-managed Oracle databases, AWS DMS supports all Oracle database editions for versions 10\.2 and later \(for versions 10\.x\), 11g and up to 12\.2, 18c, and 19c\. For Amazon RDS for Oracle databases that AWS manages, AWS DMS supports all Oracle database editions for versions 11g \(versions 11\.2\.0\.4 and later\) and up to 12\.2, 18c, and 19c\.
 
-You can use Secure Sockets Layer \(SSL\) to encrypt connections between your Oracle endpoint and your replication instance\. For more information on using SSL with an Oracle endpoint, see [Using SSL with AWS Database Migration Service](CHAP_Security.md#CHAP_Security.SSL)\. AWS DMS also supports the use of Oracle transparent data encryption \(TDE\) to encrypt data at rest in the source database\. For more information on using Oracle TDE with an Oracle source endpoint, see [Supported encryption methods for using Oracle as a source for AWS DMS](#CHAP_Source.Oracle.Encryption)\.
+You can use Secure Sockets Layer \(SSL\) to encrypt connections between your Oracle endpoint and your replication instance\. For more information on using SSL with an Oracle endpoint, see [SSL support for an Oracle endpoint](#CHAP_Security.SSL.Oracle)\. AWS DMS also supports the use of Oracle transparent data encryption \(TDE\) to encrypt data at rest in the source database\. For more information on using Oracle TDE with an Oracle source endpoint, see [Supported encryption methods for using Oracle as a source for AWS DMS](#CHAP_Source.Oracle.Encryption)\.
 
 Follow these steps to configure an Oracle database as an AWS DMS source endpoint:
 
@@ -382,6 +382,20 @@ To configure an Oracle Standby instance as a source when using Binary Reader for
   + Redo transport services for automated transfers of redo data\.
   + Apply services to automatically apply redo to the standby database\.
 
+To confirm those requirements are met, execute the following query\.
+
+```
+SQL> select open_mode, database_role from v$database;
+```
+
+From the output of that query, confirm that the standby database is opened in READ ONLY mode and redo is being applied automatically\. For example:
+
+```
+OPEN_MODE             DATABASE_ROLE
+--------------------  ----------------
+READ ONLY WITH APPLY  PHYSICAL STANDBY
+```
+
 **To configure an Oracle Standby instance as a source when using Binary Reader for CDC**
 
 1. Grant additional privileges required to access standby log files\.
@@ -395,9 +409,59 @@ To configure an Oracle Standby instance as a source when using Binary Reader for
    ```
    useLogminerReader=N;useBfile=Y
    ```
-
 **Note**  
 In AWS DMS, you can use extra connection attributes to specify if you want to migrate from the archive logs instead of the redo logs\. For more information, see [Extra connection attributes when using Oracle as a source for AWS DMS](#CHAP_Source.Oracle.ConnectionAttrib)\.
+
+1. Configure archived log destination\.
+
+   DMS binary reader for Oracle source without ASM uses Oracle Directories to access archived redo logs\. If your database is configured to use Fast Recovery Area \(FRA\) as an archive log destination, the location of archive redo files isn't constant\. Each day that archived redo logs are generated results in a new directory being created in the FRA, using the directory name format YYYY\_MM\_DD\. For example: 
+
+   ```
+   DB_RECOVERY_FILE_DEST/SID/archivelog/YYYY_MM_DD
+   ```
+
+   When DMS needs access to archived redo files in the newly created FRA directory and the primary read\-write database is being used as a source, DMS creates a new or replaces an existing Oracle directory, as follows\. 
+
+   ```
+   CREATE OR REPLACE DIRECTORY dmsrep_taskid AS ‘DB_RECOVERY_FILE_DEST/SID/archivelog/YYYY_MM_DD’;
+   ```
+
+   When the standby database is being used as a source, DMS is unable to create or replace the Oracle directory because the database is in read\-only mode\. But, you can choose to perform one of these additional steps: 
+
+   1. Modify `log_archive_dest_id_1` to use an actual path instead of FRA in such a configuration that Oracle won't create daily subdirectories:
+
+      ```
+      ALTER SYSTEM SET log_archive_dest_1=’LOCATION=full directory path’
+      ```
+
+      Then, create an Oracle directory object to be used by DMS:
+
+      ```
+      CREATE OR REPLACE DIRECTORY dms_archived_logs AS ‘full directory path’;
+      ```
+
+   1. Create an additional archive log destination and an Oracle directory object pointing to that destination\. For example:
+
+      ```
+      ALTER SYSTEM SET log_archive_dest_3=’LOCATION=full directory path’; 
+      CREATE DIRECTORY dms_archived_log AS ‘full directory path’;
+      ```
+
+      Then add an extra connection attribute to the task source endpoint:
+
+      ```
+      archivedLogDestId=3
+      ```
+
+   1. Manually pre\-create Oracle directory objects to be used by DMS\.
+
+      ```
+      CREATE DIRECTORY dms_archived_log_20210301 AS ‘DB_RECOVERY_FILE_DEST/SID/archivelog/2021_03_01’;
+      CREATE DIRECTORY dms_archived_log_20210302 AS ‘DB_RECOVERY_FILE_DEST>/SID>/archivelog/2021_03_02’; 
+      ...
+      ```
+
+   1. Create an Oracle scheduler job that runs daily and creates the required directory\.
 
 ## Working with an AWS\-managed Oracle database as a source for AWS DMS<a name="CHAP_Source.Oracle.Amazon-Managed"></a>
 

@@ -80,7 +80,7 @@ The following table shows the possible categories and events for the replication
 |  Maintenance  | Offline maintenance of the replication instance is taking place\. The replication instance is currently unavailable\.  | 
 |  Maintenance  | Offline maintenance of the replication instance is complete\. The replication instance is now available\.  | 
 |  Maintenance  | A replication instance is in a state that can't be upgraded\.  | 
-|  LowStorage  | Free storage for the replication instance is low\.  | 
+|  LowStorage  |  The replication instance has consumed more than 90% of its allocated storage\. You can monitor the storage space for a replication instance using the Free Storage Space metric\. | 
 |  Failover  | Failover started for a Multi\-AZ replication instance\.  | 
 |  Failover  | Failover is complete for a Multi\-AZ replication instance\. | 
 |  Failover  | Multi\-AZ failover to standby is complete\. | 

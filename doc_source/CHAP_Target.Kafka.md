@@ -10,7 +10,7 @@ AWS Database Migration Service publishes records to a Kafka topic using JSON\. D
 
 To migrate your data from any supported data source to a target Kafka cluster, you use object mapping\. With object mapping, you determine how to structure the data records in the target topic\. You also define a partition key for each table, which Apache Kafka uses to group the data into its partitions\. 
 
-When AWS DMS creates tables on an Apache Kafka target endpoint, it creates as many tables as in the source database endpoint\. AWS DMS also sets several Apache Kafka parameter values\. The cost for the table creation depends on the amount of data and the number of tables to be migrated\.
+Currently, AWS DMS only supports a single topic per task\. For a single task with multiple tables, all messages go to a single topic\. Each message includes a metadata section that identifies the target schema and table\.
 
 **Apache Kafka endpoint settings**
 
@@ -41,14 +41,14 @@ You can use settings to help increase the speed of your transfer\. To do so, AWS
 + `MaxFullLoadSubTasks` – Use this option to indicate the maximum number of source tables to load in parallel\. AWS DMS loads each table into its corresponding Kafka target table using a dedicated subtask\. The default is 8; the maximum value is 49\.
 + `ParallelLoadThreads` – Use this option to specify the number of threads that AWS DMS uses to load each table into its Kafka target table\. The maximum value for an Apache Kafka target is 32\. You can ask to have this maximum limit increased\.
 + `ParallelLoadBufferSize` – Use this option to specify the maximum number of records to store in the buffer that the parallel load threads use to load data to the Kafka target\. The default value is 50\. The maximum value is 1,000\. Use this setting with `ParallelLoadThreads`\. `ParallelLoadBufferSize` is valid only when there is more than one thread\.
-+ `ParallelLoadQueuesPerThread` – Use this option to specify the number of queues each concurrent thread accesses to take data records out of queues and generate a batch load for the target\. The default is 1\. However, for Kafka targets of various payload sizes, the valid range is 5–512 queues per thread\.
++ `ParallelLoadQueuesPerThread` – Use this option to specify the number of queues each concurrent thread accesses to take data records out of queues and generate a batch load for the target\. The default is 1\. The maximum is 512\.
 
-You can improve the performance of change data capture \(CDC\) for real\-time data streaming target endpoints like Kafka using task settings to modify the behaviour of the `PutRecords` API call\. To do this, you can specify the number of concurrent threads, queues per thread, and the number of records to store in a buffer using `ParallelApply*` task settings\. For example, suppose you want to perform a CDC load and apply 128 threads in parallel\. You also want to access 64 queues per thread, with 50 records stored per buffer\. 
+You can improve the performance of change data capture \(CDC\) for Kafka endpoints by tuning task settings for parallel threads and bulk operations\. To do this, you can specify the number of concurrent threads, queues per thread, and the number of records to store in a buffer using `ParallelApply*` task settings\. For example, suppose you want to perform a CDC load and apply 128 threads in parallel\. You also want to access 64 queues per thread, with 50 records stored per buffer\. 
 
 To promote CDC performance, AWS DMS supports these task settings:
 + `ParallelApplyThreads` – Specifies the number of concurrent threads that AWS DMS uses during a CDC load to push data records to a Kafka target endpoint\. The default value is zero \(0\) and the maximum value is 32\.
 + `ParallelApplyBufferSize` – Specifies the maximum number of records to store in each buffer queue for concurrent threads to push to a Kafka target endpoint during a CDC load\. The default value is 100 and the maximum value is 1,000\. Use this option when `ParallelApplyThreads` specifies more than one thread\. 
-+ `ParallelApplyQueuesPerThread` – Specifies the number of queues that each thread accesses to take data records out of queues and generate a batch load for a Kafka endpoint during CDC\.
++ `ParallelApplyQueuesPerThread` – Specifies the number of queues that each thread accesses to take data records out of queues and generate a batch load for a Kafka endpoint during CDC\. The default is 1\. The maximum is 512\.
 
 When using `ParallelApply*` task settings, the `partition-key-type` default is the `primary-key` of the table, not `schema-name.table-name`\.
 
@@ -278,7 +278,7 @@ When writing CDC updates to a data\-streaming target like Kafka you can view a s
 
 Different source database engines provide different amounts of information for a before image: 
 + Oracle provides updates to columns only if they change\. 
-+ PostgreSQL provides only data for columns that are part of the primary key \(changed or not\)\. 
++ PostgreSQL provides only data for columns that are part of the primary key \(changed or not\)\. If logical replication is in use and REPLICA IDENTITY FULL is set for the source table, you can get entire before and after information on the row written to the WALs and available here\.
 + MySQL generally provides data for all columns \(changed or not\)\.
 
 To enable before imaging to add original values from the source database to the AWS DMS output, use either the `BeforeImageSettings` task setting or the `add-before-image-columns` parameter\. This parameter applies a column transformation rule\. 
@@ -381,7 +381,6 @@ For information on using the `add-before-image-columns` rule action, see [ Trans
 
 The following limitations apply when using Apache Kafka as a target:
 + AWS DMS Kafka target endpoints don't support IAM access control for Amazon Managed Streaming for Apache Kafka \(Amazon MSK\)\.
-+ AWS DMS supports a maximum message size of 1 MiB for a Kafka target\.
 + Make sure to configure both your AWS DMS replication instance and your Kafka cluster in the same virtual private cloud \(VPC\) based on Amazon VPC and in the same security group\. The Kafka cluster can either be an Amazon MSK instance or your own Kafka instance running on Amazon EC2\. For more information, see [Setting up a network for a replication instance](CHAP_ReplicationInstance.VPC.md)\.
 **Note**  
 To specify a security group for Amazon MSK, on the **Create cluster** page, choose **Advanced settings**, select **Customize settings**, and select the security group or accept the default if it is the same as for your replication instance\.
@@ -416,6 +415,12 @@ To specify a security group for Amazon MSK, on the **Create cluster** page, choo
 AWS DMS uses table\-mapping rules to map data from the source to the target Kafka topic\. To map data to a target topic, you use a type of table\-mapping rule called object mapping\. You use object mapping to define how data records in the source map to the data records published to a Kafka topic\. 
 
 Kafka topics don't have a preset structure other than having a partition key\.
+
+**Note**  
+You don't have to use object mapping\. You can use regular table mapping for various transformations\. However, the partition key type will follow these default behaviors:   
+Primary Key is used as a partition key for Full Load\.
+If no paralle\-apply task settings are used, `schema.table` is used as a partition key for CDC\.
+If parallel\-apply task settings are used, Primary key is used as a partition key for CDC\.
 
 To create an object\-mapping rule, specify `rule-type` as `object-mapping`\. This rule specifies what type of object mapping you want to use\. 
 
@@ -663,8 +668,8 @@ With AWS DMS engine versions 3\.4\.6 and later, you can use the `kafka-target-to
             "object-locator": {
                 "schema-name": "Test",
                 "table-name": "Customer" 
-            }
-            "partition-key": {"value": "ConstantPartitionKey" },
+            },
+            "partition-key": {"value": "ConstantPartitionKey" }
         },
         {
             "rule-type": "object-mapping",
@@ -675,8 +680,8 @@ With AWS DMS engine versions 3\.4\.6 and later, you can use the `kafka-target-to
             "object-locator": {
                 "schema-name": "Test",
                 "table-name": "Address"
-            }
-            "partition-key": {"value": "HomeAddress" },
+            },
+            "partition-key": {"value": "HomeAddress" }
         },
         {
             "rule-type": "object-mapping",
@@ -713,3 +718,76 @@ The source table for the record\. This field can be empty for a control record\.
 
 **Timestamp**  
 The timestamp for when the JSON message was constructed\. The field is formatted with the ISO 8601 format\.
+
+The following JSON message example illustrates a data type message with all additional metadata\.
+
+```
+{ 
+   "data":{ 
+      "id":100000161,
+      "fname":"val61s",
+      "lname":"val61s",
+      "REGION":"val61s"
+   },
+   "metadata":{ 
+      "timestamp":"2019-10-31T22:53:59.721201Z",
+      "record-type":"data",
+      "operation":"insert",
+      "partition-key-type":"primary-key",
+      "partition-key-value":"sbtest.sbtest_x.100000161",
+      "schema-name":"sbtest",
+      "table-name":"sbtest_x",
+      "transaction-id":9324410911751,
+      "transaction-record-id":1,
+      "prev-transaction-id":9324410910341,
+      "prev-transaction-record-id":10,
+      "commit-timestamp":"2019-10-31T22:53:55.000000Z",
+      "stream-position":"mysql-bin-changelog.002171:36912271:0:36912333:9324410911751:mysql-bin-changelog.002171:36912209"
+   }
+}
+```
+
+The following JSON message example illustrates a control type message\.
+
+```
+{ 
+   "control":{ 
+      "table-def":{ 
+         "columns":{ 
+            "id":{ 
+               "type":"WSTRING",
+               "length":512,
+               "nullable":false
+            },
+            "fname":{ 
+               "type":"WSTRING",
+               "length":255,
+               "nullable":true
+            },
+            "lname":{ 
+               "type":"WSTRING",
+               "length":255,
+               "nullable":true
+            },
+            "REGION":{ 
+               "type":"WSTRING",
+               "length":1000,
+               "nullable":true
+            }
+         },
+         "primary-key":[ 
+            "id"
+         ],
+         "collation-name":"latin1_swedish_ci"
+      }
+   },
+   "metadata":{ 
+      "timestamp":"2019-11-21T19:14:22.223792Z",
+      "record-type":"control",
+      "operation":"create-table",
+      "partition-key-type":"task-id",
+      "schema-name":"sbtest",
+      "table-name":"sbtest_t1"
+   }
+}
+```

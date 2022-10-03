@@ -377,6 +377,7 @@ The following are limitations when using Amazon DocumentDB as a source for AWS D
 + Migrating in parallel using autosegmentation has the limitations described preceding\.
 + An Amazon DocumentDB \(MongoDB compatible\) source doesn’t support using a specific timestamp as a start position for change data capture \(CDC\)\. An ongoing replication task starts capturing changes regardless of the timestamp\.
 + When using DocumentDB \(MongoDB compatible\) as a source, DMS can handle a maximum of 250 records per second\.
++ AWS DMS doesn't support documents where the nesting level is greater than 97\.
 
 ## Using extra connections attributes with Amazon DocumentDB as a source<a name="CHAP_Source.DocumentDB.ECAs"></a>
 

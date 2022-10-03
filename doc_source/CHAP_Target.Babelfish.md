@@ -13,7 +13,7 @@ For information about using Babelfish as a database endpoint, see [Babelfish for
 Perform the following preparatory steps prior to migrating data from your source to your target Babelfish database\.
 + Prepare and create your tables\.
 + Manage tables that have an IDENTITY column\.
-+ Set minimum Aurora capacity units \(ACUs\) for your Aurora PostgreSQL Serverless V2 source database\.
++ Set minimum Aurora capacity units \(ACUs\) for your Aurora PostgreSQL Serverless V2 target database\.
 
 Procedures for performing those preparatory steps follow\.
 

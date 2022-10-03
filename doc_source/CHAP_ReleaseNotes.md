@@ -15,8 +15,8 @@ The following table shows the new features and enhancements introduced in AWS Da
 | Support IBM Db2 z/OS databases as a source for full load only |  AWS DMS now supports IBM Db2 z/OS databases as a source\. Using AWS DMS, you can now perform live migrations from Db2 mainframes to any AWS DMS supported target\. For more information, see [Using IBM Db2 for z/OS databases as a source for AWS DMS](CHAP_Source.DB2zOS.md)\.  | 
 | Support SQL Server read replica as a source |  AWS DMS now supports SQL Server read replica as a source\. Using AWS DMS, you can now perform live migrations from SQL Server read replica to any AWS DMS supported target\. For more information, see [Using a Microsoft SQL Server database as a source for AWS DMS](CHAP_Source.SQLServer.md)\.  | 
 | Support EventBridge DMS events |  AWS DMS supports managing event subscriptions using EventBridge for DMS events\. For more information, see [Working with Amazon EventBridge events and notifications in AWS Database Migration Service](CHAP_EventBridge.md)\.  | 
-| Support VPC source and target endpoints |  AWS DMS now supports virtual private cloud \(VPC\) endpoints as sources and targets\. AWS DMS can now connect to any AWS service with VPC endpoints when explicitly defined routes to the services are defined in their AWS DMS VPC\. For more information, see [Configuring VPC endpoints as AWS DMS source and target endpoints](CHAP_VPC_Endpoints.md)\.  | 
-| New PostgreSQL version | PostgreSQL version 14\.x is now supported as a source\. | 
+| Support VPC source and target endpoints |  AWS DMS now supports Amazon Virtual Private Cloud \(VPC\) endpoints as sources and targets\. AWS DMS can now connect to any AWS service with VPC endpoints when explicitly defined routes to the services are defined in their AWS DMS VPC\. Upgrades to AWS DMS versions 3\.4\.7 and higher require that you first configure AWS DMS to use VPC endpoints or to use public routes\. This requirement applies to source and target endpoints for Amazon S3, Amazon Kinesis Data Streams, AWS Secrets Manager, Amazon DynamoDB, Amazon Redshift, and Amazon OpenSearch Service\.  For more information, see [Configuring VPC endpoints as AWS DMS source and target endpoints](CHAP_VPC_Endpoints.md)\.  | 
+| New PostgreSQL version | PostgreSQL version 14\.0 is now supported as a source\. | 
 | Support Aurora Serverless v2 as a target |  AWS DMS now supports Aurora Serverless v2 as a target\. Using AWS DMS, you can now perform live migrations to Aurora Serverless v2\. For information about supported AWS DMS targets, see [Targets for data migration](CHAP_Target.md)\.  | 
 |  New IBM Db2 for LUW versions  |  AWS DMS now supports IBM Db2 for LUW versions 11\.5\.6 and 11\.5\.7 as a source\. Using AWS DMS, you can now perform live migrations from the latest versions of IBM DB2 for LUW\. For information about AWS DMS sources, see [Sources for data migration](CHAP_Source.md)\. For information about supported AWS DMS targets, see [Targets for data migration](CHAP_Target.md)\.  | 
 
@@ -66,7 +66,7 @@ The issues resolved in AWS DMS 3\.4\.6 include the following:
 + Supported the mapping between data type `TIMESTAMP WITH TIME ZONE` from sources to `TIMESTAMPTZ` when using Redshift as a target
 + Improved the performance of CDC for tasks without wildcard selection rules when using MongoDB or Amazon DocumentDB as a source\. 
 + Fixed an issue where schema names with underscore wildcard and length less than 8 were not captured by AWS DMS tasks when using Db2 LUW as a source\. 
-+ Fixed an issue where AWS DMS instances ran out of memory under large data volume when using Amazon ES as a target\. 
++ Fixed an issue where AWS DMS instances ran out of memory under large data volume when using OpenSearch Service as a target\. 
 + Improved the performance of data validation by supporting full load validation only tasks\. 
 + Fixed an issue where AWS DMS tasks failed to resume after forced failover when using Sybase as a source\.
 + Fixed an issue where AWS DMS sent warning `Invalid BC timestamp was encountered in column` incorrectly\.
@@ -155,7 +155,7 @@ The issues resolved in AWS DMS 3\.4\.4 include the following:
 + Fixed an issue to handle empty key values when using Amazon DocumentDB \(with MongoDB compatibility\) as a target\.
 + Fixed an issue where AWS DMS fails to replicate `NumberDecimal` or `Decimal128` columns when using MongoDB or Amazon DocumentDB \(with MongoDB compatibility\) as a source\.
 + Fixed an issue to allow CDC tasks to retry when there is a fail over on MongoDB or Amazon DocumentDB \(with MongoDB compatibility\) as a source\.
-+ Added an option to remove the hexadecimal “0x” prefix to `RAW` data type values when using Kinesis, Kafka, or Elasticsearch as a target\.
++ Added an option to remove the hexadecimal “0x” prefix to `RAW` data type values when using Kinesis, Kafka, or OpenSearch as a target\.
 + Fixed an issue where validation fails on fixed length character columns when using Db2 LUW as a source\.
 + Fixed an issue where validation fails when only the source data type or the target data type is `FLOAT` or `DOUBLE`\.
 + Fixed an issue where validation fails on `NULL` characters when using Oracle as a source\.
@@ -274,8 +274,8 @@ The issues resolved in AWS DMS 3\.4\.0 include the following:
 + Improved premigration task assessments\. For more information, see [Enabling and working with premigration assessments for a task](CHAP_Tasks.AssessmentReport.md)\.
 + Improved data validation for float, real, and double data types\.
 + Improved Amazon Redshift as a target by better handling this error: "The specified key does not exist\."
-+ Supports multithreaded CDC load task settings, including `ParallelApplyThreads`, `ParallelApplyBufferSize`, and `ParallelApplyQueuesPerThread`, for Amazon Elasticsearch Service \(Amazon ES\) as a target\.
-+ Improved Amazon ES as a target by supporting its use of composite primary keys\.
++ Supports multithreaded CDC load task settings, including `ParallelApplyThreads`, `ParallelApplyBufferSize`, and `ParallelApplyQueuesPerThread`, for Amazon OpenSearch Service \(OpenSearch Service\) as a target\.
++ Improved OpenSearch Service as a target by supporting its use of composite primary keys\.
 + Fixed an issue where test connection fails when using PostgreSQL as a source and the password has special characters in it\.
 + Fixed an issue with using SQL Server as a source when some `VARCHAR` columns are truncated\.
 + Fixed an issue where AWS DMS does not close open transactions when using Amazon RDS SQL Server as a source\. This can result in data loss if the polling interval parameter is set incorrectly\. For more information on how to setup a recommended polling interval value, see [Using a Microsoft SQL Server database as a source for AWS DMS](CHAP_Source.SQLServer.md)\. 
@@ -307,7 +307,7 @@ The following table shows the new features and enhancements introduced in AWS DM
 | New feature or enhancement | Description | 
 | --- | --- | 
 | New PostgreSQL version  |  PostgreSQL version 12 is now supported as a source and target\.  | 
-| Support for composite primary key with Amazon Elasticsearch Service as target  |  As of AWS DMS 3\.3\.3, use of a composite primary key is supported by Amazon ES targets\.  | 
+| Support for composite primary key with Amazon OpenSearch Service as target  |  As of AWS DMS 3\.3\.3, use of a composite primary key is supported by OpenSearch Service targets\.  | 
 | Support for Oracle extended data types  |  Oracle extended data types for both Oracle source and targets are now supported\.  | 
 | Increased number of AWS DMS resources per account | The limit on the number of AWS DMS resources you can create has increased\. For more information, see [Quotas for AWS Database Migration Service](CHAP_Limits.md)\. | 
 

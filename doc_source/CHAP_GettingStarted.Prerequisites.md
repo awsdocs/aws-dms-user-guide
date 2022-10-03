@@ -94,7 +94,7 @@ To specify settings for your source and target databases for AWS DMS, use Amazon
 1. On the **Parameter groups** page, choose **Create parameter group** again\.
 
 1. On the **Create parameter group** page, enter the following settings:
-   + **Parameter group family**: **postgres12**
+   + **Parameter group family**: **postgres13**
    + **Group name**: **dms\-postgresql\-parameters**
    + **Description**: **Group for specifying role setting for replication**
 

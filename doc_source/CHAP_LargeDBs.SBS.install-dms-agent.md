@@ -99,7 +99,7 @@ AWS Schema Conversion Tool DMS Agent is no longer running
 AWS Schema Conversion Tool DMS Agent was started as PID 1608
 ```
 
-We recommend that you install the [AWS Command Line Interface](https://aws.amazon.com/cli/) \(AWS CLI\)\. Using the AWS CLI, you can interrogate the Snowball Edge to see the data files written to the device\. You use the AWS credentials retrieved from the Edge to access the Edge device\. For example, you might run the following command\.
+We recommend that you install the [AWS Command Line Interface](https://aws.amazon.com/cli/) \(AWS CLI\)\. Using the AWS CLI, you can interrogate the AWS Snowball Edge to see the data files written to the device\. You use the AWS credentials retrieved from the Edge to access the Edge device\. For example, you might run the following command\.
 
 ```
 aws s3 ls --profile SnowballEdge --endpoint https://192.0.2.0 :8080 bucket-name --recursive

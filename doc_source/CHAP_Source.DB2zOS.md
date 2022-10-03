@@ -31,7 +31,7 @@ The following limitations apply when using an IBM Db2 for z/OS database as a sou
 
 Data migrations that use Db2 for z/OS as a source for AWS DMS support most Db2 for z/OS data types\. The following table shows the Db2 for z/OS source data types that are supported when using AWS DMS, and the default mapping from AWS DMS data types\.
 
-For more information about Db2 for z/OS data types, see the [IBM Db2 for z/OS documentation](https://docs.aws.amazon.com/https://www.ibm.com/docs/en/db2-for-zos/12?topic=elements-data-types)\.
+For more information about Db2 for z/OS data types, see the [IBM Db2 for z/OS documentation](https://www.ibm.com/docs/en/db2-for-zos/12?topic=elements-data-types)\.
 
 For information on how to view the data type that is mapped in the target, see the section for the target endpoint that you're using\.
 

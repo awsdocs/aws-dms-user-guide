@@ -8,7 +8,7 @@ By supporting Amazon VPC endpoints, AWS DMS makes it easier to maintain end\-to\
 + AWS Secrets Manager
 + Amazon DynamoDB
 + Amazon Redshift
-+ 
++ Amazon OpenSearch Service
 
 You might need VPC endpoints to support AWS DMS starting with version 3\.4\.7 as described following\.
 

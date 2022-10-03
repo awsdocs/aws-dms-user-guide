@@ -1,4 +1,4 @@
-# Step 3: Unlock the Snowball Edge device<a name="CHAP_LargeDBs.SBS.unlock-snowball-edge"></a>
+# Step 3: Unlock the AWS Snowball Edge device<a name="CHAP_LargeDBs.SBS.unlock-snowball-edge"></a>
 
 When the Edge device arrives, prepare it for use\. 
 
@@ -6,7 +6,7 @@ Follow the steps outlined in the section *[Getting started with an AWS Snowball 
 
 You can also check out the [AWS Snowball Edge getting started marketing page](https://aws.amazon.com/snowball-edge/getting-started/) for more resources\. 
 
-Power the device on, [connect it to your local network](https://docs.aws.amazon.com/snowball/latest/developer-guide/using-device.html), record the IP address of the Edge device, and [obtain the unlock code and manifest file](https://docs.aws.amazon.com/snowball/latest/developer-guide/get-credentials.html) from the Snowball Edge console\. In the console, choose your job, choose **View job details**, and then **Credentials**\. Save both the client unlock code and the manifest file\.
+Power the device on, [connect it to your local network](https://docs.aws.amazon.com/snowball/latest/developer-guide/using-device.html), record the IP address of the Edge device, and [obtain the unlock code and manifest file](https://docs.aws.amazon.com/snowball/latest/developer-guide/get-credentials.html) from the AWS Snowball Edge console\. In the console, choose your job, choose **View job details**, and then **Credentials**\. Save both the client unlock code and the manifest file\.
 
 ![\[Image NOT FOUND\]](http://docs.aws.amazon.com/dms/latest/userguide/images/snowball-edge-unlock.png)
 
@@ -25,7 +25,7 @@ snowballEdge unlock \
     -u 12345-abcde-12345-ABCDE-12345
 ```
 
-Finally, [retrieve the Snowball Edge access key and secret key](https://docs.aws.amazon.com/snowball/latest/developer-guide/using-client-commands.html#client-credentials) from the device using the Edge client\. The following shows example input and output for the command to get the access key\.
+Finally, [retrieve the AWS Snowball Edge access key and secret key](https://docs.aws.amazon.com/snowball/latest/developer-guide/using-client-commands.html#client-credentials) from the device using the Edge client\. The following shows example input and output for the command to get the access key\.
 
 **Example input**
 
@@ -64,4 +64,4 @@ aws_access_key_id = AKIAIOSFODNN7EXAMPLE
 aws_secret_access_key = wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 ```
 
-When the Snowball Edge is ready to use, you can interact with it directly by using the AWS CLI or S3 SDK Adapter for Snowball\. This adapter also works with the Edge device\. 
+When the AWS Snowball Edge is ready to use, you can interact with it directly by using the AWS CLI or S3 SDK Adapter for Snowball\. This adapter also works with the Edge device\. 
