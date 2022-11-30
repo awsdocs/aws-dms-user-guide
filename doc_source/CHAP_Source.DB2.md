@@ -54,6 +54,7 @@ The following table shows the extra connection attributes that you can use with 
 
 | Name | Description | 
 | --- | --- | 
+|  `BlockScan`  |  For ongoing replication \(CDC\), set `BlockScan` to `false` if you plan to start replication from a specific timestamp. This prevent the following issue: <pre>Last Error Resume from timestamp is not supported Task error notification received from subtask 0, thread 0 [reptask/replicationtask.c:2883] [1020455] 'Start from timestamp' was blocked to prevent Replicate from scanning the log (to find the timestamp). When using IBM DB2 for LUW, 'Start from timestamp' is only supported if an actual change was captured by this Replicate task earlier to the specified timestamp.; Error executing command; Stream component failed at subtask 0, component st_0_EXAMPLEJ35IHEXAMPLEYAMZIEXAMPLEROI; Stream component 'st_0_NG2SUXEXAMPLEE7QPALYEXAMPLEBDPQROI' terminated [reptask/replicationtask.c:2891] [1020455] Stop Reason FATAL_ERROR Error Level FATAL</pre>    |
 |  `CurrentLSN`  |  For ongoing replication \(CDC\), use `CurrentLSN` to specify a log sequence number \(LSN\) where you want the replication to start\.   | 
 |  `MaxKBytesPerRead`  |  Maximum number of bytes per read, as a NUMBER value\. The default is 64 KB\.  | 
 |  `SetDataCaptureChanges`  |  Enables ongoing replication \(CDC\) as a BOOLEAN value\. The default is true\.  | 
