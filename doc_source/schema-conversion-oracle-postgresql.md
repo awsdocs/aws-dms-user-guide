@@ -1,0 +1,23 @@
+# Oracle to PostgreSQL conversion settings<a name="schema-conversion-oracle-postgresql"></a>
+
+Oracle to PostgreSQL conversion settings in DMS Schema Conversion include the following:
++ AWS DMS can convert Oracle materialized views to tables or materialized views on PostgreSQL\. For **Materialized views**, choose how to convert your source materialized views\.
++ Your source Oracle database can use the `ROWID` pseudocolumn\. PostgreSQL doesn't support similar functionality\. DMS Schema Conversion can emulate the `ROWID` pseudocolumn in the converted code using the `bigint` or `character varying` data type\. To do so, choose **Use the bigint data type to emulate the ROWID pseudocolumn** or **Use the character varying data type to emulate the ROWID pseudocolumn** for **Row ID**\.
+
+  If your source Oracle code doesn't use the `ROWID` pseudocolumn, choose **Don't generate**\. In this case, the converted code works faster\.
++ Your source Oracle code can include the `TO_CHAR`, `TO_DATE`, and `TO_NUMBER` functions with parameters that PostgreSQL doesn't support\. By default, DMS Schema Conversion emulates the usage of these parameters in the converted code\.
+
+  You can use native PostgreSQL `TO_CHAR`, `TO_DATE`, and `TO_NUMBER` functions when your source Oracle code lacks parameters that are unsupported by PostgreSQL\. In this case, the converted code works faster\. To do so, select the following values:
+  + **Use a native PostgreSQL TO\_CHAR function**
+  + **Use a native PostgreSQL TO\_DATE function**
+  + **Use a native PostgreSQL TO\_NUMBER function**
++ Your database and applications can run in different time zones\. By default, DMS Schema Conversion emulates time zones in the converted code\. However, you don't need this emulation when your database and applications use the same time zone\. In this case, select **Improve the performance of the converted code where the database and applications use the same time zone**\.
++ To continue using sequences in your converted code, select **Populate converted sequences with the last value generated on the source side**\.
++ In some cases, your source Oracle database might store only integer values in the primary or foreign key columns of the `NUMBER` data type\. In these cases, AWS DMS can convert these columns to the `BIGINT` data type\. This approach improves the performance of your converted code\. To do so, select **Convert primary and foreign key columns of the NUMBER data type to the BIGINT data type**\. Make sure that your source doesn't include floating point values in these columns to avoid data loss\.
++ To skip deactivated triggers and constraints in your source code, choose **Convert only active triggers and constraints**\.
++ You can use DMS Schema Conversion to convert string variables that are called as dynamic SQL\. Your database code can change the values of these string variables\. To make sure that AWS DMS always converts the latest value of this string variable, select **Convert the dynamic SQL code that is created in called routines**\.
++ PostgreSQL versions 10 and earlier don't support procedures\. If you aren't familiar with using procedures in PostgreSQL, AWS DMS can convert Oracle procedures to PostgreSQL functions\. To do so, select **Convert procedures to functions**\.
++ To see additional information about the occurred action items, you can add specific functions to the extension pack\. To do so, select **Add extension pack functions that raise user\-defined exceptions**\. Then choose severity levels to raise user\-defined exceptions\. Make sure that you apply the extension pack schema after you convert your source database objects\. For more information about extension packs, see [Using extension packs](extension-pack.md)\. 
++ Your source Oracle database can include constraints with the automatically generated names\. If your source code uses these names, make sure that you select **Keep the names of system generated constraints**\. If your source code uses these constraints, but doesn't use their names, clear this option to increase the conversion speed\.
++ If your source and target databases run in different time zones, the function that emulates the `SYSDATE` built\-in Oracle function returns different values compared to the source function\. To make sure that your source and target functions return the same values, choose **Set the time zone of your source database**\.
++ You can use the functions from the orafce extension in your converted code\. To do so, for **Orafce built\-in routines**, select the functions to use\. For more information about orafce, see [orafce](https://github.com/orafce/orafce) on GitHub\.
