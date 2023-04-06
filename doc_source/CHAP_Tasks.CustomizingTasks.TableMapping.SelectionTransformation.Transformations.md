@@ -4,11 +4,11 @@ You use the transformation actions to specify any transformations you want to ap
 
 ## Limitations<a name="CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Transformations.Limitations"></a>
 + You can't apply more than one transformation rule action against the same object \(schema, table, column, table\-tablespace, or index\-tablespace\)\. You can apply several transformation rule actions on any level as long as each transformation action is applied against a different object\.
-+ Column names in transformation rules are case\-sensitive\. For example, you must provide column names for an Oracle or Db2 database in upper case\.
++ Table names and column names in transformation rules are case\-sensitive\. For example, you must provide table names and column names for an Oracle or Db2 database in upper\-case\.
 + Transformations are not supported for column names with Right\-to\-Left languages\.
 + Transformations cannot be performed on columns that contain special characters \(e\.g\. \#, \\, /, \-\) in their name\.
 + The only supported transformation for columns that are mapped to BLOB/CLOB data types is to drop the column on the target\.
-+ AWS DMS doesn't support replicating two source tables to a single target table\. AWS DMS replicates records from table to table, and from column to column, according to the replication tasks's transformation rules\. The object names must be unique to prevent overlapping\.
++ AWS DMS doesn't support replicating two source tables to a single target table\. AWS DMS replicates records from table to table, and from column to column, according to the replication task’s transformation rules\. The object names must be unique to prevent overlapping\.
 
   For example, a source table has a column named `ID` and the corresponding target table has a pre\-existing column called `id`\. If a rule uses an `ADD-COLUMN` statement to add a new column called `id`, and a SQLite statement to populate the column with custom values, this creates a duplicate, ambiguous object named `id` and is not supported\. 
 
@@ -532,6 +532,6 @@ For a source column named `emp_no`, the transformation rule in the example follo
 Here, the following statement populates a `BI_emp_no` column in the corresponding row with 1\.  
 
 ```
-UPDATE employees SET emp_no = 3 WHERE emp_no = 1;
+UPDATE employees SET emp_no = 3 WHERE BI_emp_no = 1;
 ```
 When writing CDC updates to supported AWS DMS targets, the `BI_emp_no` column makes it possible to tell which rows have updated values in the `emp_no` column\.

@@ -39,7 +39,7 @@ Several issues can cause a migration task to run slowly, or cause subsequent tas
 
 The most common reason for a migration task running slowly is that there are inadequate resources allocated to the AWS DMS replication instance\. To make sure that your instance has enough resources for the tasks you are running on it, check your replication instance's use of CPU, memory, swap files, and IOPS\. For example, multiple tasks with Amazon Redshift as an endpoint are I/O intensive\. You can increase IOPS for your replication instance or split your tasks across multiple replication instances for a more efficient migration\.
 
-For more information about determining the size of your replication instance, see [Choosing the best size for a replication instance](CHAP_BestPractices.SizingReplicationInstance.md)\.
+For more information about determining the size of your replication instance, see [Selecting the best size for a replication instance](CHAP_BestPractices.SizingReplicationInstance.md)\.
 
 You can increase the speed of an initial migration load by doing the following:
 + If your target is an Amazon RDS DB instance, make sure that Multi\-AZ isn't enabled for the target DB instance\.
@@ -176,7 +176,7 @@ Use the EC2 instance IP address and the database port given preceding for the AW
 
 ## Timestamps are garbled in Amazon Athena queries<a name="CHAP_Troubleshooting.General.GarbledTimestamps"></a>
 
-If timestamps are garbled in Athena queries, use the AWS Management Console or the [ModifyEndpoint](dms/latest/APIReference/API_ModifyEndpoint.html) action to set the `parquetTimestampInMillisecond` value for your Amazon S3 endpoint to `true`\. For more information, see [S3Settings](https://docs.aws.amazon.com/dms/latest/APIReference/API_S3Settings.html)\.
+If timestamps are garbled in Athena queries, use the AWS Management Console or the [ModifyEndpoint](https://docs.aws.amazon.com/dms/latest/APIReference/API_ModifyEndpoint.html) action to set the `parquetTimestampInMillisecond` value for your Amazon S3 endpoint to `true`\. For more information, see [S3Settings](https://docs.aws.amazon.com/dms/latest/APIReference/API_S3Settings.html)\.
 
 ## Troubleshooting issues with Oracle<a name="CHAP_Troubleshooting.Oracle"></a>
 

@@ -31,10 +31,11 @@ For more information, see the following topics\.
 + [AWS Database Migration Service metrics](#CHAP_Monitoring.Metrics)
 + [Viewing and managing AWS DMS task logs](#CHAP_Monitoring.ManagingLogs)
 + [Logging AWS DMS API calls with AWS CloudTrail](#logging-using-cloudtrail)
++ [AWS DMS Context logging](#datarep_Monitoring_ContextLogging)
 
 ## Task status<a name="CHAP_Tasks.Status"></a>
 
-The task status indicated the condition of the task\. The following table shows the possible statuses a task can have:
+The task status indicates the condition of the task\. The following table shows the possible statuses a task can have:
 
 
 | Task status | Description | 
@@ -50,10 +51,45 @@ The task status indicated the condition of the task\. The following table shows 
 |   **Modifying**   |  The task is being modified, usually due to a user action that modified the task settings\.  | 
 |   **Moving**   |  The task is in the process of being moved to another replication instance\. The replication remains in this state until the move is complete\. Deleting the task is the only operation allowed on the replication task while it’s being moved\.  | 
 |   **Failed\-move **   |  The task move has failed for any reason, such as not having enough storage space on the target replication instance\. When a replication task is in this state, it can be started, modified, moved, or deleted\.  | 
+|   **Testing**   |  The database migration specified for this task is being tested in response to running either the [StartReplicationTaskAssessmentRun](https://docs.aws.amazon.com/dms/latest/APIReference/API_StartReplicationTaskAssessmentRun.html) , or the [StartReplicationTaskAssessment](https://docs.aws.amazon.com/dms/latest/APIReference/API_StartReplicationTaskAssessment.html) operation\.  | 
 
 The task status bar gives an estimation of the task's progress\. The quality of this estimate depends on the quality of the source database's table statistics; the better the table statistics, the more accurate the estimation\. For tasks with only one table that has no estimated rows statistic, we are unable to provide any kind of percentage complete estimate\. In this case, the task state and the indication of rows loaded can be used to confirm that the task is indeed running and making progress\.
 
 Note that the "last updated" column the DMS console only indicates the time that AWS DMS last updated the table statistics record for a table\. It does not indicate the time of the last update to the table\.
+
+In addition to using the DMS  console, you can *output *a description of current replication tasks, including task status, by using the `aws dms describe-replication-tasks` command in the [AWS CLI](https://docs.aws.amazon.com/cli/latest/reference/dms/index.html), as shown in the following example\.
+
+```
+{
+    "ReplicationTasks": [
+        {
+            "ReplicationTaskIdentifier": "moveit2",
+            "SourceEndpointArn": "arn:aws:dms:us-east-1:123456789012:endpoint:6GGI6YPWWGAYUVLKIB732KEVWA",
+            "TargetEndpointArn": "arn:aws:dms:us-east-1:123456789012:endpoint:EOM4SFKCZEYHZBFGAGZT3QEC5U",
+            "ReplicationInstanceArn": "arn:aws:dms:us-east-1:123456789012:rep:T3OM7OUB5NM2LCVZF7JPGJRNUE",
+            "MigrationType": "full-load",
+            "TableMappings": ...output omitted... ,
+            "ReplicationTaskSettings": ...output omitted... ,
+            "Status": "stopped",
+            "StopReason": "Stop Reason FULL_LOAD_ONLY_FINISHED",
+            "ReplicationTaskCreationDate": 1590524772.505,
+            "ReplicationTaskStartDate": 1590619805.212,
+            "ReplicationTaskArn": "arn:aws:dms:us-east-1:123456789012:task:K55IUCGBASJS5VHZJIINA45FII",
+            "ReplicationTaskStats": {
+                "FullLoadProgressPercent": 100,
+                "ElapsedTimeMillis": 0,
+                "TablesLoaded": 0,
+                "TablesLoading": 0,
+                "TablesQueued": 0,
+                "TablesErrored": 0,
+                "FreshStartDate": 1590619811.528,
+                "StartDate": 1590619811.528,
+                "StopDate": 1590619842.068
+            }
+        }
+    ]
+}
+```
 
 ## Table state during tasks<a name="CHAP_Tasks.CustomizingTasks.TableState"></a>
 
@@ -377,3 +413,84 @@ The following example shows a CloudTrail log entry that demonstrates the `Reboot
     "recipientAccountId": "123456789012"
 }
 ```
+
+## AWS DMS Context logging<a name="datarep_Monitoring_ContextLogging"></a>
+
+AWS DMS uses context logging to give you information about a migration in progress\. Context logging writes information, such as the following, to the task's CloudWatch log:
++ Information about the task's connection to the source and target databases\.
++ Replication task behavior\. You can use the task logs to diagnose replication issues\.
++ SQL statements without data that AWS DMS executes on source and target databases\. You can use the SQL logs to diagnose unexpected migration behavior\.
++ Stream position details for each CDC event\.
+
+Context logging is only available in AWS DMS version 3\.5\.0 or later\.
+
+AWS DMS turns on context logging by default\. To control context logging, set the `EnableLogContext` task setting to `true` or `false`, or by modifying the task in the console\.
+
+AWS DMS writes context log information to the CloudWatch log's replication task every three minutes\. Make sure that your replication instance has sufficient space for its application log\. For more information about managing task logs, see [Viewing and managing AWS DMS task logs](#CHAP_Monitoring.ManagingLogs)\.
+
+**Topics**
++ [Object Types](#datarep_Monitoring_ContextLogging_objects)
++ [Logging Examples](#datarep_Monitoring_ContextLogging_examples)
++ [Limitations](#datarep_Monitoring_ContextLogging_limitations)
+
+### Object Types<a name="datarep_Monitoring_ContextLogging_objects"></a>
+
+AWS DMS produces context logging in CloudWatch for the following object types\.
+
+
+| Object Type | Description | 
+| --- | --- | 
+| TABLE\_NAME | These log entries contain information about tables that are in scope with the current task mapping rule\. You can use these entries to examine the table events for a specific period during migration\. | 
+| SCHEMA\_NAME | These log entries contain information about schemas used by the current task mapping rule\. You can use these entries to determine which schema AWS DMS is using for a specific period during migration\. | 
+| TRANSACTION\_ID | These entries contain the transaction ID for each DML/ DDL change captured from the source database\. You can use these log entries to determine what changes happened during a given transaction\. | 
+| CONNECTION\_ID | These entries contain the connection ID for each thread in the source and target database\. You can use these log entries to determine which connection AWS DMS uses for each migration step\. | 
+| STATEMENT | These entries contain the SQL code used to fetch, process, and apply each migration change\. | 
+| STREAM\_POSITION | These entries contain the position in the transaction log file for each migration action on the source database\. The format for these entries varies between source database engine types\. You can also use this information to determine a starting position for a recovery checkpoint when configuring CDC\-only replication\. | 
+
+### Logging Examples<a name="datarep_Monitoring_ContextLogging_examples"></a>
+
+This section contains examples of log records that you can use to monitor replication and diagnose replication issues\.
+
+#### Connection log examples<a name="datarep_Monitoring_ContextLogging_examples_connection"></a>
+
+This section contains log samples that include connection IDs\. You can search for a given connection ID in the logs to see what other operations AWS DMS runs under the same thread as a given operation\.
+
+The following log entries have the same connection ID\. Operations with the same connection ID use the same thread\.
+
+```
+00362696: 2023-02-22T10:09:29 [SOURCE_CAPTURE  ]I:  Capture record 1 to internal queue from Source  {operation:START_REGULAR (43), connectionId:27598, streamPosition:0000124A/6800A778.NOW}  (streamcomponent.c:2920)
+            
+00362696: 2023-02-22T10:12:30 [SOURCE_CAPTURE  ]I:  Capture record 0 to internal queue from Source  {operation:IDLE (51), connectionId:27598}  (streamcomponent.c:2920)
+
+00362696: 2023-02-22T11:25:27 [SOURCE_CAPTURE  ]I:  Capture record 0 to internal queue from Source  {operation:IDLE (51), columnName:region, connectionId:27598}  (streamcomponent.c:2920)
+```
+
+#### Task behavior log examples<a name="datarep_Monitoring_ContextLogging_examples_behavior"></a>
+
+This section contains log samples about replication task log behavior\. You can use this information to diagnose replication issues, such as a task in the `IDLE` status\.
+
+The following `SOURCE_CAPTURE` logs indicate that there are no events available to read from the source database log file, and contain `TARGET_APPLY` records that indicate that there are no events received from AWS DMS CDC components to apply to the target database\. These events also contain previously applied event\-related context details\.
+
+```
+00362696: 2023-02-22T11:23:24 [SOURCE_CAPTURE  ]I:  No Event fetched from wal log  (postgres_endpoint_wal_engine.c:1369)
+00362697: 2023-02-22T11:24:29 [TARGET_APPLY    ]I:  No records received to load or apply on target , waiting for data from upstream. The last context is  {operation:INSERT (1), tableName:sales_11, schemaName:public, txnId:18662441, connectionId:17855, statement:INSERT INTO "public"."sales_11"("sales_no","dept_name","sale_amount","sale_date","region") values (?,?,?,?,?),
+```
+
+#### SQL statement log examples<a name="datarep_Monitoring_ContextLogging_examples_sql"></a>
+
+This section contains log samples about SQL statements run on source and target databases\. The SQL statements you see in the logs only show the SQL statement; they don't show the data\. The following `TARGET_APPLY` log shows an `INSERT` statement that ran on the target\.
+
+```
+00362697: 2023-02-22T11:26:07 [TARGET_APPLY    ]I:  Applied record 2193305 to target  {operation:INSERT (1), tableName:sales_111, schemaName:public, txnId:18761543, connectionId:17855, statement:INSERT INTO "public"."sales_111"("sales_no","dept_name","sale_amount","sale_date","region") values (?,?,?,?,?), 
+```
+
+### Limitations<a name="datarep_Monitoring_ContextLogging_limitations"></a>
+
+The following limitations apply to AWS DMS context logging:
++ While AWS DMS creates minimal logging for all endpoint types, extensive engine\-specific context logging is only available for the following endpoint types\. We recommend turning on context logging when using these endpoint types\.
+  + MySQL
+  + PostgreSQL
+  + Oracle
+  + Microsoft SQL Server
+  + MongoDB/ Amazon DocumentDB
+  + Amazon S3

@@ -4,8 +4,6 @@ You can create data providers and use them in migration projects for DMS Schema 
 
 For each database, you can create a single data provider\. You can use a single data provider in multiple migration projects\.
 
-You can create up to 1,000 data providers in DMS Schema Conversion\.
-
 Before creating a migration project, make sure that you have created at least two data providers\. One of your data providers must be on an AWS service\. You can't use DMS Schema Conversion to migrate your database to an on\-premises database\.
 
 The following procedure shows you how to create data providers in the AWS DMS console wizard\.

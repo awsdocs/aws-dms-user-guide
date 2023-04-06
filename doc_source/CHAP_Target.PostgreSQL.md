@@ -171,7 +171,7 @@ The following sample transformation rule makes all table names lowercase, and re
 
 The following limitations apply when using a PostgreSQL target endpoint with Babelfish tables:
 + For **Target table preparation** mode, use only the **Do nothing** or **Truncate** modes\. Don't use the **Drop tables on target** mode\. In that mode, DMS creates the tables as PostgreSQL tables that T\-SQL might not recognize\.
-+ Babelfish only supports migrating `BINARY`, `VARBINARY`, and `IMAGE` data types with Aurora PostgreSQL version 14\.3 and later, using the `BTYEA` data type\. For earlier versions of Aurora PostgreSQL, you can use DMS to migrate these tables to a [Babelfish target endpoint](CHAP_Target.Babelfish.md)\. You don't have to specify a length for the `BYTEA` data type, as shown in the example following\.
++ Babelfish only supports migrating `BINARY`, `VARBINARY`, and `IMAGE` data types with Aurora PostgreSQL version 14\.3 and later, using the `BYTEA` data type\. For earlier versions of Aurora PostgreSQL, you can use DMS to migrate these tables to a [Babelfish target endpoint](CHAP_Target.Babelfish.md)\. You don't have to specify a length for the `BYTEA` data type, as shown in the example following\.
 
   ```
       [Picture] [VARBINARY](max) NULL

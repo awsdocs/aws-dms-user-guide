@@ -366,6 +366,7 @@ The JSON following migrates all tables from the `Customers`, `Orders`, and `Supp
 ## Limitations when using MongoDB as a source for AWS DMS<a name="CHAP_Source.MongoDB.Limitations"></a>
 
 The following are limitations when using MongoDB as a source for AWS DMS:
++ In table mode, the documents in a collection must be consistent in the data type that they use for the value in the same field\. For example, if a document in a collection includes `'{ a:{ b:value ... }'`, all documents in the collection that reference the `value` of the `a.b` field must use the same data type for `value`, wherever it appears in the collection\.
 + When the `_id` option is set as a separate column, the ID string can't exceed 200 characters\.
 + Object ID and array type keys are converted to columns that are prefixed with `oid` and `array` in table mode\.
 
@@ -389,9 +390,9 @@ The following table describes the configuration settings available when using Mo
 |  **Authentication source**  |  A valid MongoDB database name\.  |  The name of the MongoDB database that you want to use to validate your credentials for authentication\. The default value is `"admin"`\.   | 
 |  **Authentication mechanism**  |  `"default"` `"mongodb_cr"` `"scram_sha_1"`  |  The authentication mechanism\. The value` "default"` is `"scram_sha_1"`\. This setting isn't used when `authType` is set to `"no"`\.  | 
 |  **Metadata mode**  |  Document and table  |  Chooses document mode or table mode\.   | 
-|  **Number of documents to scan **\(**docsToInvestigate**\)  |  A positive integer greater than `0`\.  |  Use this option in table mode only to define the target table definition\.  | 
+|  **Number of documents to scan** \(`docsToInvestigate`\)  |  A positive integer greater than `0`\.  |  Use this option in table mode only to define the target table definition\.  | 
 |  **\_id as a separate column**  |  Check mark in box  |  Optional check mark box that creates a second column named `_id` that acts as the primary key\.  | 
-|  **socketTimeoutMS**  |  NUMBER Extra Connection Attribute \(ECA\) only\.  |  This setting is in units of milliseconds and configures the connection timeout for MongoDB clients\. If the value is less than or equal to zero, then the MongoDB client default is used\.  | 
+|  `socketTimeoutMS`  |  NUMBER Extra Connection Attribute \(ECA\) only\.  |  This setting is in units of milliseconds and configures the connection timeout for MongoDB clients\. If the value is less than or equal to zero, then the MongoDB client default is used\.  | 
 
 If you choose **Document** as **Metadata mode**, different options are available\. 
 

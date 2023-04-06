@@ -5,7 +5,7 @@ You can migrate data from an IBM Db2 for Linux, Unix, and Windows \(Db2 LUW\) da
 + Version 10\.1, with all Fix Packs supported
 + Version 10\.5, with all Fix Packs supported except for Fix Pack 5
 + Version 11\.1, with all Fix Packs supported
-+ Version 11\.5, Mods \(0\-7\) with only Fix Pack 0 supported
++ Version 11\.5, Mods \(0\-8\) with only Fix Pack 0 supported
 
 You can use Secure Sockets Layer \(SSL\) to encrypt connections between your Db2 LUW endpoint and the replication instance\. For more information on using SSL with a Db2 LUW endpoint, see [Using SSL with AWS Database Migration Service](CHAP_Security.SSL.md)\.
 
@@ -27,7 +27,7 @@ To enable ongoing replication, also called change data capture \(CDC\), do the f
 
 ## Limitations when using Db2 LUW as a source for AWS DMS<a name="CHAP_Source.DB2.Limitations"></a>
 
-AWS DMS doesn't support clustered databases\. However, you can define a separate Db2 LUW for each of the endpoints of a cluster\. 
+AWS DMS doesn't support clustered databases\. However, you can define a separate Db2 LUW for each of the endpoints of a cluster\. For example, you can create a Full Load migration task with any one of the nodes in the cluster, then create separate tasks from each node\.
 
 AWS DMS doesn't support the `BOOLEAN` data type in your source Db2 LUW database\.
 
@@ -47,6 +47,7 @@ When using ongoing replication \(CDC\), the following limitations apply:
 + While a replication task is running, DMS captures CREATE TABLE DDLs only if the tables were created with the DATA CAPTURE CHANGE attribute\.
 + DMS doesn't support DB2 Database Partition Feature \(DPF\)\.
 + For ongoing replication \(CDC\), if you plan to start replication from a specific timestamp, you must set the `StartFromContext` connection attribute to the required timestamp\.
++ Currently, DMS doesn't support the Db2 pureScale Feature, an extension of DB2 LUW that you can use to scale your database solution\.
 
 ## Endpoint settings when using Db2 LUW as a source for AWS DMS<a name="CHAP_Source.DB2.ConnectionAttrib"></a>
 

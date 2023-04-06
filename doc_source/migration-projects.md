@@ -6,7 +6,7 @@ The migration project is the foundation of your work with DMS Schema Conversion\
 
 Migration projects in DMS Schema Conversion are serverless only\. AWS DMS automatically provisions the cloud resources for your migration projects\.
 
-You can create up to 3 migration projects in DMS Schema Conversion\.
+AWS DMS has the maximum number of migration projects that you can create for your AWS account\. See the following section for information about AWS DMS service quotas [Quotas for AWS Database Migration Service](CHAP_Limits.md)\.
 
 **Topics**
 + [Creating migration projects in DMS Schema Conversion](migration-projects-create.md)

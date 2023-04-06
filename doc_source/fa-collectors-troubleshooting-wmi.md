@@ -1,4 +1,4 @@
-# Data collection issues related to Windows Management Instrumentation<a name="CHAP_FleetAdvisor.Troubleshooting.WMI"></a>
+# Data collection issues related to Windows Management Instrumentation<a name="fa-collectors-troubleshooting-wmi"></a>
 
 ****  
 

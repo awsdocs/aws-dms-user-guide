@@ -29,9 +29,9 @@ In this step, you create a virtual private cloud \(VPC\) in your AWS account\. T
 
 1. Choose **Subnets**, and take a note of your public and private subnet IDs\.
 
-   To connect to your Amazon RDS databases, use public subnet IDs\.
+   To connect to your Amazon RDS databases, create a subnet group that includes public subnets\.
 
-   To connect to your on\-premises databases, use private subnet IDs\.
+   To connect to your on\-premises databases, create a subnet group that includes private subnets\. For more information, see [Step 1: Create an instance profile](getting-started-instance.md)\.
 
 1. Choose **NAT gateways**\. Choose your **NAT gateway** and take a note of your **Elastic IP address**\.
 

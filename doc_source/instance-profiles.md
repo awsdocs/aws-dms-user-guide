@@ -4,7 +4,7 @@ Before you create your migration project in DMS Schema Conversion, you set up an
 
 You can create multiple instance profiles\. Select an instance profile to use for each migration project that you create for DMS Schema Conversion\.
 
-You can create up to 60 instance profiles in DMS Schema Conversion\.
+AWS DMS has the maximum number of instance profiles that you can create for your AWS account\. See the following section for information about AWS DMS service quotas [Quotas for AWS Database Migration Service](CHAP_Limits.md)\.
 
 **To create an instance profile**
 
@@ -18,9 +18,9 @@ You can create up to 60 instance profiles in DMS Schema Conversion\.
 
 1. For **Network type**, choose **Dual\-stack mode** to create an instance profile that supports IPv4 and IPv6 addressing\. Keep the default option to create an instance profile that supports only IPv4 addressing\.
 
-1. Next, choose **Virtual private cloud \(VPC\)** to run your instance of the selected network type\. Then choose values for **Subnet IDs** and **VPC security groups** for your instance profile\.
+1. Next, choose **Virtual private cloud \(VPC\)** to run your instance of the selected network type\. Then choose a **Subnet group** and **VPC security groups** for your instance profile\.
 
-   To connect to Amazon RDS databases, use public subnet IDs\. To connect to on\-premises databases, use private subnet IDs\. Make sure that you configured your network so that AWS DMS can access your source on\-premises database using the NAT gateway's public IP address\. For more information, see [Create a VPC based on Amazon VPC](set-up.md#set-up-vpc)\.
+   To connect to Amazon RDS databases, use a subnet group that includes public subnets\. To connect to on\-premises databases, use a subnet group that includes private subnets\. Make sure that you configured your network so that AWS DMS can access your source on\-premises database using the NAT gateway's public IP address\. For more information, see [Create a VPC based on Amazon VPC](set-up.md#set-up-vpc)\.
 
 1. For **Schema conversion settings \- optional**, choose an Amazon S3 bucket to store information from your migration project\. Then choose the AWS Identity and Access Management \(IAM\) role that provides access to this Amazon S3 bucket\. For more information, see [Create an Amazon S3 bucket](set-up.md#set-up-s3-bucket)\.
 

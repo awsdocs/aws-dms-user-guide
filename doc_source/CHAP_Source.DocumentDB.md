@@ -390,11 +390,11 @@ The following table shows the endpoint settings that you can use with Amazon Doc
 | Attribute name | Valid values | Default value and description | 
 | --- | --- | --- | 
 |   `NestingLevel`   |  `"none"` `"one"`  |  `"none"` – Specify `"none"` to use document mode\. Specify `"one"` to use table mode\.  | 
-|   `ExtractDocID`   |  `true` `false`  |  `false` – Use this attribute when `NestingLevel` is set to `"none"`\.  If your target database is Amazon DocumentDB, set `'{"ExtractDocID": true}'`\.   | 
+|   `ExtractDocID`   |  boolean `true` `false`  |  `false` – Use this attribute when `NestingLevel` is set to `"none"`\.  If your target database is Amazon DocumentDB, set `'{"ExtractDocID": true}'`\.   | 
 |   `DocsToInvestigate`   |  A positive integer greater than `0`\.  |  `1000` – Use this attribute when `NestingLevel` is set to `"one"`\.   | 
 
 **Note**  
-If the target endpoint is Amazon DocumentDB, run the migration in**Document mode**, and set the extra connection attribute `"ExtractDocID": true`\. To set the endpoint setting `"ExtractDocID": true`, modify your source endpoint and check the box **\_id as separate column**\.
+If the target endpoint is Amazon DocumentDB, run the migration in **Document mode**, and set the extra connection attribute `"ExtractDocID": true`\. To set the endpoint setting `"ExtractDocID": true`, modify your source endpoint and check the box **\_id as separate column**\.
 
 ## Source data types for Amazon DocumentDB<a name="CHAP_Source.DocumentDB.DataTypes"></a>
 

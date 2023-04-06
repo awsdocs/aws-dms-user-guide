@@ -118,7 +118,6 @@ For example, the following JSON file contains settings saved for a task\.
         ]
     },
     "ControlTablesSettings": {
-        "historyTimeslotInMinutes": 5,
         "ControlSchema": "",
         "HistoryTimeslotInMinutes": 5,
         "HistoryTableEnabled": false,

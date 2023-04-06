@@ -28,3 +28,15 @@ AWS DMS supports default or custom keys to encrypt replication storage, connecti
 ## Internetwork traffic privacy<a name="CHAP_Security.DataProtection.InternetworkTraffic"></a>
 
 Connections are provided with protection between AWS DMS and source and target endpoints in the same AWS Region, whether running on premises or as part of an AWS service in the cloud\. \(At least one endpoint, source or target, must run as part of an AWS service in the cloud\.\) This protection applies whether these components share the same virtual private cloud \(VPC\) or exist in separate VPCs, if the VPCs are all in the same AWS Region\. For more information about the supported network configurations for AWS DMS, see [Setting up a network for a replication instance](CHAP_ReplicationInstance.VPC.md)\. For more information about the security considerations when using these network configurations, see [Network security for AWS Database Migration Service](CHAP_Security.md#CHAP_Security.Network)\.
+
+## Data protection in DMS Fleet Advisor<a name="fa-security-data-protection"></a>
+
+DMS Fleet Advisor collects and analyzes your database metadata to determine the right size of the migration target\. DMS Fleet Advisor doesn't access data in your tables and doesn't transfer it\. Also, DMS Fleet Advisor doesn't track database feature usage and doesn't access your usage statistics\.
+
+You control access to your databases when you create database users which DMS Fleet Advisor uses to work with your databases\. You grant the required privileges to these users\. To use DMS Fleet Advisor, you grant your database users with read permissions\. DMS Fleet Advisor doesn't modify your databases and doesn't require write permissions\. For more information, see [Creating database users for AWS DMS Fleet Advisor](fa-database-users.md)\.
+
+You can use data encryption in your databases\. AWS DMS also encrypts connections within DMS Fleet Advisor and within its data collectors\.
+
+DMS data collector uses the Data Protection application programming interface \(DPAPI\) to encrypt, protect, and store information about customer's environment and database credentials\. DMS Fleet Advisor stores this encrypted data in a file on the server where your DMS data collector works\. DMS Fleet Advisor doesn't transfer this data from this server\. For more information about DPAPI, see [How to: Use Data Protection](https://learn.microsoft.com/en-us/dotnet/standard/security/how-to-use-data-protection)\.
+
+After you install the DMS data collector, you can view all queries that this application runs to collect metrics\. You can run the DMS data collector in an offline mode and then review the collected data on your server\. Also, you can review this collected data in your Amazon S3 bucket\. For more information, see [How does DMS data collector work?](fa-collecting.md#fa-data-collectors-how-it-works)\.

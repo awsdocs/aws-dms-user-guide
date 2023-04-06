@@ -22,11 +22,17 @@ The following table lists the AWS DMS resources and their quotas for each AWS Re
 | Event subscriptions per user account | 60 | 
 | Replication subnet groups per user account | 60 | 
 | Subnets per replication subnet group | 60 | 
-| Endpoints per user account | 1000 | 
+| Endpoints per user account | 1,000 | 
 | Endpoints per replication instance | 100 | 
 | Tasks per user account | 600 | 
 | Tasks per replication instance | 200 | 
 | Certificates per user account | 100 | 
+| Data providers per user account | 1,000 | 
+| Instance profiles per user account | 60 | 
+| Migration projects per user account | 10 | 
+| DMS data collectors per user account | 10 | 
+| Target recommendations generated at one time | 100 | 
+| Number of files that DMS data collector can upload per hour | 500 | 
 
 For more information on the API request throttling quota and refresh rate, see [Understanding API request throttling](#CHAP_Limits.Throttling)\.
 

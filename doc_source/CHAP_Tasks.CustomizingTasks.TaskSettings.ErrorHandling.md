@@ -60,3 +60,5 @@ You can set the error handling behavior of your replication task during change d
 
   When a CDC task starts with Oracle, AWS DMS waits for a limited time for the oldest open transaction to close before starting CDC\. If the oldest open transaction doesn't close until the timeout is reached, then in most cases AWS DMS starts CDC, ignoring that transaction\. If this option is set to `true`, the task fails\.
 + `FullLoadIgnoreConflicts` – Set this option to `true` to have AWS DMS ignore "zero rows affected" and "duplicates" errors when applying cached events\. If set to `false`, AWS DMS reports all errors instead of ignoring them\. The default is `true`\. 
+
+Note that *table load errors* in Redshift as a target are reported in `STL_LOAD_ERRORS`\. For more information, see [STL\_LOAD\_ERRORS](https://docs.aws.amazon.com/redshift/latest/dg/r_STL_LOAD_ERRORS.html) in the *Amazon Redshift Database Developer Guide*\.

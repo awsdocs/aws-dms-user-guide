@@ -126,7 +126,7 @@ The following limitations apply when accessing the backup transaction logs at fi
 
 ## Permissions for full load only tasks<a name="CHAP_Source.SQLServer.Permissions"></a>
 
-The following permissions are required to perform full load only tasks\.
+The following permissions are required to perform full load only tasks\. Note that AWS DMS does not create the `dms_user` login\. For information about creating a login for SQL Server, see [Creating a database user with Microsoft SQL Server](fa-database-users.md#fa-database-users-sql-server)\.
 
 ```
 USE db_name;

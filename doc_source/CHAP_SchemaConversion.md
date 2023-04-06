@@ -56,7 +56,7 @@ DMS Schema Conversion provides the following features:
 
 ## Schema conversion limitations<a name="schema-conversion-limitations"></a>
 
-DMS Schema Conversion is a web\-version of the AWS Schema Conversion Tool \(AWS SCT\)\. DMS Schema Conversion provides more limited functionality compared to the AWS SCT desktop application\. For more information about AWS SCT, see the [AWS Schema Conversion Tool User Guide](https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/)\.
+DMS Schema Conversion is a web\-version of the AWS Schema Conversion Tool \(AWS SCT\)\. DMS Schema Conversion supports less database platforms and provides more limited functionality compared to the AWS SCT desktop application\. To convert data warehouse schemas, big data frameworks, application SQL code, and ETL processes, use AWS SCT\. For more information about AWS SCT, see the [AWS Schema Conversion Tool User Guide](https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/)\.
 
 The following limitations apply when you use DMS Schema Conversion for database schema conversion:
 + You can't save a migration project and use it in an offline mode\.

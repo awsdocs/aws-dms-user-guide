@@ -77,6 +77,8 @@ ROWID columns are migrated by default when the target table prep mode for the ta
 
 AWS Mainframe Modernization program helps you modernize your mainframe applications to AWS managed runtime environments\. It provides tools and resources that help you plan and implement your migration and modernization projects\. For more information about mainframe modernization and migration, see [Mainframe Modernization with AWS](http://aws.amazon.com/mainframe/)\.
 
+Some IBM Db2 for z/OS data sets are encoded in the Extended Binary Coded Decimal Interchange \(EBCDIC\) character set\. This is a character set that was developed before ASCII \(American Standard Code for Information Interchange\) became commonly used\. A *code page* maps each character of text to the characters in a character set\. A traditional code page contains the mapping information between a code point and a character ID\. A *character ID *is an 8\-byte character data string\. A *code point* is an 8\-bit binary number that represents a character\. Code points are usually shown as hexadecimal representations of their binary values\.
+
 If you currently use either the Micro Focus or BluAge component of the Mainframe Modernization service, you must tell AWS DMS to *shift* \(translate\) certain code points\. You can use AWS DMS task settings to perform the shifts\. The following example shows how to use the AWS DMS `CharacterSetSettings` operation to map the shifts in a DMS task setting\.
 
 ```

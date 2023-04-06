@@ -44,10 +44,10 @@ The following JSON example shows an EventBridge events model for an AWS DMS serv
       "arn:aws:dms:us-east-1:012345678901:task:AAAABBBB0CCCCDDDDEEEEE1FFFF2GGG3FFFFFF3"
    ],
    "detail":{
-      "type":"ReplicationTask",
+      "type":"REPLICATION_TASK",
       "category":"StateChange",
       "eventType":"REPLICATION_TASK_STARTED",
-      "eventName":"DMS-EVENT-0069",
+      "eventId":"DMS-EVENT-0069",
       "resourceLink":"https://console.aws.amazon.com/dms/v2/home?region=us-east-1#taskDetails/taskName",
       "detailMessage":"Replication task started, with flag = fresh start"
    }

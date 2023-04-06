@@ -10,10 +10,12 @@ AWS Identity and Access Management \(IAM\) is an AWS service that helps an admin
 + [AWS Database Migration Service identity\-based policy examples](security_iam_id-based-policy-examples.md)
 + [Resource\-based policy examples for AWS KMS](security_iam_resource-based-policy-examples.md)
 + [Using secrets to access AWS Database Migration Service endpoints](security_iam_secretsmanager.md)
++ [Using service\-linked roles for DMS Fleet Advisor](using-service-linked-roles.md)
 + [Troubleshooting AWS Database Migration Service identity and access](security_iam_troubleshoot.md)
 + [IAM permissions needed to use AWS DMS](#CHAP_Security.IAMPermissions)
 + [Creating the IAM roles to use with the AWS CLI and AWS DMS API](#CHAP_Security.APIRole)
 + [Cross\-service confused deputy prevention](cross-service-confused-deputy-prevention.md)
++ [AWS managed policies for AWS Database Migration Service](security-iam-awsmanpol.md)
 
 ## Audience<a name="security_iam_audience"></a>
 

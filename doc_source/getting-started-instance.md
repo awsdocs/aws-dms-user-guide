@@ -1,5 +1,25 @@
 # Step 1: Create an instance profile<a name="getting-started-instance"></a>
 
+Before you create an instance profile, configure a subnet group for your instance profile\. A *subnet* is a range of IP addresses in your VPC\. A *subnet group* includes subnets from different Availability Zones which your instance profile can use\.
+
+**To create a subnet group**
+
+1. Sign in to the AWS Management Console and open the AWS DMS console at [https://console\.aws\.amazon\.com/dms/v2/](https://console.aws.amazon.com/dms/v2/)\.
+
+1. In the navigation pane, choose **Subnet groups**, and then choose **Create subnet group**\.
+
+1. For **Name**, enter a unique name of your subnet group\.
+
+1. For **Description**, enter a brief description of your subnet group\.
+
+1. For **VPC**, choose a VPC that has at least one subnet in at least two Availability Zones\.
+
+1. For **Add subnets**, choose subnets to include in the subnet group\. You must choose subnets in at least two Availability Zones\.
+
+   To connect to Amazon RDS databases, add public subnets into your subnet group\. To connect to on\-premises databases, use private subnets into your subnet group\.
+
+1. Choose **Create subnet group**\.
+
 You can create an instance profile as described in the following procedure\. In this instance profile, you specify network and security settings for your DMS Schema Conversion project\.
 
 **To create an instance profile**
@@ -14,7 +34,7 @@ You can create an instance profile as described in the following procedure\. In 
 
 1. For **Virtual private cloud \(VPC\)**, choose the VPC that you created in the prerequisites step\.
 
-1. For **Subnet IDs**, choose subnet IDs for your instance profile\. To connect to your Amazon RDS databases, use public subnet IDs\. To connect to your on\-premises databases, use private subnet IDs\. Make sure that you choose at least two subnet IDs\.
+1. For **Subnet group**, choose the subnet group for your instance profile\. To connect to Amazon RDS databases, use a subnet group that includes public subnets\. To connect to on\-premises databases, use a subnet group that includes private subnets\.
 
 1. For **S3 bucket** under **Schema conversion settings \- optional**, choose an Amazon S3 bucket that you created in the prerequisites step\.
 

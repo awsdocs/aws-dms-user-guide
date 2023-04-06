@@ -16,10 +16,11 @@ AWS DMS creates the replication instance on an Amazon EC2 instance\. AWS DMS cur
 
 Each replication instance has a specific configuration of memory and vCPU\. The following table shows the configuration for each replication instance type\. For pricing information, see the [AWS Database Migration Service service pricing page](https://aws.amazon.com/dms/pricing/)\.
 
+**General Purpose Replication Instance Types**
 
-|  Replication instance type  |  vCPU  |  Memory \(GiB\)  | 
+
+|  Type  |  vCPU  |  Memory \(GiB\)  | 
 | --- | --- | --- | 
-|  General Purpose  | 
 |  dms\.t2\.micro  |  1  |  1  | 
 |  dms\.t2\.small  |  1  |  2  | 
 |  dms\.t2\.medium  |  2  |  4  | 
@@ -28,7 +29,12 @@ Each replication instance has a specific configuration of memory and vCPU\. The 
 |  dms\.t3\.small  |  2  |  2  | 
 |  dms\.t3\.medium  |  2  |  4  | 
 |  dms\.t3\.large  |  2  |  8  | 
-|  Compute Optimized  | 
+
+**Compute Optimized Replication Instance Types**
+
+
+|  Type  |  vCPU  |  Memory \(GiB\)  | 
+| --- | --- | --- | 
 |  dms\.c4\.large  |  2  |  3\.75  | 
 |  dms\.c4\.xlarge  |  4  |  7\.5  | 
 |  dms\.c4\.2xlarge  |  8  |  15  | 
@@ -50,7 +56,12 @@ Each replication instance has a specific configuration of memory and vCPU\. The 
 |  dms\.c6i\.16xlarge  |  64  | 128 | 
 |  dms\.c6i\.24xlarge  |  96  | 192 | 
 |  dms\.c6i\.32xlarge  |  128  | 256 | 
-|  Memory Optimized  | 
+
+**Memory Optimized Replication Instance Types**
+
+
+|  Type  |  vCPU  |  Memory \(GiB\)  | 
+| --- | --- | --- | 
 |  dms\.r4\.large  |  2  |  15\.25  | 
 |  dms\.r4\.xlarge  |  4  |  30\.5  | 
 |  dms\.r4\.2xlarge  |  8  |  61  | 
@@ -73,6 +84,12 @@ Each replication instance has a specific configuration of memory and vCPU\. The 
 |  dms\.r6i\.16xlarge  |  64  |  512  | 
 |  dms\.r6i\.24xlarge  |  96  |  768  | 
 |  dms\.r6i\.32xlarge  |  128  |  1024  | 
+
+The tables above list all of the AWS DMS replication instance types, but the types that are available in your region might vary\. To see the replication instance types available in your region, you can run the following [AWS CLI](https://docs.aws.amazon.com/cli/latest/reference/dms/index.html) command:
+
+```
+aws dms describe-orderable-replication-instances --region your_region_name
+```
 
 **Topics**
 + [Deciding what instance class to use](#CHAP_ReplicationInstance.Types.Deciding)

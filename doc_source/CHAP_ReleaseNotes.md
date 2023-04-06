@@ -2,7 +2,57 @@
 
 Following, you can find release notes for current and previous versions of AWS Database Migration Service \(AWS DMS\)\.
 
-AWS DMS uses a semantic versioning scheme to identify a service release\. A version consists of a three\-component number in the format of X\.Y\.Z where X represents an *epic* version, X\.Y represents a *major* version, and Z represents a *minor* version \(**Epic**\.**Major**\.**Minor**\)\.
+AWS DMS doesn't differentiate between major and minor versions\. For example, upgrading from version 3\.4\.x to 3\.5\.x isn't considered a major upgrade, so all changes should be backward\-compatible\.
+
+## AWS Database Migration Service 3\.5\.0 Beta release notes<a name="CHAP_ReleaseNotes.DMS350"></a>
+
+**Important**  
+AWS DMS 3\.5\.0 is a beta version of the replication instance engine\. AWS DMS supports this version the same as all previous releases\. But we recommend that you test AWS DMS 3\.5\.0 Beta before using it for production purposes\.
+
+The following table shows the new features and enhancements introduced in AWS Database Migration Service \(AWS DMS\) version 3\.5\.0 Beta\. 
+
+
+| New feature or enhancement | Description | 
+| --- | --- | 
+| Time Travel for Oracle and Microsoft SQL Server | You can now use Time Travel in all AWS Regions with DMS\-supported Oracle, Microsoft SQL Server, and PostgreSQL source endpoints, and DMS\-supported PostgreSQL and MySQL target endpoints\. | 
+| S3 validation | AWS DMS now supports validating replicated data in Amazon S3 target endpoints\. For information about validating Amazon S3 target data, see [Amazon S3 target data validation](CHAP_Validating_S3.md)\. | 
+| Glue Catalog Integration | AWS Glue is a service that provides simple ways to categorize data, and consists of a metadata repository known as AWS Glue Data Catalog\. You can now integrate an AWS Glue Data Catalog with your Amazon S3 target endpoint and query Amazon S3 data through other AWS services such as Amazon Athena\. For more information, see [Using AWS Glue Data Catalog with an Amazon S3 target for AWS DMS](CHAP_Target.S3.md#CHAP_Target.S3.GlueCatalog)\.  | 
+| Parallel apply for DocumentDB as a target | Using DocumentDB as the target with new ParallelApply\* task settings, AWS DMS now supports a maximum of 5000 records per second during CDC replication\. For more information, see [Using Amazon DocumentDB as a target for AWS Database Migration Service](CHAP_Target.DocumentDB.md)\.  | 
+| Customer Centric Logging | You can now examine and manage task logs more effectively with AWS DMS version 3\.5\.0\. For information about viewing and managing AWS DMS task logs, see [Viewing and managing AWS DMS task logs](CHAP_Monitoring.md#CHAP_Monitoring.ManagingLogs)\.  | 
+| SASL\_PLAIN mechanism for Kafka target endpoints | You can now use SASL\_PLAIN authentication to support Kafka MSK target endpoints\. | 
+
+AWS DMS 3\.5\.0 includes the following resolved issues:
+
+
+**Issues resolved in AWS DMS 3\.5\.0 launched on 17\-March\-2023**  
+
+| Topic | Resolution | 
+| --- | --- | 
+| Oracle—comparing special case for string that was converted from numeric | Fixed an issue for Oracle source where filtering rules weren't working as expected for a numeric column when data type transformation to string existed for the same column\. | 
+| On\-premises SQL Server AG enhancements | Improved efficiency of connection handling with SQL Server source in AlwaysOn configuration by eliminating unnecessary connections to replicas that aren't used by DMS\. | 
+| SQL Server HIERARCHYID internal conversion | Fixed an issues with SQL Server Source where HIERARCHYID data type was replicated as VARCHAR\(250\) instead of HIERARCHYID to SQL Server target\. | 
+| S3 target move task fix | Fixed an issue when moving a task with an S3 target would take a very long time, appear frozen or never complete\. | 
+| SASL Plain mechanism of Kafka | Introduced support for SASL Plain authentication method for Kafka MSK target endpoint\. | 
+| Parallel Load/Apply fails due to \_type parameter with Opensearch 2\.x | Fixed an issue for Opensearch 2\.x target where parallel load or parallel apply would fail due to lack of support for \_type parameter\. | 
+| Support table mapping filter with mixed operators | Removed a limitation where only one filter could be applied on a column\. | 
+| S3, Kinesis, Kafka endpoints — alter\-based lob columns migration in CDC phase | Fixed an issue for Kinesis, Kafka and S3 targets where data in LOB columns added during CDC wasn't replicated\. | 
+| MongoDB driver upgrade | Upgraded the MongoDB driver to v1\.23\.2\. | 
+| Kafka driver update | Upgraded the Kafka driver from 1\.5\.3 to 1\.9\.2\. | 
+| S3 endpoint setting was not working properly | Fixed an issue for S3 target where the AddTrailingPaddingCharacter endpoint setting was not working when data contained the character specified as the delimiter for the S3 target\. | 
+| Kinesis target task would crash | Fixed an issue for Kinesis target where a task would crash when PK value was empty and detailed debug was enabled\. | 
+| When S3 targets' column names were shifted by one position | Fixed an issue for an S3 target where column names where shifted by one position when AddColumnName was set to true and TimestampColumnName was set to ""\.  | 
+| Improved logging LOB truncation warning | Improved warning logging for LOB truncation for SQL Server source to include the select statement used to retrieve the LOB\. | 
+| Add Fatal error to avoid DMS task crashes if TDE password is wrong\. | Introduced meaningful error message and eliminated task crash issue in situations where DMS task was failing with no error message due incorrect TDE password for Oracle as a source\. | 
+| Allows PostgreSQL CTAS\(Create table as selected\) DDL's migration during CDC\. | Removed limitations of DMS not being able to replicate PostgreSQL CTAS \(create table as selected\) DDLs during CDC\. | 
+| Fix pg\_logical task crash when table columns are dropped in CDC\. | Fixed an issue for PostgreSQL source with S3 target where columns were misaligned on the target when support for LOBs was disabled and LOBs were present\. | 
+| Fix memory leak in MySQL connection handling | Fixed an issue for MySQL source where task memory consumption was increasing continuously\. | 
+| Oracle source endpoint setting – ConvertTimestampWithZoneToUTC | Set this attribute to true to convert the timestamp value of 'TIMESTAMP WITH TIME ZONE' and 'TIMESTAMP WITH LOCAL TIME ZONE' columns to UTC\. By default the value of this attribute is 'false' and data is replicated using the source database timezone\. | 
+| Oracle source \- DataTruncationErrorPolicy to SUSPEND\_TABLE not working | Fixed an issue for Oracle source with S3 target where tables were not suspended while the DataTruncationErrorPolicy task setting was set to SUSPEND\_TABLE\. | 
+| SQL Server fail on long schema/table while building query clause | Fixed an issues for SQL Server source where task would fail or become unresponsive when selection rule contained comma separated list of tables\. | 
+| Secret Manager authentication with MongoDB endpoint | Fixed an issue for MongoDB and DocumentDB endpoints where secret manager based authentication wasn't working\. | 
+| DMS truncating the data during CDC for a multi\-byte varchar column when NLS\_NCHAR\_CHARACTERSET is set to UTF8 | Fixed an issues for Oracle source with Oracle target where data was being truncated for multi\-byte VARCHAR columns with NLS\_NCHAR\_CHARACTERSET set to UTF8\. | 
+| filterTransactionsOfUser ECA for Oracle LogMiner | Added an Extra Connection Attribute \(ECA\) filterTransactionsOfUser to allow DMS to ignore transactions from a specified user when replicating from Oracle using LogMiner\.  | 
+| SQL Server Setting recoverable error when lsn missing from backup | Fixed an issue for Azure SQL Database where task would not fail on missing LSN\. | 
 
 ## AWS Database Migration Service 3\.4\.7 release notes<a name="CHAP_ReleaseNotes.DMS347"></a>
 
@@ -48,6 +98,8 @@ AWS DMS 3\.4\.7 includes the following new or changed behavior and resolved issu
 + As of November 25, 2022, with DMS 3\.4\.7 you can convert database schemas and code objects using **DMS Schema Conversion**, and discover databases in your network environment that are good candidates for migration using **DMS Fleet Advisor**\.
 + As of November 25, 2022, DMS Studio is retired\.
 + As of January 31, 2023, DMS Schema Conversion supports Aurora MySQL and Aurora PostgreSQL as a target data provider\.
++ As of March 6, 2023, you can generate right sized target recommendations for your source databases with DMS Fleet Advisor\. 
++ As of March 6, 2023, AWS DMS supports the AWS managed policy that allows publishing metric data points to Amazon CloudWatch\.
 
 
 **Issues resolved in the DMS 3\.4\.7 maintenance release dated 22\-February\-2023**  

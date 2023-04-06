@@ -312,7 +312,7 @@ The following example adds a new string column, `hashed_emp_number`, to the targ
       "expression": "hash_sha256($emp_number)",
       "data-type": {
         "type": "string",
-        "length": 50
+        "length": 64
       }
   }
 ```

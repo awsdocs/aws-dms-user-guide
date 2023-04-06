@@ -2,10 +2,11 @@
 
 The following table describes the important changes to the AWS Database Migration Service user guide documentation after January 2018\.
 
-You can subscribe to an RSS feed to be notified of updates to this documentation\. For more details on AWS DMS version releases, see [AWS DMS release notes](CHAP_ReleaseNotes.md) 
+You can subscribe to an RSS feed to be notified of updates to this documentation\. For more details on AWS DMS version releases, see [AWS DMS release notes](CHAP_ReleaseNotes.md)\. 
 
 | Change | Description | Date | 
 | --- |--- |--- |
+| [AWS DMS added support for a new AWS managed policy](https://docs.aws.amazon.com/dms/latest/userguide/security-iam-awsmanpol.html) | AWS DMS now supports the AWS managed policy that allows publishing metric data points to Amazon CloudWatch\. Also, AWS DMS started tracking changes for its AWS managed policies\. | March 6, 2023 | 
 | [Support VPC source and target endpoints](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_VPC_Endpoints.html) | AWS DMS now supports virtual private cloud \(VPC\) endpoints as sources and targets\. AWS DMS can now connect to any AWS service with VPC endpoints when explicitly defined routes to the services are defined in their AWS DMS VPC\. | June 30, 2022 | 
 | [Support SQL Server read replica as a source](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.SQLServer.html) | AWS DMS now supports SQL Server read replica as a source\. Using AWS DMS, you can now perform live migrations from SQL Server read replica to any AWS DMS supported target\. | June 30, 2022 | 
 | [Support IBM Db2 z/OS databases as a source for full load only](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.DB2zOS.html) | AWS DMS now supports IBM Db2 z/OS databases as a source\. Using AWS DMS, you can now perform live migrations from Db2 mainframes to any AWS DMS supported target\. | June 30, 2022 | 

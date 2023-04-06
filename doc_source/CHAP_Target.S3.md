@@ -55,6 +55,7 @@ To control the frequency of writes to an Amazon S3 target during a data replicat
 + [Using date\-based folder partitioning](#CHAP_Target.S3.DatePartitioning)
 + [Parallel load of partitioned sources when using Amazon S3 as a target for AWS DMS](#CHAP_Target.S3.ParallelLoad)
 + [Endpoint settings when using Amazon S3 as a target for AWS DMS](#CHAP_Target.S3.Configuring)
++ [Using AWS Glue Data Catalog with an Amazon S3 target for AWS DMS](#CHAP_Target.S3.GlueCatalog)
 + [Using data encryption, parquet files, and CDC on your Amazon S3 target](#CHAP_Target.S3.EndpointSettings)
 + [Indicating source DB operations in migrated S3 data](#CHAP_Target.S3.Configuring.InsertOps)
 + [Target data types for S3 Parquet](#CHAP_Target.S3.DataTypes)
@@ -97,6 +98,8 @@ To set up this account access, ensure that the role assigned to the user account
 }
 ```
 
+For prerequisites for using validation with S3 as a target, see [S3 target validation prerequisites](CHAP_Validating_S3.md#CHAP_Validating_S3_prerequisites)\.
+
 ## Limitations to using Amazon S3 as a target<a name="CHAP_Target.S3.Limitations"></a>
 
 The following limitations apply when using Amazon S3 as a target:
@@ -110,6 +113,8 @@ A truncate DDL operation removes all files and corresponding table folders from 
 + Multiple tasks that replicate data from the same source table to the same target S3 endpoint bucket result in those tasks writing to the same file\. We recommend that you specify different target endpoints \(buckets\) if your data source is from the same table\.
 + `BatchApply` is not supported for an S3 endpoint\. Using Batch Apply \(for example, the `BatchApplyEnabled` target metadata task setting\) for an S3 target might result in loss of data\.
 + You can't use `DatePartitionEnabled` or `addColumnName` together with `PreserveTransactions` or `CdcPath`\.
+
+For limitations for using validation with S3 as a target, see [Limitations for using S3 target validation](CHAP_Validating_S3.md#CHAP_Validating_S3_limitations)\.
 
 ## Security<a name="CHAP_Target.S3.Security"></a>
 
@@ -625,6 +630,7 @@ The following table shows the endpoint settings that you can use with Amazon S3 
 | --- | --- | 
 | CsvNullValue |  An optional parameter that specifies how AWS DMS treats null values\. While handling the null value, you can use this parameter to pass a user\-defined string as null when writing to the target\. For example, when target columns are not nullable, you can use this option to differentiate between the empty string value and the null value\. So, if you set this parameter value to the empty string \(" " or ''\), AWS DMS treats the empty string as the null value instead of `NULL`\. Default value: `NULL` Valid values: any valid string Example: `--s3-settings '{"CsvNullValue": " "}'`  | 
 | AddColumnName |  An optional parameter that when set to `true` or `y` you can use to add column name information to the \.csv output file\. You can't use this parameter with `PreserveTransactions` or `CdcPath`\. Default value: `false` Valid values: `true`, `false`, `y`, `n` Example: `--s3-settings '{"AddColumnName": true}'`  | 
+| AddTrailingPaddingCharacter |  Use the S3 target endpoint setting `AddTrailingPaddingCharacter` to add padding on string data\. The default value is `false`\. Type: Boolean Example: `--s3-settings '{"AddTrailingPaddingCharacter": true}'`  | 
 | BucketFolder |  An optional parameter to set a folder name in the S3 bucket\. If provided, target objects are created as \.csv or \.parquet files in the path `BucketFolder/schema_name/table_name/`\. If this parameter isn't specified, then the path used is `schema_name/table_name/`\.  Example: `--s3-settings '{"BucketFolder": "testFolder"}'`  | 
 | BucketName |  The name of the S3 bucket where S3 target objects are created as \.csv or \.parquet files\. Example: `--s3-settings '{"BucketName": "buckettest"}'`  | 
 | CannedAclForObjects |  A value that enables AWS DMS to specify a predefined \(canned\) access control list for objects created in the S3 bucket as \.csv or \.parquet files\. For more information about Amazon S3 canned ACLs, see [Canned ACL](http://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) in the *Amazon S3 Developer Guide\.* Default value: NONE Valid values for this attribute are: NONE; PRIVATE; PUBLIC\_READ; PUBLIC\_READ\_WRITE; AUTHENTICATED\_READ; AWS\_EXEC\_READ; BUCKET\_OWNER\_READ; BUCKET\_OWNER\_FULL\_CONTROL\. Example: `--s3-settings '{"CannedAclForObjects": "PUBLIC_READ"}'`  | 
@@ -652,6 +658,84 @@ The following table shows the endpoint settings that you can use with Amazon S3 
 | TimestampColumnName |  An optional parameter to include a timestamp column in the S3 target endpoint data\. AWS DMS includes an additional `STRING` column in the \.csv or \.parquet object files of your migrated data when you set `TimestampColumnName` to a non blank value\. For a full load, each row of this timestamp column contains a timestamp for when the data was transferred from the source to the target by DMS\.  For a CDC load, each row of the timestamp column contains the timestamp for the commit of that row in the source database\. The string format for this timestamp column value is `yyyy-MM-dd HH:mm:ss.SSSSSS`\. By default, the precision of this value is in microseconds\. For a CDC load, the rounding of the precision depends on the commit timestamp supported by DMS for the source database\. When the `AddColumnName` parameter is set to `true`, DMS also includes the name for the timestamp column that you set as the non blank value of `TimestampColumnName`\. Example: `--s3-settings '{"TimestampColumnName": "TIMESTAMP"}'`  | 
 | UseTaskStartTimeForFullLoadTimestamp |  When set to `true`, this parameter uses the task start time as the timestamp column value instead of the time data is written to target\. For full load, when `UseTaskStartTimeForFullLoadTimestamp` is set to `true`, each row of the timestamp column contains the task start time\. For CDC loads, each row of the timestamp column contains the transaction commit time\. When `UseTaskStartTimeForFullLoadTimestamp` is set to `false`, the full load timestamp in the timestamp column increments with the time data arrives at the target\. Default value: `false` Valid values: `true`, `false` Example: `--s3-settings '{"UseTaskStartTimeForFullLoadTimestamp": true}'` `UseTaskStartTimeForFullLoadTimestamp: true` helps make the S3 target `TimestampColumnName` for a full load sortable with `TimestampColumnName` for a CDC load\.  | 
 | ParquetTimestampInMillisecond |  An optional parameter that specifies the precision of any `TIMESTAMP` column values written to an S3 object file in \.parquet format\. When this attribute is set to `true` or `y`, AWS DMS writes all `TIMESTAMP` columns in a \.parquet formatted file with millisecond precision\. Otherwise, DMS writes them with microsecond precision\. Currently, Amazon Athena and AWS Glue can handle only millisecond precision for `TIMESTAMP` values\. Set this attribute to true for \.parquet formatted S3 endpoint object files only if you plan to query or process the data with Athena or AWS Glue\.    AWS DMS writes any `TIMESTAMP` column values written to an S3 file in \.csv format with microsecond precision\.   The setting of this attribute has no effect on the string format of the timestamp column value inserted by setting the `TimestampColumnName` attribute\.    Default value: `false` Valid values: `true`, `false`, `y`, `n` Example: `--s3-settings '{"ParquetTimestampInMillisecond": true}'`  | 
+| GlueCatalogGeneration |  To generate an AWS Glue Data Catalog, set this endpoint setting to `true`\. Default value: `false` Valid values: `true`, `false`, Example: `--s3-settings '{"GlueCatalogGeneration": true}'` **Note: **Don't use `GlueCatalogGeneration` with `PreserveTransactions` and `CdcPath`\.  | 
+
+## Using AWS Glue Data Catalog with an Amazon S3 target for AWS DMS<a name="CHAP_Target.S3.GlueCatalog"></a>
+
+AWS Glue is a service that provides simple ways to categorize data, and consists of a metadata repository known as AWS Glue Data Catalog\. You can integrate AWS Glue Data Catalog with your Amazon S3 target endpoint and query Amazon S3 data through other AWS services such as Amazon Athena\. Amazon Redshift works with AWS Glue but AWS DMS doesn't support that as a pre\-built option\. 
+
+To generate the data catalog, set the `GlueCatalogGeneration` endpoint setting to `true`, as shown in the following AWS CLI example\.
+
+```
+aws dms create-endpoint --endpoint-identifier s3-target-endpoint 
+            --engine-name s3 --endpoint-type target--s3-settings '{"ServiceAccessRoleArn": 
+            "your-service-access-ARN", "BucketFolder": "your-bucket-folder", "BucketName": 
+            "your-bucket-name", "DataFormat": "parquet", "GlueCatalogGeneration": true}'
+```
+
+For a Full load replication task that includes `csv` type data, set `IncludeOpForFullLoad` to `true`\.
+
+Don't use `GlueCatalogGeneration` with `PreserveTransactions` and `CdcPath`\. The AWS Glue crawler can't reconcile the different schemas of files stored under the specified `CdcPath`\.
+
+For Amazon Athena to index your Amazon S3 data, and for you to query your data using standard SQL queries through Amazon Athena, the migration task must have the following set of permissions\.
+
+```
+{
+    "Version": "2012-10-17", 
+    "Statement": [ 
+        {
+            "Effect": "Allow", 
+            "Action": [
+                "s3:GetBucketLocation", 
+                "s3:GetObject",
+                "s3:ListBucket", 
+                "s3:ListBucketMultipartUploads", 
+                "s3:ListMultipartUploadParts", 
+                "s3:AbortMultipartUpload" 
+            ], 
+            "Resource": [
+                "arn:aws:s3:::bucket123", 
+                "arn:aws:s3:::bucket123/*" 
+            ]
+        },
+        {
+            "Effect": "Allow", 
+            "Action": [ 
+                "glue:CreateDatabase", 
+                "glue:GetDatabase", 
+                "glue:CreateTable", 
+                "glue:DeleteTable", 
+                "glue:UpdateTable", 
+                "glue:GetTable", 
+                "glue:BatchCreatePartition", 
+                "glue:CreatePartition", 
+                "glue:UpdatePartition", 
+                "glue:GetPartition", 
+                "glue:GetPartitions", 
+                "glue:BatchGetPartition"
+            ], 
+            "Resource": [
+                "arn:aws:glue:*:111122223333:catalog", 
+                "arn:aws:glue:*:111122223333:database/*", 
+                "arn:aws:glue:*:111122223333:table/*" 
+            ]
+        }, 
+        {
+            "Effect": "Allow",
+            "Action": [
+                "athena:StartQueryExecution",
+                "athena:GetQueryExecution", 
+                "athena:CreateWorkGroup"
+            ],
+            "Resource": "arn:aws:athena:*:111122223333:workgroup/glue_catalog_generation_for_task_*"
+        }
+    ]
+}
+```
+
+**References**
++ For more information about AWS Glue, see [Concepts](https://docs.aws.amazon.com/glue/latest/dg/components-key-concepts.html) in the *AWS Glue Developer Guide* \.
++ For more information about AWS Glue Data Catalog see [Components](https://docs.aws.amazon.com/glue/latest/dg/components-overview.html) in the *AWS Glue Developer Guide* \.
 
 ## Using data encryption, parquet files, and CDC on your Amazon S3 target<a name="CHAP_Target.S3.EndpointSettings"></a>
 
@@ -659,6 +743,7 @@ You can use S3 target endpoint settings to configure the following:
 + A custom KMS key to encrypt your S3 target objects\.
 + Parquet files as the storage format for S3 target objects\.
 + Change data capture \(CDC\) including transaction order on the S3 target\.
++ Integrate AWS Glue Data Catalog with your Amazon S3 target endpoint and query Amazon S3 data through other services such as Amazon Athena\.
 
 ### AWS KMS key settings for data encryption<a name="CHAP_Target.S3.EndpointSettings.KMSkeys"></a>
 

@@ -311,7 +311,11 @@ The following AWS DMS data types are used with Amazon S3 as a source:
 + INT2
 + INT4
 + INT8
-+ NUMERIC – Requires `ColumnPrecision` and `ColumnScale`\. For more information and an example, see the NUMERIC type example in [Defining external tables for Amazon S3 as a source for AWS DMS](#CHAP_Source.S3.ExternalTableDef)\.
++ NUMERIC – Requires `ColumnPrecision` and `ColumnScale`\. AWS DMS supports the following maximum values:
+  + **ColumnPrecision: 38**
+  + **ColumnScale: 31**
+
+  For more information and an example, see the NUMERIC type example in [Defining external tables for Amazon S3 as a source for AWS DMS](#CHAP_Source.S3.ExternalTableDef)\.
 + REAL4
 + REAL8
 + STRING – Requires `ColumnLength`\. For more information, see [Defining external tables for Amazon S3 as a source for AWS DMS](#CHAP_Source.S3.ExternalTableDef)\.

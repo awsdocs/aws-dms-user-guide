@@ -59,7 +59,8 @@ In AWS DMS, there are two methods for reading the redo logs when doing change da
 | RAC |  Yes Not recommended  |  Yes Highly recommended  | 
 
 **Note**  
-By default, AWS DMS uses Oracle LogMiner for \(CDC\)\. 
+By default, AWS DMS uses Oracle LogMiner for \(CDC\)\.   
+AWS DMS supports transparent data encryption \(TDE\) methods when working with an Oracle source database\. If the TDE credentials you specify are incorrect, the AWS DMS migration task doesn't fail, which can impact ongoing replication of encrypted tables\. For more information about specifying TDE credentials, see [Supported encryption methods for using Oracle as a source for AWS DMS](#CHAP_Source.Oracle.Encryption)\.
 
 The main advantages of using LogMiner with AWS DMS include the following:
 + LogMiner supports most Oracle options, such as encryption options and compression options\. Binary Reader doesn't support all Oracle options, particularly compression and most options for encryption\.
@@ -755,7 +756,7 @@ After you do so, use the following procedure to use RDS for Oracle Standby as a 
 ## Limitations on using Oracle as a source for AWS DMS<a name="CHAP_Source.Oracle.Limitations"></a>
 
 The following limitations apply when using an Oracle database as a source for AWS DMS:
-+ AWS DMS doesn't support Oracle Extended data types at this time\.
++ AWS DMS supports Oracle Extended data types in AWS DMS version 3\.5\.0 and later\.
 + AWS DMS doesn't support long object names \(over 30 bytes\)\.
 + AWS DMS doesn't support function\-based indexes\.
 + If you manage supplemental logging and carry out transformations on any of the columns, make sure that supplemental logging is activated for all fields and columns\. For more information on setting up supplemental logging, see the following topics:
@@ -831,7 +832,12 @@ The following limitations apply when using an Oracle database as a source for AW
 + AWS DMS doesn't support a virtual private database \(VPD\)\.
 + AWS DMS doesn't support replication from application containers\.
 + AWS DMS doesn't support performing Oracle Flashback Database and restore points, as these operations affect the consistency of Oracle Redo Log files\.
-+ Direct\-load `INSERT` procedure with parallel execution option isn't supported for tables with more than 255 columns, or when a row size is greater than 8K\.
++ Direct\-load `INSERT` procedure with the parallel execution option isn't supported in the following cases:
+  + Uncompressed tables with more than 255 columns
+  + Row size exceeds 8K
+  + Exadata HCC tables
++ A source table with neither primary nor unique key requires ALL COLUMN supplemental logging to be enabled\. It creates more redo log activities and may increase DMS CDC latency\.
++ AWS DMS doesn't migrate data from invisible columns in your source database\. To include these columns in your migration scope, use the `ALTER TABLE` statement to make these columns visible\.
 
 ## SSL support for an Oracle endpoint<a name="CHAP_Security.SSL.Oracle"></a>
 
@@ -1451,6 +1457,8 @@ The following table shows the endpoint settings that you can use with Oracle as 
 |  `SpatialSdo2GeoJsonFunctionName`  |  For Oracle version 12\.1 or earlier sources migrating to PostgreSQL targets, use this attribute to convert SDO\_GEOMETRY to GEOJSON format\. By default, AWS DMS calls the `SDO2GEOJSON` custom function which must be present and accessible to the AWS DMS user\. Or you can create your own custom function that mimics the operation of `SDOGEOJSON` and set `SpatialSdo2GeoJsonFunctionName` to call it instead\.  Default value: SDO2GEOJSON Valid values: String  Example: `--oracle-settings '{"SpatialSdo2GeoJsonFunctionName": "myCustomSDO2GEOJSONFunction"}'`  | 
 |  `ExposeViews`  |  Use this attribute to pull data once from a view; you can't use it for ongoing replication\. When you extract data from a view, the view is shown as a table on the target schema\. Default value: false Valid values: true/false Example: `--oracle-settings '{"ExposeViews": true}'`  | 
 |  `EnableHomogenousPartitionOps`  |  Set this attribute to `true` to enable replication of Oracle Partition and subPartition DDL Operations for Oracle *Homogenous* migration\. Note that this feature and enhancement was introduced in AWS DMS version 3\.4\.7\. Default value: false Valid values: true/false Example: `--oracle-settings '{"EnableHomogenousPartitionOps": true}'`  | 
+|  filterTransactionsOfUser \(ECA Only\)  |  Use this extra connection attribute \(ECA\) to allows DMS to ignore transactions from a specified user when replicating data from Oracle when using LogMiner\. You can pass comma separated user name values, but they must be in all CAPITAL letters\. ECA Example: `filterTransactionsOfUser=USERNAME;`  | 
+|  `ConvertTimestampWithZoneToUTC`  |  Set this attribute to `true` to convert the timestamp value of 'TIMESTAMP WITH TIME ZONE' and 'TIMESTAMP WITH LOCAL TIME ZONE' columns to UTC\. By default the value of this attribute is 'false' and the data will be replicated using the source database timezone\. Default value: false Valid values: true/false Example: `--oracle-settings '{"ConvertTimestampWithZoneToUTC": true}'`  | 
 
 ## Source data types for Oracle<a name="CHAP_Source.Oracle.DataTypes"></a>
 

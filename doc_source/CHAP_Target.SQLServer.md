@@ -8,6 +8,12 @@ For Amazon RDS instance databases, AWS DMS supports as a target SQL Server versi
 
 For additional details on working with AWS DMS and SQL Server target databases, see the following\.
 
+**Topics**
++ [Limitations on using SQL Server as a target for AWS Database Migration Service](#CHAP_Target.SQLServer.Limitations)
++ [Security requirements when using SQL Server as a target for AWS Database Migration Service](#CHAP_Target.SQLServer.Security)
++ [Endpoint settings when using SQL Server as a target for AWS DMS](#CHAP_Target.SQLServer.ConnectionAttrib)
++ [Target data types for Microsoft SQL Server](#CHAP_Target.SQLServer.DataTypes)
+
 ## Limitations on using SQL Server as a target for AWS Database Migration Service<a name="CHAP_Target.SQLServer.Limitations"></a>
 
 The following limitations apply when using a SQL Server database as a target for AWS DMS:
@@ -16,6 +22,7 @@ The following limitations apply when using a SQL Server database as a target for
 + Temporal tables are not supported\. Migrating temporal tables may work with a replication\-only task in transactional apply mode if those tables are manually created on the target\.
 + Currently, `boolean` data types in a PostgreSQL source are migrated to a SQLServer target as the `bit` data type with inconsistent values\. As a workaround, precreate the table with a `VARCHAR(1)` data type for the column \(or let AWS DMS create the table\)\. Then have downstream processing treat an "F" as False and a "T" as True\.
 + AWS DMS doesn't support change processing to set column nullability \(using the `ALTER COLUMN [SET|DROP] NOT NULL` clause with `ALTER TABLE` statements\)\.
++ Windows Authentication isn't supported\.
 
 ## Security requirements when using SQL Server as a target for AWS Database Migration Service<a name="CHAP_Target.SQLServer.Security"></a>
 

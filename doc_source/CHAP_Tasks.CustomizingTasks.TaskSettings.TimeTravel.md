@@ -2,7 +2,7 @@
 
 To log and debug replication tasks, you can use AWS DMS Time Travel\. In this approach, you use Amazon S3 to store logs and encrypt them using your encryption keys\. Only with access to your Time Travel S3 bucket, can you retrieve your S3 logs using date\-time filters, then view, download, and obfuscate logs as needed\. By doing this, you can securely "travel back in time" to investigate database activities\. Time Travel works independently from the CloudWatch logging\. For more information on CloudWatch logging, see [Logging task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.Logging.md)\. 
 
-You can use Time Travel in all AWS Regions with DMS\-supported PostgreSQL source endpoints and DMS\-supported PostgreSQL and MySQL target endpoints\. You can turn on Time Travel only for full\-load and CDC tasks and for CDC only tasks\. To turn on Time Travel or to modify any existing Time Travel settings, ensure that your replication task is stopped\.
+You can use Time Travel in all AWS Regions with AWS DMS\-supported Oracle, Microsoft SQL Server, and PostgreSQL source endpoints, and AWS DMS\-supported PostgreSQL and MySQL target endpoints\. You can turn on Time Travel only for full\-load and change data capture \(CDC\) tasks and for CDC\-only tasks\. To turn on Time Travel or to modify any existing Time Travel settings, ensure that your replication task is stopped\.
 
 The Time Travel settings include the `TTSettings` properties following:
 + `EnableTT` – If this option is set to `true`, Time Travel logging is turned on for the task\. The default value is `false`\.
@@ -88,7 +88,16 @@ The Time Travel settings include the `TTSettings` properties following:
   Type: String
 
   Required: No
-+ `EnableRawData ` – When this option is set to `true`, the data manipulation language \(DML\) raw data for Time Travel logs appears under the `raw_data` column of the Time Travel logs\. For the details, see [Using the Time Travel logs](CHAP_Tasks.CustomizingTasks.TaskSettings.TimeTravel.LogSchema.md)\. The default value is `false`\. When this option is set to `false`, only the type of DML is captured\.
++ `EnableRawData` – When this option is set to `true`, the data manipulation language \(DML\) raw data for Time Travel logs appears under the `raw_data` column of the Time Travel logs\. For the details, see [Using the Time Travel logs](CHAP_Tasks.CustomizingTasks.TaskSettings.TimeTravel.LogSchema.md)\. The default value is `false`\. When this option is set to `false`, only the type of DML is captured\.
+
+  Type: String
+
+  Required: No
++ `RawDataFormat` – In AWS DMS versions 3\.5\.0 and later, when `EnableRawData` is set to `true`\. This property specifies a format for the raw data of the DML in a Time Travel log and can be presented as:
+  + `"TEXT"` – Parsed, readable column names and values for DML events captured during CDC as `Raw` fields\.
+  + `"HEX"` – The original hexidecimal for column names and values captured for DML events during CDC\.
+
+  This property applies to Oracle and Microsoft SQL Server database sources\.
 
   Type: String
 
@@ -106,7 +115,7 @@ The Time Travel settings include the `TTSettings` properties following:
   Type: String
 
   Required: No
-+ `MaxRecordSize` – Specifies the maximum size of Time Travel log records that are logged for each row\. Use this parameter to control the growth of Time Travel logs for especially busy tables\. The default is 64 KB\.
++ `MaxRecordSize` – Specifies the maximum size of Time Travel log records that are logged for each row\. Use this property to control the growth of Time Travel logs for especially busy tables\. The default is 64 KB\.
 
   Type: Integer
 

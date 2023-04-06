@@ -7,6 +7,7 @@ Before you use IAM to manage access to AWS DMS, you should understand what IAM f
 + [AWS DMS resource\-based policies](#security_iam_service-with-iam-resource-based-policies)
 + [Authorization based on AWS DMS tags](#security_iam_service-with-iam-tags)
 + [IAM roles for AWS DMS](#security_iam_service-with-iam-roles)
++ [Identity and access management for DMS Fleet Advisor](#fa-security-iam)
 
 ## AWS DMS identity\-based policies<a name="security_iam_service-with-iam-id-based-policies"></a>
 
@@ -162,7 +163,7 @@ AWS DMS supports using temporary credentials\.
 
 [Service\-linked roles](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_terms-and-concepts.html#iam-term-service-linked-role) allow AWS services to access resources in other services to complete an action on your behalf\. Service\-linked roles appear in your IAM account and are owned by the service\. An IAM administrator can view but not edit the permissions for service\-linked roles\.
 
-AWS DMS does not support service\-linked roles\. 
+For details about creating or managing AWS DMS service\-linked roles, see [](using-service-linked-roles.md)\.
 
 ### Service roles<a name="security_iam_service-with-iam-roles-service"></a>
 
@@ -182,3 +183,9 @@ AWS DMS supports two types of service roles that you must create to use certain 
 ### Choosing an IAM role in AWS DMS<a name="security_iam_service-with-iam-roles-choose"></a>
 
 If you use the AWS CLI or the AWS DMS API for your database migration, you must add certain IAM roles to your AWS account before you can use the features of AWS DMS\. Two of these are `dms-vpc-role` and `dms-cloudwatch-logs-role`\. If you use Amazon Redshift as a target database, you must also add the IAM role `dms-access-for-endpoint` to your AWS account\. For more information, see [Creating the IAM roles to use with the AWS CLI and AWS DMS API](security-iam.md#CHAP_Security.APIRole)\.
+
+## Identity and access management for DMS Fleet Advisor<a name="fa-security-iam"></a>
+
+With IAM identity\-based policies, you can specify allowed or denied actions and resources, and also the conditions under which actions are allowed or denied\. DMS Fleet Advisor supports specific actions, resources, and condition keys\. To learn about all of the elements that you use in a JSON policy, see [IAM JSON policy elements reference](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements.html) in the *IAM User Guide*\. 
+
+DMS Fleet Advisor uses IAM roles to access Amazon Simple Storage Service\. An [IAM role](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html) is an entity within your AWS account that has specific permissions\. For more information, see [Create IAM resources](fa-resources.md#fa-resources-iam)\. 

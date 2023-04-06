@@ -1,23 +1,33 @@
-# Discover and evaluate databases for migration using AWS DMS Fleet Advisor<a name="CHAP_FleetAdvisor"></a>
+# Discovering and evaluating databases for migration with AWS DMS Fleet Advisor<a name="CHAP_FleetAdvisor"></a>
 
-AWS DMS Fleet Advisor collects data from multiple database environments to provide insight into your data infrastructure\. [DMS Fleet Advisor](http://aws.amazon.com/dms/fleet-advisor/) collects data from your on\-premises database and analytic servers from one or more central locations without the need to install it on every computer\. Currently, DMS Fleet Advisor supports Microsoft SQL Server, MySQL, Oracle, and PostgreSQL database servers\.
+You can use DMS Fleet Advisor to collect metadata and performance metrics from multiple database environments\. These collected metrics provide insight into your data infrastructure\. [DMS Fleet Advisor](http://aws.amazon.com/dms/fleet-advisor/) collects metadata and metrics from your on\-premises database and analytic servers from one or more central locations without the need to install it on every computer\. Currently, DMS Fleet Advisor supports Microsoft SQL Server, MySQL, Oracle, and PostgreSQL database servers\.
 
-Based on data discovered from the network, you can build an inventory to define the list of database servers for further data collection\. As details about these servers, databases, and schemas are collected, you can analyze the feasibility of your intended database migrations\.
+Based on data discovered from the network, you can build an inventory to define the list of database servers for further data collection\. After AWS DMS collects information about your servers, databases, and schemas, you can analyze the feasibility of your intended database migrations\.
+
+For databases in your inventory that you plan to migrate to the AWS Cloud, DMS Fleet Advisor generates right\-sized target recommendations\. To generate target recommendations, DMS Fleet Advisor considers the metrics from your data collector and preferred settings\. After DMS Fleet Advisor generates recommendations, you can view detailed information for each target database configuration\. Your organization's database engineers and administrators can use DMS Fleet Advisor Target Recommendations to plan the migration of their on\-premises databases to AWS\. Also, you can explore different available migration options and export these recommendations\. Finally, you can use the AWS Pricing Calculator to further optimize the cost\.
+
+The following diagram illustrates the AWS DMS Fleet Advisor Target Recommendations process\.
+
+![\[DMS Fleet Advisor target recommendations architecture diagram.\]](http://docs.aws.amazon.com/dms/latest/userguide/images/dms-fleet-advisor-diagram.png)
 
 Use the following topics to better understand how to use AWS DMS Fleet Advisor\.
 
 **Topics**
++ [Supported source databases](#welcome-supported-databases)
 + [Supported AWS Regions](#CHAP_FleetAdvisor.SupportedRegions)
-+ [Creating required AWS resources for AWS DMS Fleet Advisor](CHAP_FleetAdvisor.Prerequisites.md)
-+ [Creating database users for AWS DMS Fleet Advisor](CHAP_FleetAdvisor.DBUser.md)
-+ [Creating a data collector for AWS DMS Fleet Advisor](CHAP_FleetAdvisor.DataCollector.md)
-+ [Installing and configuring a data collector](CHAP_FleetAdvisor.InstallDataCollector.md)
-+ [Discovering OS and database servers to monitor](CHAP_FleetAdvisor.Discovering.md)
-+ [Managing monitored objects](CHAP_FleetAdvisor.ManagingObjects.md)
-+ [Using SSL with AWS DMS Fleet Advisor](CHAP_FleetAdvisor.Ssl.md)
-+ [Collecting data for AWS DMS Fleet Advisor](CHAP_FleetAdvisor.Collecting.md)
-+ [Using inventories for analysis in AWS DMS Fleet Advisor](CHAP_FleetAdvisor.Inventory.md)
-+ [Troubleshooting for DMS data collector](CHAP_FleetAdvisor.Troubleshooting.md)
++ [Getting started with DMS Fleet Advisor](fa-getting-started.md)
++ [Setting up AWS DMS Fleet Advisor](fa-prerequisites.md)
++ [Discovering databases for migration using data collectors](fa-data-collectors.md)
++ [Using inventories for analysis in AWS DMS Fleet Advisor](fa-inventory.md)
++ [Using the AWS DMS Fleet Advisor Target Recommendations feature](fa-recommendations.md)
+
+## Supported source databases<a name="welcome-supported-databases"></a>
+
+DMS Fleet Advisor supports the following source databases\.
++ Microsoft SQL Server version 2012 and up to 2019
++ MySQL version 5\.6 and up to 8
++ Oracle version 11g Release 2 and up to 12c, 19c, and 21c
++ PostgreSQL version 9\.6 and up to 13
 
 ## Supported AWS Regions<a name="CHAP_FleetAdvisor.SupportedRegions"></a>
 

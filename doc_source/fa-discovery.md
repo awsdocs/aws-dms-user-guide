@@ -1,8 +1,8 @@
-# Discovering OS and database servers to monitor<a name="CHAP_FleetAdvisor.Discovering"></a>
+# Discovering OS and database servers to monitor<a name="fa-discovery"></a>
 
-You can use the DMS data collector to find and list all available servers in your network\. Discovering all the available database servers in you network is recommended, but isn't required\. Optionally, you can manually add or upload the list of servers for further data collection\. For more information about manually adding a list of servers, see [Managing monitored objects](CHAP_FleetAdvisor.ManagingObjects.md)\.
+You can use the DMS data collector to find and list all available servers in your network\. Discovering all the available database servers in your network is recommended, but isn't required\. Optionally, you can manually add or upload the list of servers for further data collection\. For more information about manually adding a list of servers, see [Managing monitored objects](fa-managing-objects.md)\.
 
-We recommend that you discover all operating system \(OS\) servers before discovering databases on those servers\. To discover OS servers, you need permission to run remote PowerShell, Secure Shell \(SSH\), and Windows Management Instrumentation \(WMI\) scripts and commands, as well as access to the Windows registry\. To discover database servers in your network and collect data from them, you need read\-only administrator permissions for a remote database connection\. Make sure that you added an LDAP server before you proceed with discovery\. For more information, see [Configuring credentials for data forwarding](CHAP_FleetAdvisor.InstallDataCollector.md#CHAP_FleetAdvisor.InstallDataCollector.Configure)\.
+We recommend that you discover all operating system \(OS\) servers before discovering databases on those servers\. To discover OS servers, you need permission to run remote PowerShell, Secure Shell \(SSH\), and Windows Management Instrumentation \(WMI\) scripts and commands, as well as access to the Windows registry\. To discover database servers in your network and collect metadata from them, you need read\-only administrator permissions for a remote database connection\. Make sure that you added an LDAP server before you proceed with discovery\. For more information, see [Configuring credentials for data forwarding](fa-data-collectors-install.md#fa-data-collectors-configure)\.
 
 To get started with the DMS data collector, complete the following tasks:
 + Discover all OS servers in your network\.
@@ -22,7 +22,7 @@ To get started with the DMS data collector, complete the following tasks:
 
 1. Enter the LDAP servers that you want to use to scan your network\.
 
-1. Choose **Run discovery**\. The page populates with a list of all OS servers discovered within your network, regardless of whether they're running a database\.
+1. Choose **Run discovery**\. The page displays a list of all OS servers discovered within your network, regardless of whether they're running a database\.
 
    We recommend that you run discovery for all OS servers before running discovery for databases on those servers\. Your credentials make discovery possible first for the host servers, then for the databases that reside on them\. You want to discover OS servers first before running discovery for databases on those servers\. Be aware that the credentials that you use for an LDAP server to find OS servers in your network might differ from the credentials required to discover databases on a particular OS server\. Therefore, we recommend that you add OS servers to monitored objects, verify the credentials and correct them if necessary, and then check connectivity before proceeding\.
 
@@ -42,15 +42,15 @@ You can view the list of OS servers to monitor and verify connections on the **M
 
 1. In the DMS data collector navigation pane, choose **Monitored objects**\. 
 
-1. On the **Monitored objects** page, choose the **All** tab\. A list of discovered OS servers to be monitored appears\.
+1. On the **Monitored objects** page, choose the **OS servers** tab\. A list of discovered OS servers to be monitored appears\.
 
 1. Select the check box at the top of the column to choose all the listed OS servers\.
 
-1. Choose **Verify connection**\. For each server object, view the results in the **Connections status** column\.
+1. Choose **Actions**, then **Verify connection**\. For each server object, view the results in the **Connections status** column\.
 
-1. Select servers with a connection status other than **Success**, and choose **Edit**\. The **Edit monitored objects** dialog box opens\.
+1. Select servers with a connection status other than **Success**\. Next, choose **Actions**, then choose **Edit**\. The **Edit server** dialog box opens\.
 
-1. Correct any improper information, then choose **Save**\. The **Override credentials** dialog box opens\.
+1. Verify that the information is correct or edit if needed\. When finished, choose **Save**\. The **Override credentials** dialog box opens\.
 
 1. Choose **Overwrite**\. DMS data collector verifies and updates the status for each connection as **Success**\.
 
@@ -60,11 +60,11 @@ You can now discover databases that reside on servers that you selected to monit
 
 1. In the DMS data collector navigation pane, choose **Discovery**\. 
 
-1. Choose the **Database servers** tab, and choose **Run discovery**\. The **Discovery parameter** dialog box opens\.
+1. Choose the **Database servers** tab, and choose **Run discovery**\. The **Discovery parameters** dialog box opens\.
 
-1. In the **Discovery parameter** dialog box, for **Discovered by**, choose **Monitored objects**\. For **Servers**, choose the OS servers on which you want to run database discovery\.
+1. In the **Discovery parameters** dialog box, for **Discovery by**, choose **Monitored objects**\. For **Servers**, choose the OS servers on which you want to run database discovery\.
 
-1. Choose **Run discovery**\. The page becomes populated with a list of all databases that reside on the OS servers that you choose to monitor\.
+1. Choose **Run discovery**\. The page displays a list of all databases that reside on the OS servers that you choose to monitor\.
 
 View information such as database address, server name, and database engine to help you select databases to monitor\.
 
@@ -78,7 +78,7 @@ View information such as database address, server name, and database engine to h
 
 You can now verify the connections to the databases you choose to monitor\.
 
-**Verify connections to monitored databases**
+**To verify connections to monitored databases**
 
 1. In the DMS data collector navigation pane, choose **Monitored objects**\. 
 
@@ -86,9 +86,9 @@ You can now verify the connections to the databases you choose to monitor\.
 
 1. Select the check box at the top of the column to choose all the listed database servers\.
 
-1. Choose **Verify connection**\. For each database, view the results in the **Connections status** column\.
+1. Choose **Actions**, then choose **Verify connection**\. For each database, view the results in the **Connections status** column\.
 
-1. Select all connections that are undefined \(blank\) or resulted in **Failure**, then choose **Edit**\. The **Edit monitored objects** dialog box opens\.
+1. Select connections that have undefined \(blank\) status or the status of **Failure**\. Next, choose **Actions**, then choose **Edit**\. The **Edit monitored objects** dialog box opens\.
 
 1. Enter your **Login** and **Password** credentials, then choose **Save**\. The **Change credentials** dialog box opens\.
 

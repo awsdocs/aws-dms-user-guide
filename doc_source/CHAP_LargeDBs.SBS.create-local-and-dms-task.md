@@ -11,7 +11,7 @@ We recommend that you test your migration before you use the AWS Snowball Edge d
 
 1. Start AWS SCT, choose **View**, and then choose **Data migration view \(other\)**\.
 
-1. In the left panel that displays the schema from your source database, choose a schema object to migrate\. Open the context \(right\-click\) menu for the object, and then choose **Create local task**\.
+1. In the left panel that displays the schema from your source database, choose a schema object to migrate\. Open the context \(right\-click\) menu for the object, and then choose **Create Local & DMS task**\.
 
 1. For **Task name**, enter a descriptive name for your data migration task\.
 

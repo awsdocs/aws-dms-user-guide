@@ -33,53 +33,6 @@ You can import data from an existing MySQL or MariaDB database to an Amazon RDS 
 
 For more information about importing a MySQL database into Amazon RDS for MySQL or Amazon Aurora MySQL\-Compatible Edition, see [ Importing data into a MySQL DB instance ](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/MySQL.Procedural.Importing.Other.html) and [ Importing data from a MySQL or MariaDB DB to an Amazon RDS MySQL or MariaDB DB instance](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/MySQL.Procedural.Importing.SmallExisting.html)\. 
 
-### Using AWS DMS to migrate data from MySQL to MySQL<a name="CHAP_Source.MySQL.Homogeneous.DMS"></a>
-
- AWS DMS can migrate data from, for example, a source MySQL database that is on premises to a target Amazon RDS for MySQL or Aurora MySQL instance\. Core or basic MySQL data types most often migrate successfully\. 
-
-Data types that are supported on the source database but aren't supported on the target might not migrate successfully\. AWS DMS streams some data types as strings if the data type is unknown\. Some data types, such as XML, can successfully migrate as small files but can fail if they are large documents\. 
-
-The following table shows source MySQL data types and whether they can be migrated successfully\.
-
-
-| Data type | Migrates successfully | Will partially migrate | Will not migrate | 
-| --- | --- | --- | --- | 
-| INT | X |  |  | 
-| BIGINT | X |  |  | 
-| MEDIUMINT | X |  |  | 
-| TINYINT | X |  |  | 
-| DECIMAL\(p,s\) | X |  |  | 
-| BINARY | X |  |  | 
-| BIT\(M\) | X |  |  | 
-| BLOB | X |  |  | 
-| LONGBLOB | X |  |  | 
-| MEDIUMBLOB | X |  |  | 
-| TINYBLOB | X |  |  | 
-| DATE | X |  |  | 
-| DATETIME | X |  |  | 
-| TIME |  | X |  | 
-| TIMESTAMP | X |  |  | 
-| YEAR | X |  |  | 
-| DOUBLE | X |  |  | 
-| FLOAT |  | X |  | 
-| VARCHAR\(N\) | X |  |  | 
-| VARBINARY\(N\) | X |  |  | 
-| CHAR\(N\) | X |  |  | 
-| TEXT | X |  |  | 
-| LONGTEXT | X |  |  | 
-| MEDIUMTEXT | X |  |  | 
-| TINYTEXT | X |  |  | 
-| JSON | X |  |  | 
-| GEOMETRY |  |  | X | 
-| POINT |  |  | X | 
-| LINESTRING |  |  | X | 
-| POLYGON |  |  | X | 
-| MULTILINESTRING |  |  | X | 
-| MULTIPOLYGON |  |  | X | 
-| GEOMETRYCOLLECTION |  |  | X | 
-| ENUM | X |  |  | 
-| SET | X |  |  | 
-
 ## Using any MySQL\-compatible database as a source for AWS DMS<a name="CHAP_Source.MySQL.Prerequisites"></a>
 
 Before you begin to work with a MySQL database as a source for AWS DMS, make sure that you have the following prerequisites\. These prerequisites apply to either self\-managed or AWS\-managed sources\.
@@ -173,7 +126,7 @@ When using a MySQL database as a source, consider the following:
 + Temporal data tables or system—versioned tables are not supported on MariaDB source and target databases\.
 + If migrating between two Amazon RDS Aurora MySQL clusters, the RDS Aurora MySQL source endpoint must be a read/write instance, not a replica instance\. 
 + AWS DMS currently doesn't support views migration for MariaDB\.
-+ AWS DMS doesn't support DDL changes for partitioned tables for MySQL\.
++ AWS DMS doesn't support DDL changes for partitioned tables for MySQL\. To skip table suspension for partition DDL changes during CDC, set `skipTableSuspensionForPartitionDdl` to `true`\.
 + AWS DMS doesn't currently support XA transactions\.
 + AWS DMS doesn't support GTID for replication\. 
 + AWS DMS doesn't support binary log transaction compression\.

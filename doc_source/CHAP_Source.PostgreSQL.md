@@ -136,20 +136,20 @@ You can't use RDS PostgreSQL read replicas for CDC \(ongoing replication\)\.
 In some cases, you might not use the master user account for the Amazon RDS PostgreSQL DB instance that you are using as a source\. In these cases, you create several objects to capture data definition language \(DDL\) events\. You create these objects in the account other than the master account and then create a trigger in the master user account\.
 
 **Note**  
-If you set the `captureDDLs` extra connection attribute to *N* on the source endpoint, you don't have to create the following table and trigger on the source database\.
+If you set the `captureDDLs` endpoint setting to `false` on the source endpoint, you don't have to create the following table and trigger on the source database\.
 
 Use the following procedure to create these objects\.
 
 **To create objects**
 
-1. Choose the schema where the objects are to be created\. The default schema is `public`\. Ensure that the schema exists and is accessible by the `NoPriv` account\. 
+1. Choose the schema where the objects are to be created\. The default schema is `public`\. Ensure that the schema exists and is accessible by the `OtherThanMaster` account\. 
 
-1. Log in to the PostgreSQL DB instance using the user account other than the master account, here the `NoPriv` account\.
+1. Log in to the PostgreSQL DB instance using the user account other than the master account, here the `OtherThanMaster` account\.
 
 1. Create the table `awsdms_ddl_audit` by running the following command, replacing `objects_schema` in the following code with the name of the schema to use\.
 
    ```
-   create table objects_schema.awsdms_ddl_audit
+   CREATE TABLE objects_schema.awsdms_ddl_audit
    (
      c_key    bigserial primary key,
      c_time   timestamp,    -- Informational
@@ -160,7 +160,7 @@ Use the following procedure to create these objects\.
      c_name   varchar(64),  -- For future use - TG_OBJECTNAME
      c_schema varchar(64),  -- For future use - TG_SCHEMANAME. For now - holds current_schema
      c_ddlqry  text         -- The DDL query associated with the current DDL event
-   )
+   );
    ```
 
 1. Create the function `awsdms_intercept_ddl` by running the following command, replacing `objects_schema` in the code following with the name of the schema to use\.
@@ -186,7 +186,7 @@ Use the following procedure to create these objects\.
    $$;
    ```
 
-1. Log out of the `NoPriv` account and log in with an account that has the `rds_superuser` role assigned to it\.
+1. Log out of the `OtherThanMaster` account and log in with an account that has the `rds_superuser` role assigned to it\.
 
 1. Create the event trigger `awsdms_intercept_ddl` by running the following command\.
 
@@ -195,17 +195,17 @@ Use the following procedure to create these objects\.
    EXECUTE PROCEDURE objects_schema.awsdms_intercept_ddl();
    ```
 
-When you have completed the procedure preceding, you can create the AWS DMS source endpoint using the `NoPriv` account\.
+1. Make sure that all users and roles that access these events have the necessary DDL permissions\. For example:
+
+   ```
+   grant all on public.awsdms_ddl_audit to public;
+   grant all on public.awsdms_ddl_audit_c_key_seq to public;
+   ```
+
+When you have completed the procedure preceding, you can create the AWS DMS source endpoint using the `OtherThanMaster` account\.
 
 **Note**  
 These events are triggered by `CREATE TABLE`, `ALTER TABLE`, and `DROP TABLE` statements\.
-
-Make sure that all users and roles that access these events have the necessary DDL permissions\. For example:
-
-```
-grant all on public.awsdms_ddl_audit to public;
-grant all on public.awsdms_ddl_audit_c_key_seq to public;
-```
 
 ## Enabling change data capture \(CDC\) using logical replication<a name="CHAP_Source.PostgreSQL.Security"></a>
 
@@ -477,7 +477,7 @@ You can add additional configuration settings when migrating data from a Postgre
 + You can override connection string parameters\. Choose this option to do either of the following:
   + Specify internal AWS DMS parameters\. Such parameters are rarely required so aren't exposed in the user interface\.
   + Specify pass\-through \(passthru\) values for the specific database client\. AWS DMS includes pass\-through parameters in the connection sting passed to the database client\.
-+ By using the table\-level parameter `REPLICATE IDENTITY` in PostgreSQL versions 9\.4 and higher, you can control information written to write\-ahead logs \(WALs\)\. In particular, it does so for WALs that identify rows that are updated or deleted\. `REPLICATE IDENTITY FULL` records the old values of all columns in the row\. Use `REPLICATE IDENTITY FULL` carefully for each table as `FULL` generates an extra number of WALs that might not be necessary\. For more information, see [ALTER TABLE\-REPLICA IDENTITY](https://www.postgresql.org/docs/devel/sql-altertable.html) 
++ By using the table\-level parameter `REPLICA IDENTITY` in PostgreSQL versions 9\.4 and higher, you can control information written to write\-ahead logs \(WALs\)\. In particular, it does so for WALs that identify rows that are updated or deleted\. `REPLICA IDENTITY FULL` records the old values of all columns in the row\. Use `REPLICA IDENTITY FULL` carefully for each table as `FULL` generates an extra number of WALs that might not be necessary\. For more information, see [ALTER TABLE\-REPLICA IDENTITY](https://www.postgresql.org/docs/devel/sql-altertable.html) 
 
 ## Using the MapBooleanAsBoolean PostgreSQL endpoint setting<a name="CHAP_Source.PostgreSQL.ConnectionAttrib.Endpointsetting"></a>
 

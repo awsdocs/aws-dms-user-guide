@@ -273,8 +273,8 @@ Then, when you create your Kafka target endpoint, set the security protocol endp
 ```
 
 **Note**  
-Currently, AWS DMS supports only public CA backed SASL/SSL\. DMS doesn't support SASL/SSL for use with self\-managed Kafka that is backed by private CA\.  
-For SASL/SSL authentication, AWS DMS supports only the SCRAM\-SHA\-512 mechanism\.
+Currently, AWS DMS supports only public CA backed SASL\-SSL\. DMS doesn't support SASL\-SSL for use with self\-managed Kafka that is backed by private CA\.
+For SASL\-SSL authentication, AWS DMS supports the SCRAM\-SHA\-512 mechanism by default\. AWS DMS versions 3\.5\.0 and later also support the Plain mechanism\. To support the Plain mechanism, set the `SaslMechanism` parameter of the `KafkaSettings` API data type to `PLAIN`\.
 
 ## Using a before image to view original values of CDC rows for Apache Kafka as a target<a name="CHAP_Target.Kafka.BeforeImage"></a>
 

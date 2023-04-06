@@ -120,6 +120,7 @@ The following limitations apply when using Amazon OpenSearch Service as a target
 + With OpenSearch Service, you can't make updates to the primary key attributes\. This restriction is important when using ongoing replication with change data capture \(CDC\) because it can result in unwanted data in the target\. In CDC mode, primary keys are mapped to SHA256 values, which are 32 bytes long\. These are converted to human\-readable 64\-byte strings, and are used as OpenSearch Service document IDs\.
 + If AWS DMS encounters any items that can't be migrated, it writes error messages to Amazon CloudWatch Logs\. This behavior differs from that of other AWS DMS target endpoints, which write errors to an exceptions table\.
 + AWS DMS doesn't support connection to an Amazon ES cluster that has Fine\-grained Access Control enabled with master user and password\.
++ AWS DMS doesn't support OpenSearch Service serverless\.
 
 ## Target data types for Amazon OpenSearch Service<a name="CHAP_Target.Elasticsearch.DataTypes"></a>
 

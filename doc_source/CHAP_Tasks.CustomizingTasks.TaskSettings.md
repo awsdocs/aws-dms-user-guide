@@ -37,7 +37,7 @@ There are several main types of task settings, as listed following\.
 
 ## Task settings example<a name="CHAP_Tasks.CustomizingTasks.TaskSettings.Example"></a>
 
-You can use either the AWS Management Console or the AWS CLI to create a replication task\. If you use the AWS CLI, you set task settings by creating a JSON file and by providing the file as the [ ReplicationTaskSettings](https://docs.aws.amazon.com/dms/latest/APIReference/API_CreateReplicationTask.html#DMS-CreateReplicationTask-request-ReplicationTaskSettings) parameter of the [CreateReplicationTask](https://docs.aws.amazon.com/dms/latest/APIReference/API_CreateReplicationTask.html) operation\.
+You can use either the AWS Management Console or the AWS CLI to create a replication task\. If you use the AWS CLI, you set task settings by creating a JSON file, then specifying the file:// URI of the JSON file as the [ ReplicationTaskSettings](https://docs.aws.amazon.com/dms/latest/APIReference/API_CreateReplicationTask.html#DMS-CreateReplicationTask-request-ReplicationTaskSettings) parameter of the [CreateReplicationTask](https://docs.aws.amazon.com/dms/latest/APIReference/API_CreateReplicationTask.html) operation\.
 
 The following example shows how to use the AWS CLI to call the `CreateReplicationTask` operation:
 

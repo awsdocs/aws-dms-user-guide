@@ -1,6 +1,6 @@
 # Using Amazon DocumentDB as a target for AWS Database Migration Service<a name="CHAP_Target.DocumentDB"></a>
 
-You can use AWS DMS to migrate data to Amazon DocumentDB \(with MongoDB compatibility\) from any of the source data engines that AWS DMS supports\. The source engine can be on an AWS\-managed service such as Amazon RDS, Aurora, or Amazon S3\. Or the engine can be on a self\-managed database, such as MongoDB running on Amazon EC2 or on\-premises\.
+AWS DMS supports Amazon DocumentDB \(with MongoDB compatibility\) versions 3\.6, 4\.0 and 5\.0 as a database target\. You can use AWS DMS to migrate data to Amazon DocumentDB \(with MongoDB compatibility\) from any of the source data engines that AWS DMS supports\. The source engine can be on an AWS managed service such as Amazon RDS, Aurora, or Amazon S3\. Or the engine can be on a self\-managed database, such as MongoDB running on Amazon EC2 or on\-premises\.
 
 You can use AWS DMS to replicate source data to Amazon DocumentDB databases, collections, or documents\. 
 
@@ -27,10 +27,20 @@ In this case, AWS DMS maps the objects in `mybucket` to Amazon DocumentDB as fol
 
 For more information on mapping rules for Amazon S3, see [Using Amazon S3 as a source for AWS DMS](CHAP_Source.S3.md)\.
 
+**Amazon DocumentDB endpoint settings**
+
+In AWS DMS versions 3\.5\.0 and later, you can improve the performance of change data capture \(CDC\) for Amazon DocumentDB endpoints by tuning task settings for parallel threads and bulk operations\. To do this, you can specify the number of concurrent threads, queues per thread, and the number of records to store in a buffer using `ParallelApply*` task settings\. For example, suppose you want to perform a CDC load and apply 128 threads in parallel\. You also want to access 64 queues per thread, with 50 records stored per buffer\. 
+
+To promote CDC performance, AWS DMS supports these task settings:
++ `ParallelApplyThreads` – Specifies the number of concurrent threads that AWS DMS uses during a CDC load to push data records to a Amazon DocumentDB target endpoint\. The default value is zero \(0\) and the maximum value is 32\.
++ `ParallelApplyBufferSize` – Specifies the maximum number of records to store in each buffer queue for concurrent threads to push to a Amazon DocumentDB target endpoint during a CDC load\. The default value is 100 and the maximum value is 1,000\. Use this option when `ParallelApplyThreads` specifies more than one thread\. 
++ `ParallelApplyQueuesPerThread` – Specifies the number of queues that each thread accesses to take data records out of queues and generate a batch load for a Amazon DocumentDB endpoint during CDC\. The default is 1\. The maximum is 512\.
+
 For additional details on working with Amazon DocumentDB as a target for AWS DMS, see the following sections:
 
 **Topics**
 + [Mapping data from a source to an Amazon DocumentDB target](#CHAP_Target.DocumentDB.data-mapping)
++ [Connecting to Amazon DocumentDB Elastic Clusters as a target](#CHAP_Target.DocumentDB.data-mapping.elastic-cluster-connect)
 + [Ongoing replication with Amazon DocumentDB as a target](#CHAP_Target.DocumentDB.data-mapping.ongoing-replication)
 + [Limitations to using Amazon DocumentDB as a target](#CHAP_Target.DocumentDB.limitations)
 + [Target data types for Amazon DocumentDB](#CHAP_Target.DocumentDB.datatypes)
@@ -190,7 +200,7 @@ AWS DMS replicates `ContactAddress` and `ContactPhoneNumbers` as follows\.
 
 By default, a newly created Amazon DocumentDB cluster accepts secure connections only using Transport Layer Security \(TLS\)\. When TLS is enabled, every connection to Amazon DocumentDB requires a public key\.
 
-You can retrieve the public key for Amazon DocumentDB by downloading the file, `rds-combined-ca-bundle.pem`, from an AWS\-hosted Amazon S3 bucket\. For more information on downloading this file, see [Encrypting connections using TLS](https://docs.aws.amazon.com/documentdb/latest/developerguide/security.encryption.ssl.html) in the *Amazon DocumentDB Developer Guide*
+You can retrieve the public key for Amazon DocumentDB by downloading the file, `rds-combined-ca-bundle.pem`, from an AWS hosted Amazon S3 bucket\. For more information on downloading this file, see [Encrypting connections using TLS](https://docs.aws.amazon.com/documentdb/latest/developerguide/security.encryption.ssl.html) in the *Amazon DocumentDB Developer Guide*
 
 After you download this \.pem file, you can import the public key that it contains into AWS DMS as described following\.
 
@@ -220,9 +230,36 @@ aws dms import-certificate \
 
 When you create an AWS DMS target endpoint, provide the certificate identifier \(for example, `docdb-cert`\)\. Also, set the SSL mode parameter to `verify-full`\.
 
+## Connecting to Amazon DocumentDB Elastic Clusters as a target<a name="CHAP_Target.DocumentDB.data-mapping.elastic-cluster-connect"></a>
+
+In AWS DMS versions 3\.4\.7 and later, you can create a Amazon DocumentDB target endpoint as an Elastic Cluster\. If you create your target endpoint as an Elastic Cluster, you need to attach a new SSL certificate to your Amazon DocumentDB Elastic Cluster endpoint because your existing SSL certificate won't work\.
+
+**Note**  
+With Amazon DocumentDB Elastic Clusters as a target, the migration of sharded collections isn't currently supported\.
+
+**To attach a new SSL certificate to your Amazon DocumentDB Elastic Cluster endpoint**
+
+1. In a browser, open [ https://www\.amazontrust\.com/repository/SFSRootCAG2\.pem](https://www.amazontrust.com/repository/SFSRootCAG2.pem) and save the contents to a `.pem` file with a unique file name, for example `SFSRootCAG2.pem`\. This is the certificate file that you need to import in subsequent steps\.
+
+1. Create the Elastic Cluster endpoint and set the following options:
+
+   1. Under **Endpoint Configuration**, choose **Add new CA certificate**\.
+
+   1. For **Certificate identifier**, enter **SFSRootCAG2\.pem**\.
+
+   1. For **Import certificate file**, choose **Choose file**, then navigate to the `SFSRootCAG2.pem` file that you previously downloaded\.
+
+   1. Select and open the downloaded `SFSRootCAG2.pem` file\.
+
+   1. Choose **Import certificate**\.
+
+   1. From the **Choose a certificate** drop down, choose **SFSRootCAG2\.pem**\.
+
+The new SSL certificate from the downloaded `SFSRootCAG2.pem` file is now attached to your Amazon DocumentDB Elastic Cluster endpoint\.
+
 ## Ongoing replication with Amazon DocumentDB as a target<a name="CHAP_Target.DocumentDB.data-mapping.ongoing-replication"></a>
 
-If ongoing replication is enabled, AWS DMS ensures that documents in Amazon DocumentDB stay in sync with the source\. When a source record is created or updated, AWS DMS must first determine which Amazon DocumentDB record is affected by doing the following:
+If ongoing replication \(change data capture, CDC\) is enabled for Amazon DocumentDB as a target, AWS DMS versions 3\.5\.0 and later provide a performance improvement that is twenty times greater than in prior releases\. In prior releases where AWS DMS handles up to 250 records per second, AWS DMS now handles approximately 5000 records/second\. AWS DMS also ensures that documents in Amazon DocumentDB stay in sync with the source\. When a source record is created or updated, AWS DMS must first determine which Amazon DocumentDB record is affected by doing the following:
 + If the source record has a column named `_id`, the value of that column determines the corresponding `_id` in the Amazon DocumentDB collection\.
 + If there is no `_id` column, but the source data has a primary key or unique index, then AWS DMS uses that key or index value as the `_id` for the Amazon DocumentDB collection\.
 + If the source record doesn't have an `_id` column, a primary key, or a unique index, then AWS DMS matches all of the source columns to the corresponding fields in the Amazon DocumentDB collection\.
@@ -252,6 +289,7 @@ With ongoing replication, any changes to source data structures \(such as tables
 ## Limitations to using Amazon DocumentDB as a target<a name="CHAP_Target.DocumentDB.limitations"></a>
 
 The following limitations apply when using Amazon DocumentDB as a target for AWS DMS:
++ With Amazon DocumentDB Elastic Clusters as a target, the migration of sharded collections isn't currently supported\.
 + In Amazon DocumentDB, collection names can't contain the dollar symbol \($\)\. In addition, database names can't contain any Unicode characters\.
 + AWS DMS doesn't support merging of multiple source tables into a single Amazon DocumentDB collection\.
 + When AWS DMS processes changes from a source table that doesn't have a primary key, any LOB columns in that table are ignored\.

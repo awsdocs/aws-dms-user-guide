@@ -34,22 +34,28 @@ Target metadata settings include the following\. For information about how to us
   When LOB columns are included in the replication, you can use `BatchApplyEnabled` only in limited LOB mode\.
 
   For more information about using these settings for a change data capture \(CDC\) load, see [Change processing tuning settings](CHAP_Tasks.CustomizingTasks.TaskSettings.ChangeProcessingTuning.md)\.
-+ `ParallelLoadThreads` – Specifies the number of threads that AWS DMS uses to load each table into the target database\. This parameter has maximum values for non\-RDBMS targets\. The maximum value for a DynamoDB target is 200\. The maximum value for an Amazon Kinesis Data Streams, Apache Kafka, or Amazon OpenSearch Service target is 32\. You can ask to have this maximum limit increased\. For information on the settings for parallel load of individual tables, see [Table and collection settings rules and operations](CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Tablesettings.md)\.
++ `ParallelLoadThreads` – Specifies the number of threads that AWS DMS uses to load each table into the target database\. This parameter has maximum values for non\-RDBMS targets\. The maximum value for a DynamoDB target is 200\. The maximum value for an Amazon Kinesis Data Streams, Apache Kafka, or Amazon OpenSearch Service target is 32\. You can ask to have this maximum limit increased\. `ParallelLoadThreads` applies to Full Load tasks\. For information on the settings for parallel load of individual tables, see [Table and collection settings rules and operations](CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Tablesettings.md)\.
 
   This setting applies to the following endpoint engine types:
+  + 
   + DynamoDB
   + Amazon Kinesis Data Streams
   + Amazon MSK
   + Amazon OpenSearch Service
   + Amazon Redshift
+
+  AWS DMS supports `ParallelLoadThreads` for MySQL as an extra connection attribute\. `ParallelLoadThreads` does not apply to MySQL as a task setting\. 
 + `ParallelLoadBufferSize` – Specifies the maximum number of records to store in the buffer that the parallel load threads use to load data to the target\. The default value is 50\. The maximum value is 1,000\. This setting is currently only valid when DynamoDB, Kinesis, Apache Kafka, or OpenSearch is the target\. Use this parameter with `ParallelLoadThreads`\. `ParallelLoadBufferSize` is valid only when there is more than one thread\. For information on the settings for parallel load of individual tables, see [Table and collection settings rules and operations](CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Tablesettings.md)\.
 + `ParallelLoadQueuesPerThread` – Specifies the number of queues that each concurrent thread accesses to take data records out of queues and generate a batch load for the target\. The default is 1\. This setting is currently only valid when Kinesis or Apache Kafka is the target\.
-+ `ParallelApplyThreads` – Specifies the number of concurrent threads that AWS DMS uses during a CDC load to push data records to a Kinesis, Apache Kafka, OpenSearch, or Amazon Redshift target endpoint\. The default is zero \(0\)\.
++ `ParallelApplyThreads` – Specifies the number of concurrent threads that AWS DMS uses during a CDC load to push data records to an Amazon DocumentDB, Kinesis, Amazon MSK, OpenSearch, or Amazon Redshift target endpoint\. The default is zero \(0\)\.
+
+  This setting only applies for CDC\-only\. This setting does not apply for Full Load\.
 
   This setting applies to the following endpoint engine types:
+  + Amazon DocumentDB \(with MongoDB compatibility\)
   + Amazon Kinesis Data Streams
-  + Amazon MSK
+  + Amazon Managed Streaming for Apache Kafka
   + Amazon OpenSearch Service
   + Amazon Redshift
-+ `ParallelApplyBufferSize` – Specifies the maximum number of records to store in each buffer queue for concurrent threads to push to a Kinesis, Apache Kafka, OpenSearch, or Amazon Redshift target endpoint during a CDC load\. The default value is 100\. Use this option when `ParallelApplyThreads` specifies more than one thread\. 
-+ `ParallelApplyQueuesPerThread` – Specifies the number of queues that each thread accesses to take data records out of queues and generate a batch load for a Kinesis, Apache Kafka, or OpenSearch endpoint during CDC\. The default value is 1\.
++ `ParallelApplyBufferSize` – Specifies the maximum number of records to store in each buffer queue for concurrent threads to push to an Amazon DocumentDB, Kinesis, Amazon MSK, OpenSearch, or Amazon Redshift target endpoint during a CDC load\. The default value is 100\. Use this option when `ParallelApplyThreads` specifies more than one thread\. 
++ `ParallelApplyQueuesPerThread` – Specifies the number of queues that each thread accesses to take data records out of queues and generate a batch load for a an Amazon DocumentDB, Kinesis, Amazon MSK, OpenSearch, or Amazon Redshift endpoint during CDC\. The default value is 1\.

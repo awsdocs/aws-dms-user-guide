@@ -8,6 +8,7 @@
 + [Validation only tasks](#CHAP_Validating.ValidationOnly)
 + [Troubleshooting](#CHAP_Validating.Troubleshooting)
 + [Limitations](#CHAP_Validating.Limitations)
++ [Amazon S3 target data validation](CHAP_Validating_S3.md)
 
 AWS DMS provides support for data validation to ensure that your data was migrated accurately from the source to the target\. If enabled, validation begins immediately after a full load is performed for a table\. Validation compares the incremental changes for a CDC\-enabled task as they occur\.
 
@@ -15,12 +16,20 @@ During data validation, AWS DMS compares each row in the source with its corresp
 
 For a CDC only task with validation enabled, all pre\-existing data in a table is validated before starting validation of new data\.
 
-Data validation works with the following databases wherever AWS DMS supports them as source and target endpoints:
+Data validation works with the following source databases wherever AWS DMS supports them as source endpoints:
 + Oracle
 + PostgreSQL\-compatible database \(PostgreSQL, Aurora PostgreSQL, or Aurora Serverless for PostgreSQL\)
 + MySQL\-compatible database \(MySQL, MariaDB, Aurora MySQL, or Aurora Serverless for MySQL\)
 + Microsoft SQL Server
 + IBM Db2 LUW
+
+Data validation works with the following target databases wherever AWS DMS supports them as target endpoints:
++ Oracle
++ PostgreSQL\-compatible database \(PostgreSQL, Aurora PostgreSQL, or Aurora Serverless for PostgreSQL\)
++ MySQL\-compatible database \(MySQL, MariaDB, Aurora MySQL, or Aurora Serverless for MySQL\)
++ Microsoft SQL Server
++ IBM Db2 LUW
++ Amazon S3\. For information about validating Amazon S3 target data, see [Amazon S3 target data validation](CHAP_Validating_S3.md)\.
 
 For more information about the supported endpoints, see [Working with AWS DMS endpoints](CHAP_Endpoints.md)\.
 
@@ -36,7 +45,7 @@ When data validation is enabled, AWS DMS provides the following statistics at th
 + **ValidationState**—The validation state of the table\. The parameter can have the following values:
   + **Not enabled**—Validation is not enabled for the table in the migration task\.
   + **Pending records**—Some records in the table are waiting for validation\.
-  + **Mismatched records**—Some records in the table don't match between the source and target\. A mismatch might occur for a number of reasons; For more information, check the `awsdms_validation_failures_v1` table on the target endpoint\.
+  + **Mismatched records**—Some records in the table don't match between the source and target\. A mismatch might occur for a number of reasons; For more information, check the `awsdms_control.awsdms_validation_failures_v1` table on the target endpoint\.
   + **Suspended records**—Some records in the table can't be validated\.
   + **No primary key**—The table can't be validated because it had no primary key\.
   + **Table error**—The table wasn't validated because it was in an error state and some data wasn't migrated\.
@@ -186,6 +195,8 @@ For a full load only migration type, a validation only task completes much faste
 
 A CDC validation only task delays validation based on average latency, and retries failures multiple times before reporting them\. If the majority of data comparisons result in failures, a validation only task for CDC mode is very slow, a potential drawback\.
 
+A validation\-only task must be set up in the same direction as the replication task, especially for CDC\. This is because a CDC Validation Only task detects which rows have changed and need to be revalidated based on the change log on the source\. If the target is specified as the source, then it only knows about changes sent to the target by DMS and is not guaranteed to catch replication errors\.
+
 ### Full load validation only<a name="CHAP_Validating.ValidationOnly.FL"></a>
 
 Beginning with AWS DMS version 3\.4\.6 and later, a full load validation only task quickly compares all rows from the source and target tables in a single pass, immediately reports any failures, and then shuts down\. Validation never is suspended due to failures in this mode, it is optimized for speed\. But changes to the source or target endpoint are reported as failures\.
@@ -214,11 +225,11 @@ For an example of `ValidationSettings` task settings in a JSON file, see [Task s
 
 ## Troubleshooting<a name="CHAP_Validating.Troubleshooting"></a>
 
-During validation, AWS DMS creates a new table at the target endpoint: `awsdms_validation_failures_v1`\. If any record enters the *ValidationSuspended* or the *ValidationFailed* state, AWS DMS writes diagnostic information to `awsdms_validation_failures_v1`\. You can query this table to help troubleshoot validation errors\.
+During validation, AWS DMS creates a new table at the target endpoint: `awsdms_control.awsdms_validation_failures_v1`\. If any record enters the *ValidationSuspended* or the *ValidationFailed* state, AWS DMS writes diagnostic information to `awsdms_control.awsdms_validation_failures_v1`\. You can query this table to help troubleshoot validation errors\.
 
 For information about changing the default schema the table is created in on the target, see [Control table task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.ControlTable.md)\.
 
-Following is a description of the `awsdms_validation_failures_v1` table:
+Following is a description of the `awsdms_control.awsdms_validation_failures_v1` table:
 
 
 | Column name | Data type | Description | 
@@ -232,7 +243,7 @@ Following is a description of the `awsdms_validation_failures_v1` table:
 | FAILURE\_TYPE | VARCHAR\(128\) NOT NULL |   Severity of validation error\. Can be either `RECORD_DIFF`, `MISSING_SOURCE` or `MISSING_TARGET`\.   | 
 | DETAILS | VARCHAR\(8000\) NOT NULL |  JSON formatted string of all source/target column values which do not match for the given key\.  | 
 
-The following query will show you all the failures for a task by querying the `awsdms_validation_failures_v1` table\. The task name should be the external resource ID of the task\. The external resource ID of the task is the last value in the task ARN\. For example, for a task with an ARN value of arn:aws:dms:us\-west\-2:5599:task: VFPFKH4FJR3FTYKK2RYSI, the external resource ID of the task would be VFPFKH4FJR3FTYKK2RYSI\.
+The following query will show you all the failures for a task by querying the `awsdms_control.awsdms_validation_failures_v1` table\. The task name should be the external resource ID of the task\. The external resource ID of the task is the last value in the task ARN\. For example, for a task with an ARN value of arn:aws:dms:us\-west\-2:5599:task: VFPFKH4FJR3FTYKK2RYSI, the external resource ID of the task would be VFPFKH4FJR3FTYKK2RYSI\.
 
 ```
 select * from awsdms_validation_failures_v1 where TASK_NAME = 'VFPFKH4FJR3FTYKK2RYSI'
@@ -269,3 +280,5 @@ You can look at the `DETAILS` field to determine which columns don’t match\. S
 + If AWS DMS detects more than 10,000 failed or suspended records, it stops the validation\. Before you proceed further, resolve any underlying problems with the data\.
 + AWS DMS doesn't support data validation of views\.
 + AWS DMS doesn't support data validation when character substitution task settings are used\.
+
+For limitations when using S3 target validation, see [Limitations for using S3 target validation](CHAP_Validating_S3.md#CHAP_Validating_S3_limitations)\.
