@@ -4,7 +4,7 @@ You can migrate data to any MySQL\-compatible database using AWS DMS, from any o
 
 You can use SSL to encrypt connections between your MySQL\-compatible endpoint and the replication instance\. For more information on using SSL with a MySQL\-compatible endpoint, see [Using SSL with AWS Database Migration Service](CHAP_Security.SSL.md)\. 
 
-AWS DMS supports versions 5\.5, 5\.6, 5\.7, and 8\.0 of MySQL and Aurora MySQL\. In addition, AWS DMS supports MariaDB versions 10\.0\.24 to 10\.0\.28, 10\.1, 10\.2, 10\.3, 10\.4, and 10\.5\.
+For information about versions of MySQL that AWS DMS supports as a target, see [Targets for AWS DMS](CHAP_Introduction.Targets.md)\.
 
 You can use the following MySQL\-compatible databases as targets for AWS DMS:
 + MySQL Community Edition
@@ -39,10 +39,10 @@ Before you begin to work with a MySQL\-compatible database as a target for AWS D
   '<user acct>'@'%';
   GRANT ALL PRIVILEGES ON awsdms_control.* TO '<user acct>'@'%';
   ```
-+ During the full\-load migration phase, you must disable foreign keys on your target tables\. To disable foreign key checks on a MySQL\-compatible database during a full load, you can add the following command to the **Endpoint settings** section of the AWS DMS console for your target endpoint\.
++ During the full\-load migration phase, you must disable foreign keys on your target tables\. To disable foreign key checks on a MySQL\-compatible database during a full load, you can add the following command to the **Extra connection attributes** section of the AWS DMS console for your target endpoint\.
 
   ```
-  '{"Initstmt": "SET FOREIGN_KEY_CHECKS":"0"}'
+  Initstmt=SET FOREIGN_KEY_CHECKS=0;
   ```
 + Set the database parameter `local_infile = 1` to enable AWS DMS to load data into the target database\.
 
@@ -59,7 +59,9 @@ When using a MySQL database as a target, AWS DMS doesn't support the following:
   the target database. See awsdms_apply_exceptions table for details.
   ```
 + Aurora Serverless is available as a target for Amazon Aurora version 1, compatible with MySQL version 5\.6\. Aurora Serverless is available as a target for Amazon Aurora version 2, compatible with MySQL version 5\.7\. \(Select Aurora MySQL version 2\.07\.1 to be able to use Aurora Serverless with MySQL 5\.7 compatibility\.\) For more information about Aurora Serverless, see [Using Amazon Aurora Serverless](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless.html) in the *Amazon Aurora User Guide*\.
-+ Using an Aurora Reader endpoint\. You can't use an Aurora for MySQL reader endpoint because the `read_only` parameter can't be changed\. You can use a Amazon RDS for MySQL reader endpoint if the `read_only` parameter is set to 0\.
++ AWS DMS doesn't support using a reader endpoint for Aurora or Amazon RDS, unless the instances are in writable mode, that is, the `read_only` and `innodb_read_only` parameters are set to `0` or `OFF`\. For more information about using Amazon RDS and Aurora as targets, see the following:
+  +  [ Determining which DB instance you are connected to](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.BestPractices.html#AuroraMySQL.BestPractices.DeterminePrimaryInstanceConnection) 
+  +  [ Updating read replicas with MySQL](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_MySQL.Replication.ReadReplicas.html#USER_MySQL.Replication.ReadReplicas.Updates) 
 
 ## Endpoint settings when using a MySQL\-compatible database as a target for AWS DMS<a name="CHAP_Target.MySQL.ConnectionAttrib"></a>
 
@@ -68,6 +70,14 @@ You can use endpoint settings to configure your MySQL\-compatible target databas
 The following table shows the endpoint settings that you can use with MySQL as a target\.
 
 [\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_Target.MySQL.html)
+
+You can also use extra connection attributes to configure your MySQL\-compatible target database\.
+
+The following table shows the extra connection attributes that you can use with MySQL as a target\.
+
+[\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_Target.MySQL.html)
+
+Alternatively, you can use the `AfterConnectScript` parameter of the `--my-sql-settings` command to disable foreign key checks and specify the time zone for your database\.
 
 ## Target data types for MySQL<a name="CHAP_Target.MySQL.DataTypes"></a>
 

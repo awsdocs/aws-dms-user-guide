@@ -1,11 +1,8 @@
 # Using IBM Db2 for Linux, Unix, and Windows database \(Db2 LUW\) as a source for AWS DMS<a name="CHAP_Source.DB2"></a>
 
-You can migrate data from an IBM Db2 for Linux, Unix, and Windows \(Db2 LUW\) database to any supported target database using AWS Database Migration Service \(AWS DMS\)\. AWS DMS supports the following versions of Db2 LUW as migration sources:
-+ Version 9\.7, with all Fix Packs supported
-+ Version 10\.1, with all Fix Packs supported
-+ Version 10\.5, with all Fix Packs supported except for Fix Pack 5
-+ Version 11\.1, with all Fix Packs supported
-+ Version 11\.5, Mods \(0\-8\) with only Fix Pack 0 supported
+You can migrate data from an IBM Db2 for Linux, Unix, and Windows \(Db2 LUW\) database to any supported target database using AWS Database Migration Service \(AWS DMS\)\. 
+
+For information about versions of Db2 on Linux, Unix, and Windows that AWS DMS supports as a source, see [Sources for AWS DMS](CHAP_Introduction.Sources.md)\. 
 
 You can use Secure Sockets Layer \(SSL\) to encrypt connections between your Db2 LUW endpoint and the replication instance\. For more information on using SSL with a Db2 LUW endpoint, see [Using SSL with AWS Database Migration Service](CHAP_Security.SSL.md)\.
 

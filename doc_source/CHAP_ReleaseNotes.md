@@ -20,6 +20,12 @@ The following table shows the new features and enhancements introduced in AWS Da
 | Parallel apply for DocumentDB as a target | Using DocumentDB as the target with new ParallelApply\* task settings, AWS DMS now supports a maximum of 5000 records per second during CDC replication\. For more information, see [Using Amazon DocumentDB as a target for AWS Database Migration Service](CHAP_Target.DocumentDB.md)\.  | 
 | Customer Centric Logging | You can now examine and manage task logs more effectively with AWS DMS version 3\.5\.0\. For information about viewing and managing AWS DMS task logs, see [Viewing and managing AWS DMS task logs](CHAP_Monitoring.md#CHAP_Monitoring.ManagingLogs)\.  | 
 | SASL\_PLAIN mechanism for Kafka target endpoints | You can now use SASL\_PLAIN authentication to support Kafka MSK target endpoints\. | 
+| Replication of XA transactions in MySQL  | You can now use XA transactions on your MySQL DMS source\. Prior to DMS 3\.5\.0, DML changes applied as part of XA transactions weren’t replicated correctly\. | 
+| Oracle Extended Data Types  | AWS DMS now supports replication of extended data types in Oracle version 12\.2 and later\.  | 
+| PostgreSQL Source JSONB Data Type  | AWS DMS now supports JSONB data types for a PostgreSQL source\. | 
+| Db2 LUW PureScale Environment  | AWS DMS now supports replication from a Db2 LUW PureScale environment\. This functionality is only supported using the Start processing changes from source change position option\. | 
+| Oracle Source Open Transactions  | AWS DMS 3\.5\.0 improves the methodology of handling open transactions when starting a CDC\-Only task from the Start Position for an Oracle source\. | 
+| SQL Server source with READ\_COMMITTED\_SNAPSHOT option | When using a Microsoft SQL Server source database with the READ\_COMMITTED\_SNAPSHOT option set to TRUE, you can replicate DML changes correctly by setting the forceDataRowLookup connection attribute\.  | 
 
 AWS DMS 3\.5\.0 includes the following resolved issues:
 

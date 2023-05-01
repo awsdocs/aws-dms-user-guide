@@ -4,7 +4,7 @@ You can migrate data from a Microsoft SQL Server source database to a Babelfish 
 
 Babelfish for Aurora PostgreSQL extends your Amazon Aurora PostgreSQL\-Compatible Edition database with the ability to accept database connections from Microsoft SQL Server clients\. Doing this allows applications originally built for SQL Server to work directly with Aurora PostgreSQL with few code changes compared to a traditional migration, and without changing database drivers\. 
 
-The AWS DMS Babelfish endpoint supports Aurora PostgreSQL with Babelfish compatibility version 13\.6 \(Babelfish version 1\.2\.0\) or later\. Earlier versions of Babelfish on Aurora PostgreSQL version 13\.4 and 13\.5 require a minor version upgrade before using the Babelfish endpoint\.
+For information about versions of Babelfish that AWS DMS supports as a target, see [Targets for AWS DMS](CHAP_Introduction.Targets.md)\. Earlier versions of Babelfish on Aurora PostgreSQL version 13\.4 and 13\.5 require a minor version upgrade before using the Babelfish endpoint\.
 
 For information about using Babelfish as a database endpoint, see [Babelfish for Aurora PostgreSQL](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.AuroraPostgreSQL.html) in the *Amazon Aurora User Guide for Aurora* 
 
@@ -137,7 +137,41 @@ The following limitations apply when using a Babelfish database as a target for 
 + Babelfish doesn't copy IMAGE data type columns\.
 + For tables with identity or computed columns, where the target tables use mixed case names like Categories, you must create a transformation rule action that converts the table names to lowercase for your DMS task\. The following example shows how to create the transformation rule action, **Make lowercase** using the AWS DMS console\. For more information, see [ Transformation rules and actions](CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Transformations.md)\.  
 ![\[Babelfish transformation rule\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-babelfish-transform-1.png)
-+ Prior to Babelfish version 2\.2\.0, DMS limits the number of columns that you can replicate to a Babelfish target endpoint to twenty \(20\) columns\. With Babelfish version 2\.2\.0 and later, the limit increases to 100 columns\. For tables with more than 100 columns, you can use the [PostgreSQL endpoint](CHAP_Target.PostgreSQL.md) as a workaround\.
++ Prior to Babelfish version 2\.2\.0, DMS limited the number of columns that you could replicate to a Babelfish target endpoint to twenty \(20\) columns\. With Babelfish 2\.2\.0 the limit increased to 100 columns\. But with Babelfish versions 2\.4\.0 and later, the number of columns that you can replicate increases again\. You can run the following code sample against your SQL Server database to determine which tables are too long\.
+
+  ```
+  USE myDB;
+  GO
+  DECLARE @Babelfish_version_string_limit INT = 8000; -- Use 380 for Babelfish versions before 2.2.0
+  WITH bfendpoint
+  AS (
+  SELECT 
+  	[TABLE_SCHEMA]
+        ,[TABLE_NAME]
+  	  , COUNT( [COLUMN_NAME] ) AS NumberColumns
+  	  , ( SUM( LEN( [COLUMN_NAME] ) + 3)  
+  		+ SUM( LEN( FORMAT(ORDINAL_POSITION, 'N0') ) + 3 )  
+  	    + LEN( TABLE_SCHEMA ) + 3
+  		+ 12 -- INSERT INTO string
+  		+ 12)  AS InsertIntoCommandLength -- values string
+        , CASE WHEN ( SUM( LEN( [COLUMN_NAME] ) + 3)  
+  		+ SUM( LEN( FORMAT(ORDINAL_POSITION, 'N0') ) + 3 )  
+  	    + LEN( TABLE_SCHEMA ) + 3
+  		+ 12 -- INSERT INTO string
+  		+ 12)  -- values string
+  			>= @Babelfish_version_string_limit
+  			THEN 1
+  			ELSE 0
+  		END AS IsTooLong
+  FROM [INFORMATION_SCHEMA].[COLUMNS]
+  GROUP BY [TABLE_SCHEMA], [TABLE_NAME]
+  )
+  SELECT * 
+  FROM bfendpoint
+  WHERE IsTooLong = 1
+  ORDER BY TABLE_SCHEMA, InsertIntoCommandLength DESC, TABLE_NAME
+  ;
+  ```
 
 ## Target data types for Babelfish<a name="CHAP_Target.Babelfish.DataTypes"></a>
 

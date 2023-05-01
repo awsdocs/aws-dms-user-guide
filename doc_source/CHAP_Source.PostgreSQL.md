@@ -1,6 +1,10 @@
 # Using a PostgreSQL database as an AWS DMS source<a name="CHAP_Source.PostgreSQL"></a>
 
-You can migrate data from one or many PostgreSQL databases using AWS DMS\. With a PostgreSQL database as a source, you can migrate data to either another PostgreSQL database or one of the other supported databases\. AWS DMS supports a PostgreSQL version 9\.4 and later \(for versions 9\.x\), 10\.x, 11\.x, 12\.x, 13\.x and 14\.x database as a source for these types of databases: 
+You can migrate data from one or many PostgreSQL databases using AWS DMS\. With a PostgreSQL database as a source, you can migrate data to either another PostgreSQL database or one of the other supported databases\. 
+
+For information about versions of PostgreSQL that AWS DMS supports as a source, see [Sources for AWS DMS](CHAP_Introduction.Sources.md)\. 
+
+AWS DMS supports PostgreSQL for these types of databases: 
 + On\-premises databases
 + Databases on an Amazon EC2 instance
 + Databases on an Amazon RDS DB instance

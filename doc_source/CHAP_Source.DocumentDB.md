@@ -1,6 +1,8 @@
 # Using Amazon DocumentDB \(with MongoDB compatibility\) as a source for AWS DMS<a name="CHAP_Source.DocumentDB"></a>
 
-AWS DMS supports Amazon DocumentDB \(with MongoDB compatibility\) versions 3\.6 and 4\.0 as a database source\. Using Amazon DocumentDB as a source, you can migrate data from one Amazon DocumentDB cluster to another Amazon DocumentDB cluster\. You can also migrate data from an Amazon DocumentDB cluster to one of the other target endpoints supported by AWS DMS\.
+For information about versions of Amazon DocumentDB \(with MongoDB compatibility\) that AWS DMS supports as a source, see [Sources for AWS DMS](CHAP_Introduction.Sources.md)\.
+
+ Using Amazon DocumentDB as a source, you can migrate data from one Amazon DocumentDB cluster to another Amazon DocumentDB cluster\. You can also migrate data from an Amazon DocumentDB cluster to one of the other target endpoints supported by AWS DMS\.
 
 If you are new to Amazon DocumentDB, be aware of the following important concepts for Amazon DocumentDB databases:
 + A record in Amazon DocumentDB is a *document*, a data structure composed of field and value pairs\. The value of a field can include other documents, arrays, and arrays of documents\. A document is roughly equivalent to a row in a relational database table\.

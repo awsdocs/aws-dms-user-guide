@@ -88,6 +88,10 @@ To specify the maximum number of tables and views to load in parallel, use the `
 
 To specify the maximum number of threads per table or view for the supported targets of a parallel\-load task, define more segments using column\-value boundaries\.
 
+**Important**  
+`MaxFullLoadSubTasks` controls the number of tables or table segments to load in parallel\. `ParallelLoadThreads` controls the number of threads that are used by a migration task to execute the loads in parallel\. *These settings are multiplicative*\. As such, the total number of threads that are used during a full load task is approximately the result of the value of `ParallelLoadThreads `multiplied by the value of `MaxFullLoadSubTasks` \(`ParallelLoadThreads` **\*** `MaxFullLoadSubtasks)`\.  
+If you create tasks with a high number of Full Load sub tasks and a high number of parallel load threads, your task can consume too much memory and fail\.
+
 To specify the maximum number of threads per table for Amazon DynamoDB, Amazon Kinesis Data Streams, Apache Kafka, or Amazon Elasticsearch Service targets, use the `ParallelLoadThreads` target metadata task setting\.
 
 To specify the buffer size for a parallel load task when `ParallelLoadThreads` is used, use the `ParallelLoadBufferSize` target metadata task setting\.

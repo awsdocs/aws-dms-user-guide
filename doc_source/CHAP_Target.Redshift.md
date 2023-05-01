@@ -377,7 +377,7 @@ You can improve performance of full load and change data capture \(CDC\) tasks f
 ### Multithreaded full load task settings for Amazon Redshift<a name="CHAP_Target.Redshift.ParallelApply.FullLoad"></a>
 
 To promote full load performance, you can use the following `ParallelLoad*` task settings:
-+ `ParallelLoadThreads` – Specifies the number of concurrent threads that DMS uses during a full load to push data records to an Amazon Redshift target endpoint\. The default value is zero \(0\) and the maximum value is 32\.
++ `ParallelLoadThreads` – Specifies the number of concurrent threads that DMS uses during a full load to push data records to an Amazon Redshift target endpoint\. The default value is zero \(0\) and the maximum value is 32\. For more information, see [Full\-load task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.FullLoad.md)\.
 
   You can use the `enableParallelBatchInMemoryCSVFiles` attribute set to `false` when using the `ParallelLoadThreads` task setting\. The attribute improves performance of larger multithreaded full load tasks by having DMS write to disk instead of memory\. The default value is `true`\.
 + `ParallelLoadBufferSize` – Specifies the maximum data record requests while using parallel load threads with Redshift target\. The default value is 100 and the maximum value is 1,000\. We recommend you use this option when ParallelLoadThreads > 1 \(greater than one\)\.
@@ -389,7 +389,7 @@ The `ReplaceInvalidChars` Redshift endpoint setting is not supported for use dur
 ### Multithreaded CDC task settings for Amazon Redshift<a name="CHAP_Target.Redshift.ParallelApply.CDC"></a>
 
 To promote CDC performance, you can use the following `ParallelApply*` task settings:
-+ `ParallelApplyThreads` – Specifies the number of concurrent threads that AWS DMS uses during a CDC load to push data records to a Amazon Redshift target endpoint\. The default value is zero \(0\) and the maximum value is 32\.
++ `ParallelApplyThreads` – Specifies the number of concurrent threads that AWS DMS uses during a CDC load to push data records to a Amazon Redshift target endpoint\. The default value is zero \(0\) and the maximum value is 32\. The minimum recommended value equals the number of slices in your cluster\.
 + `ParallelApplyBufferSize` – Specifies the maximum data record requests while using parallel apply threads with Redshift target\. The default value is 100 and the maximum value is 1,000\. We recommend to use this option when ParallelApplyThreads > 1 \(greater than one\)\. 
 
   To obtain the most benefit for Redshift as a target, we recommend that the value of `ParallelApplyBufferSize` be at least two times \(double or more\) the number of `ParallelApplyThreads`\.

@@ -1,6 +1,8 @@
 # Using IBM Db2 for z/OS databases as a source for AWS DMS<a name="CHAP_Source.DB2zOS"></a>
 
-You can migrate data from an IBM for z/OS database to any supported target database using AWS Database Migration Service \(AWS DMS\)\. AWS DMS supports Db2 for z/OS version 12 as a source for data migration\.
+You can migrate data from an IBM for z/OS database to any supported target database using AWS Database Migration Service \(AWS DMS\)\. 
+
+For information about versions of Db2 for z/OS that AWS DMS supports as a source, see [Sources for AWS DMS](CHAP_Introduction.Sources.md)\.
 
 ## Prerequisites when using Db2 for z/OS as a source for AWS DMS<a name="CHAP_Source.DB2zOS.Prerequisites"></a>
 

@@ -23,6 +23,16 @@ You can specify logging for the following types of events:
 + `TRANSFORMATION` – Table\-mapping transformation events\. For more information, see [Using table mapping to specify task settings](CHAP_Tasks.CustomizingTasks.TableMapping.md)\.
 + `VALIDATOR/ VALIDATOR_EXT` – The `VALIDATOR` service component verifies that data was migrated accurately from the source to the target\. For more information, see [Data validation](CHAP_Validating.md)\. 
 
+The following logging components generate a large amount of logs when using the `LOGGER_SEVERITY_DETAILED_DEBUG` log severity level:
++ `COMMON`
++ `ADDONS`
++ `DATA_STRUCTURE`
++ `COMMUNICATION`
++ `FILE_TRANSFER`
++ `FILE_FACTORY`
+
+Logging levels other than `DEFAULT` are rarely needed for these components during troubleshooting\. We do not recommend changing the logging level from `DEFAULT` for these components unless specifically requested by AWS Support\.
+
 After you specify one of the preceding, you can then specify the amount of information that is logged, as shown in the following list\. 
 
 The levels of severity are in order from lowest to highest level of information\. The higher levels always include information from the lower levels\. 

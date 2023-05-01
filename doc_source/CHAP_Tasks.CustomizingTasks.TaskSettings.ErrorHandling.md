@@ -1,8 +1,6 @@
 # Error handling task settings<a name="CHAP_Tasks.CustomizingTasks.TaskSettings.ErrorHandling"></a>
 
-
-
-You can set the error handling behavior of your replication task during change data capture \(CDC\) using the following settings\. For information about how to use a task configuration file to set task settings, see [Task settings example](CHAP_Tasks.CustomizingTasks.TaskSettings.md#CHAP_Tasks.CustomizingTasks.TaskSettings.Example)\.
+You can set the error handling behavior of your replication task using the following settings\. For information about how to use a task configuration file to set task settings, see [Task settings example](CHAP_Tasks.CustomizingTasks.TaskSettings.md#CHAP_Tasks.CustomizingTasks.TaskSettings.Example)\.
 + `DataErrorPolicy` – Determines the action AWS DMS takes when there is an error related to data processing at the record level\. Some examples of data processing errors include conversion errors, errors in transformation, and bad data\. The default is `LOG_ERROR`\.
   + `IGNORE_RECORD` – The task continues and the data for that record is ignored\. The error counter for the `DataErrorEscalationCount` property is incremented\. Thus, if you set a limit on errors for a table, this error counts toward that limit\. 
   + `LOG_ERROR` – The task continues and the error is written to the task log\.
@@ -41,12 +39,12 @@ You can set the error handling behavior of your replication task during change d
   + `SUSPEND_TABLE` – The task continues but data from the table with the error record is moved into an error state and the data isn't replicated\.
   + `STOP_TASK` – The task stops and manual intervention is required\.
   + `INSERT_RECORD` – If there is an existing target record with the same primary key as the inserted source record, the target record is updated\.
-+ `ApplyErrorUpdatePolicy` – Determines what action AWS DMS takes when there is a missing data conflict with an UPDATE operation\. The default is `LOG_ERROR`\. This error handling doesn't support LOBs\. Possible values are the following:
++ `ApplyErrorUpdatePolicy` – Determines what action AWS DMS takes when there is a missing data conflict with an UPDATE operation\. The default is `LOG_ERROR`\. Possible values are the following:
   + `IGNORE_RECORD` – The task continues and the data for that record is ignored\. The error counter for the `ApplyErrorEscalationCount` property is incremented\. Thus, if you set a limit on errors for a table, this error counts toward that limit\. 
   + `LOG_ERROR` – The task continues and the error is written to the task log\.
   + `SUSPEND_TABLE` – The task continues but data from the table with the error record is moved into an error state and the data isn't replicated\.
   + `STOP_TASK` – The task stops and manual intervention is required\.
-  + `UPDATE_RECORD` – If the target record is missing, the missing target record is inserted into the target table\. Selecting this option requires full supplemental logging to be enabled for all the source table columns when Oracle is the source database\.
+  + `UPDATE_RECORD` – If the target record is missing, the missing target record is inserted into the target table\. AWS DMS doesn't insert source LOB columns into your target table\. Selecting this option requires full supplemental logging to be enabled for all the source table columns when Oracle is the source database\.
 + `ApplyErrorEscalationPolicy` – Determines what action AWS DMS takes when the maximum number of errors \(set using the `ApplyErrorEscalationCount` parameter\) is reached\. The default is LOG\_ERROR:
   + `LOG_ERROR` – The task continues and the error is written to the task log\.
   + `SUSPEND_TABLE` – The task continues but data from the table with the error record is moved into an error state and the data isn't replicated\.

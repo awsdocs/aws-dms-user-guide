@@ -2,9 +2,9 @@
 
 You can migrate data to Microsoft SQL Server databases using AWS DMS\. With an SQL Server database as a target, you can migrate data from either another SQL Server database or one of the other supported databases\.
 
-For on\-premises and Amazon EC2 instance databases, AWS DMS supports as a target SQL Server versions 2005, 2008, 2008R2, 2012, 2014, 2016, 2017, and 2019\. The Enterprise, Standard, Workgroup, Developer, and Web editions are supported by AWS DMS\.
+For information about versions of SQL Server that AWS DMS supports as a target, see [Targets for AWS DMS](CHAP_Introduction.Targets.md)\. 
 
-For Amazon RDS instance databases, AWS DMS supports as a target SQL Server versions 2008R2, 2012, 2014, 2016, 2017, and 2019\. The Enterprise, Standard, Workgroup, Developer, and Web editions are supported by AWS DMS\.
+AWS DMS supports the on\-premises and Amazon RDS editions of Enterprise, Standard, Workgroup, Developer, and Web\.
 
 For additional details on working with AWS DMS and SQL Server target databases, see the following\.
 
@@ -20,7 +20,11 @@ The following limitations apply when using a SQL Server database as a target for
 + When you manually create a SQL Server target table with a computed column, full load replication is not supported when using the BCP bulk\-copy utility\. To use full load replication, disable BCP loading by setting the extra connection attribute \(ECA\) `'useBCPFullLoad=false'` on the endpoint\. For information about setting ECAs on endpoints, see [Creating source and target endpoints](CHAP_Endpoints.Creating.md)\. For more information on working with BCP, see the [Microsoft SQL Server documentation](https://docs.microsoft.com/en-us/sql/relational-databases/import-export/import-and-export-bulk-data-by-using-the-bcp-utility-sql-server)\.
 + When replicating tables with SQL Server spatial data types \(GEOMETRY and GEOGRAPHY\), AWS DMS replaces any spatial reference identifier \(SRID\) that you might have inserted with the default SRID\. The default SRID is 0 for GEOMETRY and 4326 for GEOGRAPHY\.
 + Temporal tables are not supported\. Migrating temporal tables may work with a replication\-only task in transactional apply mode if those tables are manually created on the target\.
-+ Currently, `boolean` data types in a PostgreSQL source are migrated to a SQLServer target as the `bit` data type with inconsistent values\. As a workaround, precreate the table with a `VARCHAR(1)` data type for the column \(or let AWS DMS create the table\)\. Then have downstream processing treat an "F" as False and a "T" as True\.
++ Currently, `boolean` data types in a PostgreSQL source are migrated to a SQLServer target as the `bit` data type with inconsistent values\. 
+
+  As a workaround, do the following:
+  + Precreate the table with a `VARCHAR(1)` data type for the column \(or let AWS DMS create the table\)\. Then have downstream processing treat an "F" as False and a "T" as True\.
+  + To avoid having to change downstream processing, add a transformation rule to the task to change the "F" values to "0" and "T" values to 1, and store them as the SQL server bit datatype\.
 + AWS DMS doesn't support change processing to set column nullability \(using the `ALTER COLUMN [SET|DROP] NOT NULL` clause with `ALTER TABLE` statements\)\.
 + Windows Authentication isn't supported\.
 

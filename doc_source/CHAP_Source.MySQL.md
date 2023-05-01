@@ -1,9 +1,8 @@
 # Using a MySQL\-compatible database as a source for AWS DMS<a name="CHAP_Source.MySQL"></a>
 
-You can migrate data from any MySQL\-compatible database \(MySQL, MariaDB, or Amazon Aurora MySQL\) using AWS Database Migration Service\. MySQL versions 5\.5, 5\.6, 5\.7, and 8\.0\. MariaDB versions 10\.0\.24 to 10\.0\.28, 10\.1, 10\.2, 10\.3, 10\.4, and 10\.5, and also Amazon Aurora MySQL, are supported for on\-premises\. 
+You can migrate data from any MySQL\-compatible database \(MySQL, MariaDB, or Amazon Aurora MySQL\) using AWS Database Migration Service\. 
 
-**Note**  
-Support for MySQL 8\.0 as a source is available in AWS DMS versions 3\.4\.0 and later, except when the transaction payload is compressed\. AWS DMS doesn't currently support CDC replication using MySQL 8\.0 as a source when binary log encryption is turned on\. 
+For information about versions of MySQL that AWS DMS supports as a source, see [Sources for AWS DMS](CHAP_Introduction.Sources.md)\.  
 
 You can use SSL to encrypt connections between your MySQL\-compatible endpoint and the replication instance\. For more information on using SSL with a MySQL\-compatible endpoint, see [Using SSL with AWS Database Migration Service](CHAP_Security.SSL.md)\.
 
@@ -17,6 +16,7 @@ For additional details on working with MySQL\-compatible databases and AWS DMS, 
 + [Using a self\-managed MySQL\-compatible database as a source for AWS DMS](#CHAP_Source.MySQL.CustomerManaged)
 + [Using an AWS\-managed MySQL\-compatible database as a source for AWS DMS](#CHAP_Source.MySQL.AmazonManaged)
 + [Limitations on using a MySQL database as a source for AWS DMS](#CHAP_Source.MySQL.Limitations)
++ [Support for XA transactions](#CHAP_Source.MySQL.XA)
 + [Endpoint settings when using MySQL as a source for AWS DMS](#CHAP_Source.MySQL.ConnectionAttrib)
 + [Source data types for MySQL](#CHAP_Source.MySQL.DataTypes)
 
@@ -127,9 +127,19 @@ When using a MySQL database as a source, consider the following:
 + If migrating between two Amazon RDS Aurora MySQL clusters, the RDS Aurora MySQL source endpoint must be a read/write instance, not a replica instance\. 
 + AWS DMS currently doesn't support views migration for MariaDB\.
 + AWS DMS doesn't support DDL changes for partitioned tables for MySQL\. To skip table suspension for partition DDL changes during CDC, set `skipTableSuspensionForPartitionDdl` to `true`\.
-+ AWS DMS doesn't currently support XA transactions\.
-+ AWS DMS doesn't support GTID for replication\. 
++ AWS DMS only supports XA transactions in version 3\.5\.0 and above\. Previous versions do not support XA transactions\. For more information, see [Support for XA transactions](#CHAP_Source.MySQL.XA) following\.
++ AWS DMS doesn't use GTIDs for replication, even if the source data contains them\. 
 + AWS DMS doesn't support binary log transaction compression\.
+
+## Support for XA transactions<a name="CHAP_Source.MySQL.XA"></a>
+
+An Extended Architecture \(XA\) transaction is a transaction that can be used to group a series of operations from multiple transactional resources into a single, reliable global transaction\. An XA transaction uses a two\-phase commit protocol\. In general, capturing changes while there are open XA transactions might lead to loss of data\. If your database doesn't use XA transactions, you can ignore this permission and the configuration `IgnoreOpenXaTransactionsCheck` by using the deafult value `TRUE`\. To start replicating from a source that has XA transactions, do the following:
++ Ensure that the AWS DMS endpoint user has the following permission:
+
+  ```
+  grant XA_RECOVER_ADMIN on *.* to 'userName'@'%';
+  ```
++ Set the endpoint setting `IgnoreOpenXaTransactionsCheck` to `false`\.
 
 ## Endpoint settings when using MySQL as a source for AWS DMS<a name="CHAP_Source.MySQL.ConnectionAttrib"></a>
 

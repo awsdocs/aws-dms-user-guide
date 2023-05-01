@@ -2,7 +2,7 @@
 
 You can migrate data to SAP Adaptive Server Enterprise \(ASE\)–formerly known as Sybase–databases using AWS DMS, either from any of the supported database sources\.
 
-SAP ASE versions 15, 15\.5, 15\.7, 16 and later are supported\.
+For information about versions of SAP ASE that AWS DMS supports as a target, see [Targets for AWS DMS](CHAP_Introduction.Targets.md)\.
 
 ## Prerequisites for using a SAP ASE database as a target for AWS Database Migration Service<a name="CHAP_Target.SAP.Prerequisites"></a>
 

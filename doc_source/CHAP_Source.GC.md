@@ -1,6 +1,8 @@
 # Using Google Cloud for MySQL as a source for AWS DMS<a name="CHAP_Source.GC"></a>
 
-With AWS DMS, you can use Google Cloud for MySQL as a source in much the same way as you do MySQL\. AWS DMS supports, as a source, GCP for MySQL versions 5\.6, 5\.7, and 8\.0\. 
+With AWS DMS, you can use Google Cloud for MySQL as a source in much the same way as you do MySQL\. 
+
+For information about version of GCP MySQL that AWS DMS supports as a source, see [Sources for AWS DMS](CHAP_Introduction.Sources.md)\.  
 
 For more information, see [Using a MySQL\-compatible database as a source for AWS DMS](CHAP_Source.MySQL.md)\.
 

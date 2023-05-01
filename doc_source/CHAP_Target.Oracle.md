@@ -2,7 +2,7 @@
 
 You can migrate data to Oracle database targets using AWS DMS, either from another Oracle database or from one of the other supported databases\. You can use Secure Sockets Layer \(SSL\) to encrypt connections between your Oracle endpoint and the replication instance\. For more information on using SSL with an Oracle endpoint, see [Using SSL with AWS Database Migration Service](CHAP_Security.SSL.md)\. AWS DMS also supports the use of Oracle transparent data encryption \(TDE\) to encrypt data at rest in the target database because Oracle TDE does not require an encryption key or password to write to the database\.
 
-AWS DMS supports Oracle versions 10g, 11g, 12c, 18c, and 19c for on\-premises and EC2 instances for the Enterprise, Standard, Standard One, and Standard Two editions as targets\. AWS DMS supports Oracle versions 11g \(version 11\.2\.0\.3\.v1 and later\), 12c, 18c, and 19c for Amazon RDS instance databases for the Enterprise, Standard, Standard One, and Standard Two editions\.
+For information about versions of Oracle that AWS DMS supports as a target, see [Targets for AWS DMS](CHAP_Introduction.Targets.md)\. 
 
 When you use Oracle as a target, we assume that the data is to be migrated into the schema or user that is used for the target connection\. If you want to migrate data to a different schema, use a schema transformation to do so\. For example, suppose that your target endpoint connects to the user `RDSMASTER` and you want to migrate from the user `PERFDATA1` to `PERFDATA2`\. In this case, create a transformation like the following\.
 

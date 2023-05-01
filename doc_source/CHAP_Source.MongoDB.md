@@ -1,6 +1,8 @@
 # Using MongoDB as a source for AWS DMS<a name="CHAP_Source.MongoDB"></a>
 
-AWS DMS supports MongoDB versions 3\.x and 4\.0 as a database source\. Starting with AWS DMS 3\.4\.5, AWS DMS supports MongoDB versions 4\.2 and 4\.4\. Starting with MongoDB version 4\.2, AWS DMS 3\.4\.5 and later supports distributed transactions\. For more information on MongoDB distributed transactions, see [Transactions](https://docs.mongodb.com/manual/core/transactions/) in MongoDB\.
+ For information about versions of MongoDB that AWS DMS supports as a source, see [Sources for AWS DMS](CHAP_Introduction.Sources.md)\. 
+
+Starting with AWS DMS 3\.4\.5, AWS DMS supports MongoDB versions 4\.2 and 4\.4\. Starting with MongoDB version 4\.2, AWS DMS 3\.4\.5 and later supports distributed transactions\. For more information on MongoDB distributed transactions, see [Transactions](https://docs.mongodb.com/manual/core/transactions/) in MongoDB\.
 
 If you are new to MongoDB, be aware of the following important MongoDB database concepts: 
 + A record in MongoDB is a *document*, which is a data structure composed of field and value pairs\. The value of a field can include other documents, arrays, and arrays of documents\. A document is roughly equivalent to a row in a relational database table\.

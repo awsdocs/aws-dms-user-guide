@@ -115,6 +115,8 @@ If your replication task doesn't create CloudWatch logs, see [AWS DMS does not c
 
 The AWS DMS console shows basic CloudWatch statistics for each task, including the task status, percent complete, elapsed time, and table statistics, as shown following\. Select the replication task and then select the **CloudWatch metrics** tab\.
 
+To view and modify the CloudWatch task log settings, choose **Modify task logging**\. For more information, see [Logging task settings](CHAP_Tasks.CustomizingTasks.TaskSettings.Logging.md)\.
+
 ![\[AWS DMS monitoring\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-monitoring1.png)
 
 The AWS DMS console shows performance statistics for each table, including the number of inserts, deletions, and updates, when you select the **Table statistics** tab\.
@@ -165,13 +167,13 @@ Replication instance monitoring includes Amazon CloudWatch metrics for the follo
 |  Metric  |  Description  | 
 | --- | --- | 
 | AvailableMemory |  An estimate of how much memory is available for starting new applications, without swapping\. For more information, see `MemAvailable` value in `/proc/memInfo` section of the [Linux man\-pages](https://man7.org/linux/man-pages/man5/proc.5.html)\. Units: Bytes  | 
-| CPUAllocated |  The percentage of CPU maximally allocated for the task \(0 means no limit\)\. Units: Percent  | 
+| CPUAllocated |  The percentage of CPU maximally allocated for the task \(0 means no limit\)\. AWS DMS raises this metric against the combined dimensions of `ReplicationInstanceIdentifer` and `ReplicationTaskIdentifier` in the CloudWatch console\. Use the `ReplicationInstanceIdentifier, ReplicationTaskIdentifier` category to view this metric\. Units: Percent  | 
 | CPUUtilization |  The percentage of allocated vCPU \(virtual CPU\) currently in use on the instance\.  Units: Percent   | 
 | DiskQueueDepth |  The number of outstanding read/write requests \(I/Os\) waiting to access the disk\.  Units: Count   | 
 | FreeStorageSpace |  The amount of available storage space\. Units: Bytes  | 
 | FreeMemory |  The amount of physical memory available for use by applications, page cache, and for the kernel’s own data structures\. For more information, see `MemFree` value in `/proc/memInfo` section of the [Linux man\-pages](https://man7.org/linux/man-pages/man5/proc.5.html)\. Units: Bytes  | 
 | FreeableMemory |  The amount of available random access memory\. Units: Bytes  | 
-| MemoryAllocated |  The maximum allocation of memory for the task \(0 means no limits\)\. Units: MiB  | 
+| MemoryAllocated |  The maximum allocation of memory for the task \(0 means no limits\)\. AWS DMS raises this metric against the combined dimensions of `ReplicationInstanceIdentifer` and `ReplicationTaskIdentifier` in the CloudWatch console\. Use the `ReplicationInstanceIdentifier, ReplicationTaskIdentifier` category to view this metric\. Units: MiB  | 
 | WriteIOPS |  The average number of disk write I/O operations per second\. Units: Count/Second  | 
 | ReadIOPS |  The average number of disk read I/O operations per second\. Units: Count/Second  | 
 | WriteThroughput |  The average number of bytes written to disk per second\. Units: Bytes/Second  | 
@@ -203,7 +205,7 @@ Replication task monitoring includes metrics for the following statistics\.
 | CDCLatencyTarget |  The gap, in seconds, between the first event timestamp waiting to commit on the target and the current timestamp of the AWS DMS instance\. Target latency is the difference between the replication instance server time and the oldest unconfirmed event id forwarded to a target component\. In other words, target latency is the timestamp difference between the replication instance and the oldest event applied but unconfirmed by TRG endpoint \(99%\)\. When CDCLatencyTarget is high, it indicates the process of applying change events to the target is delayed\. To identify latency in an ongoing replication, you can view this metric together with CDCLatencySource\. If CDCLatencyTarget is high but CDCLatencySource isn’t high, investigate if: [\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_Monitoring.html)  | 
 | CPUUtilization |  The percentage of CPU being used by a task across multiple cores\. The semantics of task CPUUtilization is slightly different from replication CPUUtilizaiton\. If 1 vCPU is fully used, it indicates 100%, but if multiple vCPUs are in use, the value could be above 100%\. Units: Percent  | 
 | SwapUsage |  The amount of swap used by the task\. Units: Bytes  | 
-| MemoryUsage |  The control group \(cgroup\) **memory\.usage\_in\_bytes** consumed by a task\. DMS uses cgroups to control the usage of system resources such as memory and CPU\. This metric indicates a task's memory usage in Megabytes within the cgroup allocated for that task\. The cgroup limits are based on the resources available for your DMS replication instance class\. **memory\.usage\_in\_bytes** consists of resident set size \(RSS\), cache, and swap components of memory\. The operating system can reclaim cache memory if needed\. We recommend that you also monitor the replication instance metric, **AvailableMemory**\.  | 
+| MemoryUsage |  The control group \(cgroup\) **memory\.usage\_in\_bytes** consumed by a task\. DMS uses cgroups to control the usage of system resources such as memory and CPU\. This metric indicates a task's memory usage in Megabytes within the cgroup allocated for that task\. The cgroup limits are based on the resources available for your DMS replication instance class\. **memory\.usage\_in\_bytes** consists of resident set size \(RSS\), cache, and swap components of memory\. The operating system can reclaim cache memory if needed\. We recommend that you also monitor the replication instance metric, **AvailableMemory**\. AWS DMS raises this metric against the combined dimensions of `ReplicationInstanceIdentifer` and `ReplicationTaskIdentifier` in the CloudWatch console\. Use the `ReplicationInstanceIdentifier, ReplicationTaskIdentifier` category to view this metric\.  | 
 
 ## Viewing and managing AWS DMS task logs<a name="CHAP_Monitoring.ManagingLogs"></a>
 
