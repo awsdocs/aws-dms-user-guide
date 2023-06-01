@@ -5,7 +5,7 @@ You can migrate data to PostgreSQL databases using AWS DMS, either from another 
 For information about versions of PostgreSQL that AWS DMS supports as a target, see [Targets for AWS DMS](CHAP_Introduction.Targets.md)\.
 
 **Note**  
-PostgreSQL 14\.x requires AWS DMS 3\.4\.7 and later\.
+PostgreSQL 14\.x requires AWS DMS 3\.4\.7 and higher\.
 Amazon Aurora Serverless is available as a TARGET for Amazon Aurora with PostgreSQL compatibility\. For more information about Amazon Aurora Serverless, see [Using Amazon Aurora Serverless](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless.html) in the *Amazon Aurora User Guide*\.
 Aurora Serverless DB clusters are accessible only from an Amazon VPC and can't use a [public IP address](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless.html#aurora-serverless.requirements)\. So, if you intend to have a replication instance in a different region than Aurora PostgreSQL Serverless, you must configure [vpc peering](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_ReplicationInstance.VPC.html#CHAP_ReplicationInstance.VPC.Configurations.ScenarioVPCPeer)\. Otherwise, check the availability of Aurora PostgreSQL Serverless [regions](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Concepts.AuroraFeaturesRegionsDBEngines.grids.html#Concepts.Aurora_Fea_Regions_DB-eng.Feature.Serverless), and decide to use one of those regions for both Aurora PostgreSQL Serverless and your replication instance\.
 Babelfish capability is built into Amazon Aurora and doesn't have an additional cost\. For more information, see [Using Babelfish for Aurora PostgreSQL as a target for AWS Database Migration Service](#CHAP_Target.PostgreSQL.Babelfish)\.
@@ -39,6 +39,7 @@ The following limitations apply when using a PostgreSQL database as a target for
 + For heterogeneous migrations, the JSON data type is converted to the Native CLOB data type internally\.
 + In an Oracle to PostgreSQL migration, if a column in Oracle contains a NULL character \(hex value U\+0000\), AWS DMS converts the NULL character to a space \(hex value U\+0020\)\. This is due to a PostgreSQL limitation\.
 + AWS DMS doesn't support replication to a table with a unique index created with coalesce function\.
++ If your tables use sequences, then update the value of `NEXTVAL` for each sequence in the target database after you stop the replication from the source database\. AWS DMS copies data from your source database, but doesn't migrate sequences to the target during the ongoing replication\.
 
 ## Security requirements when using a PostgreSQL database as a target for AWS Database Migration Service<a name="CHAP_Target.PostgreSQL.Security"></a>
 
@@ -169,7 +170,7 @@ The following sample transformation rule makes all table names lowercase, and re
 
 The following limitations apply when using a PostgreSQL target endpoint with Babelfish tables:
 + For **Target table preparation** mode, use only the **Do nothing** or **Truncate** modes\. Don't use the **Drop tables on target** mode\. In that mode, DMS creates the tables as PostgreSQL tables that T\-SQL might not recognize\.
-+ Babelfish only supports migrating `BINARY`, `VARBINARY`, and `IMAGE` data types with Aurora PostgreSQL version 14\.3 and later, using the `BYTEA` data type\. For earlier versions of Aurora PostgreSQL, you can use DMS to migrate these tables to a [Babelfish target endpoint](CHAP_Target.Babelfish.md)\. You don't have to specify a length for the `BYTEA` data type, as shown in the example following\.
++ Babelfish only supports migrating `BINARY`, `VARBINARY`, and `IMAGE` data types with Aurora PostgreSQL version 14\.3 and higher, using the `BYTEA` data type\. For earlier versions of Aurora PostgreSQL, you can use DMS to migrate these tables to a [Babelfish target endpoint](CHAP_Target.Babelfish.md)\. You don't have to specify a length for the `BYTEA` data type, as shown in the example following\.
 
   ```
       [Picture] [VARBINARY](max) NULL

@@ -24,7 +24,7 @@ For additional details on working with Amazon Redshift as a target for AWS DMS, 
 + [Privileges required for using Redshift as a target](#CHAP_Target.Redshift.Privileges)
 + [Limitations on using Amazon Redshift as a target for AWS Database Migration Service](#CHAP_Target.Redshift.Limitations)
 + [Configuring an Amazon Redshift database as a target for AWS Database Migration Service](#CHAP_Target.Redshift.Configuration)
-+ [Using enhanced VPC routing with an Amazon Redshift as a target for AWS Database Migration Service](#CHAP_Target.Redshift.EnhancedVPC)
++ [Using enhanced VPC routing with Amazon Redshift as a target for AWS Database Migration Service](#CHAP_Target.Redshift.EnhancedVPC)
 + [Creating and using AWS KMS keys to encrypt Amazon Redshift target data](#CHAP_Target.Redshift.KMSKeys)
 + [Endpoint settings when using Amazon Redshift as a target for AWS DMS](#CHAP_Target.Redshift.ConnectionAttrib)
 + [Using a data encryption key, and an Amazon S3 bucket as intermediate storage](#CHAP_Target.Redshift.EndpointSettings)
@@ -126,7 +126,7 @@ AWS Database Migration Service must be configured to work with the Amazon Redshi
 
 If you want to add extra connection string attributes to your Amazon Redshift endpoint, you can specify the `maxFileSize` and `fileTransferUploadStreams` attributes\. For more information on these attributes, see [Endpoint settings when using Amazon Redshift as a target for AWS DMS](#CHAP_Target.Redshift.ConnectionAttrib)\.
 
-## Using enhanced VPC routing with an Amazon Redshift as a target for AWS Database Migration Service<a name="CHAP_Target.Redshift.EnhancedVPC"></a>
+## Using enhanced VPC routing with Amazon Redshift as a target for AWS Database Migration Service<a name="CHAP_Target.Redshift.EnhancedVPC"></a>
 
 If you use Enhanced VPC Routing with your Amazon Redshift target, all COPY traffic between your Amazon Redshift cluster and your data repositories goes through your VPC\. Because Enhanced VPC Routing affects the way that Amazon Redshift accesses other resources, COPY commands might fail if you haven't configured your VPC correctly\.
 
@@ -383,7 +383,7 @@ To promote full load performance, you can use the following `ParallelLoad*` task
 + `ParallelLoadBufferSize` – Specifies the maximum data record requests while using parallel load threads with Redshift target\. The default value is 100 and the maximum value is 1,000\. We recommend you use this option when ParallelLoadThreads > 1 \(greater than one\)\.
 
 **Note**  
-Support for the use of `ParallelLoad*` task settings during FULL LOAD to Amazon Redshift target endpoints is available in AWS DMS versions 3\.4\.5 and later\.  
+Support for the use of `ParallelLoad*` task settings during FULL LOAD to Amazon Redshift target endpoints is available in AWS DMS versions 3\.4\.5 and higher\.  
 The `ReplaceInvalidChars` Redshift endpoint setting is not supported for use during change data capture \(CDC\) or during a parallel load enabled FULL LOAD migration task\. It is supported for FULL LOAD migration when parallel load isn’t enabled\. For more information see [RedshiftSettings](https://docs.aws.amazon.com/dms/latest/APIReference/API_RedshiftSettings.html) in the *AWS Database Migration Service API Reference*
 
 ### Multithreaded CDC task settings for Amazon Redshift<a name="CHAP_Target.Redshift.ParallelApply.CDC"></a>
@@ -395,7 +395,7 @@ To promote CDC performance, you can use the following `ParallelApply*` task sett
   To obtain the most benefit for Redshift as a target, we recommend that the value of `ParallelApplyBufferSize` be at least two times \(double or more\) the number of `ParallelApplyThreads`\.
 
 **Note**  
-Support for the use of `ParallelApply*` task settings during CDC to Amazon Redshift target endpoints is available in AWS DMS versions 3\.4\.3 and later\.
+Support for the use of `ParallelApply*` task settings during CDC to Amazon Redshift target endpoints is available in AWS DMS versions 3\.4\.3 and higher\.
 
 The level of parallelism applied depends on the correlation between the total *batch size* and the *maximum file size* used to transfer data\. When using multithreaded CDC task settings with a Redshift target, benefits are gained when batch size is large in relation to the maximum file size\. For example, you can use the following combination of endpoint and task settings to tune for optimal performance\. 
 

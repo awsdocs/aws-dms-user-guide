@@ -1,22 +1,162 @@
 # AWS managed policies for AWS Database Migration Service<a name="security-iam-awsmanpol"></a>
 
+**Topics**
++ [AWS managed policy: AWSDMSServerlessServiceRolePolicy](#security-iam-awsmanpol-AWSDMSServerlessServiceRolePolicy)
++ [AWS managed policy: AmazonDMSCloudWatchLogsRole](#security-iam-awsmanpol-AmazonDMSCloudWatchLogsRole)
++ [AWS managed policy: AWSDMSFleetAdvisorServiceRolePolicy](#security-iam-awsmanpol-AWSDMSFleetAdvisorServiceRolePolicy)
++ [AWS DMS updates to AWS managed policies](#security-iam-awsmanpol-updates)
+
+## AWS managed policy: AWSDMSServerlessServiceRolePolicy<a name="security-iam-awsmanpol-AWSDMSServerlessServiceRolePolicy"></a>
+
+This policy is attached to the `AWSServiceRoleForDMSServerless` role, which allows AWS DMS to perform actions on your behalf\. For more information, see [Service\-linked role for AWS DMS Serverless](slr-services-sl.md)\.
+
+This policy grants contributor permissions that allow AWS DMS to manage replication resources\.
+
+**Permissions details**
+
+This policy includes the following permissions\.
++ `dms` – Allows principals to interact with AWS DMS resources\.
+
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "id0",
+            "Effect": "Allow",
+            "Action": [
+                "dms:CreateReplicationInstance",
+                "dms:CreateReplicationTask"
+            ],
+            "Resource": "*",
+            "Condition": {
+                "StringEquals": {
+                    "dms:req-tag/ResourceCreatedBy": "DMSServerless"
+                }
+            }
+        },
+        {
+            "Sid": "id1",
+            "Effect": "Allow",
+            "Action": [
+                "dms:DescribeReplicationInstances",
+                "dms:DescribeReplicationTasks"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "id2",
+            "Effect": "Allow",
+            "Action": [
+                "dms:StartReplicationTask",
+                "dms:StopReplicationTask",
+                "dms:DeleteReplicationTask",
+                "dms:DeleteReplicationInstance"
+            ],
+            "Resource": [
+                "arn:aws:dms:*:*:rep:*",
+                "arn:aws:dms:*:*:task:*"
+            ],
+            "Condition": {
+                "StringEqualsIgnoreCase": {
+                    "aws:ResourceTag/ResourceCreatedBy": "DMSServerless"
+                }
+            }
+        },
+        {
+            "Sid": "id3",
+            "Effect": "Allow",
+            "Action": [
+                "dms:TestConnection",
+                "dms:DeleteConnection"
+            ],
+            "Resource": [
+                "arn:aws:dms:*:*:rep:*",
+                "arn:aws:dms:*:*:endpoint:*"
+            ]
+        }
+    ]
+}
+```
+
+## AWS managed policy: AmazonDMSCloudWatchLogsRole<a name="security-iam-awsmanpol-AmazonDMSCloudWatchLogsRole"></a>
+
+This policy is attached to the `dms-cloudwatch-logs-role` role, which allows AWS DMS to perform actions on your behalf\. For more information, see [Using service\-linked roles for AWS DMS](using-service-linked-roles.md)\.
+
+This policy grants contributor permissions that allow AWS DMS to publish replication logs to CloudWatch logs\.
+
+**Permissions details**
+
+This policy includes the following permissions\.
 
 
 
 
-To add permissions to users, groups, and roles, it is easier to use AWS managed policies than to write policies yourself\. It takes time and expertise to [create IAM customer managed policies](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_create-console.html) that provide your team with only the permissions they need\. To get started quickly, you can use our AWS managed policies\. These policies cover common use cases and are available in your AWS account\. For more information about AWS managed policies, see [AWS managed policies](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html#aws-managed-policies) in the *IAM User Guide*\.
-
-AWS services maintain and update AWS managed policies\. You can't change the permissions in AWS managed policies\. Services occasionally add additional permissions to an AWS managed policy to support new features\. This type of update affects all identities \(users, groups, and roles\) where the policy is attached\. Services are most likely to update an AWS managed policy when a new feature is launched or when new operations become available\. Services do not remove permissions from an AWS managed policy, so policy updates won't break your existing permissions\.
-
-Additionally, AWS supports managed policies for job functions that span multiple services\. For example, the `ViewOnlyAccess` AWS managed policy provides read\-only access to many AWS services and resources\. When a service launches a new feature, AWS adds read\-only permissions for new operations and resources\. For a list and descriptions of job function policies, see [AWS managed policies for job functions](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_job-functions.html) in the *IAM User Guide*\.
++ `logs` – Allows principals to publish logs to CloudWatch Logs\. This permission is required so that AWS DMS can use CloudWatch to display replication logs\.
 
 
 
-
-
-
-
-
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowDescribeOnAllLogGroups",
+            "Effect": "Allow",
+            "Action": [
+                "logs:DescribeLogGroups"
+            ],
+            "Resource": [
+                "*"
+            ]
+        },
+        {
+            "Sid": "AllowDescribeOfAllLogStreamsOnDmsTasksLogGroup",
+            "Effect": "Allow",
+            "Action": [
+                "logs:DescribeLogStreams"
+            ],
+            "Resource": [
+                "arn:aws:logs:*:*:log-group:dms-tasks-*",
+                "arn:aws:logs:*:*:log-group:dms-serverless-replication-*"
+            ]
+        },
+        {
+            "Sid": "AllowCreationOfDmsLogGroups",
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogGroup"
+            ],
+            "Resource": [
+                "arn:aws:logs:*:*:log-group:dms-tasks-*",
+                "arn:aws:logs:*:*:log-group:dms-serverless-replication-*:log-stream:"
+            ]
+        },
+        {
+            "Sid": "AllowCreationOfDmsLogStream",
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogStream"
+            ],
+            "Resource": [
+                "arn:aws:logs:*:*:log-group:dms-tasks-*:log-stream:dms-task-*",
+                "arn:aws:logs:*:*:log-group:dms-serverless-replication-*:log-stream:dms-serverless-*"
+            ]
+        },
+        {
+            "Sid": "AllowUploadOfLogEventsToDmsLogStream",
+            "Effect": "Allow",
+            "Action": [
+                "logs:PutLogEvents"
+            ],
+            "Resource": [
+                "arn:aws:logs:*:*:log-group:dms-tasks-*:log-stream:dms-task-*",
+                "arn:aws:logs:*:*:log-group:dms-serverless-replication-*:log-stream:dms-serverless-*"
+            ]
+        }
+    ]
+}
+```
 
 ## AWS managed policy: AWSDMSFleetAdvisorServiceRolePolicy<a name="security-iam-awsmanpol-AWSDMSFleetAdvisorServiceRolePolicy"></a>
 
@@ -24,7 +164,7 @@ Additionally, AWS supports managed policies for job functions that span multiple
 
 
 
-You can't attach AWSDMSFleetAdvisorServiceRolePolicy to your IAM entities\. This policy is attached to a service\-linked role that allows AWS DMS Fleet Advisor to perform actions on your behalf\. For more information, see [Using service\-linked roles for DMS Fleet Advisor](using-service-linked-roles.md)\.
+You can't attach AWSDMSFleetAdvisorServiceRolePolicy to your IAM entities\. This policy is attached to a service\-linked role that allows AWS DMS Fleet Advisor to perform actions on your behalf\. For more information, see [Using service\-linked roles for AWS DMS](using-service-linked-roles.md)\.
 
 
 
@@ -74,5 +214,7 @@ View details about updates to AWS managed policies for AWS DMS since this servic
 
 | Change | Description | Date | 
 | --- | --- | --- | 
+|  [AWSDMSServerlessServiceRolePolicy](#security-iam-awsmanpol-AWSDMSServerlessServiceRolePolicy) – New policy  |  AWS DMS added the `AWSDMSServerlessServiceRolePolicy` role to allow AWS DMS to create and manage services on your behalf, such as publishing Amazon CloudWatch metrics\.  | May 22, 2023 | 
+|  [AmazonDMSCloudWatchLogsRole](#security-iam-awsmanpol-AmazonDMSCloudWatchLogsRole) – Change  |  AWS DMS added the ARN for serverless resources to each of the permissions granted, to allow uploading AWS DMS replication logs from serverless replication configurations to CloudWatch Logs\.  | May 22, 2023 | 
 |  [AWSDMSFleetAdvisorServiceRolePolicy](#security-iam-awsmanpol-AWSDMSFleetAdvisorServiceRolePolicy) – New policy  |  AWS DMS Fleet Advisor added a new policy to allow publishing metric data points to Amazon CloudWatch\.  | March 6, 2023 | 
 |  AWS DMS started tracking changes  |  AWS DMS started tracking changes for its AWS managed policies\.  | March 6, 2023 | 

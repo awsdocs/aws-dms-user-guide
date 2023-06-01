@@ -85,6 +85,7 @@ View the following additional limitations that apply when using S3 target valida
 
   To minimize the number of false errors, ensure that the `CDCLatencySource` for the task is low\. For information about monitoring latency, see [Replication task metrics](CHAP_Monitoring.md#CHAP_Monitoring.Metrics.Task)\. 
 + Tasks in the `failed` or `stopped` state don't validate the previous day's changes\. To minimize validation errors because of unexpected failures, create separate validation only tasks with the same table mappings, and source and target endpoints\. For more information about validation only tasks, see [Using validation only tasks with S3 target validation](#CHAP_Validating_S3_only)\.
++ The **Validation Status** column in table statistics reflects the state of the most recent interval validation\. As a result, a table which has mismatches might show up as validated after the next day's interval validation\. Check the `s3_validation_failures folder` in the target Amazon S3 bucket for mismatches that occurred more than a day ago\.
 
 ## Using validation only tasks with S3 target validation<a name="CHAP_Validating_S3_only"></a>
 

@@ -3,7 +3,7 @@
 You can use Amazon EventBridge to provide notification of when an AWS DMS event occurs, for example the creation or deletion of a replication instance\. EventBridge receives events and routes notification of an event as defined by event rules\. You can work with notifications in any form supported by Amazon EventBridge for an AWS Region\. For more information about using Amazon EventBridge, see [What is Amazon EventBridge?](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-what-is.html) in the *Amazon EventBridge User Guide*\.
 
 **Note**  
-Working with Amazon EventBridge events is supported in AWS DMS version 3\.4\.6 and later\.
+Working with Amazon EventBridge events is supported in AWS DMS version 3\.4\.6 and higher\.
 
 EventBridge receives an event, an indicator of a change in AWS DMS environment, and applies a rule to route the event to a notification mechanism\. Rules match events to notification mechanisms based on the structure of the event, called an *event pattern*\.
 

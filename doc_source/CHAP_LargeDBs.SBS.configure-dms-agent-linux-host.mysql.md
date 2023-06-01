@@ -1,6 +1,6 @@
 # MySQL<a name="CHAP_LargeDBs.SBS.configure-dms-agent-linux-host.mysql"></a>
 
-Install MySQL Connector/ODBC for Linux, version 5\.2\.6 or later\.
+Install MySQL Connector/ODBC for Linux, version 5\.2\.6 or higher\.
 
 Make sure that the `/etc/odbcinst.ini` file contains an entry for MySQL, as shown in the following example\.
 

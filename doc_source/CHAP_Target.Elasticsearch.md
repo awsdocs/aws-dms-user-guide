@@ -27,7 +27,7 @@ For more information on how DMS loads an OpenSearch Service cluster using multit
 
 You can improve the performance of change data capture \(CDC\) for an OpenSearch Service target cluster using task settings to modify the behavior of the `PutRecords` API call\. To do this, you can specify the number of concurrent threads, queues per thread, and the number of records to store in a buffer using `ParallelApply*` task settings\. For example, suppose you want to perform a CDC load and apply 32 threads in parallel\. You also want to access 64 queues per thread, with 50 records stored per buffer\. 
 **Note**  
-Support for the use of `ParallelApply*` task settings during CDC to Amazon OpenSearch Service target endpoints is available in AWS DMS versions 3\.4\.0 and later\.
+Support for the use of `ParallelApply*` task settings during CDC to Amazon OpenSearch Service target endpoints is available in AWS DMS versions 3\.4\.0 and higher\.
 
 To promote CDC performance, AWS DMS supports these task settings:
 + `ParallelApplyThreads` – Specifies the number of concurrent threads that AWS DMS uses during a CDC load to push data records to a OpenSearch Service target endpoint\. The default value is zero \(0\) and the maximum value is 32\.

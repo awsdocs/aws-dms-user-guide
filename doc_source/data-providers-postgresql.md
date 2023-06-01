@@ -1,6 +1,8 @@
 # Using a PostgreSQL database as a target in DMS Schema Conversion<a name="data-providers-postgresql"></a>
 
-You can use PostgreSQL databases version 14\.x as a target database in DMS Schema Conversion\.
+You can use PostgreSQL databases as a migration target in DMS Schema Conversion\.
+
+For information about supported target databases, see [Target data providers for DMS Schema Conversion](CHAP_Introduction.Targets.md#CHAP_Introduction.Targets.SchemaConversion)\.
 
 ## Privileges for PostgreSQL as a target<a name="data-providers-postgresql-permissions"></a>
 

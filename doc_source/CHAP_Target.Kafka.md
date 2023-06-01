@@ -14,7 +14,7 @@ AWS Database Migration Service publishes records to a Kafka topic using JSON\. D
 
 To migrate your data from any supported data source to a target Kafka cluster, you use object mapping\. With object mapping, you determine how to structure the data records in the target topic\. You also define a partition key for each table, which Apache Kafka uses to group the data into its partitions\. 
 
-Currently, AWS DMS supports a single topic per task\. For a single task with multiple tables, all messages go to a single topic\. Each message includes a metadata section that identifies the target schema and table\. AWS DMS versions 3\.4\.6 and later support multitopic replication using object mapping\. For more information, see [Multitopic replication using object mapping](#CHAP_Target.Kafka.MultiTopic)\.
+Currently, AWS DMS supports a single topic per task\. For a single task with multiple tables, all messages go to a single topic\. Each message includes a metadata section that identifies the target schema and table\. AWS DMS versions 3\.4\.6 and higher support multitopic replication using object mapping\. For more information, see [Multitopic replication using object mapping](#CHAP_Target.Kafka.MultiTopic)\.
 
 **Apache Kafka endpoint settings**
 
@@ -274,7 +274,7 @@ Then, when you create your Kafka target endpoint, set the security protocol endp
 
 **Note**  
 Currently, AWS DMS supports only public CA backed SASL\-SSL\. DMS doesn't support SASL\-SSL for use with self\-managed Kafka that is backed by private CA\.
-For SASL\-SSL authentication, AWS DMS supports the SCRAM\-SHA\-512 mechanism by default\. AWS DMS versions 3\.5\.0 and later also support the Plain mechanism\. To support the Plain mechanism, set the `SaslMechanism` parameter of the `KafkaSettings` API data type to `PLAIN`\.
+For SASL\-SSL authentication, AWS DMS supports the SCRAM\-SHA\-512 mechanism by default\. AWS DMS versions 3\.5\.0 and higher also support the Plain mechanism\. To support the Plain mechanism, set the `SaslMechanism` parameter of the `KafkaSettings` API data type to `PLAIN`\.
 
 ## Using a before image to view original values of CDC rows for Apache Kafka as a target<a name="CHAP_Target.Kafka.BeforeImage"></a>
 
@@ -645,7 +645,7 @@ By default, AWS DMS tasks migrate all source data to one of the Kafka topics fol
 + As specified in the **Topic** field of the AWS DMS target endpoint\.
 + As specified by `kafka-default-topic` if the **Topic** field of the target endpoint isn't populated and the Kafka `auto.create.topics.enable` setting is set to `true`\.
 
-With AWS DMS engine versions 3\.4\.6 and later, you can use the `kafka-target-topic` attribute to map each migrated source table to a separate topic\. For example, the object mapping rules following migrate the source tables `Customer` and `Address` to the Kafka topics `customer_topic` and `address_topic`, respectively\. At the same time, AWS DMS migrates all other source tables, including the `Bills` table in the `Test` schema, to the topic specified in the target endpoint\.
+With AWS DMS engine versions 3\.4\.6 and higher, you can use the `kafka-target-topic` attribute to map each migrated source table to a separate topic\. For example, the object mapping rules following migrate the source tables `Customer` and `Address` to the Kafka topics `customer_topic` and `address_topic`, respectively\. At the same time, AWS DMS migrates all other source tables, including the `Bills` table in the `Test` schema, to the topic specified in the target endpoint\.
 
 ```
 {

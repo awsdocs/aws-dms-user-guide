@@ -3,14 +3,14 @@
 Following, you can find the diagnostic support scripts available to analyze any PostgreSQL RDBMS \(on\-premises, Amazon RDS, or Aurora PostgreSQL\) in your AWS DMS migration configuration\. These scripts work with either a source or target endpoint\. The scripts are all written to run in the psql command\-line utility\. 
 
 Before running these scripts, ensure that the user account that you use has the following necessary permissions to access any PostgreSQL RDBMS:
-+ PostgreSQL 10\.x or later – A user account with execute permission on the `pg_catalog.pg_ls_waldir` function\.
++ PostgreSQL 10\.x or higher – A user account with execute permission on the `pg_catalog.pg_ls_waldir` function\.
 + PostgreSQL 9\.x or earlier – A user account with default permissions\.
 
 We recommend using an existing account with the appropriate permissions to run these scripts\.
 
 If you need to create a new user account or grant permissions to an existing account to run these scripts, you can execute the following SQL commands for any PostgreSQL RDBMS based on the PostgreSQL version\.
 
-**To grant account permissions to run these scripts for a PostgreSQL 10\.x or later database**
+**To grant account permissions to run these scripts for a PostgreSQL databases version 10\.x or higher**
 + Do one of the following:
   + For a new user account, run the following\.
 
@@ -48,7 +48,7 @@ Download the [https://d2pwp9zz55emqw.cloudfront.net/scripts/awsdms_support_colle
 This script collects information about your PostgreSQL database configuration\. Remember to verify the checksum on the script\. If the checksum verifies, review the SQL code in the script to comment out any of the code that you are uncomfortable running\. After you are satisfied with the integrity and content of the script, you can run it\.
 
 **Note**  
-You can run this script with psql client version 10 or later\.
+You can run this script with psql client version 10 or higher\.
 
 You can use the following procedures to run this script either from your database environment or from the command line\. In either case, you can then upload your file to AWS Support later\.
 

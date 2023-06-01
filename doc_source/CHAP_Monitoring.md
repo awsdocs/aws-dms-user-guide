@@ -148,14 +148,46 @@ Monitor these two metrics for the following conditions:
 
 If you see either of these two conditions, they indicate that you should consider moving to a larger replication instance\. You should also consider reducing the number and type of tasks running on the replication instance\. Full Load tasks require more memory than tasks that just replicate changes\.
 
-To estimate the actual memory requirements for a migration task, AWS DMS roughly uses the following methods\.
+To roughly estimate the actual memory requirements for an AWS DMS migration task, you can use the following parameters\.
 
-**Full LOB mode \(using single row\+update, commit rate\)**  
-`Memory: (# of lob columns in a table) x (Number of table in parallel, default is 8) x (lob chunk size) x (Commit rate during full load) = 2 * 8 *64(k) * 10000k`  
-You can modify your task to reduce **Commit rate during full load**\. To change this number in the AWS Management Console, open the console, choose **Tasks**, choose to create or modify a task, and then choose **Advanced Settings**\. Under **Tuning Settings**, change the **Commit rate during full load** option\.
+**LOB columns**  
+An average number of LOB columns in each table in your migration scope\.
 
-**Limited LOB mode \(using array\)**  
-`Memory: (# of lob columns in a table) x (Number of table in parallel, default is 8) x maxlobSize x bulkArraySize = 2 * 8 * 4096(k) * 1000`
+**Maximum number of tables to load in parallel**  
+The maximum number of tables that AWS DMS loads in parallel in one task\.  
+The default value is 8\.
+
+**LOB chunk size**  
+The size of the LOB chunks, in kilobytes, that AWS DMS uses to replicate data to the target database\.
+
+**Commit rate during full load**  
+The maximum number of records that AWS DMS can transfer in parallel\.  
+The default value is 10,000\.
+
+**LOB size**  
+The maximum size of an individual LOB, in kilobytes\.
+
+**Bulk array size**  
+The maximum number of rows that are fetched or processed by your endpoint driver\. This value depends on the driver settings\.  
+The default value is 1,000\.
+
+After you determine these values, you can use one of the following methods to estimate the amount of required memory for your migration task\. These methods depend on the option that you choose for **LOB column settings** in your migration task\.
++  For **Full LOB mode**, use the following formula\.
+
+  `Required memory = (LOB columns) * (Maximum number of tables to load in parallel) * (LOB chunk size) * (Commit rate during full load)`
+
+  Consider an example where your source tables include on average 2 LOB columns, and the size of the LOB chunks is 64 KB\. If you use the default values for `Maximum number of tables to load in parallel` and `Commit rate during full load`, then the amount of required memory for your task is as follows\.
+
+  `Required memory = 2 * 8 * 64 * 10,000 = 10,240,000 KB`
+**Note**  
+To reduce the value of **Commit rate during full load**, open the AWS DMS console, choose **Database migration tasks**, and create or modify a task\. Expand **Advanced settings**, and enter your value for **Commit rate during full load**\.
++  For **Limited LOB mode**, use the following formula\.
+
+  `Required memory = (LOB columns) * (Maximum number of tables to load in parallel) * (LOB size) * (Bulk array size)`
+
+  Consider an example where your source tables include on average 2 LOB columns, and the maximum size of an individual LOB is 4,096 KB\. If you use the default values for `Maximum number of tables to load in parallel` and `Bulk array size`, then the amount of required memory for your task is as follows\.
+
+  `Required memory = 2 * 8 * 4,096 * 1,000 = 65,536,000 KB`
 
 For AWS DMS to perform conversions optimally, the CPU must be available when the conversions happen\. Overloading the CPU and not having enough CPU resources can result in slow migrations\. AWS DMS can be CPU\-intensive, especially when performing heterogeneous migrations and replications such as migrating from Oracle to PostgreSQL\. Use of a C4 replication instance class can be a good choice for these situations\. For more information, see [Choosing the right AWS DMS replication instance for your migration](CHAP_ReplicationInstance.Types.md)\.
 
@@ -424,7 +456,7 @@ AWS DMS uses context logging to give you information about a migration in progre
 + SQL statements without data that AWS DMS executes on source and target databases\. You can use the SQL logs to diagnose unexpected migration behavior\.
 + Stream position details for each CDC event\.
 
-Context logging is only available in AWS DMS version 3\.5\.0 or later\.
+Context logging is only available in AWS DMS version 3\.5\.0 or higher\.
 
 AWS DMS turns on context logging by default\. To control context logging, set the `EnableLogContext` task setting to `true` or `false`, or by modifying the task in the console\.
 

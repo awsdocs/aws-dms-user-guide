@@ -2,7 +2,7 @@
 
 To get started with DMS Schema Conversion, use the following tutorial\. In it, you can learn to set up DMS Schema Conversion, create a migration project, and connect to your data providers\. Then, you can learn to assess the complexity of your migration, and convert your source database to a format compatible with your target database\. In addition, you can learn to apply the converted code to your target database\.
 
-The following tutorial covers the prerequisite tasks and demonstrates the conversion of an Amazon RDS for SQL Server database to Amazon RDS for MySQL\. You can use any of the supported source and target data providers\. For more information, see [Migration sources and targets](CHAP_SchemaConversion.md#schema-conversion-data-providers)\.
+The following tutorial covers the prerequisite tasks and demonstrates the conversion of an Amazon RDS for SQL Server database to Amazon RDS for MySQL\. You can use any of the supported source and target data providers\. For more information, see [Source data providers for DMS Schema Conversion](CHAP_Introduction.Sources.md#CHAP_Introduction.Sources.SchemaConversion)\.
 
 For more information about DMS Schema Conversion, read the step\-by\-step migration walkthoughs for [Oracle to PostgreSQL](https://docs.aws.amazon.com/dms/latest/sbs/schema-conversion-oracle-postgresql.html) and [SQL Server to MySQL](https://docs.aws.amazon.com/dms/latest/sbs/schema-conversion-sql-server-mysql.html) migrations\.
 

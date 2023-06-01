@@ -23,7 +23,7 @@ DMS supports an on\-premises Redis target in a standalone configuration, or as a
 Since Redis is a key\-value NoSQL data store, the Redis key naming convention to use when your source is a relational database, is **schema\-name\.table\-name\.primary\-key**\. In Redis, the key and value must not contain the special character %\. Otherwise, DMS skips the record\. 
 
 **Note**  
-If you are using ElastiCache for Redis as a target, DMS supports *cluster mode enabled* configurations only\. For more information about using ElastiCache for Redis version 6\.x or later to create a cluster mode enabled target data store, see [Getting started](https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/GettingStarted.html) in the *Amazon ElastiCache for Redis User Guide*\. 
+If you are using ElastiCache for Redis as a target, DMS supports *cluster mode enabled* configurations only\. For more information about using ElastiCache for Redis version 6\.x or higher to create a cluster mode enabled target data store, see [Getting started](https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/GettingStarted.html) in the *Amazon ElastiCache for Redis User Guide*\. 
 
 Before you begin a database migration, launch your Redis cluster with the following criteria\.
 + Your cluster has one or more shards\.

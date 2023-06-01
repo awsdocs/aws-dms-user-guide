@@ -1,6 +1,6 @@
 # Oracle<a name="CHAP_LargeDBs.SBS.configure-dms-agent-linux-host.oracle"></a>
 
-Install Oracle Instant Client for Linux \(x86\-64\) version 11\.2\.0\.3\.0 or later\.
+Install Oracle Instant Client for Linux \(x86\-64\) version 11\.2\.0\.3\.0 or higher\.
 
 In addition, if not already included in your system, you need to create a symbolic link in the `$ORACLE_HOME\lib directory`\. This link should be called `libclntsh.so`, and should point to a specific version of this file\. For example, on an Oracle 12c client you use the following\.
 

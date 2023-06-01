@@ -21,10 +21,9 @@ The following table shows the new features and enhancements introduced in AWS Da
 | Customer Centric Logging | You can now examine and manage task logs more effectively with AWS DMS version 3\.5\.0\. For information about viewing and managing AWS DMS task logs, see [Viewing and managing AWS DMS task logs](CHAP_Monitoring.md#CHAP_Monitoring.ManagingLogs)\.  | 
 | SASL\_PLAIN mechanism for Kafka target endpoints | You can now use SASL\_PLAIN authentication to support Kafka MSK target endpoints\. | 
 | Replication of XA transactions in MySQL  | You can now use XA transactions on your MySQL DMS source\. Prior to DMS 3\.5\.0, DML changes applied as part of XA transactions weren’t replicated correctly\. | 
-| Oracle Extended Data Types  | AWS DMS now supports replication of extended data types in Oracle version 12\.2 and later\.  | 
+| Oracle Extended Data Types  | AWS DMS now supports replication of extended data types in Oracle version 12\.2 and higher\.  | 
 | PostgreSQL Source JSONB Data Type  | AWS DMS now supports JSONB data types for a PostgreSQL source\. | 
 | Db2 LUW PureScale Environment  | AWS DMS now supports replication from a Db2 LUW PureScale environment\. This functionality is only supported using the Start processing changes from source change position option\. | 
-| Oracle Source Open Transactions  | AWS DMS 3\.5\.0 improves the methodology of handling open transactions when starting a CDC\-Only task from the Start Position for an Oracle source\. | 
 | SQL Server source with READ\_COMMITTED\_SNAPSHOT option | When using a Microsoft SQL Server source database with the READ\_COMMITTED\_SNAPSHOT option set to TRUE, you can replicate DML changes correctly by setting the forceDataRowLookup connection attribute\.  | 
 
 AWS DMS 3\.5\.0 includes the following resolved issues:
@@ -106,6 +105,21 @@ AWS DMS 3\.4\.7 includes the following new or changed behavior and resolved issu
 + As of January 31, 2023, DMS Schema Conversion supports Aurora MySQL and Aurora PostgreSQL as a target data provider\.
 + As of March 6, 2023, you can generate right sized target recommendations for your source databases with DMS Fleet Advisor\. 
 + As of March 6, 2023, AWS DMS supports the AWS managed policy that allows publishing metric data points to Amazon CloudWatch\.
+
+
+**Issues resolved in the DMS 3\.4\.7 maintenance release dated 5\-May\-2023**  
+
+| Topic | Resolution | 
+| --- | --- | 
+| PostgreSQL source task failure |  Fixed an issue for PostgreSQL source where tasks were failing when exceeding the maximum allowed DDL operations in a single event\. | 
+| PostgreSQL source data validation false positives | Fixed an issue for PostgreSQL source with Oracle target where incorrect casting of timestamp field resulted in false positive data validation errors\. | 
+| MySQL source error handling | Fixed an issues for a MySQL source where the DMS task wasn't failing when the next BIN log was unavailable\. | 
+| MySQL source ROTATE\_EVENT logging | Improved logging for MySQL source related to ROTATE\_EVENT – included the BIN log name being read\.  | 
+| Data validation timeout issue | Fixed an issue for Data Validation feature where the executeTimeout endpoint setting wasn't being respected for queries related to data validation\. | 
+| PostgreSQL target parallel full load issue | Fixed an issue for PostgreSQL target where segmented \(parallel\) full load was failing due to "connection down" error\. | 
+| DMS task move issue | Fixed an issue for S3 target where a DMS task move operation was taking a very long time or never completing\. | 
+| PostgreSQL source duplicate record issue | Fixed an issue for PostgreSQL source where a DMS task would throw errors related to duplicates on the target after a task stop and resume\. | 
+| Oracle target data validation false positives | Fixed an issue for Oracle target where data validation would report false positive errors due to incorrectly replicated timezone for timestamp fields\. | 
 
 
 **Issues resolved in the DMS 3\.4\.7 maintenance release dated 22\-February\-2023**  
@@ -232,7 +246,7 @@ The issues resolved in AWS DMS 3\.4\.5 include the following:
 + Fixed an issue where delete operations are not properly captured when the primary key is not the first column in the table definition, when using PostgreSQL as a source\. 
 + Fixed an issue where database migration tasks miss LOB updates in a special metadata setting when using MySQL as a source\.
 + Fixed an issue where `TIMESTAMP` columns are treated as `DATETIME` in full LOB mode when using MySQL version 8 as a source\. 
-+ Fixed an issue where database migration tasks fail when parsing `NULL DATETIME` records when using MySQL 5\.6\.4 and above as a source\.
++ Fixed an issue where database migration tasks fail when parsing `NULL DATETIME` records when using MySQL 5\.6\.4 and higher as a source\.
 + Fixed an issue where database migration tasks get stuck after encountering a **Thread is exiting** error when using Amazon Redshift as a target with parallel apply\. 
 + Fixed an issue where data could potentially be lost, when database migration tasks disconnect with a Amazon Redshift target endpoint during batch\-apply CDC\. 
 + Improved the performance of full load by calling `ACCEPTINVCHARS` when using Amazon Redshift as a target\. 

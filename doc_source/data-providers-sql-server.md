@@ -1,12 +1,14 @@
 # Using a Microsoft SQL Server database as a source in DMS Schema Conversion<a name="data-providers-sql-server"></a>
 
-DMS Schema Conversion supports the following versions of on\-premises SQL Server databases: 2008R2, 2012, 2014, 2016, 2017, and 2019\. Also, you can connect to the following versions of RDS for SQL Server databases: 2012, 2014, 2016, 2017, and 2019\.
+You can use SQL Server databases as a migration source in DMS Schema Conversion\.
 
 You can use DMS Schema Conversion to convert database code objects from SQL Server to the following targets:
 + Aurora MySQL
 + Aurora PostgreSQL
 + RDS for MySQL
 + RDS for PostgreSQL
+
+For information about the supported SQL Server database versions, see [Source data providers for DMS Schema Conversion](CHAP_Introduction.Sources.md#CHAP_Introduction.Sources.SchemaConversion)\.
 
 For more information about using DMS Schema Conversion with a source SQL Server database, see the [SQL Server to MySQL migration step\-by\-step walkthrough](https://docs.aws.amazon.com/dms/latest/sbs/schema-conversion-sql-server-mysql.html)\.
 

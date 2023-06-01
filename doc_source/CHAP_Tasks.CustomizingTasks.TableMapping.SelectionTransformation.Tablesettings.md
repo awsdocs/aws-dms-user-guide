@@ -39,7 +39,7 @@ Using the percent wildcard \(`"%"`\) in `"table-settings"` rules is not supporte
   }
 ```
 
-If you use `"%"` in the `"table-settings"` rules as shown, AWS DMS returns the exception following\.
+If you use `"%"` in the `"table-settings"` rules as shown, then AWS DMS returns the exception following\.
 
 ```
 Error in mapping rules. Rule with ruleId = x failed validation. Exact 

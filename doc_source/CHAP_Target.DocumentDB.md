@@ -29,7 +29,7 @@ For more information on mapping rules for Amazon S3, see [Using Amazon S3 as a s
 
 **Amazon DocumentDB endpoint settings**
 
-In AWS DMS versions 3\.5\.0 and later, you can improve the performance of change data capture \(CDC\) for Amazon DocumentDB endpoints by tuning task settings for parallel threads and bulk operations\. To do this, you can specify the number of concurrent threads, queues per thread, and the number of records to store in a buffer using `ParallelApply*` task settings\. For example, suppose you want to perform a CDC load and apply 128 threads in parallel\. You also want to access 64 queues per thread, with 50 records stored per buffer\. 
+In AWS DMS versions 3\.5\.0 and higher, you can improve the performance of change data capture \(CDC\) for Amazon DocumentDB endpoints by tuning task settings for parallel threads and bulk operations\. To do this, you can specify the number of concurrent threads, queues per thread, and the number of records to store in a buffer using `ParallelApply*` task settings\. For example, suppose you want to perform a CDC load and apply 128 threads in parallel\. You also want to access 64 queues per thread, with 50 records stored per buffer\. 
 
 To promote CDC performance, AWS DMS supports these task settings:
 + `ParallelApplyThreads` – Specifies the number of concurrent threads that AWS DMS uses during a CDC load to push data records to a Amazon DocumentDB target endpoint\. The default value is zero \(0\) and the maximum value is 32\.
@@ -232,7 +232,7 @@ When you create an AWS DMS target endpoint, provide the certificate identifier \
 
 ## Connecting to Amazon DocumentDB Elastic Clusters as a target<a name="CHAP_Target.DocumentDB.data-mapping.elastic-cluster-connect"></a>
 
-In AWS DMS versions 3\.4\.7 and later, you can create a Amazon DocumentDB target endpoint as an Elastic Cluster\. If you create your target endpoint as an Elastic Cluster, you need to attach a new SSL certificate to your Amazon DocumentDB Elastic Cluster endpoint because your existing SSL certificate won't work\.
+In AWS DMS versions 3\.4\.7 and higher, you can create a Amazon DocumentDB target endpoint as an Elastic Cluster\. If you create your target endpoint as an Elastic Cluster, you need to attach a new SSL certificate to your Amazon DocumentDB Elastic Cluster endpoint because your existing SSL certificate won't work\.
 
 **Note**  
 With Amazon DocumentDB Elastic Clusters as a target, the migration of sharded collections isn't currently supported\.
@@ -259,7 +259,7 @@ The new SSL certificate from the downloaded `SFSRootCAG2.pem` file is now attach
 
 ## Ongoing replication with Amazon DocumentDB as a target<a name="CHAP_Target.DocumentDB.data-mapping.ongoing-replication"></a>
 
-If ongoing replication \(change data capture, CDC\) is enabled for Amazon DocumentDB as a target, AWS DMS versions 3\.5\.0 and later provide a performance improvement that is twenty times greater than in prior releases\. In prior releases where AWS DMS handles up to 250 records per second, AWS DMS now handles approximately 5000 records/second\. AWS DMS also ensures that documents in Amazon DocumentDB stay in sync with the source\. When a source record is created or updated, AWS DMS must first determine which Amazon DocumentDB record is affected by doing the following:
+If ongoing replication \(change data capture, CDC\) is enabled for Amazon DocumentDB as a target, AWS DMS versions 3\.5\.0 and higher provide a performance improvement that is twenty times greater than in prior releases\. In prior releases where AWS DMS handles up to 250 records per second, AWS DMS now handles approximately 5000 records/second\. AWS DMS also ensures that documents in Amazon DocumentDB stay in sync with the source\. When a source record is created or updated, AWS DMS must first determine which Amazon DocumentDB record is affected by doing the following:
 + If the source record has a column named `_id`, the value of that column determines the corresponding `_id` in the Amazon DocumentDB collection\.
 + If there is no `_id` column, but the source data has a primary key or unique index, then AWS DMS uses that key or index value as the `_id` for the Amazon DocumentDB collection\.
 + If the source record doesn't have an `_id` column, a primary key, or a unique index, then AWS DMS matches all of the source columns to the corresponding fields in the Amazon DocumentDB collection\.

@@ -127,7 +127,7 @@ When using a MySQL database as a source, consider the following:
 + If migrating between two Amazon RDS Aurora MySQL clusters, the RDS Aurora MySQL source endpoint must be a read/write instance, not a replica instance\. 
 + AWS DMS currently doesn't support views migration for MariaDB\.
 + AWS DMS doesn't support DDL changes for partitioned tables for MySQL\. To skip table suspension for partition DDL changes during CDC, set `skipTableSuspensionForPartitionDdl` to `true`\.
-+ AWS DMS only supports XA transactions in version 3\.5\.0 and above\. Previous versions do not support XA transactions\. For more information, see [Support for XA transactions](#CHAP_Source.MySQL.XA) following\.
++ AWS DMS only supports XA transactions in version 3\.5\.0 and higher\. Previous versions do not support XA transactions\. For more information, see [Support for XA transactions](#CHAP_Source.MySQL.XA) following\.
 + AWS DMS doesn't use GTIDs for replication, even if the source data contains them\. 
 + AWS DMS doesn't support binary log transaction compression\.
 

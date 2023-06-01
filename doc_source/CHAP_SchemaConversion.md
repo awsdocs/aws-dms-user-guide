@@ -6,6 +6,10 @@ DMS Schema Conversion automatically converts your source database schemas and mo
 
 At a high level, [DMS Schema Conversion](http://aws.amazon.com/dms/schema-conversion-tool/) operates with the following three components: instance profiles, data providers, and migration projects\. An *instance profile* specifies network and security settings\. A *data provider* stores database connection credentials\. A *migration project* contains data providers, an instance profile, and migration rules\. AWS DMS uses data providers and an instance profile to design a process that converts database schemas and code objects\.
 
+For the list of supported source databases, see [Sources for DMS Schema Conversion](CHAP_Introduction.Sources.md#CHAP_Introduction.Sources.SchemaConversion)\.
+
+For the list of supported target databases, see [Targets for DMS Schema Conversion](CHAP_Introduction.Targets.md#CHAP_Introduction.Targets.SchemaConversion)\.
+
 The following diagram illustrates the DMS Schema Conversion process\.
 
 ![\[An architecture diagram of the DMS Schema Conversion.\]](http://docs.aws.amazon.com/dms/latest/userguide/images/dms-schema-conversion-diagram.png)
@@ -26,22 +30,6 @@ You can create a DMS Schema Conversion migration project in the following AWS Re
 | Europe \(Frankfurt\) | eu\-central\-1 | 
 | Europe \(Stockholm\) | eu\-north\-1 | 
 | Europe \(Ireland\) | eu\-west\-1 | 
-
-## Supported source and target data providers<a name="schema-conversion-data-providers"></a>
-
-In DMS Schema Conversion, you create data providers to describe your source and target databases\. Each data provider stores information about the data store type and the location of your database\.
-
-Your source data provider can be a self\-managed engine running on\-premises or on an Amazon Elastic Compute Cloud \(Amazon EC2\) instance\.
-
-DMS Schema Conversion supports the following data providers as sources for your migration projects:
-+ Microsoft SQL Server version 2008 R2 and higher
-+ Oracle version 10\.2 and later, 11g and up to 12\.2, 18c, and 19c
-
-You can use DMS Schema Conversion to convert schemas for your source data provider to the target engine\. That engine can run on an Amazon EC2 instance, an Amazon Relational Database Service \(Amazon RDS\) DB instance, or an Amazon Aurora DB instance\.
-
-DMS Schema Conversion supports the following data providers as targets for your migration projects:
-+ MySQL version 8\.x
-+ PostgreSQL version 14\.x
 
 ## Schema conversion features<a name="schema-conversion-features"></a>
 

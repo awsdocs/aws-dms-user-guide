@@ -29,9 +29,9 @@ To reboot a replication instance, use the AWS console\.
 
 1. Choose the replication instance you want to reboot\. 
 
-1. Choose **Reboot**\.
+1. Choose **Reboot**\. The **Reboot replication instance** dialog box opens\.
 
-1. In the **Reboot replication instance** dialog box, choose **Reboot With Failover?** if you have configured your replication instance for Multi\-AZ deployment and you want to fail over to another AWS Availability Zone\.
+1. Select the check box for **Reboot with planned failover?** if you have configured your replication instance for Multi\-AZ deployment and you want to fail over to another AWS Availability Zone\.
 
 1. Choose **Reboot**\.
 
@@ -54,7 +54,7 @@ The following AWS CLI example reboots a replication instance with failover\.
 ```
 aws dms reboot-replication-instance \
 --replication-instance-arn arn of my rep instance \
---force-failover
+--force-planned-failover
 ```
 
 ## Rebooting a replication instance using the API<a name="CHAP_ReplicationInstance.Rebooting.API"></a>
@@ -86,7 +86,7 @@ The following code example reboots a replication instance and fails over to anot
  1. https://dms.us-west-2.amazonaws.com/
  2. ?Action=RebootReplicationInstance
  3. &DBInstanceArn=arn of my rep instance
- 4. &ForceFailover=true
+ 4. &ForcePlannedFailover=true
  5. &SignatureMethod=HmacSHA256
  6. &SignatureVersion=4
  7. &Version=2014-09-01

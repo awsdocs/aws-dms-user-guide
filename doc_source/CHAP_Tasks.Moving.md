@@ -10,7 +10,7 @@ You can move a task in the console by selecting the task and choosing **Move**\.
 
 Make sure that the target replication instance has enough storage space to accommodate the task that's being moved\. Otherwise, scale the storage to make space for your target replication instance before moving the task\.
 
-Also, make sure that your target replication instance is created with the same or later AWS DMS engine version as the current replication instance\. 
+Also, make sure that your target replication instance is created with the same or higher AWS DMS engine version as the current replication instance\. 
 
 **Note**  
 You can't move a task to the same replication instance where it currently resides\.

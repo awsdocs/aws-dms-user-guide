@@ -1,6 +1,8 @@
 # Using a MySQL database as a target in DMS Schema Conversion<a name="data-providers-mysql"></a>
 
-You can use MySQL databases version 8\.x as a target database in DMS Schema Conversion\.
+You can use MySQL databases as a migration target in DMS Schema Conversion\.
+
+For information about supported target databases, see [Target data providers for DMS Schema Conversion](CHAP_Introduction.Targets.md#CHAP_Introduction.Targets.SchemaConversion)\.
 
 ## Privileges for MySQL as a target<a name="data-providers-mysql-permissions"></a>
 

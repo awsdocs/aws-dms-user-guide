@@ -106,6 +106,14 @@ Create AWS Identity and Access Management \(IAM\) roles to use in your migration
 
 1. For **Role name**, enter a descriptive name\. For example, enter **sc\-s3\-role**\. Choose **Create role**\.
 
+1. On the **Roles** page, enter **sc\-s3\-role** for **Role name**\. Choose **sc\-s3\-role**\.
+
+1. On the **sc\-s3\-role** page, choose the **Trust relationships tab**\. Choose **Edit trust policy**\.
+
+1. On the **Edit trust policy** page, edit the trust relationships for the role to use `schema-conversion.dms.amazonaws.com` service principal as the trusted entity\.
+
+1. Choose **Update trust policy**\.
+
 **To create an IAM role that provides access to AWS Secrets Manager**
 
 1. Sign in to the AWS Management Console and open the IAM console at [https://console\.aws\.amazon\.com/iam/](https://console.aws.amazon.com/iam/)\.
@@ -128,7 +136,7 @@ Create AWS Identity and Access Management \(IAM\) roles to use in your migration
 
 1. On the **sc\-secrets\-manager\-role** page, choose the **Trust relationships tab**\. Choose **Edit trust policy**\.
 
-1. On the **Edit trust policy** page, edit the trust relationships for the role to use your AWS DMS regional service principal as the trusted entity\. This principal has the following format\.
+1. On the **Edit trust policy** page, edit the trust relationships for the role to use `schema-conversion.dms.amazonaws.com` and your AWS DMS regional service principal as the trusted entities\. This AWS DMS regional service principal has the following format\.
 
    ```
    dms.region-name.amazonaws.com

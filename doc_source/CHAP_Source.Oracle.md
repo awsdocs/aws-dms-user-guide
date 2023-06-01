@@ -27,7 +27,7 @@ For additional details on working with Oracle source databases and AWS DMS, see 
 
 **Topics**
 + [Using Oracle LogMiner or AWS DMS Binary Reader for CDC](#CHAP_Source.Oracle.CDC)
-+ [Workflows for configuring a self\-managed or AWS\-managed Oracle source database for AWS DMS](#CHAP_Source.Oracle.Workflows)
++ [Workflows for configuring a self\-managed or AWS\-managed Oracle source database for AWS DMSConfiguring an Oracle source database](#CHAP_Source.Oracle.Workflows)
 + [Working with a self\-managed Oracle database as a source for AWS DMS](#CHAP_Source.Oracle.Self-Managed)
 + [Working with an AWS\-managed Oracle database as a source for AWS DMS](#CHAP_Source.Oracle.Amazon-Managed)
 + [Limitations on using Oracle as a source for AWS DMS](#CHAP_Source.Oracle.Limitations)
@@ -122,7 +122,7 @@ For more information on configuring CDC for a self\-managed Oracle database as a
 
 For more information on configuring CDC for an AWS\-managed Oracle database as a source, see [ Configuring a CDC task to use Binary Reader with an RDS for Oracle source for AWS DMS](#CHAP_Source.Oracle.Amazon-Managed.CDC) and [Using an Amazon RDS Oracle Standby \(read replica\) as a source with Binary Reader for CDC in AWS DMS](#CHAP_Source.Oracle.Amazon-Managed.StandBy)\.
 
-## Workflows for configuring a self\-managed or AWS\-managed Oracle source database for AWS DMS<a name="CHAP_Source.Oracle.Workflows"></a>
+## Workflows for configuring a self\-managed or AWS\-managed Oracle source database for AWS DMSConfiguring an Oracle source database<a name="CHAP_Source.Oracle.Workflows"></a>
 
 To configure a self\-managed source database instance, use the following workflow steps , depending on how you perform CDC\.  
 
@@ -191,7 +191,8 @@ GRANT SELECT ON DBA_TABLESPACES TO db_user;
 GRANT SELECT ON DBA_OBJECTS TO db_user; -– Required if the Oracle version is earlier than 11.2.0.3.
 GRANT SELECT ON SYS.ENC$ TO db_user; -– Required if transparent data encryption (TDE) is enabled. For more information on using Oracle TDE with AWS DMS, see Supported encryption methods for using Oracle as a source for AWS DMS.
 GRANT SELECT ON GV_$TRANSACTION TO db_user; -– Required if the source database is Oracle RAC in AWS DMS versions 3.4.6 and higher.
-GRANT SELECT ON V_$DATAGUARD_STATS TO db_user ; -- Required if the source database is Oracle Data Guard and Oracle Standby is used in the latest release of DMS version 3.4.6, version 3.4.7, and higher.
+GRANT SELECT ON V_$DATAGUARD_STATS TO db_user; -- Required if the source database is Oracle Data Guard and Oracle Standby is used in the latest release of DMS version 3.4.6, version 3.4.7, and higher.
+GRANT SELECT ON DBA_TYPES TO db_user; --- Required for preflight v3.
 ```
 
 Grant the additional following privilege for each replicated table when you are using a specific table list\.
@@ -350,7 +351,7 @@ To access the redo logs using the Oracle LogMiner, grant the following privilege
 GRANT EXECUTE on DBMS_LOGMNR to db_user;
 GRANT SELECT on V_$LOGMNR_LOGS to db_user;
 GRANT SELECT on V_$LOGMNR_CONTENTS to db_user;
-GRANT LOGMINING to db_user; -– Required only if the Oracle version is 12c or later.
+GRANT LOGMINING to db_user; -– Required only if the Oracle version is 12c or higher.
 ```
 
 ### Account privileges required when using AWS DMS Binary Reader to access the redo logs<a name="CHAP_Source.Oracle.Self-Managed.BinaryReaderPrivileges"></a>
@@ -381,7 +382,7 @@ To access the redo logs in Automatic Storage Management \(ASM\) using Binary Rea
 
 ```
 SELECT ON v_$transportable_platform
-SYSASM -– To access the ASM account with Oracle 11g Release 2 (version 11.2.0.2) and later, grant the Oracle endpoint user the SYSASM privilege. For older supported Oracle versions, it's typically sufficient to grant the Oracle endpoint user the SYSDBA privilege.
+SYSASM -– To access the ASM account with Oracle 11g Release 2 (version 11.2.0.2) and higher, grant the Oracle endpoint user the SYSASM privilege. For older supported Oracle versions, it's typically sufficient to grant the Oracle endpoint user the SYSDBA privilege.
 ```
 
 You can validate ASM account access by opening a command prompt and invoking one of the following statements, depending on your Oracle version as specified preceding\.
@@ -526,8 +527,8 @@ GRANT SELECT ANY TRANSACTION to db_user;
 GRANT SELECT on DBA_TABLESPACES to db_user;
 GRANT SELECT ON any-replicated-table to db_user;
 GRANT EXECUTE on rdsadmin.rdsadmin_util to db_user;
- -- For Oracle 12c or later:
-GRANT LOGMINING to db_user; – Required only if the Oracle version is 12c or later.
+ -- For Oracle 12c or higher:
+GRANT LOGMINING to db_user; – Required only if the Oracle version is 12c or higher.
 ```
 
 In addition, grant `SELECT` and `EXECUTE` permissions on `SYS` objects using the Amazon RDS procedure `rdsadmin.rdsadmin_util.grant_sys_object` as shown\. For more information, see [Granting SELECT or EXECUTE privileges to SYS objects](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Appendix.Oracle.CommonDBATasks.html#Appendix.Oracle.CommonDBATasks.TransferPrivileges)\.
@@ -562,7 +563,7 @@ exec rdsadmin.rdsadmin_util.grant_sys_object('V_$LOGMNR_LOGS', 'db_user', 'SELEC
 exec rdsadmin.rdsadmin_util.grant_sys_object('V_$LOGMNR_CONTENTS','db_user','SELECT');
 exec rdsadmin.rdsadmin_util.grant_sys_object('DBMS_LOGMNR', 'db_user', 'EXECUTE');
 
--- (as of Oracle versions 12.1 and later)
+-- (as of Oracle versions 12.1 and higher)
 exec rdsadmin.rdsadmin_util.grant_sys_object('REGISTRY$SQLPATCH', 'db_user', 'SELECT');
 
 -- (for Amazon RDS Active Dataguard Standby (ADG))
@@ -662,11 +663,11 @@ To use Oracle LogMiner, the minimum required user account privileges are suffici
 To use AWS DMS Binary Reader, specify additional settings and extra connection attributes for the Oracle source endpoint, depending on your AWS DMS version\.
 
 Binary Reader support is available in the following versions of Amazon RDS for Oracle:
-+ Oracle 11\.2 – Versions 11\.2\.0\.4V11 and later\.
-+ Oracle 12\.1 – Versions 12\.1\.0\.2\.V7 and later\.
-+ Oracle 12\.2 – All versions\.
-+ Oracle 18\.0 – All versions\.
-+ Oracle 19\.0 – All versions\.
++ Oracle 11\.2 – Versions 11\.2\.0\.4V11 and higher
++ Oracle 12\.1 – Versions 12\.1\.0\.2\.V7 and higher
++ Oracle 12\.2 – All versions
++ Oracle 18\.0 – All versions
++ Oracle 19\.0 – All versions
 
 **To configure CDC using Binary Reader**
 
@@ -756,7 +757,7 @@ After you do so, use the following procedure to use RDS for Oracle Standby as a 
 ## Limitations on using Oracle as a source for AWS DMS<a name="CHAP_Source.Oracle.Limitations"></a>
 
 The following limitations apply when using an Oracle database as a source for AWS DMS:
-+ AWS DMS supports Oracle Extended data types in AWS DMS version 3\.5\.0 and later\.
++ AWS DMS supports Oracle Extended data types in AWS DMS version 3\.5\.0 and higher\.
 + AWS DMS doesn't support long object names \(over 30 bytes\)\.
 + AWS DMS doesn't support function\-based indexes\.
 + If you manage supplemental logging and carry out transformations on any of the columns, make sure that supplemental logging is activated for all fields and columns\. For more information on setting up supplemental logging, see the following topics:
@@ -765,9 +766,9 @@ The following limitations apply when using an Oracle database as a source for AW
 + AWS DMS doesn't support the multi\-tenant container root database \(CDB$ROOT\)\. It does support a PDB using the Binary Reader\.
 + AWS DMS doesn't support deferred constraints\.
 + Secure LOBs are supported using Full LOB mode only by performing LOB lookup\.
-+ AWS DMS supports the `rename table table-name to new-table-name` syntax for all supported Oracle versions 11 and later\. This syntax isn't supported for any Oracle version 10 source databases\.
++ AWS DMS supports the `rename table table-name to new-table-name` syntax for all supported Oracle versions 11 and higher\. This syntax isn't supported for any Oracle version 10 source databases\.
 + AWS DMS doesn't replicate results of the DDL statement `ALTER TABLE ADD column data_type DEFAULT default_value`\. Instead of replicating `default_value` to the target, it sets the new column to `NULL`\.
-+ When using AWS DMS version 3\.4\.7 or later, to replicate changes that result from partition or subpartition operations, do the following before starting a DMS task\.
++ When using AWS DMS version 3\.4\.7 or higher, to replicate changes that result from partition or subpartition operations, do the following before starting a DMS task\.
   + Manually create the partitioned table structure \(DDL\); 
   + Make sure the DDL is the same on both Oracle source and Oracle target; 
   + Set the extra connection attribute `enableHomogenousPartitionOps=true`\.

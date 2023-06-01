@@ -170,7 +170,7 @@ To make sure that your data collector works correctly and uploads the collected 
 
 ### Create the DMS Fleet Advisor service\-linked role<a name="fa-resources-iam-slr"></a>
 
-DMS Fleet Advisor uses a service\-linked role to manage Amazon CloudWatch metrics in your AWS account\. DMS Fleet Advisor uses this service\-linked role to publish the collected database performance metrics to CloudWatch on your behalf\. DMS Fleet Advisor can create this role after you create the required IAM policy\. For more information, see [Using service\-linked roles for DMS Fleet Advisor](using-service-linked-roles.md)\.
+DMS Fleet Advisor uses a service\-linked role to manage Amazon CloudWatch metrics in your AWS account\. DMS Fleet Advisor uses this service\-linked role to publish the collected database performance metrics to CloudWatch on your behalf\. DMS Fleet Advisor can create this role after you create the required IAM policy\. For more information, see [Using service\-linked roles for AWS DMS](using-service-linked-roles.md)\.
 
 **To create an IAM policy that is required for the DMS Fleet Advisor service\-linked role**
 
@@ -228,6 +228,6 @@ Now, you can use this policy to create the service\-linked role for DMS Fleet Ad
 
 1. On the **Name, review, and create** page, choose **Create role**\.
 
-Alternatively, you can create this service\-linked role from the AWS API or AWS CLI\. For more information, see [Creating a service\-linked role for DMS Fleet Advisor](using-service-linked-roles.md#create-slr)\.
+Alternatively, you can create this service\-linked role from the AWS API or AWS CLI\. For more information, see [Creating a service\-linked role for AWS DMS Fleet Advisor](slr-services-fa.md#create-slr-fa)\.
 
 After you create the service\-linked role for DMS Fleet Advisor, you can see performance metrics for your source databases in target recommendations\. Also, you can see these metrics and in your CloudWatch account\. For more information, see [Target recommendations](fa-recommendations.md)\.

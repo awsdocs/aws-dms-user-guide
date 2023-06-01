@@ -51,9 +51,9 @@ The following table shows the Microsoft SQL Server target data types that are su
 | --- | --- | 
 |  BOOLEAN  |  TINYINT  | 
 |  BYTES  |  VARBINARY\(length\)  | 
-|  DATE  |  For SQL Server 2008 and later, use DATE\. For earlier versions, if the scale is 3 or less use DATETIME\. In all other cases, use VARCHAR \(37\)\.  | 
-|  TIME  |  For SQL Server 2008 and later, use DATETIME2 \(%d\)\. For earlier versions, if the scale is 3 or less use DATETIME\. In all other cases, use VARCHAR \(37\)\.  | 
-|  DATETIME  |  For SQL Server 2008 and later, use DATETIME2 \(scale\)\.  For earlier versions, if the scale is 3 or less use DATETIME\. In all other cases, use VARCHAR \(37\)\.  | 
+|  DATE  |  For SQL Server 2008 and higher, use DATE\. For earlier versions, if the scale is 3 or less use DATETIME\. In all other cases, use VARCHAR \(37\)\.  | 
+|  TIME  |  For SQL Server 2008 and higher, use DATETIME2 \(%d\)\. For earlier versions, if the scale is 3 or less use DATETIME\. In all other cases, use VARCHAR \(37\)\.  | 
+|  DATETIME  |  For SQL Server 2008 and higher, use DATETIME2 \(scale\)\.  For earlier versions, if the scale is 3 or less use DATETIME\. In all other cases, use VARCHAR \(37\)\.  | 
 |  INT1  | SMALLINT | 
 |  INT2  |  SMALLINT  | 
 |  INT4  | INT | 

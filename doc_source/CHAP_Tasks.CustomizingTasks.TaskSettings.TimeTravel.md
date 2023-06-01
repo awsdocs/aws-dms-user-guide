@@ -93,7 +93,7 @@ The Time Travel settings include the `TTSettings` properties following:
   Type: String
 
   Required: No
-+ `RawDataFormat` – In AWS DMS versions 3\.5\.0 and later, when `EnableRawData` is set to `true`\. This property specifies a format for the raw data of the DML in a Time Travel log and can be presented as:
++ `RawDataFormat` – In AWS DMS versions 3\.5\.0 and higher, when `EnableRawData` is set to `true`\. This property specifies a format for the raw data of the DML in a Time Travel log and can be presented as:
   + `"TEXT"` – Parsed, readable column names and values for DML events captured during CDC as `Raw` fields\.
   + `"HEX"` – The original hexidecimal for column names and values captured for DML events during CDC\.
 

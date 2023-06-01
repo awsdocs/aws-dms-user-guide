@@ -77,7 +77,7 @@ db.createUser(
 })
 ```
 
-For Amazon DocumentDB 4\.0 and above, AWS DMS uses a deployment\-wide change stream\. Here, the code following creates a user with minimal privileges\.
+For Amazon DocumentDB 4\.0 and higher, AWS DMS uses a deployment\-wide change stream\. Here, the code following creates a user with minimal privileges\.
 
 ```
 db.createUser( 
@@ -329,7 +329,7 @@ Currently, AWS DMS supports the following Amazon DocumentDB data types as a segm
 
 ## Migrating multiple databases when using Amazon DocumentDB as a source for AWS DMS<a name="CHAP_Source.DocumentDB.Multidatabase"></a>
 
-AWS DMS versions 3\.4\.5 and later support migrating multiple databases in a single task only for Amazon DocumentDB versions 4\.0 and above\. If you want to migrate multiple databases, do the following:
+AWS DMS versions 3\.4\.5 and higher support migrating multiple databases in a single task only for Amazon DocumentDB versions 4\.0 and higher\. If you want to migrate multiple databases, do the following:
 
 1. When you create the Amazon DocumentDB source endpoint:
    + In the AWS Management Console for AWS DMS, leave **Database name** empty under **Endpoint configuration** on the **Create endpoint** page\.

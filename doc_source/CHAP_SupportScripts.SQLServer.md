@@ -52,7 +52,7 @@ The following topics describe how to download, review, and run each support scri
 Download the [https://d2pwp9zz55emqw.cloudfront.net/scripts/awsdms_support_collector_sql_server.sql](https://d2pwp9zz55emqw.cloudfront.net/scripts/awsdms_support_collector_sql_server.sql) script\.
 
 **Note**  
-Run this SQL Server diagnostic support script on SQL Server 2014 and later versions only\.
+Run this SQL Server diagnostic support script on SQL Server 2014 and higher versions only\.
 
 This script collects information about your SQL Server database configuration\. Remember to verify the checksum on the script, and if the checksum verifies, review the SQL code in the script to comment out any of the code that you are uncomfortable running\. After you are satisfied with the integrity and content of the script, you can run it\.
 

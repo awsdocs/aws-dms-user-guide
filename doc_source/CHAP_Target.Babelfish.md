@@ -105,7 +105,7 @@ The following limitations apply when using a Babelfish database as a target for 
         }
   }
   ```
-+ TIME\(7\), DATETIME2\(7\), and DATETIMEOFFSET\(7\) data types in Babelfish limit the precision value for the seconds portion of the time to 6 digits\. Consider using a precision value of 6 for your target table when using these data types\. For Babelfish versions 2\.2\.0 and later, when using TIME\(7\) and DATETIME2\(7\), the seventh digit of precision is always zero\.
++ TIME\(7\), DATETIME2\(7\), and DATETIMEOFFSET\(7\) data types in Babelfish limit the precision value for the seconds portion of the time to 6 digits\. Consider using a precision value of 6 for your target table when using these data types\. For Babelfish versions 2\.2\.0 and higher, when using TIME\(7\) and DATETIME2\(7\), the seventh digit of precision is always zero\.
 + In DO\_NOTHING mode, DMS checks to see if the table already exists\. If the table doesn't exist in the target schema, DMS creates the table based on the source table definition, and maps any user defined data types to their base data type\.
 + An AWS DMS migration task to a Babelfish target doesn't support tables that have columns using ROWVERSION or TIMESTAMP data types\. You can use a table mapping rule that removes the column name from the table during the transfer process\. In the following transformation rule example, a table named `Actor` in your source is transformed to remove all columns starting with the characters `col` from the `Actor` table in your target\.
 
@@ -137,7 +137,7 @@ The following limitations apply when using a Babelfish database as a target for 
 + Babelfish doesn't copy IMAGE data type columns\.
 + For tables with identity or computed columns, where the target tables use mixed case names like Categories, you must create a transformation rule action that converts the table names to lowercase for your DMS task\. The following example shows how to create the transformation rule action, **Make lowercase** using the AWS DMS console\. For more information, see [ Transformation rules and actions](CHAP_Tasks.CustomizingTasks.TableMapping.SelectionTransformation.Transformations.md)\.  
 ![\[Babelfish transformation rule\]](http://docs.aws.amazon.com/dms/latest/userguide/images/datarep-babelfish-transform-1.png)
-+ Prior to Babelfish version 2\.2\.0, DMS limited the number of columns that you could replicate to a Babelfish target endpoint to twenty \(20\) columns\. With Babelfish 2\.2\.0 the limit increased to 100 columns\. But with Babelfish versions 2\.4\.0 and later, the number of columns that you can replicate increases again\. You can run the following code sample against your SQL Server database to determine which tables are too long\.
++ Prior to Babelfish version 2\.2\.0, DMS limited the number of columns that you could replicate to a Babelfish target endpoint to twenty \(20\) columns\. With Babelfish 2\.2\.0 the limit increased to 100 columns\. But with Babelfish versions 2\.4\.0 and higher, the number of columns that you can replicate increases again\. You can run the following code sample against your SQL Server database to determine which tables are too long\.
 
   ```
   USE myDB;

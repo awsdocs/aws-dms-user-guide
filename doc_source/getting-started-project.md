@@ -20,6 +20,6 @@ Now you can create a migration project\. In the migration project, you specify y
 
 1. For **Secret ID**, choose **sc\-target\-secret**\.
 
-1. For **IAM role**, choose **sc\-secrets\-manager\-role**\.
+1. For **IAM role**, choose **schema\-conversion\-role**\.
 
 1. Choose **Create migration project**\.

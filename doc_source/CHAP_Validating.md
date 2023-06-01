@@ -199,10 +199,10 @@ A validation\-only task must be set up in the same direction as the replication 
 
 ### Full load validation only<a name="CHAP_Validating.ValidationOnly.FL"></a>
 
-Beginning with AWS DMS version 3\.4\.6 and later, a full load validation only task quickly compares all rows from the source and target tables in a single pass, immediately reports any failures, and then shuts down\. Validation never is suspended due to failures in this mode, it is optimized for speed\. But changes to the source or target endpoint are reported as failures\.
+Beginning with AWS DMS version 3\.4\.6 and higher, a full load validation only task quickly compares all rows from the source and target tables in a single pass, immediately reports any failures, and then shuts down\. Validation never is suspended due to failures in this mode, it is optimized for speed\. But changes to the source or target endpoint are reported as failures\.
 
 **Note**  
-Beginning with AWS DMS version 3\.4\.6 and later, this validation behavior also applies to full load migration task with validation enabled\.
+Beginning with AWS DMS version 3\.4\.6 and higher, this validation behavior also applies to full load migration task with validation enabled\.
 
 ### CDC validation only<a name="CHAP_Validating.ValidationOnly.CDC"></a>
 

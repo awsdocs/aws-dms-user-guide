@@ -28,7 +28,7 @@ The Replication Status table \(`dmslogs.awsdms_status`\) contains the current st
 |  TASK\_NAME  |  nvchar  |  The Resource ID of the AWS DMS task\. Resource ID can be found in task ARN\.  | 
 |  TASK\_STATUS  |  varchar  |  One of the following values: [\[See the AWS documentation website for more details\]](http://docs.aws.amazon.com/dms/latest/userguide/CHAP_Tasks.CustomizingTasks.TaskSettings.ControlTable.html) Task status is set to FULL LOAD as long as there is at least one table in full load\. After all tables have been loaded, the task status changes to CHANGE PROCESSING if CDC is enabled\.  | 
 | STATUS\_TIME |  timestamp  |  The timestamp of the task status\.  | 
-|  PENDING\_CHANGES  |  int  |  The number of change records that weren't applied to the target\.  | 
+|  PENDING\_CHANGES  |  int  |  The number of change records that were committed in the source database and cached in the memory and disk of your replication instance\.  | 
 |  DISK\_SWAP\_SIZE  |  int  |  The amount of disk space used by old or offloaded transactions\.  | 
 | TASK\_MEMORY |  int  |  Current memory used, in MB\.  | 
 |  SOURCE\_CURRENT \_POSITION  |  varchar  |  The position in the source database that AWS DMS is currently reading from\.  | 

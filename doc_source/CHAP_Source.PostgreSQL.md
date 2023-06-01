@@ -18,8 +18,8 @@ DMS supports Amazon Aurora PostgreSQL—Serverless V1 as a source for Full load 
 |  PostgreSQL source version  |  AWS DMS version to use  | 
 | --- | --- | 
 |  9\.x, 10\.x, 11\.x, 12\.x  |  Use any available AWS DMS version\.  | 
-|  13\.x  |  Use AWS DMS version 3\.4\.3 and above\.  | 
-|  14\.x  |  Use AWS DMS version 3\.4\.7 and above\.  | 
+|  13\.x  |  Use AWS DMS version 3\.4\.3 and higher\.  | 
+|  14\.x  |  Use AWS DMS version 3\.4\.7 and higher\.  | 
 
 You can use Secure Socket Layers \(SSL\) to encrypt connections between your PostgreSQL endpoint and the replication instance\. For more information on using SSL with a PostgreSQL endpoint, see [Using SSL with AWS Database Migration Service](CHAP_Security.SSL.md)\.
 
@@ -29,7 +29,7 @@ To configure a PostgreSQL database as an AWS DMS source endpoint, do the followi
 + Create a PostgreSQL user with appropriate permissions to provide AWS DMS access to your PostgreSQL source database\.
 **Note**  
 If your PostgreSQL source database is self\-managed, see [Working with self\-managed PostgreSQL databases as a source in AWS DMS](#CHAP_Source.PostgreSQL.Prerequisites) for more information\.
-If your PostgreSQL source database is managed by Amazon RDS, see [Working with AWS\-managed PostgreSQL databases as DMS sources](#CHAP_Source.PostgreSQL.RDSPostgreSQL) for more information\.
+If your PostgreSQL source database is managed by Amazon RDS, see [Working with AWS\-managed PostgreSQL databases as a DMS source](#CHAP_Source.PostgreSQL.RDSPostgreSQL) for more information\.
 + Create a PostgreSQL source endpoint that conforms with your chosen PostgreSQL database configuration\.
 + Create a task or set of tasks to migrate your tables\.
 
@@ -39,7 +39,7 @@ If your PostgreSQL source database is managed by Amazon RDS, see [Working with A
 
 **Topics**
 + [Working with self\-managed PostgreSQL databases as a source in AWS DMS](#CHAP_Source.PostgreSQL.Prerequisites)
-+ [Working with AWS\-managed PostgreSQL databases as DMS sources](#CHAP_Source.PostgreSQL.RDSPostgreSQL)
++ [Working with AWS\-managed PostgreSQL databases as a DMS source](#CHAP_Source.PostgreSQL.RDSPostgreSQL)
 + [Enabling change data capture \(CDC\) using logical replication](#CHAP_Source.PostgreSQL.Security)
 + [Using native CDC start points to set up a CDC load of a PostgreSQL source](#CHAP_Source.PostgreSQL.v10)
 + [Migrating from PostgreSQL to PostgreSQL using AWS DMS](#CHAP_Source.PostgreSQL.Homogeneous)
@@ -57,7 +57,7 @@ With a self\-managed PostgreSQL database as a source, you can migrate data to ei
 ### Prerequisites to using a self\-managed PostgreSQL database as a AWS DMS source<a name="CHAP_Source.PostgreSQL.Prerequisites.SelfManaged"></a>
 
 Before migrating data from a self\-managed PostgreSQL source database, do the following: 
-+ Make sure that you use a PostgreSQL database that is version 9\.4\.x or later\.
++ Make sure that you use a PostgreSQL database that is version 9\.4\.x or higher\.
 + For full\-load plus CDC tasks or CDC\-only tasks, grant superuser permissions for the user account specified for the PostgreSQL source database\. The user account needs superuser permissions to access replication\-specific functions in the source\. For full\-load only tasks, the user account needs SELECT permissions on tables to migrate them\.
 + Add the IP address of the AWS DMS replication server to the `pg_hba.conf` configuration file and enable replication and socket connections\. An example follows\.
 
@@ -73,7 +73,7 @@ Before migrating data from a self\-managed PostgreSQL source database, do the fo
 + If you're configuring a database as a source for logical replication using AWS DMS see [Enabling CDC using a self\-managed PostgreSQL database as a AWS DMS source](#CHAP_Source.PostgreSQL.Prerequisites.CDC)
 
 **Note**  
-Some AWS DMS transactions are idle for some time before the DMS engine uses them again\. By using the parameter `idle_in_transaction_session_timeout` in PostgreSQL versions 9\.6 and later, you can cause idle transactions to time out and fail\. Don't end idle transactions when you use AWS DMS\. 
+Some AWS DMS transactions are idle for some time before the DMS engine uses them again\. By using the parameter `idle_in_transaction_session_timeout` in PostgreSQL versions 9\.6 and higher, you can cause idle transactions to time out and fail\. Don't end idle transactions when you use AWS DMS\. 
 
 ### Enabling CDC using a self\-managed PostgreSQL database as a AWS DMS source<a name="CHAP_Source.PostgreSQL.Prerequisites.CDC"></a>
 
@@ -93,7 +93,7 @@ Some parameters are static, and you can only set them at server start\. Any chan
 
 For more information about enabling CDC, see [Enabling change data capture \(CDC\) using logical replication](#CHAP_Source.PostgreSQL.Security)\.
 
-## Working with AWS\-managed PostgreSQL databases as DMS sources<a name="CHAP_Source.PostgreSQL.RDSPostgreSQL"></a>
+## Working with AWS\-managed PostgreSQL databases as a DMS source<a name="CHAP_Source.PostgreSQL.RDSPostgreSQL"></a>
 
 You can use an AWS\-managed PostgreSQL DB instance as a source for AWS DMS\. You can perform both full\-load tasks and change data capture \(CDC\) tasks using an AWS\-managed PostgreSQL source\. 
 
@@ -106,7 +106,7 @@ Before migrating data from an AWS\-managed PostgreSQL source database, do the fo
 + If your source database is in a virtual private cloud \(VPC\), choose the VPC security group that provides access to the DB instance where the database resides\. This is needed for the DMS replication instance to connect successfully to the source DB instance\. When the database and DMS replication instance are in same VPC, add the appropriate security group to its own inbound rules\.
 
 **Note**  
-Some AWS DMS transactions are idle for some time before the DMS engine uses them again\. By using the parameter `idle_in_transaction_session_timeout` in PostgreSQL versions 9\.6 and later, you can cause idle transactions to time out and fail\. Don't end idle transactions when you use AWS DMS\.
+Some AWS DMS transactions are idle for some time before the DMS engine uses them again\. By using the parameter `idle_in_transaction_session_timeout` in PostgreSQL versions 9\.6 and higher, you can cause idle transactions to time out and fail\. Don't end idle transactions when you use AWS DMS\.
 
 ### Enabling CDC with an AWS\-managed PostgreSQL DB instance with AWS DMS<a name="CHAP_Source.PostgreSQL.RDSPostgreSQL.CDC"></a>
 

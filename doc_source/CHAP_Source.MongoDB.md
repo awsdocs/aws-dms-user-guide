@@ -2,7 +2,7 @@
 
  For information about versions of MongoDB that AWS DMS supports as a source, see [Sources for AWS DMS](CHAP_Introduction.Sources.md)\. 
 
-Starting with AWS DMS 3\.4\.5, AWS DMS supports MongoDB versions 4\.2 and 4\.4\. Starting with MongoDB version 4\.2, AWS DMS 3\.4\.5 and later supports distributed transactions\. For more information on MongoDB distributed transactions, see [Transactions](https://docs.mongodb.com/manual/core/transactions/) in MongoDB\.
+Starting with AWS DMS 3\.4\.5, AWS DMS supports MongoDB versions 4\.2 and 4\.4\. Starting with MongoDB version 4\.2, AWS DMS 3\.4\.5 and higher supports distributed transactions\. For more information on MongoDB distributed transactions, see [Transactions](https://docs.mongodb.com/manual/core/transactions/) in MongoDB\.
 
 If you are new to MongoDB, be aware of the following important MongoDB database concepts: 
 + A record in MongoDB is a *document*, which is a data structure composed of field and value pairs\. The value of a field can include other documents, arrays, and arrays of documents\. A document is roughly equivalent to a row in a relational database table\.
@@ -312,7 +312,7 @@ Currently, AWS DMS supports the following MongoDB data types as a segment key co
 
 ## Migrating multiple databases when using MongoDB as a source for AWS DMS<a name="CHAP_Source.MongoDB.Multidatabase"></a>
 
-AWS DMS versions 3\.4\.5 and later support migrating multiple databases in a single task for all supported MongoDB versions\. If you want to migrate multiple databases, take these steps:
+AWS DMS versions 3\.4\.5 and higher support migrating multiple databases in a single task for all supported MongoDB versions\. If you want to migrate multiple databases, take these steps:
 
 1. When you create the MongoDB source endpoint, do one of the following:
    + On the DMS console's **Create endpoint** page, make sure that **Database name** is empty under **Endpoint configuration**\.
