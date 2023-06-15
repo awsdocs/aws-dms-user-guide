@@ -1,5 +1,0 @@
-# Specifying supplemental data for task settings<a name="CHAP_Tasks.TaskData"></a>
-
-When you create or modify a replication task for some AWS DMS endpoints, the task might require additional information to perform the migration\. You can specify this additional information using an option in the DMS console\. Or you can specify it using the `TaskData` parameter for the DMS API operation `CreateReplicationTask` or `ModifyReplicationTask`\.
-
-If your target endpoint is Amazon Neptune, you need to specify mapping data, supplemental to table mapping\. This supplemental mapping data specifies how to convert source relational data into the target graph data that a Neptune database can consume\. In this case, you can use one of two possible formats\. For more information, see [Specifying graph\-mapping rules using Gremlin and R2RML for Amazon Neptune as a target](CHAP_Target.Neptune.md#CHAP_Target.Neptune.GraphMapping)\.
